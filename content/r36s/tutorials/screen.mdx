@@ -1,0 +1,109 @@
+---
+title: Ajustes de Tela (Painéis)
+description: Como resolver problemas de tela preta, imagem distorcida ou invertida no R36S.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+import { Link } from "lucide-react";
+
+O R36S possui diferentes versões de tela (painéis) que exigem arquivos de configuração específicos (`.dtb`). Se você atualizou o sistema e ficou com tela preta, ou se a imagem está errada, você provavelmente está usando o arquivo DTB errado para o seu painel.
+
+## Identificando seu Painel
+
+Use nossa ferramenta exclusiva para identificar qual painel seu console usa analisando um arquivo DTB de backup (do cartão original).
+
+<a
+  href="/r36s/dtb-detector"
+  className="rw-btn dark:bg-transparent! dark:border-green-500/20! border! hover:bg-green-100/20 dark:hover:bg-green-100/5!"
+>
+  Acessar Detector de DTB
+</a>
+
+## Telas Comuns e Seus Arquivos
+
+Existem 7 painéis principais:
+
+- **Panel 1**: Comum nos primeiros modelos.
+- **Panel 2**: Introduzido em versões intermediárias.
+- **Panel 3**: Presente em versões V.
+- **Panel 4**: A versão mais nova, requerendo arquivos específicos.
+- **Panel 4 (v22)**: A versão mais nova, requerendo arquivos específicos.
+- **Panel 5**: A versão mais nova, requerendo arquivos específicos.
+- **Panel 6**: A versão mais nova, requerendo arquivos específicos.
+
+<Alert type="critical" title="Tela Preta após Atualização?">
+  Se você atualizou o ArkOS e a tela ficou preta, não se desespere. O sistema
+  está rodando, mas não consegue exibir imagem. Você precisa substituir o
+  arquivo `.dtb` na partição BOOT.
+</Alert>
+
+## Como Corrigir (Tela Preta)
+
+<Steps>
+  <Step title="Acesse a Partição BOOT">
+    Insira o cartão SD (TF1) no computador. Abra a partição chamada **BOOT**.
+  </Step>
+
+<Step title="Localize os DTBs">
+  Geralmente, há uma pasta (ex: `BOOT/dtb` ou apenas arquivos na raiz) contendo
+  variantes. O arquivo principal que o sistema lê é geralmente nomeado como
+  `rk3326-r35s-linux.dtb` (no ArkOS).
+</Step>
+
+  <Step title="Substitua o Arquivo">
+    Você precisará substituir o arquivo `rk3326-r35s-linux.dtb` por uma das variantes compatíveis com sua tela.
+    
+    *   Se você tem backup do cartão original, copie o arquivo `.dtb` dele para o novo cartão.
+    *   Se não tem backup, tente os arquivos disponíveis nos repositórios da comunidade (AeolusUX).
+  </Step>
+</Steps>
+
+## Arquivos para Download
+
+Baixe o pacote de DTBs originais para testar qual funciona no seu dispositivo:
+
+- [Pack de DTBs Originais](https://github.com/AeolusUX/R36S-DTB/)
+
+<Alert type="info">
+  Recomendamos testar o **Panel 4** primeiro se você comprou o console
+  recentemente (final de 2024/2025), pois é o mais comum atualmente.
+</Alert>
+
+## Correção de Gama (Panel 4)
+
+Jogadores atentos podem ter notado que os valores de gama nas telas **Panel 4** podem estar desajustados, resultando em uma imagem "lavada" ou com uma tonalidade esverdeada. Existe uma correção via script que resolve isso, tornando o Panel 4 superior ao Panel 1 com cores muito mais vibrantes.
+
+<Alert type="info">
+  Essa correção é específica para melhorar a qualidade de imagem do **Panel 4**,
+  mas também inclui valores para o Panel 1 (embora o efeito seja mais sutil).
+</Alert>
+
+### Instalação da Correção
+
+<Steps>
+  <Step title="Baixe o Arquivo">
+    Faça o download do pacote de correção de gama no link abaixo.
+  </Step>
+  
+  <Step title="Mova para o SD">
+    Extraia o conteúdo e mova a pasta `Gamma/` para a pasta `tools/` na partição **EASYROMS** do seu cartão SD.
+    
+    O caminho final deve ser algo como: `EASYROMS/tools/Gamma/`.
+  </Step>
+
+  <Step title="Acesse no Console">
+    No R36S, navegue até o menu **Options** > **Tools** > **Gamma**.
+  </Step>
+
+  <Step title="Ative a Correção">
+    Selecione a opção **Enable Gamma Correction** para ativar a correção na inicialização (boot).
+    
+    *   Use **Set Panel1/4** para gravar os valores adequados para seu painel (só funciona se a correção estiver ativada).
+    *   Use **Adjust Gamma (temporary)** para testar valores sem salvar (reseta ao reiniciar).
+  </Step>
+</Steps>
+
+### Downloads
+
+- [Script de Correção de Gama (Google Drive)](https://drive.google.com/file/d/1hXEMSVcwIpFpTxnMlVUC6lTV8gpGirm6/view?usp=sharing)

@@ -1,0 +1,96 @@
+---
+title: Instalar e Configurar Temas
+description: Guia completo para personalizar a interface do seu R36S com novos temas.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+O R36S, rodando ArkOS ou outros sistemas baseados em EmulationStation, permite uma personalização profunda da interface através de temas. Você pode mudar completamente o visual dos menus, listas de jogos e telas de sistema.
+
+## Métodos de Instalação
+
+Existem duas formas principais de instalar temas: via Wi-Fi (mais fácil) ou manualmente (via cartão SD).
+
+### Método 1: Via Wi-Fi (ThemeMaster)
+
+Se você tem um adaptador Wi-Fi compatível configurado, este é o método mais rápido.
+
+<Steps>
+  <Step title="Conecte-se à Internet">
+    Certifique-se de que seu R36S está conectado ao Wi-Fi. (Veja nosso [guia de Wi-Fi](/r36s/wifi)).
+  </Step>
+
+  <Step title="Acesse o ThemeMaster">
+    No menu principal, vá para **Options** > **Tools** > **ThemeMaster**.
+  </Step>
+
+  <Step title="Navegue e Baixe">
+    O ThemeMaster mostrará uma lista de temas compatíveis. Navegue, veja as prévias e pressione `A` para instalar o tema desejado.
+  </Step>
+</Steps>
+
+### Método 2: Instalação Manual (Cartão SD)
+
+Ideal para quem não tem Wi-Fi ou quer instalar temas específicos baixados da comunidade.
+
+<Steps>
+  <Step title="Baixe o Tema">
+    Baixe temas compatíveis com ArkOS/EmulationStation. A maioria está disponível no GitHub.
+    
+    *   [Galeria de Temas ArkOS (Handhelds Wiki)](https://handhelds.wiki/R36S_Themes#Themes_for_ArkOS)
+    *   [Repositorio Jetup13](https://github.com/Jetup13/Emulationstation-OGA-Theme-Gallery)
+  </Step>
+
+<Step title="Acesse o Cartão SD">
+  Insira o cartão SD (TF2/GAME ou TF1/OS) no computador.
+</Step>
+
+<Step title="Localize a Pasta de Temas">
+  Vá para a partição **EASYROMS**. Dentro dela, procure pela pasta `themes`.
+  Caminho: `EASYROMS/themes/`
+</Step>
+
+  <Step title="Copie os Arquivos">
+    Extraia o arquivo `.zip` do tema baixado.
+    Copie a **pasta extraída** para dentro de `EASYROMS/themes/`.
+    
+    <Alert type="warning">
+      Certifique-se de que a estrutura esteja correta: dentro da pasta do tema deve haver arquivos como `theme.xml` e pastas de assets, não outra subpasta com o mesmo nome.
+    </Alert>
+  </Step>
+</Steps>
+
+## Ativando o Tema
+
+Após instalar (por qualquer método), você precisa ativar o tema:
+
+<Steps>
+  <Step title="Abra o Menu UI Settings">
+    Pressione `START` no menu principal para abrir o **Main Menu**.
+    Selecione **UI Settings**.
+  </Step>
+
+<Step title="Selecione o Tema">
+  Vá em **Theme Set**. Use as setas esquerda/direita para escolher o tema que
+  você instalou.
+</Step>
+
+  <Step title="Volte e Aproveite">
+    Pressione `B` para voltar. O sistema recarregará a interface com o novo visual.
+  </Step>
+</Steps>
+
+## Temas Recomendados para ArkOS
+
+Nem todos os temas funcionam perfeitamente no ArkOS do R36S. Aqui estão alguns testados e recomendados pela comunidade:
+
+- **Art Book Next**: Visual limpo e moderno, estilo revista.
+- **Epic Noir**: Tema escuro e elegante com artes de alta qualidade.
+- **Switch OS**: Imita a interface do Nintendo Switch.
+- **NesBox**: Estilo retrô pixelado.
+
+<Alert type="info">
+  Alguns temas podem ter problemas de desempenho ou cortar textos em resoluções
+  640x480. Se o sistema ficar lento, reverta para o tema padrão.
+</Alert>

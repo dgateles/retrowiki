@@ -5,10 +5,19 @@ description: Configuração de Wi-Fi para R36S (adaptador externo e soldagem).
 
 import { Alert } from "@/components/mdx/Alert";
 import { Steps, Step } from "@/components/mdx/Steps";
+import { CardLink } from "@/components/mdx/CardLink";
 
 <Alert type="info" title="Adaptadores Compatíveis">
   Adaptadores com chipset RTL8188 são os mais compatíveis.
 </Alert>
+
+<div className="my-6">
+  <CardLink
+    title="Comprar Adaptador Compatível"
+    description="Encontre dongles Wi-Fi (RTL8188) e adaptadores OTG testados."
+    href="/r36s/buying-guide"
+  />
+</div>
 
 ## Configuração
 
@@ -23,3 +32,57 @@ import { Steps, Step } from "@/components/mdx/Steps";
     Escolha sua rede e insira a senha.
   </Step>
 </Steps>
+
+## Modificação: Wi-Fi Interno (Solda)
+
+Se você tem habilidade com solda, é possível instalar um módulo Wi-Fi internamente, liberando a porta USB OTG externa e evitando dongles pendurados.
+
+<Alert type="warning" title="Perda de Garantia">
+  Este procedimento requer abrir o console e soldar componentes na placa-mãe.
+  Faça por sua conta e risco. Danos causados por erro na soldagem não são
+  cobertos.
+</Alert>
+
+### Materiais Necessários
+
+- Módulo Wi-Fi **[RTL8188ETV](https://s.click.aliexpress.com/e/_c3ZlDh9d)** (Pequeno e compatível).
+- Ferro de solda, estanho e fluxo.
+- Fios finos (AWG 30 recomendado).
+- Chave para abrir o console.
+
+### Passo a Passo
+
+<Steps>
+  <Step title="Localize os Pontos de Solda">
+    Abra o console. Nas placas mais novas (como a **V21**), existem pads dedicados para o Wi-Fi próximos ao alto-falante.
+    
+    Identifique os pads: **GND**, **D+**, **D-**, **3.3V**.
+    
+    ![Localização do Slot Wi-Fi](https://r36swiki.com/img/wifislotpreview.webp)
+  </Step>
+
+<Step title="Prepare o Módulo">
+  Verifique a pinagem no verso do módulo RTL8188ETV. Estanhe os pontos de
+  contato tanto no módulo quanto na placa-mãe. ![Pinagem do Módulo
+  RTL8188](https://r36swiki.com/img/backofrtlwifi.jpg)
+</Step>
+
+  <Step title="Solde os Fios">
+    Conecte os pontos correspondentes:
+    *   **3.3V** -> **3.3V** (Energia)
+    *   **GND** -> **GND** (Terra)
+    *   **D+** -> **DP** (Data +)
+    *   **D-** -> **DM** (Data -)
+    
+    ![Módulo Instalado com Sucesso](https://r36swiki.com/img/internal-wifi-upgrade-success.webp)
+  </Step>
+
+  <Step title="Teste">
+    Antes de fechar, ligue o console. Vá em **Options** > **WiFi** e veja se as redes aparecem. Se sim, isole o módulo com fita Kapton para evitar curtos e feche o console.
+  </Step>
+</Steps>
+
+### Problemas Conhecidos
+
+- **Interferência no Áudio**: Como o módulo fica perto do alto-falante, pode haver ruído ("buzzing") durante a transferência de dados. Usar cabos blindados pode ajudar.
+- **Porta OTG**: O Wi-Fi interno usa o mesmo barramento da porta OTG. Você **não poderá** usar a porta OTG para dados (controles, teclados) enquanto o Wi-Fi estiver instalado. O carregamento continua funcionando.

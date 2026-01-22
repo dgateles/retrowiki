@@ -1,0 +1,87 @@
+---
+title: Configurações do RetroArch
+description: Guia para ajustar emulação, áudio, vídeo e save states no RetroArch.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+O RetroArch é o "motor" por trás da maioria dos emuladores no R36S (ArkOS). Aprender a configurá-lo permite melhorar a imagem, salvar o jogo em qualquer lugar e ajustar controles.
+
+## Atalhos Principais (Hotkeys)
+
+O botão **FN** (ou **Select** em alguns modelos/configurações) funciona como tecla de função. Segure-o e pressione:
+
+| Combinação     | Ação                                      |
+| :------------- | :---------------------------------------- |
+| **FN + X**     | Abrir Menu do RetroArch (Quick Menu)      |
+| **FN + R1**    | Save State (Salvar onde está)             |
+| **FN + L1**    | Load State (Carregar onde salvou)         |
+| **FN + Start** | Sair do Jogo (Voltar ao EmulationStation) |
+| **FN + R2**    | Avançar Slot de Save                      |
+| **FN + L2**    | Voltar Slot de Save                       |
+
+## Ajustando a Proporção de Tela (Aspect Ratio)
+
+Alguns jogos podem parecer esticados ou com bordas pretas indesejadas.
+
+<Steps>
+  <Step title="Abra o Menu">
+    Dentro do jogo, pressione **FN + X** para abrir o Quick Menu.
+  </Step>
+
+  <Step title="Vá para Video Settings">
+    Pressione **B** para voltar ao menu principal do RetroArch (Main Menu) > **Settings** > **Video** > **Scaling**.
+  </Step>
+
+  <Step title="Ajuste o Aspect Ratio">
+    Altere a opção **Aspect Ratio**.
+    *   **Core Provided**: O padrão do emulador (geralmente o correto).
+    *   **4:3**: Ideal para TV antiga (preenche bem a tela do R36S).
+    *   **Full**: Estica a imagem para preencher toda a tela (pode distorcer).
+  </Step>
+</Steps>
+
+## Melhorando a Imagem (Shaders e Filtros)
+
+Você pode simular telas de CRT ou LCD antigas.
+
+<Steps>
+  <Step title="Quick Menu">
+    Abra o menu com **FN + X**.
+  </Step>
+
+<Step title="Shaders">
+  Role até **Shaders** e ative a opção **Video Shaders**.
+</Step>
+
+  <Step title="Load Preset">
+    Selecione **Load Preset** e navegue pelas pastas.
+    *   **Recomendado**: `shaders_glsl/handheld/lcd3x.glslp` (Simula pixels de LCD).
+    *   **Leve**: `shaders_glsl/stock.glslp` (Apenas correções de cor, sem peso no processamento).
+  </Step>
+</Steps>
+
+## Salvando suas Configurações (Overrides)
+
+<Alert type="warning">
+  **Importante:** Nunca selecione "Save Configuration" no menu principal, pois
+  isso pode bagunçar as configurações globais de todos os sistemas. Use sempre
+  **Overrides**.
+</Alert>
+
+Para salvar uma mudança (como tela ou shader) apenas para o jogo atual ou para todo o console (ex: SNES):
+
+<Steps>
+  <Step title="Quick Menu">
+    Com as alterações feitas, vá para **Quick Menu**.
+  </Step>
+
+<Step title="Overrides">Selecione **Overrides**.</Step>
+
+  <Step title="Escolha o Tipo">
+    *   **Save Core Overrides**: Aplica a TODOS os jogos desse emulador (ex: todos de SNES).
+    *   **Save Content Directory Overrides**: Aplica a todos os jogos da mesma pasta.
+    *   **Save Game Overrides**: Aplica APENAS para o jogo que está aberto.
+  </Step>
+</Steps>

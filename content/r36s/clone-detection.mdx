@@ -6,44 +6,63 @@ description: Existem várias variantes do R36S no mercado. Identificar corretame
 import { Steps, Step } from "@/components/mdx/Steps";
 import { Alert } from "@/components/mdx/Alert";
 import { QuickChecklist } from "@/components/mdx/QuickChecklist";
+import { CardLink } from "@/components/mdx/CardLink";
 
 <Alert type="critical" title="Por que isso importa?">
   Instalar o firmware errado pode deixar seu console inoperante. Sempre
   verifique sua variante antes de prosseguir.
 </Alert>
 
-## Lista de Verificação
-
-<QuickChecklist
-  title="Identificação do Hardware"
-  items={[
-    {
-      label: "Verifique a etiqueta na caixa",
-      description: "Procure por 'R36S V1' ou 'R36S V2'",
-    },
-    {
-      label: "Confira o arquivo DTB",
-      description: "Na partição BOOT, procure arquivos .dtb",
-    },
-    {
-      label: "Verifique a tela",
-      description: "Tela IPS ou TN? Cores vivas = IPS",
-    },
-    {
-      label: "Teste os botões",
-      description: "Alguns clones têm layout de botões diferente",
-    },
-  ]}
-/>
-
 ## Variantes Conhecidas
 
-| Variante      | Chip   | Tela        | Observações                        |
-| ------------- | ------ | ----------- | ---------------------------------- |
-| R36S Original | RK3326 | IPS 640×480 | Versão mais comum                  |
-| R36S V2       | RK3326 | IPS 640×480 | Melhorias no D-pad                 |
-| Clone A       | RK3326 | TN          | Cores mais fracas                  |
-| Clone B       | H700   | IPS         | Chip diferente, firmware diferente |
+### Originais e Revisões (ArkOS Oficial)
+
+Esses modelos rodam a imagem oficial do ArkOS sem modificações maiores (apenas DTB correto).
+
+| Variante                  | Chip   | Tela / Painel | Observações                                                                    |
+| :------------------------ | :----- | :------------ | :----------------------------------------------------------------------------- |
+| **R36S Original (V1/V2)** | RK3326 | IPS           | Versão clássica. Placas V1.1, V1.2. Painéis P1, P2, P3, P4.                    |
+| **R36S-V12 (2023-08)**    | RK3326 | IPS           | Variação antiga. 1 Chip RAM. Geralmente Painel 1.                              |
+| **R36S-V21 (12/2024)**    | RK3326 | IPS (P4)      | LED verde, carrega via USB-C PD. Local p/ Wi-Fi na placa.                      |
+| **R36S-V22 (12/2024)**    | RK3326 | IPS (P4)      | Similar à V21, acabamento OSP. Problemas no OTG corrigidos com DTB específico. |
+| **R36S-V30 (10/2025)**    | RK3326 | IPS           | Revisão da V21 com espaço para hub USB soldado.                                |
+| **R36S-Y02 (2024/25)**    | RK3326 | IPS (P0)      | Geralmente usa o "Panel 0" (Tela original).                                    |
+| **RK3326-D3**             | RK3326 | IPS (P4)      | Roda ArkOS padrão.                                                             |
+
+### Clones Compatíveis (Requerem DTB Específico ou ArkOS Modificado)
+
+Esses dispositivos são clones funcionais, mas precisam de arquivos DTB específicos ou imagens modificadas (como AeolusUX ou ArkOS4Clone).
+
+| Variante                  | Chip   | Observações                                                                                        |
+| :------------------------ | :----- | :------------------------------------------------------------------------------------------------- |
+| **"Soy Sauce" (Y3506)**   | RK3326 | **Muito Comum**. Chips RAM à direita. Versões V03/V04/V05. Requer DTBs **Panel 5** ou **Panel 6**. |
+| **R36S-V20 (05/09 2025)** | RK3326 | Memória LPDDR3 (Nanya). Mostra 719MB ou 985MB RAM. Requer config "Clone Type 1" ou "Panel 3".      |
+| **R36S-Power-MB**         | RK3326 | Detectado em 10/2025. Funciona com arquivos **Panel 8**.                                           |
+| **R36S Clone #1**         | RK3326 | "R35S+" ou "R36S+". LED verde, botões diferentes. Roda ArkOS oficial.                              |
+| **Sem Slot TF2**          | RK3326 | Apenas 1 slot SD. Bateria removível. Roda ArkOS oficial.                                           |
+| **Clone 2 Chips RAM**     | RK3326 | Placas **G80D** ou **V12 (Variant 2)**. Requer DTBs Panel 10 ou 8. Áudio pode falhar.              |
+| **G80C / G80CA**          | RK3326 | Clone sem eMMC. Versões V1.1 a V1.3. Requer DTBs Panel 8, 9 ou imagem K36.                         |
+| **EmuELEC "Sticker"**     | RK3326 | Adesivo na placa. Roda EmuELEC ou ArkOS K36.                                                       |
+| **512MB RAM (Temu)**      | RK3326 | Apenas 512MB RAM + 512MB Swap. Performance inferior.                                               |
+
+### Clones Incompatíveis (Evite)
+
+Não rodam ArkOS. Usam hardware inferior ou totalmente diferente.
+
+| Variante             | Chip              | Sistema  | Observações                                                                |
+| :------------------- | :---------------- | :------- | :------------------------------------------------------------------------- |
+| **Clone GA36**       | **Allwinner A33** | EmuELEC  | Chip fraco. Sem GPU 3D decente. Incompatível com ArkOS.                    |
+| **Clone GB350**      | **Allwinner A33** | Stock OS | Variantes V2.5, V2.6, R36HD. Sem Custom Firmware.                          |
+| **Gaminja Batocera** | **Allwinner A33** | Batocera | Contorno branco na CPU. Sem suporte.                                       |
+| **Clone PS202**      | **MTK6572**       | Android  | Roda Android KitKat escondido. Placa cortada no topo. Péssima performance. |
+
+<div className="my-8">
+  <CardLink
+    title="Onde Comprar o Original?"
+    description="Confira nossa lista de vendedores confiáveis para evitar clones."
+    href="/r36s/buying-guide"
+  />
+</div>
 
 ## Método de Verificação via DTB
 

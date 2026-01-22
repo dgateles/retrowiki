@@ -1,0 +1,63 @@
+---
+title: Adicionar Jogos
+description: Guia completo de como adicionar ROMs e BIOS ao seu R36S.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+Adicionar jogos no R36S é um processo simples, mas requer atenção a alguns detalhes importantes, como o formato dos arquivos e a pasta correta (EASYROMS).
+
+<Alert type="warning" title="Backup Importante">
+  Sempre faça backup do seu cartão SD original antes de fazer qualquer
+  modificação. Os cartões que vêm com o console são conhecidos por falhar, então
+  recomenda-se trocá-los por marcas confiáveis (Samsung, SanDisk) o quanto
+  antes.
+</Alert>
+
+## O Que Você Precisa
+
+- Um leitor de cartão SD
+- Seus arquivos de jogos (ROMs)
+- Arquivos de BIOS (para sistemas como PS1, NDS, etc.)
+
+## Passo a Passo
+
+<Steps>
+  <Step title="Remova o Cartão SD">
+    Com o console desligado, remova o cartão SD do slot **TF2/GAME** (se estiver usando dois cartões) ou do slot **TF1/OS** (se estiver usando apenas um).
+  </Step>
+
+<Step title="Insira no Computador">
+  Insira o cartão no seu computador usando o leitor. Você verá uma partição
+  chamada **EASYROMS**.
+  <Alert type="info">
+    Se o Windows pedir para formatar alguma partição, **CANCELE**. Isso acontece
+    porque o sistema não reconhece as partições Linux do sistema operacional.
+  </Alert>
+</Step>
+
+<Step title="Localize as Pastas">
+  Dentro da partição `EASYROMS`, você encontrará várias pastas com nomes de
+  consoles (ex: `gba`, `snes`, `psx`). É aqui que você deve colocar seus jogos.
+  Algumas pastas comuns: - **Nintendo DS**: `nds` - **PlayStation 1**: `psx` -
+  **Super Nintendo**: `snes` - **Game Boy Advance**: `gba` - **PSP**: `psp`
+</Step>
+
+<Step title="Copie as ROMs">
+  Copie seus arquivos de jogo para a pasta correspondente. * **Não descompacte**
+  arquivos `.zip` para sistemas simples (SNES, Mega Drive, GBA). * Para sistemas
+  baseados em CD (PS1, Dreamcast), prefira formatos como `.chd` ou `.pbp` para
+  economizar espaço e evitar múltiplos arquivos `.bin/.cue`.
+</Step>
+
+<Step title="Adicione as BIOS">
+  Muitos sistemas exigem arquivos de BIOS para funcionar (PS1, NDS, Dreamcast).
+  Coloque esses arquivos na pasta `bios` na raiz da partição `EASYROMS`.
+</Step>
+
+  <Step title="Reinsira e Jogue">
+    Ejete o cartão com segurança, coloque-o de volta no R36S e ligue o console.
+    Se os jogos não aparecerem, pressione `START` no menu principal, vá em **Game Settings** e selecione **Update Gamelist**.
+  </Step>
+</Steps>

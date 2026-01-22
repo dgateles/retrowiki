@@ -1,0 +1,79 @@
+---
+title: Scraping de Capas
+description: Como baixar automaticamente capas, vídeos e descrições para sua coleção de jogos.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+O **Scraping** é o processo de baixar metadados (capas, screenshots, vídeos, sinopses) para os seus jogos automaticamente. O R36S com ArkOS possui uma ferramenta integrada para isso.
+
+## Pré-requisitos
+
+<Steps>
+  <Step title="Conexão com Internet">
+    Você precisa de um adaptador Wi-Fi ou conexão via cabo (OTG) ativa no console.
+    [Veja como configurar o Wi-Fi](/r36s/wifi).
+  </Step>
+
+  <Step title="Conta no ScreenScraper (Recomendado)">
+    Embora seja possível fazer scraping sem conta, é **altamente recomendado** criar uma conta gratuita no [ScreenScraper.fr](https://www.screenscraper.fr/).
+    
+    *   Sem conta: Limite baixo de requisições diárias, servidores podem bloquear.
+    *   Com conta: Maior velocidade e limite de download.
+  </Step>
+</Steps>
+
+## Configurando o Scraper
+
+<Steps>
+  <Step title="Acesse o Menu de Scraping">
+    Pressione `START` para abrir o menu principal e selecione **Scraper**.
+  </Step>
+
+<Step title="Defina a Fonte (Source)">
+  Em **Scrape From**, selecione **ScreenScraper**. É a fonte mais completa.
+</Step>
+
+<Step title="Insira suas Credenciais">
+  Vá em **Username** e **Password** e insira os dados da sua conta do
+  ScreenScraper (se criou uma).
+</Step>
+
+  <Step title="Configurações de Conteúdo">
+    Em **Content Settings**, você pode escolher o que baixar:
+    *   **Box Source**: `Box 2D` (Capa simples) ou `Box 3D` (Caixa com perspectiva).
+    *   **Logo**: `Wheel` (Logotipo do jogo).
+    *   **Video**: Baixa um clipe curto do gameplay (ocupa mais espaço).
+  </Step>
+</Steps>
+
+## Iniciando o Processo
+
+<Steps>
+  <Step title="Selecione Scrape Now">
+    No menu do Scraper, escolha a opção **Scrape Now**.
+  </Step>
+
+<Step title="Filtros">
+  * **Systems**: Escolha quais consoles você quer atualizar (ou "All" para
+  todos). * **Filter**: Recomendamos selecionar **Only missing media** (Apenas
+  mídia faltante) para economizar tempo se você já tem algumas capas.
+</Step>
+
+  <Step title="Start">
+    Pressione **Start**. O processo pode demorar dependendo da quantidade de jogos e da sua conexão.
+    
+    <Alert type="warning">
+      O scraping consome bastante bateria e processamento. Recomenda-se manter o console carregando durante o processo se você tiver muitos jogos.
+    </Alert>
+  </Step>
+</Steps>
+
+## Solução de Problemas
+
+**Erro "Quota Exceeded" ou Falha no Login:**
+Isso significa que os servidores do ScreenScraper estão sobrecarregados ou você atingiu o limite gratuito. Tente novamente mais tarde ou verifique suas credenciais.
+
+**Jogos não encontrados:**
+Se o nome do arquivo da ROM estiver muito diferente do oficial (ex: `mario_brazil_hack_v3.zip`), o scraper pode não reconhecer. Renomeie para o nome original ou faça o scraping manual no PC usando ferramentas como _Skraper_ ou _Genscraper_.
