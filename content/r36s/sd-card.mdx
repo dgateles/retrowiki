@@ -1,0 +1,33 @@
+---
+title: Cartão SD
+description: Guia de compatibilidade e formatação de cartões SD para R36S.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+<Alert type="info" title="Recomendação">
+  Use cartões de marcas confiáveis como SanDisk, Samsung ou Kingston. Evite
+  cartões genéricos que podem corromper dados.
+</Alert>
+
+## Cartões Recomendados
+
+| Marca    | Modelo        | Capacidade | Status                 |
+| -------- | ------------- | ---------- | ---------------------- |
+| SanDisk  | Ultra         | 128GB      | ✅ Recomendado         |
+| SanDisk  | Extreme       | 256GB      | ✅ Excelente           |
+| Samsung  | EVO Select    | 128GB      | ✅ Recomendado         |
+| Kingston | Canvas Select | 64GB       | ✅ Bom custo-benefício |
+| Genérico | -             | Qualquer   | ❌ Não recomendado     |
+
+## Formatação
+
+Para formatar o cartão SD corretamente:
+
+1. **Windows**: Use o [Rufus](https://rufus.ie/) ou [Balena Etcher](https://www.balena.io/etcher/)
+2. **macOS**: Use o Balena Etcher
+3. **Linux**: Use o comando `dd` ou Balena Etcher
+
+<Alert type="warning" title="Atenção">
+  A formatação apaga todos os dados do cartão. Faça backup antes de prosseguir.
+</Alert>

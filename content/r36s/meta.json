@@ -1,0 +1,16 @@
+{
+  "title": "R36S",
+  "pages": [
+    "index",
+    "---Guias---",
+    "firmware",
+    "clone-detection",
+    "sd-card",
+    "wifi",
+    "performance",
+    "troubleshooting",
+    "shortcuts",
+    "---Ferramentas---",
+    "dtb-detector"
+  ]
+}

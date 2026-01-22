@@ -1,0 +1,97 @@
+---
+title: Atalhos e Hotkeys
+description: Lista completa de combinações de botões para controlar o R36S e os emuladores. O botão **SELECT** funciona como Hotkey padrão no ArkOS.
+---
+
+import { ButtonLayout } from "@/components/mdx/ButtonLayout";
+
+## Layout dos Botões
+
+<ButtonLayout />
+
+## Hotkeys ArkOS
+
+| Combinação                                      | Função                        |
+| ----------------------------------------------- | ----------------------------- |
+| <kbd>SELECT</kbd> + <kbd>X</kbd>                | Abrir menu RetroArch          |
+| <kbd>SELECT</kbd> + <kbd>R1</kbd>               | Salvar Estado                 |
+| <kbd>SELECT</kbd> + <kbd>L1</kbd>               | Carregar Estado               |
+| <kbd>SELECT</kbd> + <kbd>R2</kbd>               | Avanço Rápido                 |
+| <kbd>SELECT</kbd> + <kbd>L2</kbd>               | Retroceder (se habilitado)    |
+| <kbd>SELECT</kbd> + <kbd>B</kbd>                | Captura de tela               |
+| <kbd>SELECT</kbd> + <kbd>Y</kbd>                | Mostrar/Ocultar FPS           |
+| <kbd>SELECT</kbd> + <kbd>A</kbd> + <kbd>B</kbd> | Reset (reiniciar jogo)        |
+| <kbd>FN</kbd> + <kbd>↑/↓</kbd>                  | Ajuste de brilho              |
+| <kbd>FN</kbd> + <kbd>←/→</kbd>                  | Ajuste de volume              |
+| <kbd>SELECT</kbd> + <kbd>START</kbd>            | Sair do jogo (voltar ao menu) |
+| <kbd>POWER</kbd> (toque curto)                  | Modo suspensão                |
+| <kbd>POWER</kbd> (toque longo)                  | Menu desligar                 |
+
+<Alert type="success" title="Dica">
+  Use Save State frequentemente! Diferente dos saves in-game, os estados salvam
+  sua posição exata. Você pode ter múltiplos slots de save (L1/R1 para trocar
+  slot no menu RetroArch).
+</Alert>
+
+## Atalhos EmulationStation
+
+| Combinação                    | Função                                |
+| ----------------------------- | ------------------------------------- |
+| <kbd>START</kbd>              | Abrir menu principal                  |
+| <kbd>SELECT</kbd>             | Abrir menu de opções                  |
+| <kbd>Y</kbd>                  | Seleção aleatória de jogo             |
+| <kbd>X</kbd>                  | Opções do jogo (no jogo selecionado)  |
+| <kbd>L1</kbd> / <kbd>R1</kbd> | Alternar entre sistemas               |
+| <kbd>L2</kbd> / <kbd>R2</kbd> | Página acima/abaixo na lista de jogos |
+
+## Atalhos Internos RetroArch
+
+| Menu                               | Descrição                          |
+| ---------------------------------- | ---------------------------------- |
+| `Settings → Video → Shaders`       | Filtros visuais (CRT, Scanlines)   |
+| `Quick Menu → Cheats`              | Códigos de trapaça                 |
+| `Settings → Input → Port 1`        | Mapeamento de controles            |
+| `Settings → Video → Scaling`       | Configurações de proporção         |
+| `Settings → Audio → Latency`       | Configurações de latência de áudio |
+| `Quick Menu → State Slot`          | Alterar slot de save state         |
+| `Main Menu → Information → System` | Verificar RAM e info do sistema    |
+
+## Emuladores Standalone
+
+Alguns sistemas usam emuladores standalone ao invés de cores RetroArch:
+
+| Emulador      | Atalho para Sair                     |
+| ------------- | ------------------------------------ |
+| PPSSPP (PSP)  | <kbd>SELECT</kbd> + <kbd>START</kbd> |
+| Drastic (NDS) | <kbd>MENU</kbd> → Sair               |
+| PICO-8        | <kbd>SELECT</kbd> + <kbd>START</kbd> |
+| ScummVM       | <kbd>START</kbd> → Sair              |
+| DOSBox        | <kbd>SELECT</kbd> + <kbd>START</kbd> |
+
+<Alert type="info" title="Nota">
+  Emuladores standalone podem ter hotkeys diferentes. Verifique as configurações
+  do emulador se SELECT+START não funcionar.
+</Alert>
+
+## Referência Rápida
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-amber-400 mb-3">Durante o Jogo</h4>
+    <p className="text-sm text-gray-300">SELECT+X → Menu</p>
+    <p className="text-sm text-gray-300">SELECT+R1 → Salvar</p>
+    <p className="text-sm text-gray-300">SELECT+L1 → Carregar</p>
+    <p className="text-sm text-gray-300">SELECT+START → Sair</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-green-400 mb-3">Controle de Velocidade</h4>
+    <p className="text-sm text-gray-300">SELECT+R2 → Avanço Rápido</p>
+    <p className="text-sm text-gray-300">SELECT+L2 → Retroceder</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-red-400 mb-3">Sistema</h4>
+    <p className="text-sm text-gray-300">FN+↑/↓ → Brilho</p>
+    <p className="text-sm text-gray-300">FN+←/→ → Volume</p>
+    <p className="text-sm text-gray-300">POWER → Suspender</p>
+  </div>
+</div>

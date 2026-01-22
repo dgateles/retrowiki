@@ -1,0 +1,119 @@
+---
+title: Firmware
+description: Guia de instalação de firmware para R36S - ArkOS, JELOS, ROCKNIX e outros sistemas.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+import { FirmwareList } from "@/components/mdx/FirmwareList";
+
+# Instalação de Firmware
+
+Guia completo para instalação de firmwares custom no R36S.
+
+<Alert type="info" title="Antes de Começar">
+  Identifique qual variante do R36S você possui antes de instalar o firmware.
+  Veja o guia de [Detecção de Clone](/r36s/clone-detection).
+</Alert>
+
+## Firmwares Recomendados
+
+<FirmwareList
+  items={[
+    {
+      name: "ArkOS",
+      owner: "christianhaitian",
+      repo: "arkos",
+      description:
+        "Sistema mais popular para R36S, estável e com boa compatibilidade.",
+      deprecated: true,
+    },
+    {
+      name: "ROCKNIX",
+      owner: "ROCKNIX",
+      repo: "distribution",
+      description: "Fork do JELOS com suporte ativo e atualizações frequentes.",
+    },
+    {
+      name: "AmberELEC",
+      owner: "AmberELEC",
+      repo: "AmberELEC-prerelease",
+      description: "Sistema focado em estabilidade, originalmente para RG351.",
+    },
+    {
+      name: "MyMinUI",
+      owner: "Turro75",
+      repo: "MyMinUI",
+      description: "Interface minimalista inspirada no MinUI.",
+    },
+  ]}
+/>
+
+## Firmwares Alternativos
+
+<FirmwareList
+  items={[
+    {
+      name: "UnofficialOS",
+      owner: "RetroGFX",
+      repo: "UnofficialOS",
+      description: "Fork comunitário com recursos adicionais.",
+    },
+    {
+      name: "PAN4ELEC",
+      owner: "Kegg1701",
+      repo: "P4ELEC",
+      description: "Fork do AmberELEC com melhorias específicas.",
+    },
+    {
+      name: "dArkOS",
+      owner: "christianhaitian",
+      repo: "dArkOS",
+      description: "Versão do ArkOS em Debian para placas RK3326 e RK3566.",
+    },
+  ]}
+/>
+
+## Para Clones R36S
+
+<FirmwareList
+  items={[
+    {
+      name: "ArkOS for Clones",
+      owner: "lcdyk0517",
+      repo: "arkos4clone",
+      description: "Versão do ArkOS específica para consoles clone.",
+    },
+    {
+      name: "AndR36oid (LineageOS)",
+      owner: "andr36oid",
+      repo: "releases",
+      description: "Android baseado em LineageOS 18.1 para R36S.",
+    },
+  ]}
+/>
+
+## Passos de Instalação
+
+<Steps>
+  <Step title="Baixe o Firmware">
+    Clique no botão Download do firmware desejado acima. O arquivo será baixado
+    diretamente do GitHub.
+  </Step>
+  <Step title="Formate o Cartão SD">
+    Use o Rufus (Windows) ou Balena Etcher (Mac/Linux) para gravar a imagem no
+    cartão SD.
+  </Step>
+  <Step title="Insira no Console">
+    Insira o cartão SD no slot 1 (TF1) do R36S.
+  </Step>
+  <Step title="Primeira Inicialização">
+    Ligue o console e aguarde a configuração inicial (pode levar alguns
+    minutos).
+  </Step>
+</Steps>
+
+<Alert type="warning" title="Importante">
+  Não desligue o console durante a primeira inicialização. O sistema está
+  expandindo arquivos e configurando o ambiente.
+</Alert>

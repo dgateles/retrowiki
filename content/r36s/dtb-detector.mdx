@@ -1,0 +1,79 @@
+---
+title: Detector de DTB
+description: O DTB (Device Tree Blob) é um arquivo que contém informações sobre a configuração de hardware do seu dispositivo. Devido às diversas variantes de tela e hardware do R36S, identificar corretamente qual configuração você possui é essencial para escolher o firmware correto.
+---
+
+import { DtbDetector } from "@/components/mdx/DtbDetector";
+
+## Como Usar
+
+<Steps>
+  <Step title="Obtenha o arquivo DTB">
+    O arquivo DTB geralmente pode ser encontrado na partição BOOT do cartão SD
+    do seu R36S. Procure por arquivos com extensão `.dtb` ou `.dtbo`.
+  </Step>
+  <Step title="Faça o upload">
+    Arraste o arquivo para a área abaixo ou clique para selecionar. A análise é
+    feita localmente no seu navegador.
+  </Step>
+  <Step title="Verifique o resultado">
+    A ferramenta irá calcular o hash MD5 do arquivo e comparar com configurações
+    conhecidas para identificar seu dispositivo.
+  </Step>
+</Steps>
+
+## Analisar Arquivo DTB
+
+<DtbDetector />
+
+## Sobre os Resultados
+
+### Correspondência Exata
+
+Se a ferramenta encontrar uma correspondência exata de MD5, significa que seu arquivo DTB é idêntico a uma configuração conhecida. Você pode usar firmwares compatíveis com o modelo identificado.
+
+### Correspondência Parcial
+
+Se apenas os parâmetros de tela corresponderem (mas o MD5 for diferente), significa que seu dispositivo provavelmente usa o mesmo painel de tela, mas pode ter pequenas diferenças de hardware. Teste com cautela.
+
+### Dispositivo Não Identificado
+
+Se nenhuma correspondência for encontrada, seu dispositivo pode ser:
+
+- Um modelo novo ainda não catalogado
+- Uma versão customizada
+- Um clone com hardware diferente
+
+<Alert type="info" title="Dica">
+  Se seu dispositivo não for identificado, você pode contribuir com a comunidade
+  compartilhando seu arquivo DTB nos fóruns ou grupos de discussão para ajudar a
+  expandir o banco de dados.
+</Alert>
+
+## O que é verificado?
+
+A ferramenta analisa os seguintes parâmetros do arquivo DTB:
+
+| Parâmetro               | Descrição                                    |
+| ----------------------- | -------------------------------------------- |
+| **MD5 Hash**            | Identificador único do arquivo completo      |
+| **panel-init-sequence** | Sequência de inicialização do painel de tela |
+| **reset-gpios**         | Configuração do GPIO de reset                |
+| **enable-gpios**        | Configuração do GPIO de ativação             |
+| **supports-sdio**       | Suporte a Wi-Fi via SDIO                     |
+| **use-ext-amplifier**   | Uso de amplificador externo de áudio         |
+
+## Variantes Conhecidas
+
+Existem diversas variantes do R36S no mercado, incluindo:
+
+- **GameConsole R36S** - Versão original com múltiplos painéis
+- **Clone Type 1-5** - Clones com diferentes configurações
+- **XiFan R36Pro** - Variante com amplificador externo
+- **Kinhank K36** - Versão alternativa do mercado
+
+<Alert type="warning" title="Atenção">
+  Instalar um firmware incompatível com seu hardware pode resultar em tela
+  branca, sem áudio, ou outros problemas. Sempre verifique a compatibilidade
+  antes de flashear.
+</Alert>

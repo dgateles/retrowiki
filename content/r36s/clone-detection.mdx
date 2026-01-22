@@ -1,0 +1,60 @@
+---
+title: Detecção de Clone
+description: Existem várias variantes do R36S no mercado. Identificar corretamente sua versão é essencial para instalar o firmware correto.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+import { QuickChecklist } from "@/components/mdx/QuickChecklist";
+
+<Alert type="critical" title="Por que isso importa?">
+  Instalar o firmware errado pode deixar seu console inoperante. Sempre
+  verifique sua variante antes de prosseguir.
+</Alert>
+
+## Lista de Verificação
+
+<QuickChecklist
+  title="Identificação do Hardware"
+  items={[
+    {
+      label: "Verifique a etiqueta na caixa",
+      description: "Procure por 'R36S V1' ou 'R36S V2'",
+    },
+    {
+      label: "Confira o arquivo DTB",
+      description: "Na partição BOOT, procure arquivos .dtb",
+    },
+    {
+      label: "Verifique a tela",
+      description: "Tela IPS ou TN? Cores vivas = IPS",
+    },
+    {
+      label: "Teste os botões",
+      description: "Alguns clones têm layout de botões diferente",
+    },
+  ]}
+/>
+
+## Variantes Conhecidas
+
+| Variante      | Chip   | Tela        | Observações                        |
+| ------------- | ------ | ----------- | ---------------------------------- |
+| R36S Original | RK3326 | IPS 640×480 | Versão mais comum                  |
+| R36S V2       | RK3326 | IPS 640×480 | Melhorias no D-pad                 |
+| Clone A       | RK3326 | TN          | Cores mais fracas                  |
+| Clone B       | H700   | IPS         | Chip diferente, firmware diferente |
+
+## Método de Verificação via DTB
+
+<Steps>
+  <Step title="Conecte o cartão SD ao PC">
+    Acesse a partição BOOT do cartão.
+  </Step>
+  <Step title="Localize os arquivos DTB">
+    Procure arquivos com extensão .dtb
+  </Step>
+  <Step title="Identifique sua variante">
+    O nome do arquivo DTB indica qual variante você possui.
+  </Step>
+</Steps>

@@ -1,0 +1,82 @@
+---
+title: Escolha seu Console
+description: Selecione o console abaixo para acessar a documentação específica com guias, firmware e troubleshooting.
+toc: false
+---
+
+import Link from "next/link";
+import { Gamepad2 } from "lucide-react";
+
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 not-prose">
+  <Link href="/r36s" className="no-underline p-6 rounded-lg border border-[hsl(220_20%_18%)] bg-[hsl(220_20%_8%)] hover:border-[hsl(160_84%_45%/0.5)] hover:bg-[hsl(220_20%_10%)] transition-all group">
+    <div className="flex items-center gap-3 mb-2">
+      <div className="p-2 rounded-lg bg-[hsl(160_84%_45%/0.1)]">
+        <Gamepad2 className="w-5 h-5 text-[hsl(160_84%_45%)]" />
+      </div>
+      <span className="px-2 py-0.5 text-xs font-bold uppercase bg-[hsl(160_84%_45%)] text-black rounded">Popular</span>
+    </div>
+    <span className="block font-bold text-white group-hover:text-[hsl(160_84%_45%)] transition-colors no-underline">R36S</span>
+    <span className="block text-sm text-[hsl(220_10%_50%)] mt-1 no-underline">Console popular com RK3326</span>
+  </Link>
+
+<Link
+  href="/miyoo"
+  className="no-underline p-6 rounded-lg border border-[hsl(220_20%_18%)] bg-[hsl(220_20%_8%)] hover:border-[hsl(160_84%_45%/0.5)] hover:bg-[hsl(220_20%_10%)] transition-all group"
+>
+  <div className="flex items-center gap-3 mb-2">
+    <div className="p-2 rounded-lg bg-[hsl(160_84%_45%/0.1)]">
+      <Gamepad2 className="w-5 h-5 text-[hsl(160_84%_45%)]" />
+    </div>
+  </div>
+  <span className="block font-bold text-white group-hover:text-[hsl(160_84%_45%)] transition-colors no-underline">
+    Miyoo Mini
+  </span>
+  <span className="block text-sm text-[hsl(220_10%_50%)] mt-1 no-underline">
+    Compacto com OnionOS
+  </span>
+</Link>
+
+<Link
+  href="/rg35xx"
+  className="no-underline p-6 rounded-lg border border-[hsl(220_20%_18%)] bg-[hsl(220_20%_8%)] hover:border-[hsl(160_84%_45%/0.5)] hover:bg-[hsl(220_20%_10%)] transition-all group"
+>
+  <div className="flex items-center gap-3 mb-2">
+    <div className="p-2 rounded-lg bg-[hsl(160_84%_45%/0.1)]">
+      <Gamepad2 className="w-5 h-5 text-[hsl(160_84%_45%)]" />
+    </div>
+  </div>
+  <span className="block font-bold text-white group-hover:text-[hsl(160_84%_45%)] transition-colors no-underline">
+    RG35XX
+  </span>
+  <span className="block text-sm text-[hsl(220_10%_50%)] mt-1 no-underline">
+    Anbernic design retrô
+  </span>
+</Link>
+
+<Link
+  href="/trimui"
+  className="no-underline p-6 rounded-lg border border-[hsl(220_20%_18%)] bg-[hsl(220_20%_8%)] hover:border-[hsl(160_84%_45%/0.5)] hover:bg-[hsl(220_20%_10%)] transition-all group"
+>
+  <div className="flex items-center gap-3 mb-2">
+    <div className="p-2 rounded-lg bg-[hsl(160_84%_45%/0.1)]">
+      <Gamepad2 className="w-5 h-5 text-[hsl(160_84%_45%)]" />
+    </div>
+  </div>
+  <span className="block font-bold text-white group-hover:text-[hsl(160_84%_45%)] transition-colors no-underline">
+    TrimUI Smart Pro
+  </span>
+  <span className="block text-sm text-[hsl(220_10%_50%)] mt-1 no-underline">
+    Tela grande, boa performance
+  </span>
+</Link>
+
+  <Link href="/powkiddy" className="no-underline p-6 rounded-lg border border-[hsl(220_20%_18%)] bg-[hsl(220_20%_8%)] hover:border-[hsl(160_84%_45%/0.5)] hover:bg-[hsl(220_20%_10%)] transition-all group">
+    <div className="flex items-center gap-3 mb-2">
+      <div className="p-2 rounded-lg bg-[hsl(160_84%_45%/0.1)]">
+        <Gamepad2 className="w-5 h-5 text-[hsl(160_84%_45%)]" />
+      </div>
+    </div>
+    <span className="block font-bold text-white group-hover:text-[hsl(160_84%_45%)] transition-colors no-underline">PowKiddy RGB30</span>
+    <span className="block text-sm text-[hsl(220_10%_50%)] mt-1 no-underline">Tela 4:3 de alta qualidade</span>
+  </Link>
+</div>
