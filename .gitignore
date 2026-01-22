@@ -34,8 +34,6 @@ tsconfig.json
 package.json
 package-lock.json
 yarn.lock
-*.md
-!content/**/*.md
 
 # Ignore public
 /public
