@@ -25,20 +25,9 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 
-# Ignore everything in src
-/src
-
 # Ignore config files
 *.config.*
 tsconfig.json
 package.json
 package-lock.json
 yarn.lock
-
-# Ignore public
-/public
-
-# Keep only MDX documentation files
-!content/
-!content/**
-!content/**/*.mdx

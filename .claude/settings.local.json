@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "WebFetch(domain:fumadocs.vercel.app)",
+      "WebFetch(domain:www.fumadocs.dev)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "WebFetch(domain:fumadocs.dev)",
+      "Bash(npm run build)",
+      "WebFetch(domain:retrocatalog.com)"
+    ]
+  }
+}

@@ -1,27 +1,114 @@
 ---
 title: RG35XX
-description: Guia completo do console Anbernic RG35XX.
+description: Guia completo do console Anbernic RG35XX - Firmware, configuração, compatibilidade e troubleshooting.
+full: true
 ---
 
-import { HardwareBadge } from "@/components/mdx/HardwareBadge";
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+import { Alert } from "@/components/mdx/Alert";
 
-# RG35XX
-
-O RG35XX é um console da Anbernic com design retrô inspirado no Game Boy.
-
-<HardwareBadge
-  chip="Allwinner H700 Quad-core"
-  ram="1GB DDR4"
-  panel="3.5 inch IPS 640x480"
-  wifi="Incluso (variante Plus)"
-  variant="card"
+<ConsoleOverview
+  name="RG35XX"
+  manufacturer="Anbernic"
+  description="Console portátil com design retrô inspirado no Game Boy. Utiliza sistema Linux e suporta firmwares custom como MinUI, muOS, KNULLI, GarlicOS, ROCKNIX e Batocera."
+  image="/consoles/rg-35xx.png"
+  releaseYear={2024}
+  priceRange="Barato (entre R$240,00 e R$350,00)"
+  screen={{
+    aspectRatio: "4:3",
+    size: '3.5"',
+    resolution: "640 x 480",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: true,
+    hasVibration: true,
+    speakerPlacement: "Frontal",
+    chargePortPlacement: "Inferior",
+  }}
+  connectivity={{
+    hasWifi: false,
+    hasBluetooth: false,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: false,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: false,
+    hasAnalogSticks: false,
+    hasHallEffect: false,
+    hasL3R3: false,
+    hasTouchScreen: false,
+    hasGyroscope: false,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Quad-core ARM",
+    gpu: "PowerVR SGX544",
+    ram: "1GB",
+    ramType: "DDR",
+    architecture: "ARM",
+    storage: "microSD",
+    battery: "2600mAh",
+    os: "Linux",
+    formFactor: "Vertical",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive", level: "excellent" },
+    { system: "Master System", level: "excellent" },
+    { system: "Neo Geo", level: "excellent" },
+    { system: "PS1", level: "excellent" },
+    { system: "Nintendo DS", level: "good" },
+    { system: "Nintendo 64", level: "good" },
+    { system: "PSP", level: "playable" },
+    { system: "Dreamcast", level: "poor" },
+    { system: "Saturn", level: "poor" },
+  ]}
+  pros={[
+    "Design nostálgico inspirado no Game Boy",
+    "Excelente custo-benefício (~$50)",
+    "Suporte a múltiplos CFWs (MinUI, muOS, KNULLI, GarlicOS)",
+    "Tela IPS com boa qualidade e proporção 4:3 nativa",
+    "Grip ergonômico e vibração inclusos",
+    "Sistema de refrigeração integrado",
+  ]}
+  cons={[
+    "Sem analógicos (apenas D-pad)",
+    "Sem Wi-Fi ou Bluetooth",
+    "Potência limitada para emuladores mais pesados",
+    "Desempenho fraco em Dreamcast e Saturn",
+  ]}
 />
 
-## Especificações
+<Alert type="info" title="Firmwares Custom Disponíveis">
+  O RG35XX suporta diversos firmwares custom: **MinUI**, **muOS**, **KNULLI**,
+  **GarlicOS**, **ROCKNIX** e **Batocera**. Cada um oferece diferentes recursos
+  e interfaces.
+</Alert>
 
-| Especificação | Valor          |
-| ------------- | -------------- |
-| CPU           | Allwinner H700 |
-| RAM           | 1GB DDR4       |
-| Tela          | 3.5" IPS       |
-| Bateria       | 2600mAh        |
+## Guias Disponíveis
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Instalação de Firmware"
+    description="Instale GarlicOS, muOS, KNULLI ou outros firmwares custom"
+    href="/rg35xx/firmware"
+  />
+  <CardLink
+    title="Cartão SD"
+    description="Formatação e compatibilidade de cartões"
+    href="/rg35xx/sd-card"
+  />
+</CardGrid>

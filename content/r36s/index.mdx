@@ -1,14 +1,98 @@
 ---
 title: R36S
 description: Guia completo do console R36S - Firmware, configuração, compatibilidade e troubleshooting.
+full: true
 ---
 
-import { HardwareBadge } from "@/components/mdx/HardwareBadge";
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
 import { CardGrid } from "@/components/mdx/CardGrid";
 import { CardLink } from "@/components/mdx/CardLink";
 import { Alert } from "@/components/mdx/Alert";
 
-O R36S é um dos consoles portáteis mais populares do mercado, oferecendo excelente custo-benefício com chip RK3326 e tela IPS de 3.5 polegadas.
+<ConsoleOverview
+  name="R36S"
+  manufacturer="Game Console"
+  description="Console portátil de baixo custo com excelente custo-benefício. Utiliza o chip RK3326, tela IPS de 3.5 polegadas e suporta múltiplos firmwares custom como ArkOS, AmberELEC e ROCKNIX."
+  image="/consoles/r36s.png"
+  releaseYear={2023}
+  priceRange="Barato (entre R$150,00 e R$250,00)"
+  screen={{
+    aspectRatio: "4:3",
+    size: '3.5"',
+    resolution: "640 x 480",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: true,
+    hasVibration: true,
+    speakerPlacement: "Frontal",
+    chargePortPlacement: "Inferior",
+  }}
+  connectivity={{
+    hasWifi: false,
+    hasBluetooth: false,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: false,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: false,
+    hasAnalogSticks: true,
+    hasHallEffect: false,
+    hasL3R3: true,
+    hasTouchScreen: false,
+    hasGyroscope: false,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Rockchip RK3326 Quad-core 1.5GHz",
+    gpu: "Mali-G31 MP2",
+    ram: "1GB",
+    ramType: "DDR3L",
+    architecture: "ARM",
+    storage: "microSD (até 512GB)",
+    battery: "3200mAh (~6-8 horas)",
+    os: "Linux (ArkOS/ROCKNIX)",
+    formFactor: "Vertical",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive", level: "excellent" },
+    { system: "Master System", level: "excellent" },
+    { system: "Neo Geo", level: "excellent" },
+    { system: "PS1", level: "excellent" },
+    { system: "Nintendo 64", level: "good" },
+    { system: "Nintendo DS", level: "good" },
+    { system: "PSP", level: "playable" },
+    { system: "Dreamcast", level: "playable" },
+    { system: "Saturn", level: "poor" },
+    { system: "PS2", level: "poor" },
+    { system: "GameCube", level: "poor" },
+  ]}
+  pros={[
+    "Excelente suporte da comunidade com múltiplos CFWs",
+    "Dispositivo compacto, cabe no bolso",
+    "Preço muito acessível",
+    "Acesso a ports de PC via PortMaster",
+    "Tela IPS de boa qualidade",
+    "Dual analog sticks",
+  ]}
+  cons={[
+    "Controles um pouco rígidos de fábrica",
+    "Sem Wi-Fi (sem RetroAchievements, scraping, transferência)",
+    "Potência limitada para emuladores mais pesados",
+    "Existem clones com hardware inferior",
+  ]}
+/>
 
 <Alert type="warning" title="Atenção aos Clones">
   Existem várias versões de R36S no mercado. Verifique a seção de **Detecção de
@@ -38,16 +122,14 @@ O R36S é um dos consoles portáteis mais populares do mercado, oferecendo excel
     description="Otimização e benchmarks por emulador"
     href="/r36s/performance"
   />
+  <CardLink
+    title="Troubleshooting"
+    description="Soluções para problemas comuns"
+    href="/r36s/troubleshooting"
+  />
+  <CardLink
+    title="Atalhos"
+    description="Combinações de botões e hotkeys"
+    href="/r36s/shortcuts"
+  />
 </CardGrid>
-
-## Especificações Técnicas
-
-| Especificação | Valor                            |
-| ------------- | -------------------------------- |
-| CPU           | Rockchip RK3326 Quad-core 1.5GHz |
-| GPU           | Mali-G31 MP2                     |
-| RAM           | 1GB DDR3L                        |
-| Tela          | 3.5" IPS 640×480                 |
-| Bateria       | 3200mAh (~6-8 horas)             |
-| Armazenamento | microSD (até 512GB)              |
-| Sistema       | Linux (ArkOS)                    |

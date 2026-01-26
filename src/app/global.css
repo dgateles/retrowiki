@@ -1,0 +1,412 @@
+@import 'tailwindcss';
+@source "../../src";
+@source "../../content";
+
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+
+/* ============================================
+   RETRO WIKI - DESIGN SYSTEM (R36S Style)
+   Dark theme with blue/green glow effects
+   ============================================ */
+
+:root {
+  /* =====================
+     LIGHT MODE (Default)
+     ===================== */
+
+  /* Base Colors - Neutral */
+  --rw-background: 0 0% 100%;
+  /* #FFFFFF */
+  --rw-foreground: 220 20% 10%;
+  /* #14171F */
+  --rw-surface-1: 0 0% 96%;
+  /* #F5F5F5 */
+  --rw-surface-2: 220 15% 92%;
+  /* #EBECEF */
+  --rw-surface-3: 220 15% 88%;
+  /* #DCDEE3 */
+
+  /* Primary Accent - Green/Teal (Darker for light mode contrast) */
+  --rw-accent: 160 84% 35%;
+  --rw-accent-hover: 160 84% 30%;
+  --rw-accent-foreground: 0 0% 100%;
+
+  /* Secondary - Blue/Purple */
+  --rw-secondary: 240 60% 55%;
+  --rw-secondary-hover: 240 60% 45%;
+  --rw-secondary-foreground: 0 0% 100%;
+
+  /* Tertiary - Orange/Yellow */
+  --rw-tertiary: 35 100% 50%;
+
+  /* Semantic Colors */
+  --rw-success: 142 71% 40%;
+  --rw-warning: 38 92% 45%;
+  --rw-error: 0 84% 50%;
+  --rw-info: 199 89% 45%;
+
+  /* Muted */
+  --rw-muted: 220 10% 90%;
+  --rw-muted-foreground: 220 10% 40%;
+
+  /* Border */
+  --rw-border: 220 15% 90%;
+  --rw-border-hover: 220 15% 80%;
+
+  /* Gradients */
+  --rw-gradient-accent: linear-gradient(135deg, hsl(160 84% 45%), hsl(180 84% 40%));
+  --rw-gradient-secondary: linear-gradient(135deg, hsl(240 60% 60%), hsl(280 60% 55%));
+  --rw-gradient-border: linear-gradient(135deg, hsl(160 84% 45% / 0.3), hsl(240 60% 55% / 0.3));
+
+  /* Shadows & Glow */
+  --rw-shadow-sm: 0 1px 2px 0 hsl(220 20% 10% / 0.05);
+  --rw-shadow-md: 0 4px 6px -1px hsl(220 20% 10% / 0.1);
+  --rw-shadow-lg: 0 10px 15px -3px hsl(220 20% 10% / 0.1);
+  --rw-glow-accent: 0 0 20px hsl(160 84% 45% / 0.2);
+  --rw-glow-secondary: 0 0 20px hsl(240 60% 55% / 0.2);
+  --rw-glow-warning: 0 0 15px hsl(38 92% 50% / 0.2);
+
+  /* Typography */
+  --rw-font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --rw-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Border Radius */
+  --rw-radius-sm: 0.375rem;
+  --rw-radius-md: 0.5rem;
+  --rw-radius-lg: 0.75rem;
+  --rw-radius-xl: 1rem;
+  --rw-radius-2xl: 1.5rem;
+
+  /* Transitions */
+  --rw-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --rw-transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --rw-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  /* =====================
+     DARK MODE
+     ===================== */
+
+  /* Base Colors - Pure dark */
+  --rw-background: 220 20% 4%;
+  --rw-foreground: 0 0% 98%;
+  --rw-surface-1: 220 20% 7%;
+  --rw-surface-2: 220 20% 10%;
+  --rw-surface-3: 220 20% 14%;
+
+  /* Primary Accent - Green/Teal */
+  --rw-accent: 160 84% 45%;
+  --rw-accent-hover: 160 84% 55%;
+  --rw-accent-foreground: 0 0% 98%;
+
+  /* Secondary - Blue/Purple */
+  --rw-secondary: 240 60% 55%;
+  --rw-secondary-hover: 240 60% 65%;
+  --rw-secondary-foreground: 0 0% 98%;
+
+  /* Tertiary - Orange/Yellow */
+  --rw-tertiary: 35 100% 55%;
+
+  /* Semantic Colors */
+  --rw-success: 142 71% 45%;
+  --rw-warning: 38 92% 50%;
+  --rw-error: 0 84% 60%;
+  --rw-info: 199 89% 48%;
+
+  /* Muted */
+  --rw-muted: 220 15% 25%;
+  --rw-muted-foreground: 220 10% 55%;
+
+  /* Border */
+  --rw-border: 220 20% 15%;
+  --rw-border-hover: 220 20% 25%;
+
+  /* Gradients */
+  --rw-gradient-accent: linear-gradient(135deg, hsl(160 84% 45%), hsl(180 84% 40%));
+  --rw-gradient-secondary: linear-gradient(135deg, hsl(240 60% 55%), hsl(280 60% 50%));
+  --rw-gradient-border: linear-gradient(135deg, hsl(160 84% 45% / 0.5), hsl(240 60% 55% / 0.5));
+
+  /* Shadows & Glow */
+  --rw-shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --rw-shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+  --rw-shadow-lg: 0 10px 25px -5px hsl(0 0% 0% / 0.5);
+  --rw-glow-accent: 0 0 30px hsl(160 84% 45% / 0.4);
+  --rw-glow-secondary: 0 0 30px hsl(240 60% 55% / 0.4);
+  --rw-glow-warning: 0 0 20px hsl(38 92% 50% / 0.4);
+}
+
+/* ============================================
+   FUMADOCS THEME OVERRIDES
+   ============================================ */
+
+:root {
+  --fd-background: hsl(var(--rw-background));
+  --fd-foreground: hsl(var(--rw-foreground));
+  --fd-muted: hsl(var(--rw-surface-1));
+  --fd-muted-foreground: hsl(var(--rw-muted-foreground));
+  --fd-popover: hsl(var(--rw-surface-1));
+  --fd-popover-foreground: hsl(var(--rw-foreground));
+  --fd-card: hsl(var(--rw-surface-1));
+  --fd-card-foreground: hsl(var(--rw-foreground));
+  --fd-border: hsl(var(--rw-border));
+  --fd-input: hsl(var(--rw-border));
+
+  --fd-primary: hsl(var(--rw-accent));
+  --fd-primary-foreground: hsl(var(--rw-accent-foreground));
+  --fd-secondary: hsl(var(--rw-surface-2));
+  --fd-secondary-foreground: hsl(var(--rw-foreground));
+  --fd-accent: hsl(var(--rw-surface-2));
+  --fd-accent-foreground: hsl(var(--rw-accent));
+  --fd-destructive: hsl(var(--rw-error));
+  --fd-destructive-foreground: hsl(var(--rw-foreground));
+
+  --fd-ring: hsl(var(--rw-accent));
+}
+
+.dark {
+  /* Dark mode overrides map cleanly since Fumadocs uses CSS variables */
+  /* We explicitely redefine them here to win specificity wars against preset.css */
+  --fd-background: hsl(var(--rw-background));
+  --fd-foreground: hsl(var(--rw-foreground));
+  --fd-muted: hsl(var(--rw-surface-1));
+  --fd-muted-foreground: hsl(var(--rw-muted-foreground));
+  --fd-popover: hsl(var(--rw-surface-1));
+  --fd-popover-foreground: hsl(var(--rw-foreground));
+  --fd-card: hsl(var(--rw-surface-1));
+  --fd-card-foreground: hsl(var(--rw-foreground));
+  --fd-border: hsl(var(--rw-border));
+  --fd-input: hsl(var(--rw-border));
+
+  --fd-primary: hsl(var(--rw-accent));
+  --fd-primary-foreground: hsl(var(--rw-accent-foreground));
+  --fd-secondary: hsl(var(--rw-surface-2));
+  --fd-secondary-foreground: hsl(var(--rw-foreground));
+  --fd-accent: hsl(var(--rw-surface-2));
+  --fd-accent-foreground: hsl(var(--rw-accent));
+  --fd-destructive: hsl(var(--rw-error));
+  --fd-destructive-foreground: hsl(var(--rw-foreground));
+
+  --fd-ring: hsl(var(--rw-accent));
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+body {
+  background-color: hsl(var(--rw-background));
+  color: hsl(var(--rw-foreground));
+  font-family: var(--rw-font-sans);
+  background-image:
+    radial-gradient(circle at top center, hsl(var(--rw-accent) / 0.05) 0%, transparent 40%),
+    radial-gradient(circle at bottom left, hsl(var(--rw-secondary) / 0.05) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--rw-surface-1));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--rw-surface-3));
+  border-radius: var(--rw-radius-full);
+  border: 2px solid hsl(var(--rw-surface-1));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--rw-muted));
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--rw-accent) / 0.3);
+  color: hsl(var(--rw-accent-foreground));
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.rw-glass {
+  background: hsl(var(--rw-surface-1) / 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--rw-border) / 0.5);
+}
+
+.rw-card-hover {
+  transition: var(--rw-transition-normal);
+}
+
+.rw-card-hover:hover {
+  background: hsl(var(--rw-surface-2));
+  border-color: hsl(var(--rw-accent) / 0.5);
+  transform: translateY(-2px);
+  box-shadow: var(--rw-glow-accent);
+}
+
+.rw-gradient-text {
+  background: var(--rw-gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Button Utilities */
+.rw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--rw-radius-md);
+  font-weight: 500;
+  transition: var(--rw-transition-normal);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.rw-btn-primary {
+  background-color: hsl(var(--rw-accent));
+  color: white !important;
+  text-decoration-line: none !important;
+  /* Force white text for visibility */
+}
+
+.rw-btn-primary:hover {
+  background-color: hsl(var(--rw-accent-hover));
+}
+
+/* Badge Utilities */
+.rw-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1rem;
+}
+
+.rw-badge-accent {
+  background-color: hsl(var(--rw-accent) / 0.1);
+  color: hsl(var(--rw-accent));
+  border: 1px solid hsl(var(--rw-accent) / 0.2);
+}
+
+/* MDX Custom Content Styles */
+.prose {
+  color: hsl(var(--rw-foreground));
+  max-width: 100%;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: hsl(var(--rw-foreground));
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.prose h1 {
+  margin-bottom: 1.5rem;
+}
+
+.prose h2 {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid hsl(var(--rw-border));
+  padding-bottom: 0.5rem;
+}
+
+.prose a {
+  color: hsl(var(--rw-accent));
+  text-decoration: none;
+  border-bottom: 1px dashed hsl(var(--rw-accent) / 0.5);
+  transition: var(--rw-transition-fast);
+}
+
+.prose a:hover {
+  color: hsl(var(--rw-accent-hover));
+  border-bottom-style: solid;
+}
+
+.prose code {
+  background: hsl(var(--rw-surface-2));
+  color: hsl(var(--rw-accent));
+  padding: 0.2em 0.4em;
+  border-radius: var(--rw-radius-sm);
+  font-family: var(--rw-font-mono);
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background: hsl(var(--rw-surface-1));
+  border: 1px solid hsl(var(--rw-border));
+  border-radius: var(--rw-radius-md);
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+  color: hsl(var(--rw-muted-foreground));
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid hsl(var(--rw-accent));
+  background: hsl(var(--rw-surface-1) / 0.5);
+  padding: 1rem 1.5rem;
+  border-radius: 0 var(--rw-radius-md) var(--rw-radius-md) 0;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  color: hsl(var(--rw-muted-foreground));
+}
+
+.prose table {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-collapse: collapse;
+}
+
+.prose th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid hsl(var(--rw-border));
+  color: hsl(var(--rw-foreground));
+}
+
+.prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid hsl(var(--rw-border));
+  color: hsl(var(--rw-muted-foreground));
+}
+
+.prose img {
+  border-radius: var(--rw-radius-lg);
+  border: 1px solid hsl(var(--rw-border));
+}
+
+/* Custom Scrollbar for Pre-blocks */
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: hsl(var(--rw-border));
+}
