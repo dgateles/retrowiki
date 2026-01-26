@@ -12,6 +12,9 @@
 *.tsbuildinfo
 
 # misc
+.claude
+.vscode
+.antigravity
 .DS_Store
 *.pem
 /.pnp
@@ -23,11 +26,7 @@ yarn-error.log*
 # others
 .env*.local
 .vercel
-next-env.d.ts
 
 # Ignore config files
-*.config.*
-tsconfig.json
-package.json
 package-lock.json
 yarn.lock
