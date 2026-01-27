@@ -1,16 +1,16 @@
-import { miyooSource } from '@/lib/source';
+import { miyooMiniPlusSource } from '@/lib/source';
 import { DocsPage, DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/mdx-components';
 import type { Metadata } from 'next';
 
 export function generateStaticParams() {
-    return miyooSource.generateParams();
+    return miyooMiniPlusSource.generateParams();
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
-    const page = miyooSource.getPage(params.slug);
+    const page = miyooMiniPlusSource.getPage(params.slug);
     if (!page) return {};
 
     const title = page.data.title;
@@ -38,9 +38,9 @@ interface PageProps {
     params: Promise<{ slug?: string[] }>;
 }
 
-export default async function MiyooPage(props: PageProps) {
+export default async function MiyooMiniPlusPage(props: PageProps) {
     const params = await props.params;
-    const page = miyooSource.getPage(params.slug);
+    const page = miyooMiniPlusSource.getPage(params.slug);
     if (!page) notFound();
     const MDX = page.data.body;
 

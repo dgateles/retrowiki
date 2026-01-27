@@ -26,9 +26,9 @@ const popularConsoles = [
     badge: 'Popular',
   },
   {
-    name: 'Miyoo Mini',
+    name: 'Miyoo Mini Plus',
     description: 'Compacto e portátil com OnionOS',
-    href: '/miyoo-mini',
+    href: '/miyoo-mini-plus',
   },
   {
     name: 'RG35XX',
@@ -36,9 +36,14 @@ const popularConsoles = [
     href: '/rg35xx',
   },
   {
-    name: 'TrimUI Smart Pro',
-    description: 'Tela grande e boa performance',
-    href: '/trimui',
+    name: 'TrimUI Smart Brick',
+    description: 'Compacto com tela 4:3 de alta resolução',
+    href: '/trimui-smart-brick',
+  },
+  {
+    name: 'RG40XX H',
+    description: 'Horizontal com HDMI, Wi-Fi e RGB',
+    href: '/rg40xxh',
   },
   {
     name: 'PowKiddy RGB30',

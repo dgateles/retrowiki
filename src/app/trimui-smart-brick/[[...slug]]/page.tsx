@@ -1,16 +1,16 @@
-import { trimuiSource } from '@/lib/source';
+import { trimuiSmartBrickSource } from '@/lib/source';
 import { DocsPage, DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/mdx-components';
 import type { Metadata } from 'next';
 
 export function generateStaticParams() {
-    return trimuiSource.generateParams();
+    return trimuiSmartBrickSource.generateParams();
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
-    const page = trimuiSource.getPage(params.slug);
+    const page = trimuiSmartBrickSource.getPage(params.slug);
     if (!page) return {};
 
     const title = page.data.title;
@@ -38,9 +38,9 @@ interface PageProps {
     params: Promise<{ slug?: string[] }>;
 }
 
-export default async function TrimUIPage(props: PageProps) {
+export default async function TrimUISmartBrickPage(props: PageProps) {
     const params = await props.params;
-    const page = trimuiSource.getPage(params.slug);
+    const page = trimuiSmartBrickSource.getPage(params.slug);
     if (!page) notFound();
     const MDX = page.data.body;
 

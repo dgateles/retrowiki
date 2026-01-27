@@ -1,0 +1,120 @@
+---
+title: RG40XX H
+description: Guia completo do console Anbernic RG40XX H - Firmware, configuração, compatibilidade e troubleshooting.
+full: true
+---
+
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+import { Alert } from "@/components/mdx/Alert";
+
+<ConsoleOverview
+  name="RG40XX H"
+  manufacturer="Anbernic"
+  description="Console horizontal com tela IPS de 4 polegadas e proporção 4:3 nativa. Utiliza o chip Allwinner H700, possui Wi-Fi, Bluetooth, saída HDMI e analógicos com RGB. Suporta firmwares custom como KNULLI, muOS, MinUI e ROCKNIX."
+  image="/consoles/rg-40xxh.png"
+  releaseYear={2024}
+  priceRange="Regular (entre R$380 e R$500)"
+  screen={{
+    aspectRatio: "4:3",
+    size: '4.0"',
+    resolution: "640 x 480",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: false,
+    hasVibration: true,
+    speakerPlacement: "Inferior",
+    chargePortPlacement: "Superior",
+  }}
+  connectivity={{
+    hasWifi: true,
+    hasBluetooth: true,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: true,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: false,
+    hasAnalogSticks: true,
+    hasHallEffect: false,
+    hasL3R3: false,
+    hasTouchScreen: false,
+    hasGyroscope: false,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Allwinner H700 Quad-core Cortex-A53 1.5GHz",
+    gpu: "Mali-G31 MP2",
+    ram: "1GB",
+    ramType: "LPDDR4",
+    architecture: "ARM",
+    storage: "microSD (dual slot)",
+    battery: "3200mAh (~6 horas)",
+    os: "Linux (KNULLI/muOS/MinUI)",
+    formFactor: "Horizontal",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive", level: "excellent" },
+    { system: "Master System", level: "excellent" },
+    { system: "Neo Geo", level: "excellent" },
+    { system: "PS1", level: "excellent" },
+    { system: "Nintendo DS", level: "good" },
+    { system: "Dreamcast", level: "good" },
+    { system: "Nintendo 64", level: "good" },
+    { system: "PSP", level: "playable" },
+    { system: "Saturn", level: "playable" },
+  ]}
+  pros={[
+    "Tela IPS 4:3 de boa qualidade (4 polegadas)",
+    "Wi-Fi 5GHz e Bluetooth 4.2 integrados",
+    "Saída HDMI para TV",
+    "Analógicos com iluminação RGB",
+    "Dual analog sticks + L2/R2",
+    "Grip ergonômico confortável",
+    "Dual slot microSD",
+    "Múltiplos firmwares custom disponíveis",
+  ]}
+  cons={[
+    "Resolução ainda 640x480 (igual modelos anteriores)",
+    "Sem triggers analógicos",
+    "Desempenho limitado em PSP e Saturn",
+    "Sem L3/R3",
+  ]}
+/>
+
+<Alert type="info" title="Firmwares Custom Disponíveis">
+  O RG40XX H suporta diversos firmwares custom: **KNULLI**, **muOS**, **MinUI**
+  e **ROCKNIX**. Cada um oferece diferentes recursos e interfaces.
+</Alert>
+
+<Alert type="success" title="Recursos Especiais">
+  Este modelo possui **iluminação RGB** nos analógicos e **saída Micro HDMI**
+  para conectar na TV.
+</Alert>
+
+## Guias Disponíveis
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Instalação de Firmware"
+    description="Instale KNULLI, muOS, MinUI ou outros firmwares custom"
+    href="/rg40xxh/firmware"
+  />
+  <CardLink
+    title="Guia de Compras"
+    description="Lojas confiáveis, acessórios e dicas de compra"
+    href="/rg40xxh/buying-guide"
+  />
+</CardGrid>

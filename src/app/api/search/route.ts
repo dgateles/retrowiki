@@ -1,4 +1,4 @@
-import { source, r36sSource, miyooSource, rg35xxSource, trimuiSource, powkiddySource } from '@/lib/source';
+import { source, r36sSource, miyooMiniPlusSource, rg35xxSource, trimuiSmartBrickSource, rg40xxhSource, powkiddySource } from '@/lib/source';
 import { createSearchAPI } from 'fumadocs-core/search/server';
 
 export const revalidate = false;
@@ -7,9 +7,10 @@ export const revalidate = false;
 const allPages = [
   ...source.getPages(),
   ...r36sSource.getPages(),
-  ...miyooSource.getPages(),
+  ...miyooMiniPlusSource.getPages(),
   ...rg35xxSource.getPages(),
-  ...trimuiSource.getPages(),
+  ...trimuiSmartBrickSource.getPages(),
+  ...rg40xxhSource.getPages(),
   ...powkiddySource.getPages(),
 ];
 

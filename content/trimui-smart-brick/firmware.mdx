@@ -1,0 +1,81 @@
+---
+title: Firmware
+description: Guia de instalação de firmware para TrimUI Smart Brick - NextUI, MinUI, muOS e outros sistemas.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+import { FirmwareList } from "@/components/mdx/FirmwareList";
+
+# Instalação de Firmware
+
+Guia completo para instalação de firmwares custom no TrimUI Smart Brick.
+
+<Alert type="info" title="Antes de Começar">
+  Certifique-se de ter um cartão microSD de boa qualidade (recomendado classe A1 ou superior).
+  Faça backup de qualquer dado importante antes de começar.
+</Alert>
+
+## Firmwares Recomendados
+
+<FirmwareList
+  items={[
+    {
+      name: "NextUI",
+      owner: "nextui-org",
+      repo: "nextui",
+      description:
+        "Sistema moderno com interface elegante e suporte amplo a emuladores.",
+    },
+    {
+      name: "MinUI",
+      owner: "shauninman",
+      repo: "MinUI",
+      description: "Interface ultra-minimalista focada em simplicidade e baixo consumo de bateria.",
+    },
+    {
+      name: "muOS",
+      website: "https://muos.dev/devices",
+      description: "Sistema minimalista e rápido, com interface limpa e foco em performance.",
+    },
+    {
+      name: "KNULLI",
+      owner: "knulli-cfw",
+      repo: "distribution",
+      description: "Fork do Batocera otimizado para handhelds, com amplo suporte a emuladores.",
+    },
+  ]}
+/>
+
+## Passos de Instalação
+
+<Steps>
+  <Step title="Baixe o Firmware">
+    Clique no botão Download do firmware desejado acima. O arquivo será baixado
+    diretamente do GitHub.
+  </Step>
+  <Step title="Formate o Cartão SD">
+    Formate o cartão SD em **FAT32**. Use o [SD Card Formatter](https://www.sdcard.org/downloads/formatter/)
+    para garantir uma formatação correta.
+  </Step>
+  <Step title="Extraia os Arquivos">
+    Extraia o conteúdo do firmware baixado diretamente na raiz do cartão SD.
+  </Step>
+  <Step title="Insira no Console">
+    Insira o cartão SD no slot do TrimUI Smart Brick.
+  </Step>
+  <Step title="Primeira Inicialização">
+    Ligue o console e aguarde a configuração inicial (pode levar alguns
+    minutos).
+  </Step>
+</Steps>
+
+<Alert type="warning" title="Importante">
+  Não desligue o console durante a primeira inicialização. O sistema está
+  configurando o ambiente e pode demorar alguns minutos.
+</Alert>
+
+<Alert type="info" title="Wi-Fi e Bluetooth">
+  O TrimUI Smart Brick possui Wi-Fi e Bluetooth integrados. Após instalar o firmware,
+  configure a rede para habilitar RetroAchievements, scraping de capas e transferência de arquivos.
+</Alert>

@@ -1,6 +1,6 @@
 ---
-title: RG35XX
-description: Guia completo do console Anbernic RG35XX - Firmware, configuração, compatibilidade e troubleshooting.
+title: Miyoo Mini Plus
+description: Guia completo do console Miyoo Mini Plus - Firmware, OnionOS, configuração e compatibilidade.
 full: true
 ---
 
@@ -10,12 +10,12 @@ import { CardLink } from "@/components/mdx/CardLink";
 import { Alert } from "@/components/mdx/Alert";
 
 <ConsoleOverview
-  name="RG35XX"
-  manufacturer="Anbernic"
-  description="Console portátil com design retrô inspirado no Game Boy. Utiliza sistema Linux e suporta firmwares custom como MinUI, muOS, KNULLI, GarlicOS, ROCKNIX e Batocera."
-  image="/consoles/rg-35xx.png"
-  releaseYear={2024}
-  priceRange="Barato (entre R$240,00 e R$350,00)"
+  name="Miyoo Mini Plus"
+  manufacturer="Miyoo"
+  description="Console ultra-compacto com tela IPS vibrante de 3.5 polegadas. Utiliza o chip SigmaStar SSD202D e suporta firmwares custom como OnionOS, MinUI, Koriki e Allium. Perfeito para emulação de sistemas retro até PS1."
+  image="/consoles/miyoo-mini-plus.png"
+  releaseYear={2023}
+  priceRange="Regular (entre R$350 e R$450)"
   screen={{
     aspectRatio: "4:3",
     size: '3.5"',
@@ -25,13 +25,13 @@ import { Alert } from "@/components/mdx/Alert";
   }}
   ergonomics={{
     hasGrip: true,
-    hasCooling: true,
-    hasVibration: true,
+    hasCooling: false,
+    hasVibration: false,
     speakerPlacement: "Frontal",
     chargePortPlacement: "Inferior",
   }}
   connectivity={{
-    hasWifi: false,
+    hasWifi: true,
     hasBluetooth: false,
     hasAudioJack: true,
     hasStereoSpeaker: true,
@@ -41,7 +41,7 @@ import { Alert } from "@/components/mdx/Alert";
   }}
   controls={{
     hasL1R1: true,
-    hasL2R2: true,
+    hasL2R2: false,
     hasAnalogTriggers: false,
     hasAnalogSticks: false,
     hasHallEffect: false,
@@ -51,14 +51,14 @@ import { Alert } from "@/components/mdx/Alert";
     hasVolumeButtons: true,
   }}
   specs={{
-    cpu: "Quad-core ARM",
-    gpu: "PowerVR SGX544",
-    ram: "1GB",
-    ramType: "DDR",
+    cpu: "SigmaStar SSD202D Dual-core Cortex-A7 1.2GHz",
+    gpu: "Integrada",
+    ram: "128MB",
+    ramType: "DDR3",
     architecture: "ARM",
     storage: "microSD",
-    battery: "2600mAh",
-    os: "Linux",
+    battery: "3000mAh",
+    os: "Linux (OnionOS/MinUI)",
     formFactor: "Vertical",
   }}
   emulation={[
@@ -71,31 +71,32 @@ import { Alert } from "@/components/mdx/Alert";
     { system: "Neo Geo", level: "excellent" },
     { system: "PS1", level: "excellent" },
     { system: "Nintendo DS", level: "good" },
-    { system: "Nintendo 64", level: "good" },
-    { system: "PSP", level: "playable" },
+    { system: "Nintendo 64", level: "poor" },
+    { system: "PSP", level: "poor" },
     { system: "Dreamcast", level: "poor" },
-    { system: "Saturn", level: "poor" },
   ]}
   pros={[
-    "Design nostálgico inspirado no Game Boy",
+    "Tela IPS com cores vibrantes e excelente qualidade",
+    "Ultra-compacto e extremamente portátil (162g)",
+    "Wi-Fi integrado para RetroAchievements e transferências",
+    "Comunidade muito ativa com CFWs de qualidade (OnionOS)",
     "Excelente custo-benefício (~$50)",
-    "Suporte a múltiplos CFWs (MinUI, muOS, KNULLI, GarlicOS)",
-    "Tela IPS com boa qualidade e proporção 4:3 nativa",
-    "Grip ergonômico e vibração inclusos",
-    "Sistema de refrigeração integrado",
+    "Grip ergonômico para conforto",
+    "Bateria de 3000mAh com boa duração",
   ]}
   cons={[
     "Sem analógicos (apenas D-pad)",
-    "Sem Wi-Fi ou Bluetooth",
-    "Potência limitada para emuladores mais pesados",
-    "Desempenho fraco em Dreamcast e Saturn",
+    "Sem Bluetooth",
+    "Apenas L1/R1 (sem L2/R2)",
+    "RAM limitada (128MB) para emuladores pesados",
+    "Sem sistema de refrigeração",
   ]}
 />
 
 <Alert type="info" title="Firmwares Custom Disponíveis">
-  O RG35XX suporta diversos firmwares custom: **MinUI**, **muOS**, **KNULLI**,
-  **GarlicOS**, **ROCKNIX** e **Batocera**. Cada um oferece diferentes recursos
-  e interfaces.
+  O Miyoo Mini Plus suporta diversos firmwares custom: **OnionOS** (mais
+  popular), **MinUI**, **Koriki** e **Allium**. O OnionOS é o mais recomendado
+  pela comunidade.
 </Alert>
 
 ## Guias Disponíveis
@@ -103,17 +104,17 @@ import { Alert } from "@/components/mdx/Alert";
 <CardGrid columns={2}>
   <CardLink
     title="Instalação de Firmware"
-    description="Instale GarlicOS, muOS, KNULLI ou outros firmwares custom"
-    href="/rg35xx/firmware"
+    description="Instale OnionOS, MinUI ou outros firmwares custom"
+    href="/miyoo-mini-plus/firmware"
   />
   <CardLink
     title="Cartão SD"
     description="Formatação e compatibilidade de cartões"
-    href="/rg35xx/sd-card"
+    href="/miyoo-mini-plus/sd-card"
   />
   <CardLink
     title="Guia de Compras"
     description="Lojas confiáveis, acessórios e dicas de compra"
-    href="/rg35xx/buying-guide"
+    href="/miyoo-mini-plus/buying-guide"
   />
 </CardGrid>

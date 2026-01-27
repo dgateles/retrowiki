@@ -1,6 +1,6 @@
 ---
 title: Firmware
-description: Guia de instalação de firmware para RG35XX - GarlicOS, muOS, KNULLI e outros sistemas.
+description: Guia de instalação de firmware para RG40XX H - KNULLI, muOS, MinUI e outros sistemas.
 ---
 
 import { Steps, Step } from "@/components/mdx/Steps";
@@ -9,7 +9,7 @@ import { FirmwareList } from "@/components/mdx/FirmwareList";
 
 # Instalação de Firmware
 
-Guia completo para instalação de firmwares custom no RG35XX.
+Guia completo para instalação de firmwares custom no Anbernic RG40XX H.
 
 <Alert type="info" title="Antes de Começar">
   Certifique-se de ter um cartão microSD de boa qualidade (recomendado classe A1 ou superior).
@@ -21,22 +21,16 @@ Guia completo para instalação de firmwares custom no RG35XX.
 <FirmwareList
   items={[
     {
-      name: "muOS",
-      website: "https://muos.dev/devices",
-      description:
-        "Sistema minimalista e rápido, com interface limpa e foco em performance.",
-    },
-    {
       name: "KNULLI",
       owner: "knulli-cfw",
       repo: "distribution",
-      description: "Fork do Batocera otimizado para handhelds, com amplo suporte a emuladores.",
+      description:
+        "Fork do Batocera otimizado para handhelds, com amplo suporte a emuladores e interface completa.",
     },
     {
-      name: "GarlicOS",
-      owner: "GarlicOS",
-      repo: "buildroot",
-      description: "Sistema popular e estável, com boa compatibilidade e comunidade ativa.",
+      name: "muOS",
+      website: "https://muos.dev/devices",
+      description: "Sistema minimalista e rápido, com interface limpa e foco em performance.",
     },
     {
       name: "MinUI",
@@ -44,24 +38,11 @@ Guia completo para instalação de firmwares custom no RG35XX.
       repo: "MinUI",
       description: "Interface ultra-minimalista focada em simplicidade e baixo consumo de bateria.",
     },
-  ]}
-/>
-
-## Firmwares Alternativos
-
-<FirmwareList
-  items={[
     {
       name: "ROCKNIX",
       owner: "ROCKNIX",
       repo: "distribution",
       description: "Fork do JELOS com suporte ativo e atualizações frequentes.",
-    },
-    {
-      name: "Batocera",
-      owner: "batocera-linux",
-      repo: "batocera.linux",
-      description: "Sistema completo com ampla biblioteca de emuladores e interface Emulation Station.",
     },
   ]}
 />
@@ -79,7 +60,7 @@ Guia completo para instalação de firmwares custom no RG35XX.
     cartão SD.
   </Step>
   <Step title="Insira no Console">
-    Insira o cartão SD no slot do RG35XX.
+    Insira o cartão SD no slot TF1 (slot principal) do RG40XX H.
   </Step>
   <Step title="Primeira Inicialização">
     Ligue o console e aguarde a configuração inicial (pode levar alguns
@@ -90,4 +71,14 @@ Guia completo para instalação de firmwares custom no RG35XX.
 <Alert type="warning" title="Importante">
   Não desligue o console durante a primeira inicialização. O sistema está
   expandindo arquivos e configurando o ambiente.
+</Alert>
+
+<Alert type="info" title="Wi-Fi e Bluetooth">
+  O RG40XX H possui Wi-Fi 5GHz e Bluetooth 4.2 integrados. Após instalar o firmware,
+  configure a rede para habilitar RetroAchievements, scraping de capas e transferência de arquivos.
+</Alert>
+
+<Alert type="success" title="Saída HDMI">
+  Para jogar na TV, conecte um cabo Micro HDMI na porta superior do console.
+  A maioria dos firmwares suporta detecção automática.
 </Alert>

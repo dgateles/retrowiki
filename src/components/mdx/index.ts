@@ -17,3 +17,4 @@ export { DtbDetector } from './DtbDetector';
 export { ButtonLayout } from './ButtonLayout';
 export { FirmwareList } from './FirmwareList';
 export { ConsoleOverview } from './ConsoleOverview';
+export { BuyingGuide } from './BuyingGuide';

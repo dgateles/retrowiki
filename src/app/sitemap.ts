@@ -5,9 +5,10 @@ export const dynamic = 'force-static';
 import {
     source,
     r36sSource,
-    miyooSource,
+    miyooMiniPlusSource,
     rg35xxSource,
-    trimuiSource,
+    trimuiSmartBrickSource,
+    rg40xxhSource,
     powkiddySource
 } from '@/lib/source';
 
@@ -42,9 +43,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...routes,
         ...addSource(source),
         ...addSource(r36sSource),
-        ...addSource(miyooSource),
+        ...addSource(miyooMiniPlusSource),
         ...addSource(rg35xxSource),
-        ...addSource(trimuiSource),
+        ...addSource(trimuiSmartBrickSource),
+        ...addSource(rg40xxhSource),
         ...addSource(powkiddySource),
     ];
 }

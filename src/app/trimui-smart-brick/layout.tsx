@@ -1,15 +1,15 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import type { ReactNode } from 'react';
 import { consoleDocsOptions, consoleTabs } from '@/lib/layout.shared';
-import { miyooSource } from '@/lib/source';
+import { trimuiSmartBrickSource } from '@/lib/source';
 
 /**
- * Miyoo Mini documentation layout with console switcher dropdown.
+ * TrimUI Smart Brick documentation layout with console switcher dropdown.
  */
-export default function MiyooLayout({ children }: { children: ReactNode }) {
+export default function TrimUISmartBrickLayout({ children }: { children: ReactNode }) {
     return (
         <DocsLayout
-            tree={miyooSource.pageTree}
+            tree={trimuiSmartBrickSource.pageTree}
             {...consoleDocsOptions()}
             sidebar={{
                 tabs: consoleTabs,

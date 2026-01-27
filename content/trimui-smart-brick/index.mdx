@@ -1,0 +1,113 @@
+---
+title: TrimUI Smart Brick
+description: Guia completo do console TrimUI Smart Brick - Firmware, configuração, compatibilidade e troubleshooting.
+full: true
+---
+
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+import { Alert } from "@/components/mdx/Alert";
+
+<ConsoleOverview
+  name="TrimUI Smart Brick"
+  manufacturer="TrimUI"
+  description="Console ultra-compacto com tela IPS de alta resolução (1024x768) em formato 4:3. Utiliza o chip Allwinner A133 Plus e suporta firmwares custom como NextUI, MinUI, muOS e KNULLI."
+  image="/consoles/trimui-smart-brick.png"
+  releaseYear={2024}
+  priceRange="Barato (~$70 USD)"
+  screen={{
+    aspectRatio: "4:3",
+    size: '3.2"',
+    resolution: "1024 x 768",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: false,
+    hasCooling: false,
+    hasVibration: false,
+    speakerPlacement: "Frontal",
+    chargePortPlacement: "Superior e Inferior",
+  }}
+  connectivity={{
+    hasWifi: true,
+    hasBluetooth: true,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: false,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: false,
+    hasAnalogTriggers: false,
+    hasAnalogSticks: false,
+    hasHallEffect: false,
+    hasL3R3: false,
+    hasTouchScreen: false,
+    hasGyroscope: false,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Allwinner A133 Plus Quad-core Cortex-A53 1.8-2.0GHz",
+    gpu: "PowerVR GE8300",
+    ram: "1GB",
+    ramType: "LPDDR3",
+    architecture: "ARM",
+    storage: "8GB eMMC + microSD",
+    battery: "3000mAh",
+    os: "Linux (NextUI/MinUI/muOS)",
+    formFactor: "Vertical",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive", level: "excellent" },
+    { system: "Master System", level: "excellent" },
+    { system: "Neo Geo", level: "excellent" },
+    { system: "PS1", level: "excellent" },
+    { system: "Nintendo DS", level: "excellent" },
+    { system: "Dreamcast", level: "good" },
+    { system: "Nintendo 64", level: "good" },
+    { system: "PSP", level: "playable" },
+    { system: "Saturn", level: "playable" },
+  ]}
+  pros={[
+    "Tela IPS de altíssima resolução (1024x768, 400 PPI)",
+    "Proporção 4:3 nativa perfeita para jogos retro",
+    "Design ultra-compacto e leve (159g)",
+    "Wi-Fi e Bluetooth integrados",
+    "Armazenamento interno de 8GB eMMC",
+    "Excelente desempenho em PS1 e Nintendo DS",
+    "Múltiplos firmwares custom disponíveis",
+  ]}
+  cons={[
+    "Sem analógicos (apenas D-pad)",
+    "Apenas L1/R1 (sem L2/R2)",
+    "Tela pequena (3.2 polegadas)",
+    "Bluetooth versão antiga (2.1)",
+  ]}
+/>
+
+<Alert type="info" title="Firmwares Custom Disponíveis">
+  O TrimUI Smart Brick suporta diversos firmwares custom: **NextUI**, **MinUI**, **muOS** e **KNULLI**. Cada um oferece diferentes recursos e interfaces.
+</Alert>
+
+## Guias Disponíveis
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Instalação de Firmware"
+    description="Instale NextUI, MinUI, muOS ou outros firmwares custom"
+    href="/trimui-smart-brick/firmware"
+  />
+  <CardLink
+    title="Guia de Compras"
+    description="Lojas confiáveis, acessórios e dicas de compra"
+    href="/trimui-smart-brick/buying-guide"
+  />
+</CardGrid>

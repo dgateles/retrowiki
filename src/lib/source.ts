@@ -1,9 +1,10 @@
 import {
   docs,
   r36sDocs,
-  miyooDocs,
+  miyooMiniPlusDocs,
   rg35xxDocs,
-  trimuiDocs,
+  trimuiSmartBrickDocs,
+  rg40xxhDocs,
   powkiddyDocs
 } from 'fumadocs-mdx:collections/server';
 import { type InferPageType, loader, multiple } from 'fumadocs-core/source';
@@ -28,11 +29,11 @@ export const r36sSource = loader({
 });
 
 /**
- * Miyoo Mini console documentation source.
+ * Miyoo Mini Plus console documentation source.
  */
-export const miyooSource = loader({
-  baseUrl: '/miyoo',
-  source: miyooDocs.toFumadocsSource(),
+export const miyooMiniPlusSource = loader({
+  baseUrl: '/miyoo-mini-plus',
+  source: miyooMiniPlusDocs.toFumadocsSource(),
   plugins: [lucideIconsPlugin()],
 });
 
@@ -46,11 +47,20 @@ export const rg35xxSource = loader({
 });
 
 /**
- * TrimUI console documentation source.
+ * TrimUI Smart Brick console documentation source.
  */
-export const trimuiSource = loader({
-  baseUrl: '/trimui',
-  source: trimuiDocs.toFumadocsSource(),
+export const trimuiSmartBrickSource = loader({
+  baseUrl: '/trimui-smart-brick',
+  source: trimuiSmartBrickDocs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
+ * RG40XX H console documentation source.
+ */
+export const rg40xxhSource = loader({
+  baseUrl: '/rg40xxh',
+  source: rg40xxhDocs.toFumadocsSource(),
   plugins: [lucideIconsPlugin()],
 });
 
@@ -71,9 +81,10 @@ export const searchSource = loader({
   source: multiple({
     docs: docs.toFumadocsSource(),
     r36s: r36sDocs.toFumadocsSource(),
-    miyoo: miyooDocs.toFumadocsSource(),
+    'miyoo-mini-plus': miyooMiniPlusDocs.toFumadocsSource(),
     rg35xx: rg35xxDocs.toFumadocsSource(),
-    trimui: trimuiDocs.toFumadocsSource(),
+    'trimui-smart-brick': trimuiSmartBrickDocs.toFumadocsSource(),
+    rg40xxh: rg40xxhDocs.toFumadocsSource(),
     powkiddy: powkiddyDocs.toFumadocsSource(),
   }),
   plugins: [lucideIconsPlugin()],

@@ -33,10 +33,10 @@ export const r36sDocs = defineDocs({
 });
 
 /**
- * Miyoo Mini console documentation.
+ * Miyoo Mini Plus console documentation.
  */
-export const miyooDocs = defineDocs({
-  dir: 'content/miyoo',
+export const miyooMiniPlusDocs = defineDocs({
+  dir: 'content/miyoo-mini-plus',
   docs: {
     schema: frontmatterSchema,
     postprocess: {
@@ -65,10 +65,26 @@ export const rg35xxDocs = defineDocs({
 });
 
 /**
- * TrimUI console documentation.
+ * TrimUI Smart Brick console documentation.
  */
-export const trimuiDocs = defineDocs({
-  dir: 'content/trimui',
+export const trimuiSmartBrickDocs = defineDocs({
+  dir: 'content/trimui-smart-brick',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
+/**
+ * RG40XX H console documentation.
+ */
+export const rg40xxhDocs = defineDocs({
+  dir: 'content/rg40xxh',
   docs: {
     schema: frontmatterSchema,
     postprocess: {

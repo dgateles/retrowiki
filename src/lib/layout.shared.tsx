@@ -12,9 +12,9 @@ export const consoleTabs = [
     url: '/r36s',
   },
   {
-    title: 'Miyoo Mini',
+    title: 'Miyoo Mini Plus',
     description: 'Compacto com OnionOS',
-    url: '/miyoo',
+    url: '/miyoo-mini-plus',
   },
   {
     title: 'RG35XX',
@@ -22,9 +22,14 @@ export const consoleTabs = [
     url: '/rg35xx',
   },
   {
-    title: 'TrimUI',
-    description: 'Tela grande, boa performance',
-    url: '/trimui',
+    title: 'TrimUI Smart Brick',
+    description: 'Compacto com tela 4:3',
+    url: '/trimui-smart-brick',
+  },
+  {
+    title: 'RG40XX H',
+    description: 'Horizontal com HDMI e RGB',
+    url: '/rg40xxh',
   },
   {
     title: 'PowKiddy',
