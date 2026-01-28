@@ -16,19 +16,25 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const title = page.data.title;
     const description = page.data.description;
 
+    const url = `https://retro.wiki.br/rg35xx${params.slug ? `/${params.slug.join('/')}` : ''}`;
+
     return {
         title,
         description,
+        alternates: {
+            canonical: url,
+        },
         openGraph: {
-            title: `${title} | Retro Wiki`,
+            title: `${title} | RG35XX - Retro Wiki`,
             description,
             type: 'article',
             siteName: 'Retro Wiki',
             locale: 'pt_BR',
+            url,
         },
         twitter: {
-            card: 'summary_large_image',
-            title: `${title} | Retro Wiki`,
+            card: 'summary',
+            title: `${title} | RG35XX - Retro Wiki`,
             description,
         },
     };

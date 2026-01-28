@@ -54,15 +54,21 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
   const title = page.data.title;
   const description = page.data.description;
 
+  const url = `https://retro.wiki.br/docs${params.slug ? `/${params.slug.join('/')}` : ''}`;
+
   return {
     title,
     description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: `${title} | Retro Wiki`,
       description,
       type: 'article',
       siteName: 'Retro Wiki',
       locale: 'pt_BR',
+      url,
       images: getPageImage(page).url,
     },
     twitter: {

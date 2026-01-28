@@ -1,0 +1,30 @@
+{
+  "name": "Retro Wiki - Guia de Consoles Portáteis Retrô",
+  "short_name": "Retro Wiki",
+  "description": "Guia completo em português para consoles portáteis retrô: R36S, Miyoo Mini Plus, RG35XX, RG40XX H, TrimUI Smart Brick e PowKiddy RGB30.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["games", "entertainment", "utilities"],
+  "icons": [
+    { "src": "/favicon.ico", "type": "image/x-icon", "sizes": "16x16 32x32" },
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    {
+      "src": "/icon-192-maskable.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

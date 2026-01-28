@@ -2,8 +2,23 @@ import { Heart, Coffee, Github, Star, QrCode } from 'lucide-react';
 import Image from 'next/image';
 
 export const metadata = {
-    title: 'Apoie o Projeto',
-    description: 'Ajude a manter o Retro Wiki no ar.',
+    title: 'Apoie o Projeto Retro Wiki',
+    description:
+        'Ajude a manter o Retro Wiki no ar. Doe via Pix, Buy Me a Coffee ou contribua no GitHub. O Retro Wiki é gratuito e open source.',
+    openGraph: {
+        title: 'Apoie o Projeto Retro Wiki',
+        description:
+            'Ajude a manter o Retro Wiki no ar. Doe via Pix, Buy Me a Coffee ou contribua no GitHub.',
+        type: 'website' as const,
+        siteName: 'Retro Wiki',
+        locale: 'pt_BR',
+    },
+    twitter: {
+        card: 'summary' as const,
+        title: 'Apoie o Projeto Retro Wiki',
+        description:
+            'Ajude a manter o Retro Wiki no ar. Doe via Pix, Buy Me a Coffee ou contribua no GitHub.',
+    },
 };
 
 /**

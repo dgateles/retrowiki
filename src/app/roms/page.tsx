@@ -2,8 +2,36 @@ import Link from 'next/link';
 import { Download, AlertTriangle, Info, HardDrive, Gamepad2 } from 'lucide-react';
 
 export const metadata = {
-    title: 'ROMs e BIOS',
-    description: 'Guia de coleções recomendadas de ROMs e BIOS para seu console.',
+    title: 'ROMs e BIOS - Coleções Curadas para Consoles Retrô',
+    description:
+        'Coleções recomendadas de ROMs e BIOS para consoles portáteis retrô como R36S, Miyoo Mini Plus, RG35XX e RG40XX H. Tiny Best Set GO, Done Set 2, TopRoms e arquivos BIOS para RetroArch.',
+    keywords: [
+        'ROMs retro',
+        'BIOS retro',
+        'Tiny Best Set GO',
+        'Done Set 2',
+        'TopRoms',
+        'ROMs R36S',
+        'ROMs Miyoo Mini',
+        'BIOS RetroArch',
+        'coleção ROMs',
+        'download ROMs',
+        'ROMs console portátil',
+    ],
+    openGraph: {
+        title: 'ROMs e BIOS - Coleções Curadas para Consoles Retrô | Retro Wiki',
+        description:
+            'Coleções recomendadas de ROMs e BIOS para consoles portáteis retrô. Tiny Best Set GO, Done Set 2, TopRoms e arquivos BIOS para RetroArch.',
+        type: 'article' as const,
+        siteName: 'Retro Wiki',
+        locale: 'pt_BR',
+    },
+    twitter: {
+        card: 'summary' as const,
+        title: 'ROMs e BIOS - Coleções Curadas | Retro Wiki',
+        description:
+            'Coleções recomendadas de ROMs e BIOS para consoles portáteis retrô. Tiny Best Set GO, Done Set 2 e TopRoms.',
+    },
 };
 
 export default function RomsPage() {
