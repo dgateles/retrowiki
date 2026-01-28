@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { Gamepad2, Heart, Home, Disc } from 'lucide-react';
+import { Gamepad2, Heart, Home, Disc, Wrench } from 'lucide-react';
 
 /**
  * Console options for the sidebar tabs dropdown.
@@ -62,6 +62,11 @@ export function baseOptions(): BaseLayoutProps {
         text: 'ROMs',
         url: '/roms',
         icon: <Disc className="size-4" />,
+      },
+      {
+        text: 'Retro Tool',
+        url: '/retro-tool',
+        icon: <Wrench className="size-4" />,
       },
       {
         text: 'Apoie',
