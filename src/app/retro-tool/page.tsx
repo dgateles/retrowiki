@@ -79,9 +79,10 @@ const jsonLd = {
         'Geração de gamelist.xml',
         'Download de capas via ScreenScraper API',
         'Download de miniaturas',
+        'Download de vídeos de gameplay',
         'Renomeador de imagens para EmulationStation',
         'Conversor de arquivos DAT para gamelist.xml',
-        'Suporte a múltiplos idiomas (PT-BR, EN)',
+        'Suporte a múltiplos idiomas (PT-BR, EN, ES, FR)',
     ],
     author: {
         '@type': 'Person',
@@ -216,8 +217,8 @@ export default function RetroToolPage() {
                             <p className="text-sm text-muted-foreground">
                                 <strong className="text-emerald-600 dark:text-emerald-400">Função principal:</strong>{' '}
                                 Escaneia uma pasta de ROMs e gera o arquivo <code>gamelist.xml</code> com
-                                metadados obtidos via API do ScreenScraper.fr. Também pode baixar capas e thumbnails
-                                automaticamente.
+                                metadados obtidos via API do ScreenScraper.fr. Também pode baixar capas, thumbnails
+                                e vídeos de gameplay automaticamente.
                             </p>
                         </div>
 
@@ -229,13 +230,18 @@ export default function RetroToolPage() {
                                     Tela Inicial do Coletor
                                 </h3>
                                 <p className="text-muted-foreground">
-                                    Ao abrir o Retro Tool, você verá a tela principal do <strong>Coletor de Jogos</strong>.
-                                    No menu lateral esquerdo estão as 4 seções: Coletor, Renomeador, Conversor e Configurações.
+                                    Ao abrir o <strong>Retro Utility Suite</strong>, você verá a tela principal do <strong>Coletor de Jogos</strong>.
+                                    No menu lateral estão as seções: Coletor, Renomeador, Conversor, Configurações e Sobre.
+                                    No topo direito você pode ver seu status de conexão (Convidado ou logado) e sua cota de requisições.
+                                </p>
+                                <p className="text-muted-foreground">
+                                    A interface exibe cards com estatísticas em tempo real: <strong>Jogos Encontrados</strong>,{' '}
+                                    <strong>Imagens Salvas</strong> e <strong>Taxa de Sucesso</strong>.
                                 </p>
                                 <ClickableImage
                                     src="/retrotool-images/tela-inicial.png"
                                     alt="Tela inicial do Retro Tool - Coletor de Jogos"
-                                    caption="Tela inicial do Coletor de Jogos"
+                                    caption="Tela inicial do Coletor de Jogos com estatísticas e status"
                                 />
                             </div>
 
@@ -285,32 +291,31 @@ export default function RetroToolPage() {
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <span className="flex items-center justify-center w-7 h-7 rounded-full bg-(--fd-primary) text-white text-sm font-bold">4</span>
-                                    Configure as Opções
+                                    Configure as Opções de Download
                                 </h3>
                                 <p className="text-muted-foreground">
-                                    Antes de iniciar, configure as opções de coleta:
+                                    Antes de iniciar, configure quais mídias deseja baixar:
                                 </p>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-start gap-2">
                                         <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                                        <span><strong>Utilizar ScreenScraper API:</strong> Busca metadados online (nome, descrição, data, etc)</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                                        <span><strong>Baixar Capas:</strong> Baixa automaticamente as imagens de capa dos jogos</span>
+                                        <span><strong>Baixar Capas:</strong> Baixa imagens de capa. Use o seletor <strong>Tipo de Capa</strong> para escolher entre Screenshot, Box 2D, Box 3D, etc.</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                                         <span><strong>Baixar Miniaturas:</strong> Baixa thumbnails menores para o menu</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                                        <span><strong>Baixar Vídeos:</strong> Baixa vídeos de gameplay dos jogos (quando disponível)</span>
                                     </li>
                                 </ul>
                                 <div className="p-4 rounded-lg border border-yellow-500/30 bg-yellow-500/5">
                                     <p className="text-sm text-muted-foreground flex items-start gap-2">
                                         <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
                                         <span>
-                                            <strong>Dica:</strong> Se você já possui uma pasta <code>images</code> dentro
-                                            da pasta de ROMs com as capas, o Retro Tool as utilizará automaticamente
-                                            sem precisar baixar novamente.
+                                            <strong>Dica:</strong> Certifique-se de habilitar a opção <strong>Usar ScreenScraper API</strong> nas
+                                            Configurações para que o download de mídias funcione corretamente.
                                         </span>
                                     </p>
                                 </div>
@@ -453,38 +458,66 @@ export default function RetroToolPage() {
                         <div className="p-4 rounded-lg border border-zinc-500/30 bg-zinc-500/5 mb-6">
                             <p className="text-sm text-muted-foreground">
                                 <strong className="text-zinc-400">Função:</strong>{' '}
-                                Configure o idioma da interface e suas credenciais do ScreenScraper.fr
-                                para aumentar a velocidade de coleta.
+                                Configure o idioma da interface, credenciais do ScreenScraper.fr
+                                e preferências gerais do aplicativo.
                             </p>
                         </div>
 
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">Idioma</h3>
-                            <p className="text-muted-foreground">
-                                Escolha entre <strong>Português (BR)</strong> ou <strong>English (US)</strong>.
-                            </p>
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-lg font-semibold">Idioma</h3>
+                                <p className="text-muted-foreground">
+                                    Escolha entre <strong>Português (BR)</strong>, <strong>English (US)</strong>,{' '}
+                                    <strong>Español</strong> ou <strong>Français</strong>.
+                                </p>
+                            </div>
 
-                            <h3 className="text-lg font-semibold mt-6">Credenciais ScreenScraper</h3>
-                            <p className="text-muted-foreground">
-                                O ScreenScraper.fr limita requisições para usuários sem conta. Se você possui
-                                uma conta (especialmente se fez alguma doação), insira seu usuário e senha
-                                para aumentar o limite de requisições e a velocidade da coleta.
-                            </p>
+                            <div>
+                                <h3 className="text-lg font-semibold">Credenciais ScreenScraper</h3>
+                                <p className="text-muted-foreground">
+                                    O ScreenScraper.fr limita requisições para usuários sem conta. Se você possui
+                                    uma conta (especialmente se fez alguma doação), insira seu usuário e senha
+                                    para aumentar o limite de requisições e a velocidade da coleta.
+                                </p>
+                                <p className="text-muted-foreground mt-2">
+                                    Clique em <strong>COTA PÚBLICA</strong> para usar a cota compartilhada sem precisar de conta.
+                                    Se não tem conta, clique no link <em>"Crie uma em ScreenScraper.fr"</em> para criar.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold">Preferências Gerais</h3>
+                                <ul className="space-y-2 text-sm mt-2">
+                                    <li className="flex items-start gap-2">
+                                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                                        <span><strong>Usar ScreenScraper API:</strong> Ativa o download de metadados e mídias online</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                                        <span><strong>Salvar Configuração:</strong> Mantém suas credenciais salvas para sessões futuras</span>
+                                    </li>
+                                </ul>
+                            </div>
 
                             <div className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/5">
                                 <p className="text-sm text-muted-foreground flex items-start gap-2">
                                     <Globe className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                                     <span>
-                                        <strong>Nota:</strong> Se deixar em branco, será usada a cota pública
-                                        compartilhada, que é mais lenta mas funciona normalmente.
+                                        <strong>Nota de Autenticação:</strong> Se deixar em branco, será usada a cota pública
+                                        compartilhada de desenvolvedor. Isso limita o número de requisições por dia,
+                                        compartilhado entre todos os usuários sem conta.
                                     </span>
                                 </p>
                             </div>
 
+                            <p className="text-muted-foreground">
+                                Após configurar, clique em <strong>SALVAR CONFIGURAÇÕES</strong> para aplicar as mudanças.
+                            </p>
+
                             <ClickableImage
                                 src="/retrotool-images/tela-config.png"
                                 alt="Tela de Configurações"
-                                caption="Configurações de idioma e credenciais ScreenScraper"
+                                caption="Configurações de idioma, credenciais e preferências gerais"
                             />
                         </div>
                     </div>

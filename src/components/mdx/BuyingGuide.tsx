@@ -33,6 +33,8 @@ interface StoreItem {
     trustLevel?: TrustLevel;
     /** Optional badge text (e.g., "Recomendado", "Choice") */
     badge?: string;
+    /** Highlight this item with animated glowing border */
+    highlight?: boolean;
 }
 
 interface AccessoryItem {
@@ -46,6 +48,8 @@ interface AccessoryItem {
     category: AccessoryCategory;
     /** Optional highlight badge */
     badge?: string;
+    /** Highlight this item with animated glowing border */
+    highlight?: boolean;
 }
 
 interface BuyingTip {
@@ -133,41 +137,72 @@ function StoreCard({ store }: { store: StoreItem }) {
     const TrustIcon = trustStyle?.icon;
 
     return (
-        <a
-            href={store.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all"
-        >
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                        {store.name}
-                    </h4>
-                    {trustStyle && TrustIcon && (
-                        <span className={cn(
-                            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border',
-                            trustStyle.bg, trustStyle.text, trustStyle.border
+        <div className={cn('relative rounded-lg', store.highlight && 'p-[2px]')}>
+            {/* Animated glow border for highlighted items */}
+            {store.highlight && (
+                <div
+                    className="absolute inset-0 rounded-lg bg-size-[200%_100%] animate-[shimmer_3s_linear_infinite] opacity-80"
+                    style={{
+                        backgroundImage: 'linear-gradient(90deg, #facc15, #10b981, #2563eb, #10b981, #facc15)',
+                    }}
+                />
+            )}
+            <a
+                href={store.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                    'group relative flex items-center justify-between p-4 rounded-lg border bg-white dark:bg-zinc-900/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all',
+                    store.highlight
+                        ? 'border-transparent hover:border-transparent'
+                        : 'border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50'
+                )}
+            >
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className={cn(
+                            'font-semibold transition-colors',
+                            store.highlight
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
                         )}>
-                            <TrustIcon className="w-3 h-3" />
-                            {trustStyle.label}
-                        </span>
-                    )}
-                    {store.badge && (
-                        <span className={cn(
-                            'px-2 py-0.5 rounded text-xs font-medium border',
-                            store.badge.toLowerCase() === 'brasil'
-                                ? 'bg-linear-to-r from-teal-500/20 to-yellow-400/20 text-teal-600 dark:text-teal-300 border-teal-500/30 dark:border-teal-400/30'
-                                : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                        )}>
-                            {store.badge.toLowerCase() === 'brasil' ? '🇧🇷 No Brasil' : store.badge}
-                        </span>
-                    )}
+                            {store.name}
+                        </h4>
+                        {trustStyle && TrustIcon && (
+                            <span className={cn(
+                                'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border',
+                                trustStyle.bg, trustStyle.text, trustStyle.border
+                            )}>
+                                <TrustIcon className="w-3 h-3" />
+                                {trustStyle.label}
+                            </span>
+                        )}
+                        {store.badge && (
+                            <span className={cn(
+                                'px-2 py-0.5 rounded text-xs font-medium border',
+                                store.badge.toLowerCase() === 'brasil'
+                                    ? 'bg-linear-to-r from-teal-500/20 to-yellow-400/20 text-teal-600 dark:text-teal-300 border-teal-500/30 dark:border-teal-400/30'
+                                    : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                            )}>
+                                {store.badge.toLowerCase() === 'brasil' ? '🇧🇷 No Brasil' : store.badge}
+                            </span>
+                        )}
+                        {store.highlight && (
+                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                                ★ Destaque
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{store.description}</p>
                 </div>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{store.description}</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all ml-4 shrink-0" />
-        </a>
+                <ChevronRight className={cn(
+                    'w-5 h-5 group-hover:translate-x-1 transition-all ml-4 shrink-0',
+                    store.highlight
+                        ? 'text-emerald-500'
+                        : 'text-zinc-400 group-hover:text-emerald-500'
+                )} />
+            </a>
+        </div>
     );
 }
 
@@ -176,30 +211,71 @@ function AccessoryCard({ accessory }: { accessory: AccessoryItem }) {
     const CategoryIcon = categoryInfo.icon;
 
     return (
-        <a
-            href={accessory.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-start gap-3 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all"
-        >
-            <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-emerald-500/10 transition-colors shrink-0">
-                <CategoryIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
-            </div>
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-medium text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                        {accessory.name}
-                    </h4>
-                    {accessory.badge && (
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            {accessory.badge}
-                        </span>
-                    )}
+        <div className={cn('relative rounded-lg', accessory.highlight && 'p-[2px]')}>
+            {/* Animated glow border for highlighted items */}
+            {accessory.highlight && (
+                <div
+                    className="absolute inset-0 rounded-lg bg-size-[200%_100%] animate-[shimmer_3s_linear_infinite] opacity-80"
+                    style={{
+                        backgroundImage: 'linear-gradient(90deg, #10b981, #2dd4bf, #10b981, #2dd4bf, #10b981)',
+                    }}
+                />
+            )}
+            <a
+                href={accessory.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                    'group relative flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-zinc-900/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all',
+                    accessory.highlight
+                        ? 'border-transparent hover:border-transparent'
+                        : 'border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/50'
+                )}
+            >
+                <div className={cn(
+                    'p-2 rounded-lg transition-colors shrink-0',
+                    accessory.highlight
+                        ? 'bg-emerald-500/10'
+                        : 'bg-zinc-100 dark:bg-zinc-800 group-hover:bg-emerald-500/10'
+                )}>
+                    <CategoryIcon className={cn(
+                        'w-4 h-4 transition-colors',
+                        accessory.highlight
+                            ? 'text-emerald-600 dark:text-emerald-400'
+                            : 'text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                    )} />
                 </div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{accessory.description}</p>
-            </div>
-            <ExternalLink className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 transition-colors shrink-0 mt-1" />
-        </a>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className={cn(
+                            'font-medium text-sm transition-colors',
+                            accessory.highlight
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                        )}>
+                            {accessory.name}
+                        </h4>
+                        {accessory.badge && (
+                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                {accessory.badge}
+                            </span>
+                        )}
+                        {accessory.highlight && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                                ★
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{accessory.description}</p>
+                </div>
+                <ExternalLink className={cn(
+                    'w-4 h-4 transition-colors shrink-0 mt-1',
+                    accessory.highlight
+                        ? 'text-emerald-500'
+                        : 'text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500'
+                )} />
+            </a>
+        </div>
     );
 }
 
