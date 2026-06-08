@@ -123,8 +123,32 @@ async function seedArticles(db: Db, authorId: number) {
 
   let n = 0;
   for (const a of data) {
-    const [existing] = await db.select({ id: articles.id }).from(articles).where(eq(articles.slug, a.slug)).limit(1);
-    if (existing) continue;
+    const [existing] = await db
+      .select({ id: articles.id, authorId: articles.authorId })
+      .from(articles)
+      .where(eq(articles.slug, a.slug))
+      .limit(1);
+
+    // Já existe: se for conteúdo migrado (autor de sistema), atualiza o corpo.
+    if (existing) {
+      if (existing.authorId === authorId) {
+        const [rev] = await db.insert(revisions).values({ articleId: existing.id, body: a.body, editorId: authorId });
+        const revisionId = (rev as unknown as { insertId: number }).insertId;
+        await db
+          .update(articles)
+          .set({
+            title: a.title,
+            summary: a.summary ?? undefined,
+            type: a.type as "tutorial",
+            deviceId: idBySlug.get(a.deviceSlug) ?? null,
+            currentRevisionId: revisionId,
+            searchText: blockTreeToText(a.body),
+          })
+          .where(eq(articles.id, existing.id));
+        n++;
+      }
+      continue;
+    }
 
     const [res] = await db.insert(articles).values({
       slug: a.slug,

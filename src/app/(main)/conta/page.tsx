@@ -11,7 +11,7 @@ export default async function AccountPage() {
   if (!session?.user) redirect("/auth/entrar");
 
   return (
-    <main id="main" className="mx-auto max-w-2xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Minha conta</h1>
 
       <section aria-labelledby="perfil" className="mt-6 rounded-lg border border-border bg-card p-5">

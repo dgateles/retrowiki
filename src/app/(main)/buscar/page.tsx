@@ -16,7 +16,7 @@ export default async function SearchPage({
   const total = results.devices.length + results.articles.length;
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Buscar</h1>
 
       <form method="get" role="search" className="mt-6 flex gap-2">

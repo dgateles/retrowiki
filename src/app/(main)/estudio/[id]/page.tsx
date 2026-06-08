@@ -21,7 +21,7 @@ export default async function EditDraftPage({
   if (article.status === "published") redirect(`/guias`);
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Editar conteúdo</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Ao enviar, o conteúdo volta para a fila de moderação.

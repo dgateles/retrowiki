@@ -21,7 +21,7 @@ export default async function ModerationPage({
   const user = await getCurrentUser();
   if (!can.moderate(user)) {
     return (
-      <main id="main" className="mx-auto max-w-2xl px-6 py-20 text-center">
+      <main id="main" className="page text-center">
         <ShieldAlert className="mx-auto size-10 text-muted-foreground" aria-hidden="true" />
         <h1 className="mt-3 text-xl font-bold">Acesso restrito</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -40,7 +40,7 @@ export default async function ModerationPage({
   );
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Fila de moderação</h1>
       <p className="mt-2 text-sm text-muted-foreground" role="status">
         {queue.length} {queue.length === 1 ? "item nesta página" : "itens nesta página"}

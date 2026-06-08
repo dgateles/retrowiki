@@ -25,7 +25,7 @@ export default async function StudioPage() {
   const drafts = await getUserDrafts(Number(session.user.id));
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Meu estúdio</h1>
         <Button asChild size="sm">

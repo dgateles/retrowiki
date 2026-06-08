@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Gamepad2, Bell, PenLine, ShieldCheck, Search, UserRound } from "lucide-react";
+import { Gamepad2, Bell } from "lucide-react";
 import { auth } from "@/auth";
 import { getUnreadCount } from "@/lib/notifications";
 import { can } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
-import { LogoutButton } from "@/components/layout/logout-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { SearchBox } from "@/components/layout/search-box";
+import { UserMenu } from "@/components/layout/user-menu";
 
 export async function SiteHeader() {
   const session = await auth();
@@ -13,42 +14,28 @@ export async function SiteHeader() {
   const unread = user ? await getUnreadCount(Number(user.id)) : 0;
 
   return (
-    <header className="border-b border-border">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-6 py-3">
-        <Link href="/" className="flex items-center gap-2 font-bold">
+    <header className="site-header">
+      <div className="site-header__inner">
+        <Link href="/" className="site-header__brand">
           <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
           RetroWiki
         </Link>
 
-        <nav aria-label="Principal" className="flex items-center gap-0.5 sm:gap-1">
-          <Button asChild variant="ghost" size="icon" aria-label="Buscar">
-            <Link href="/buscar">
-              <Search className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
+        <nav aria-label="Principal" className="site-header__nav">
           <Button asChild variant="ghost" size="sm">
             <Link href="/consoles">Consoles</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
             <Link href="/guias">Guias</Link>
           </Button>
-          <ThemeToggle />
+        </nav>
 
+        <SearchBox className="site-header__search" />
+
+        <div className="site-header__actions">
+          <ThemeToggle />
           {user ? (
             <>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/estudio">
-                  <PenLine className="size-4" aria-hidden="true" />
-                  <span className="hidden sm:inline">Escrever</span>
-                </Link>
-              </Button>
-              {can.moderate(user) && (
-                <Button asChild variant="ghost" size="icon" aria-label="Moderação">
-                  <Link href="/moderacao">
-                    <ShieldCheck className="size-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              )}
               <Button asChild variant="ghost" size="icon" className="relative" aria-label={`Notificações${unread ? `, ${unread} não lidas` : ""}`}>
                 <Link href="/notificacoes">
                   <Bell className="size-4" aria-hidden="true" />
@@ -59,12 +46,7 @@ export async function SiteHeader() {
                   )}
                 </Link>
               </Button>
-              <Button asChild variant="ghost" size="icon" aria-label="Minha conta">
-                <Link href="/conta">
-                  <UserRound className="size-4" aria-hidden="true" />
-                </Link>
-              </Button>
-              <LogoutButton />
+              <UserMenu handle={user.handle} isStaff={can.moderate(user)} />
             </>
           ) : (
             <>
@@ -76,7 +58,7 @@ export async function SiteHeader() {
               </Button>
             </>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );

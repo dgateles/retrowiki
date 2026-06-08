@@ -33,7 +33,7 @@ export default async function ProfilePage({
   if (!profile) notFound();
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <header className="flex items-center gap-4">
         <span className="flex size-16 items-center justify-center rounded-full bg-muted" aria-hidden="true">
           <UserRound className="size-8 text-muted-foreground" />

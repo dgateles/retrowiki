@@ -38,7 +38,7 @@ export default async function DevicePage({
   const extra = (detail.device.extra ?? {}) as { description?: string };
 
   return (
-    <main id="main" className="mx-auto max-w-4xl px-6 py-10">
+    <main id="main" className="page">
       <JsonLd
         data={{
           "@context": "https://schema.org",

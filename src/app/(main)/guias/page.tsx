@@ -36,7 +36,7 @@ export default async function GuidesPage({
   ]);
 
   return (
-    <main id="main" className="mx-auto max-w-4xl px-6 py-12">
+    <main id="main" className="page">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Guias e tutoriais</h1>
         <Button asChild size="sm">

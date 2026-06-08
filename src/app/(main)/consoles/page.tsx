@@ -38,7 +38,7 @@ export default async function ConsolesPage({
   const hasMore = all.length > offset + PAGE_SIZE;
 
   return (
-    <main id="main" className="mx-auto max-w-6xl px-6 py-12">
+    <main id="main" className="page">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">Consoles</h1>
         <Button asChild variant="outline" size="sm">

@@ -49,18 +49,20 @@ export function DeviceSpecCard({ detail }: { detail: DeviceDetail }) {
   return (
     <div className="space-y-6">
       <section className="flex flex-col items-center gap-5 rounded-xl border border-border bg-card p-5 md:flex-row md:items-start">
-        <div className="relative flex size-44 shrink-0 items-center justify-center">
+        <div className="relative size-44 shrink-0 overflow-hidden">
           {front ? (
             <Image
               src={front.url}
               alt={front.alt}
-              width={176}
-              height={176}
+              fill
+              sizes="176px"
               className="object-contain drop-shadow"
               priority
             />
           ) : (
-            <Gamepad2 className="size-20 text-muted-foreground/40" aria-hidden="true" />
+            <span className="flex size-full items-center justify-center">
+              <Gamepad2 className="size-20 text-muted-foreground/40" aria-hidden="true" />
+            </span>
           )}
         </div>
         <div className="flex-1 text-center md:text-left">

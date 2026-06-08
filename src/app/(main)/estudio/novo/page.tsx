@@ -10,7 +10,7 @@ export default async function NewArticlePage() {
   if (!session?.user) redirect("/auth/entrar");
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Escrever conteúdo</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Monte o conteúdo com blocos. Ao enviar, ele entra na fila de moderação

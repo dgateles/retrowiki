@@ -62,7 +62,7 @@ export default async function ComparePage({
   for (const d of selected) for (const e of d.emulation) if (!systems.includes(e.system)) systems.push(e.system);
 
   return (
-    <main id="main" className="mx-auto max-w-5xl px-6 py-10">
+    <main id="main" className="page">
       <h1 className="text-3xl font-bold">Comparar consoles</h1>
 
       <form method="get" className="mt-6 flex flex-wrap items-end gap-3" aria-label="Selecionar consoles para comparar">

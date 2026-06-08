@@ -42,7 +42,7 @@ export default async function ArticlePage({
   ]);
 
   return (
-    <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+    <main id="main" className="page">
       <JsonLd
         data={{
           "@context": "https://schema.org",

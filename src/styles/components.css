@@ -1,0 +1,121 @@
+/* Componentes em BEM. Tailwind aplicado via @apply, sem utilitários soltos no
+ * HTML para as estruturas compartilhadas. Tokens de cor vêm de globals.css. */
+
+@layer components {
+  /* Página: largura única em todo o site (igual ao catálogo). */
+  .page {
+    @apply mx-auto w-full max-w-6xl px-6 py-10;
+  }
+  .page--wide {
+    @apply max-w-7xl;
+  }
+
+  /* Cabeçalho de seção dentro da página. */
+  .page__head {
+    @apply mb-6 flex flex-wrap items-center justify-between gap-3;
+  }
+  .page__title {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  /* Cabeçalho do site. */
+  .site-header {
+    @apply sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur;
+  }
+  .site-header__inner {
+    @apply mx-auto flex h-14 max-w-6xl items-center gap-2 px-6;
+  }
+  .site-header__brand {
+    @apply flex items-center gap-2 font-bold;
+  }
+  .site-header__nav {
+    @apply hidden items-center gap-0.5 sm:flex;
+  }
+  .site-header__search {
+    @apply ml-auto hidden w-full max-w-xs lg:block;
+  }
+  .site-header__actions {
+    @apply ml-auto flex items-center gap-0.5 lg:ml-2;
+  }
+
+  /* Cartão genérico. */
+  .card {
+    @apply rounded-xl border border-border bg-card text-card-foreground;
+  }
+  .card--pad {
+    @apply p-5;
+  }
+
+  /* Estado vazio. */
+  .empty {
+    @apply rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground;
+  }
+
+  /* Bloco de código com PrismJS. */
+  .code-block {
+    @apply my-5;
+  }
+  .code-block__caption {
+    @apply rounded-t-lg border border-b-0 border-border bg-muted/60 px-3 py-1 font-mono text-xs text-muted-foreground;
+  }
+  .code-block__pre {
+    @apply overflow-x-auto border border-border bg-muted/40 p-4 text-sm;
+  }
+  .code-block__pre--titled {
+    @apply rounded-b-lg;
+  }
+  .code-block__pre--plain {
+    @apply rounded-lg;
+  }
+  .code-block__code {
+    @apply font-mono;
+  }
+}
+
+/* Tema de sintaxe (PrismJS). As classes .token são convenção da biblioteca. */
+.code-block__pre .token.comment,
+.code-block__pre .token.prolog,
+.code-block__pre .token.doctype,
+.code-block__pre .token.cdata {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.code-block__pre .token.punctuation {
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+}
+.code-block__pre .token.property,
+.code-block__pre .token.tag,
+.code-block__pre .token.boolean,
+.code-block__pre .token.number,
+.code-block__pre .token.constant,
+.code-block__pre .token.symbol,
+.code-block__pre .token.deleted {
+  color: hsl(28 90% 55%);
+}
+.code-block__pre .token.selector,
+.code-block__pre .token.attr-name,
+.code-block__pre .token.string,
+.code-block__pre .token.char,
+.code-block__pre .token.builtin,
+.code-block__pre .token.inserted {
+  color: hsl(150 60% 45%);
+}
+.code-block__pre .token.operator,
+.code-block__pre .token.entity,
+.code-block__pre .token.url,
+.code-block__pre .token.variable {
+  color: hsl(190 70% 50%);
+}
+.code-block__pre .token.atrule,
+.code-block__pre .token.attr-value,
+.code-block__pre .token.function,
+.code-block__pre .token.class-name {
+  color: hsl(265 70% 65%);
+}
+.code-block__pre .token.keyword {
+  color: hsl(330 70% 60%);
+}
+.code-block__pre .token.regex,
+.code-block__pre .token.important {
+  color: hsl(40 90% 55%);
+}

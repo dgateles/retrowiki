@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Info, CheckCircle2, AlertTriangle, OctagonAlert } from "lucide-react";
+import { highlightCode } from "@/lib/prism";
 
 export function HeadingBlock({ level, text }: { level: 2 | 3 | 4; text: string }) {
   const Tag = (`h${level}` as "h2" | "h3" | "h4");
@@ -65,18 +66,16 @@ export function StepsBlock({
 }
 
 export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
+  // Destaque de sintaxe no servidor. Prism escapa o texto ao tokenizar.
+  const { html, lang: resolved } = highlightCode(code, lang);
+  const hasCaption = Boolean(lang);
   return (
-    <figure className="my-5">
-      {lang && (
-        <figcaption className="rounded-t-lg border border-b-0 border-border bg-muted/60 px-3 py-1 font-mono text-xs text-muted-foreground">
-          {lang}
-        </figcaption>
-      )}
+    <figure className="code-block">
+      {hasCaption && <figcaption className="code-block__caption">{lang}</figcaption>}
       <pre
-        className={`overflow-x-auto border border-border bg-muted/40 p-4 text-sm ${lang ? "rounded-b-lg" : "rounded-lg"}`}
+        className={`code-block__pre language-${resolved} ${hasCaption ? "code-block__pre--titled" : "code-block__pre--plain"}`}
       >
-        {/* JSX escapa o conteúdo; sem dangerouslySetInnerHTML */}
-        <code className="font-mono">{code}</code>
+        <code className="code-block__code" dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </figure>
   );
