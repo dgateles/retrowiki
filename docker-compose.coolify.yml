@@ -1,0 +1,55 @@
+# Deploy containerizado completo (Coolify). O app roda migrações + seed no start,
+# depois serve na porta 3000. Arquivos enviados persistem no volume `storage`.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_URL: ${APP_URL}
+      # Deploy opcional em subdiretório; vazio para subdomínio.
+      BASE_PATH: ${BASE_PATH:-}
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      AUTH_SECRET: ${AUTH_SECRET}
+      CAPTCHA_SECRET: ${CAPTCHA_SECRET}
+      STORAGE_DIR: /app/storage
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-RetroWiki <noreply@localhost>}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+    volumes:
+      - storage:/app/storage
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  storage:
+  mysql_data:

@@ -1,0 +1,23 @@
+# Desenvolvimento local: sobe só o MySQL. Rode o app com `npm run dev`
+# (DATABASE_URL apontando para 127.0.0.1:${MYSQL_HOST_PORT}).
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-retrowiki}
+      MYSQL_USER: ${MYSQL_USER:-retrowiki}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-retrowiki}
+    ports:
+      - "${MYSQL_HOST_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:

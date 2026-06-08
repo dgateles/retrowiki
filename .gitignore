@@ -1,33 +1,36 @@
-# deps
+# dependencies
 /node_modules
+/.pnp
+.pnp.*
 
-# generated content
-.source
-.env
-
-# test & build
-/coverage
+# next.js
 /.next/
 /out/
 /build
-*.tsbuildinfo
+next-env.d.ts
 
 # misc
-.claude
-.vscode
-.antigravity
 .DS_Store
 *.pem
-/.pnp
-.pnp.js
+*.tsbuildinfo
+.antigravity
+.vercel
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# others
-.env*.local
-.vercel
+# env files
+.env
+.env.*
+!.env.example
 
-# Ignore config files
-package-lock.json
-yarn.lock
+# storage (uploaded/processed files)
+/storage/*
+!/storage/.gitkeep
+
+# editor / tooling
+.claude
+.vscode/
+.idea/
