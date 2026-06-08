@@ -144,6 +144,12 @@ Implicações de arquitetura:
 ## Comentários
 - **Edição e remoção pelo autor, respostas aninhadas.** Hoje o comentário é
   simples (criar e, para moderador, ocultar). Falta editar, apagar e responder.
+- **Formulário de resposta rico (referência IPB).** A caixa de resposta usa o
+  editor rico (depende do WYSIWYG no backlog), com avatar do autor, anexos por
+  arrastar-e-soltar (com limite de tamanho), alternância "Seguir tópico"
+  (notificações de novas respostas) e, para a equipe, "Ocultar", além do botão
+  "Enviar resposta". O corpo do comentário deixa de ser texto puro e passa a
+  guardar a árvore de blocos segura, como os guias.
 
 ## Operação
 - **Agendar o cron.** O endpoint `/api/cron/sync-github` existe e é protegido por
@@ -267,3 +273,29 @@ Coluna principal:
 - **Feed de atividade.** Linha do tempo do usuário (entrou na comunidade,
   publicou guia, comentou, reagiu, ganhou badge). Depende do log de atividade
   da gamificação.
+
+## Configurações de conta (detalhamento)
+
+Estende a página de configurações em seções já entregue (visão geral, nome,
+senha, e-mail, segurança). Elementos adicionais da referência IPB, adaptados.
+Item ao final da fila.
+
+- **Editar perfil (modal "Sobre mim").** Modal com o campo "Sobre mim" usando o
+  editor rico (depende do WYSIWYG no backlog) e anexos com arrastar-e-soltar e
+  limite de tamanho. Salva no perfil. Hoje o perfil não tem bio editável.
+- **Reautenticação para áreas sensíveis.** Antes de abrir Segurança e
+  privacidade (ou trocar e-mail/senha), pedir a senha de novo, com link
+  "Esqueci a senha". Sessão de reautenticação curta.
+- **Privacidade.**
+  - **Status online.** Alternar entre visível e oculto. Quando visível, outros
+    veem que o usuário está online e o que está vendo. Depende do registro de
+    presença (`lastSeenAt`) e de uma flag de privacidade.
+  - **Solicitar dados (PII).** Botão para o usuário pedir uma cópia de todos os
+    dados pessoais armazenados (export LGPD). Conecta com as solicitações de
+    PII do painel de admin.
+- **Dispositivos recentes.** Lista de dispositivos/sessões usados para entrar
+  nos últimos 90 dias, com navegador, localização aproximada por IP e "último
+  acesso", e ação de desabilitar login automático/encerrar sessão. Precisa
+  registrar sessões com user-agent e IP.
+- **Preferências de conteúdo.** Seção para preferências de exibição e de
+  notificação por tipo, ligada à `notification_prefs`.

@@ -229,7 +229,25 @@
     @apply h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
   }
   .search__panel {
-    @apply absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md;
+    @apply absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md;
+  }
+  .search__scopes {
+    @apply flex gap-1 border-b border-border p-2;
+  }
+  .search__scope {
+    @apply rounded-sm px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground;
+  }
+  .search__scope--active {
+    @apply bg-accent text-foreground;
+  }
+  .search__results {
+    @apply max-h-80 overflow-y-auto p-1;
+  }
+  .search__hint {
+    @apply px-3 py-4 text-sm text-muted-foreground;
+  }
+  .search__go {
+    @apply flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-accent;
   }
   .search__group-label {
     @apply px-2 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
