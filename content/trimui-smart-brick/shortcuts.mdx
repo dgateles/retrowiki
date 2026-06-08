@@ -1,0 +1,132 @@
+---
+title: Atalhos e Hotkeys
+description: Referência completa de atalhos e hotkeys do TrimUI Smart Brick — NextUI, MinUI e RetroArch (KNULLI/muOS). Botão MENU, SELECT, FN e navegação nos menus.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O TrimUI Smart Brick tem dois esquemas de hotkey distintos dependendo do firmware: o **MENU** é a tecla principal no NextUI e MinUI, enquanto o **SELECT** assume esse papel no KNULLI e muOS (padrão RetroArch). Trocar de firmware sem saber disso é a causa mais comum de "hotkey não funciona".
+
+## Layout dos Botões
+
+| Grupo        | Botões                                              |
+| ------------ | --------------------------------------------------- |
+| Face         | A, B, X, Y                                          |
+| Shoulder     | L1, R1 (sem L2/R2 físicos)                          |
+| Especiais    | MENU (canto inf. esq.), SELECT (canto inf. dir.), START |
+| D-pad        | Posição superior esquerda                           |
+| Volume       | Botões laterais (+/-)                               |
+| FN buttons   | Dois botões frontais iluminados (L3/R3, configuráveis) |
+| Power        | Botão superior                                      |
+
+---
+
+## Hotkeys NextUI
+
+No NextUI, save state, load state e fast forward **não têm hotkeys fixas** — você define as combinações em **Opções → Atalhos** por sistema ou por jogo. As combinações abaixo são padrão do firmware ou amplamente adotadas pela comunidade:
+
+| Combinação                                      | Função                         |
+| ----------------------------------------------- | ------------------------------ |
+| <kbd>MENU</kbd>                                 | Abrir menu do emulador         |
+| <kbd>MENU</kbd> + <kbd>START</kbd>              | Salvar e sair do jogo          |
+| <kbd>MENU</kbd> + <kbd>SELECT</kbd>             | Alternar jogos recentes        |
+| <kbd>START</kbd> + <kbd>Volume +</kbd>          | Aumentar brilho                |
+| <kbd>START</kbd> + <kbd>Volume -</kbd>          | Diminuir brilho                |
+| <kbd>SELECT</kbd> + <kbd>Volume +</kbd>         | Aumentar temperatura de cor    |
+| <kbd>SELECT</kbd> + <kbd>Volume -</kbd>         | Diminuir temperatura de cor    |
+| <kbd>Power</kbd> (toque curto)                  | Modo sleep                     |
+| <kbd>Power</kbd> (pressão longa, em jogo)       | Quick save + suspensão         |
+
+---
+
+## Hotkeys MinUI
+
+No MinUI, a maior parte das funções passa pelo menu interno acessado via <kbd>MENU</kbd>:
+
+| Combinação                          | Função                               |
+| ----------------------------------- | ------------------------------------ |
+| <kbd>MENU</kbd>                     | Abrir menu interno (Save/Load/Sair)  |
+| <kbd>Power</kbd> (pressão longa)    | Quick save + suspender               |
+| <kbd>Power</kbd> (toque curto)      | Sleep / acordar                      |
+| <kbd>MENU</kbd> + <kbd>Volume</kbd> | Ajuste de brilho                     |
+| FN esquerdo (L3)                    | Ciclar proporção de tela (padrão)    |
+| FN direito (R3)                     | Ciclar efeitos de tela (padrão)      |
+| <kbd>R2</kbd>                       | Fast forward (se configurado)        |
+
+Configuração que a comunidade MinUI recomenda para todos os sistemas:
+- MENU + START → Salvar e Sair
+- L3 (FN esq.) → Ciclar proporção
+- R3 (FN dir.) → Ciclar efeito de tela
+- R2 → Fast forward
+
+---
+
+## Hotkeys RetroArch (KNULLI / muOS)
+
+No KNULLI e muOS, o hotkey principal muda para <kbd>SELECT</kbd>:
+
+| Combinação                                       | Função                        |
+| ------------------------------------------------ | ----------------------------- |
+| <kbd>SELECT</kbd> + <kbd>X</kbd>                 | Abrir Quick Menu RetroArch    |
+| <kbd>SELECT</kbd> + <kbd>R1</kbd>                | Salvar estado                 |
+| <kbd>SELECT</kbd> + <kbd>L1</kbd>                | Carregar estado               |
+| <kbd>SELECT</kbd> + <kbd>R2</kbd>                | Avanço rápido                 |
+| <kbd>SELECT</kbd> + <kbd>B</kbd>                 | Captura de tela               |
+| <kbd>SELECT</kbd> + <kbd>START</kbd>             | Sair do jogo                  |
+| <kbd>Power</kbd> (toque curto)                   | Modo suspensão                |
+
+---
+
+## Menu Interno do Emulador (NextUI e MinUI)
+
+Ao pressionar <kbd>MENU</kbd> durante o jogo:
+
+| Opção no menu | Descrição                                     |
+| ------------- | --------------------------------------------- |
+| Save State    | Salva a posição exata do jogo no slot atual   |
+| Load State    | Carrega o estado salvo no slot atual          |
+| Options       | Configurações do emulador (escala, shader)    |
+| Controls      | Remapeamento de botões                        |
+| Quit          | Sair do jogo e voltar ao menu principal       |
+
+---
+
+## Navegação nos Menus (NextUI / MinUI)
+
+| Botão               | Função                            |
+| ------------------- | --------------------------------- |
+| <kbd>D-pad ↑/↓</kbd>| Navegar entre itens               |
+| <kbd>D-pad ←/→</kbd>| Navegar entre categorias/sistemas |
+| <kbd>A</kbd>        | Confirmar / abrir                 |
+| <kbd>B</kbd>        | Voltar / cancelar                 |
+| <kbd>START</kbd>    | Menu principal / opções           |
+| <kbd>MENU</kbd>     | Menu contextual / atalhos         |
+
+---
+
+## Referência Rápida
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-amber-400 mb-3">Durante o Jogo (NextUI/MinUI)</h4>
+    <p className="text-sm text-gray-300">MENU → Menu do emulador</p>
+    <p className="text-sm text-gray-300">MENU + START → Salvar e Sair</p>
+    <p className="text-sm text-gray-300">Power longo → Quick save + sleep</p>
+    <p className="text-sm text-gray-300">R2 → Fast forward (se configurado)</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-green-400 mb-3">Interface (NextUI)</h4>
+    <p className="text-sm text-gray-300">START + Vol → Brilho</p>
+    <p className="text-sm text-gray-300">SELECT + Vol → Temperatura de cor</p>
+    <p className="text-sm text-gray-300">MENU + SELECT → Jogos recentes</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-red-400 mb-3">KNULLI / muOS</h4>
+    <p className="text-sm text-gray-300">SELECT + X → Quick Menu RetroArch</p>
+    <p className="text-sm text-gray-300">SELECT + R1 → Salvar estado</p>
+    <p className="text-sm text-gray-300">SELECT + L1 → Carregar estado</p>
+    <p className="text-sm text-gray-300">SELECT + R2 → Fast forward</p>
+  </div>
+</div>
+
+Os dois botões FN iluminados na frente do Brick (L3/R3) são totalmente configuráveis no NextUI e MinUI. No MinUI, os padrões de fábrica são ciclar proporção de tela (L3) e ciclar efeitos visuais (R3) — útil para alternar entre pixel-perfect e stretched sem abrir menu.

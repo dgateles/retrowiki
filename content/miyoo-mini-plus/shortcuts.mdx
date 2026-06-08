@@ -1,0 +1,119 @@
+---
+title: Atalhos e Hotkeys
+description: Referência completa de atalhos do OnionOS no Miyoo Mini Plus — botão MENU como modificador, save states, fast forward, RetroArch, brilho e gravação de tela.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+No Miyoo Mini Plus com OnionOS, o botão **MENU** (posicionado entre START e SELECT)
+é o modificador de quase todos os atalhos durante o jogo. Pressionar MENU sozinho
+salva o estado instantaneamente e abre o GameSwitcher. É diferente de outros
+handhelds como o R36S, onde o botão equivalente é o SELECT.
+
+## Hotkeys durante o Jogo (OnionOS)
+
+| Combinação                                          | Função                                       |
+| --------------------------------------------------- | -------------------------------------------- |
+| <kbd>MENU</kbd>                                     | Salvar estado e abrir GameSwitcher           |
+| <kbd>MENU</kbd> (segurar)                           | Salvar estado e voltar ao menu principal     |
+| <kbd>MENU</kbd> + <kbd>MENU</kbd>                   | Abrir o segundo jogo mais recente            |
+| <kbd>MENU</kbd> + <kbd>SELECT</kbd>                 | Abrir menu do RetroArch (Quick Menu)         |
+| <kbd>MENU</kbd> + <kbd>START</kbd>                  | Alternar proporção de tela (aspect ratio)    |
+| <kbd>MENU</kbd> + <kbd>R2</kbd>                     | Salvar estado (auto-incremento de slot)      |
+| <kbd>MENU</kbd> + <kbd>L2</kbd>                     | Carregar estado                              |
+| <kbd>MENU</kbd> + <kbd>←/→</kbd>                    | Selecionar slot de save state                |
+| <kbd>MENU</kbd> + <kbd>R</kbd>                      | Avanço rápido (toggle)                       |
+| <kbd>MENU</kbd> + <kbd>L</kbd>                      | Rebobinar (se habilitado nas configurações)  |
+| <kbd>MENU</kbd> + <kbd>X</kbd>                      | Mostrar/ocultar contador de FPS              |
+
+## Hotkeys de Sistema e Acessibilidade
+
+| Combinação                                              | Função                                     |
+| ------------------------------------------------------- | ------------------------------------------ |
+| <kbd>MENU</kbd> + <kbd>POWER</kbd>                      | Captura de tela (screenshot)               |
+| <kbd>MENU</kbd> + <kbd>VOL+</kbd> / <kbd>VOL-</kbd>     | Ajustar brilho da tela                     |
+| <kbd>MENU</kbd> + <kbd>B</kbd> (segurar 2s)             | Ativar/desativar filtro de luz azul        |
+| <kbd>MENU</kbd> + <kbd>A</kbd> (segurar 2s)             | Iniciar/parar gravação de tela             |
+| <kbd>VOL+</kbd> + <kbd>VOL-</kbd>                       | Silenciar/ativar o som (mute)              |
+| <kbd>START</kbd> + <kbd>L2</kbd> / <kbd>R2</kbd>        | Ajustar boost de volume                    |
+| <kbd>START</kbd> + <kbd>L2</kbd> + <kbd>R2</kbd>        | Resetar boost de volume                    |
+| <kbd>POWER</kbd> (toque curto)                          | Modo suspensão (sleep)                     |
+| <kbd>POWER</kbd> (segurar)                              | Salvar e desligar o console                |
+| <kbd>POWER</kbd> (segurar 5–10s)                        | Desligamento forçado (emergência)          |
+
+## Atalhos no Menu Principal (OnionOS)
+
+| Combinação                              | Função                                         |
+| --------------------------------------- | ---------------------------------------------- |
+| <kbd>SELECT</kbd> (na lista de jogos)   | Atualizar lista de ROMs                        |
+| <kbd>Y</kbd> (em um jogo)               | Opções do jogo (scraper, favoritos, etc.)      |
+| <kbd>MENU</kbd> (segurar, no menu)      | Abrir menu de contexto                         |
+| <kbd>MENU</kbd> + <kbd>MENU</kbd>       | Retomar o último jogo salvo                    |
+
+## Atalhos Internos do RetroArch
+
+Acesse com <kbd>MENU</kbd> + <kbd>SELECT</kbd> durante um jogo:
+
+| Menu no RetroArch                            | O que faz                                         |
+| -------------------------------------------- | ------------------------------------------------- |
+| `Quick Menu > Save State`                    | Salvar estado no slot atual                       |
+| `Quick Menu > Load State`                    | Carregar estado do slot atual                     |
+| `Quick Menu > State Slot`                    | Trocar slot de save state                         |
+| `Quick Menu > Cheats`                        | Adicionar códigos de trapaça                      |
+| `Settings > Video > Scaling`                 | Configurar proporção e escala da imagem           |
+| `Settings > Video > Shaders`                 | Aplicar filtros visuais (CRT, Scanlines, etc.)    |
+| `Settings > Audio`                           | Configurações de áudio e latência                 |
+| `Settings > Input > Port 1`                  | Remapear botões para o jogo atual                 |
+| `Settings > Achievements`                    | Configurar RetroAchievements                      |
+| `Main Menu > Configuration File > Save`      | Salvar configurações permanentemente              |
+
+## Atalhos Exclusivos do Drastic (NDS)
+
+O emulador de Nintendo DS tem hotkeys próprias:
+
+| Combinação                                      | Função                              |
+| ----------------------------------------------- | ----------------------------------- |
+| <kbd>MENU</kbd> + <kbd>←/→</kbd>                | Alternar layout de tela (DS)        |
+| <kbd>MENU</kbd> + <kbd>START</kbd>              | Menu avançado do Drastic            |
+| <kbd>MENU</kbd> + <kbd>SELECT</kbd>             | Menu principal do Drastic           |
+| <kbd>R2</kbd>                                   | Trocar telas (superior/inferior)    |
+| <kbd>L2</kbd>                                   | Ativar stylus virtual               |
+| <kbd>MENU</kbd> + <kbd>↑/↓</kbd>               | Mover stylus entre telas            |
+
+## Game Boy — Paleta de Cores
+
+| Combinação               | Função                                      |
+| ------------------------ | ------------------------------------------- |
+| <kbd>L2</kbd>            | Avançar para a próxima paleta de cores (GB/GBC) |
+| <kbd>R2</kbd>            | Voltar para a paleta anterior (GB/GBC)          |
+
+## Referência Rápida
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-amber-400 mb-3">Durante o Jogo</h4>
+    <p className="text-sm text-gray-300">MENU → Salvar + GameSwitcher</p>
+    <p className="text-sm text-gray-300">MENU+SELECT → Menu RetroArch</p>
+    <p className="text-sm text-gray-300">MENU+R2 → Salvar estado</p>
+    <p className="text-sm text-gray-300">MENU+L2 → Carregar estado</p>
+    <p className="text-sm text-gray-300">MENU (segurar) → Voltar ao menu</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-green-400 mb-3">Velocidade e Tela</h4>
+    <p className="text-sm text-gray-300">MENU+R → Avanço rápido</p>
+    <p className="text-sm text-gray-300">MENU+L → Rebobinar</p>
+    <p className="text-sm text-gray-300">MENU+START → Proporção de tela</p>
+    <p className="text-sm text-gray-300">MENU+X → FPS counter</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-red-400 mb-3">Sistema</h4>
+    <p className="text-sm text-gray-300">MENU+VOL → Brilho</p>
+    <p className="text-sm text-gray-300">VOL++VOL- → Mute</p>
+    <p className="text-sm text-gray-300">MENU+POWER → Screenshot</p>
+    <p className="text-sm text-gray-300">POWER → Suspender</p>
+    <p className="text-sm text-gray-300">POWER (segurar) → Salvar e desligar</p>
+  </div>
+</div>
+
+Use <kbd>MENU</kbd> + <kbd>←/→</kbd> para trocar o slot antes de salvar com
+<kbd>MENU</kbd> + <kbd>R2</kbd>. Cada jogo suporta múltiplos slots independentes.

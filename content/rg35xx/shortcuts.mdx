@@ -1,0 +1,118 @@
+---
+title: Atalhos e Hotkeys
+description: Combinações de botões confirmadas para muOS, GarlicOS e MinUI no RG35XX — save state, load state, fast forward, menu RetroArch, brilho e controles de hardware.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O RG35XX usa o botão <kbd>MENU</kbd> como modificador universal na maioria dos firmwares. Os atalhos abaixo são específicos por firmware — não são intercambiáveis.
+
+---
+
+## muOS
+
+| Combinação                                               | Função                         |
+| -------------------------------------------------------- | ------------------------------ |
+| <kbd>MENU</kbd> + <kbd>X</kbd>                           | Abrir menu RetroArch           |
+| <kbd>MENU</kbd> + <kbd>START</kbd>                       | Sair do jogo                   |
+| <kbd>MENU</kbd> + <kbd>R1</kbd>                          | Avanço rápido (fast forward)   |
+| <kbd>MENU</kbd> + <kbd>R2</kbd>                          | Salvar estado (save state)     |
+| <kbd>MENU</kbd> + <kbd>L2</kbd>                          | Carregar estado (load state)   |
+| <kbd>MENU</kbd> + <kbd>Y</kbd>                           | Mostrar / ocultar contador FPS |
+| <kbd>MENU</kbd> + <kbd>Vol+</kbd> / <kbd>Vol-</kbd>      | Ajustar brilho                 |
+
+---
+
+## GarlicOS
+
+No GarlicOS, segure <kbd>MENU</kbd> durante o jogo para exibir na tela a lista completa de atalhos. Os principais:
+
+| Combinação                            | Função                                              |
+| ------------------------------------- | --------------------------------------------------- |
+| Segurar <kbd>MENU</kbd> (em jogo)     | Exibe lista de hotkeys na tela                      |
+| <kbd>MENU</kbd> + <kbd>START</kbd>    | Sair do jogo                                        |
+| <kbd>SELECT</kbd> (na tela principal) | Ajuste de clock (`+` overclock / `-` underclock)    |
+| Toque curto em <kbd>POWER</kbd>       | Salva estado e desliga                              |
+
+O ajuste de clock pelo <kbd>SELECT</kbd> é útil para melhorar desempenho em N64 (`+`) ou reduzir aquecimento durante sessões longas (`-`).
+
+---
+
+## MinUI
+
+O MinUI não usa atalhos duplos como no RetroArch — todas as ações passam pelo menu de pausa:
+
+| Ação                                                     | Função                                                     |
+| -------------------------------------------------------- | ---------------------------------------------------------- |
+| <kbd>MENU</kbd> (toque em jogo)                          | Abre menu: Continuar / Salvar / Carregar / Opções / Sair   |
+| <kbd>MENU</kbd> + <kbd>Vol+</kbd> / <kbd>Vol-</kbd>      | Ajustar brilho (na tela inicial)                           |
+
+---
+
+## Menu RetroArch (todos os firmwares)
+
+Quando o menu do RetroArch está aberto, a navegação é a mesma independente do firmware:
+
+| Caminho no menu                         | Função                                |
+| --------------------------------------- | ------------------------------------- |
+| `Quick Menu → State Slot`               | Escolher slot de save state           |
+| `Quick Menu → Cheats`                   | Códigos de trapaça                    |
+| `Configurações → Vídeo → Escalonamento` | Proporção de tela (use 4:3)           |
+| `Configurações → Vídeo → Shaders`       | Filtros visuais (CRT, Scanlines)      |
+| `Configurações → Entrada → Porta 1`     | Remapear botões                       |
+| `Configurações → Áudio → Volume`        | Ajuste de volume                      |
+| `Menu Principal → Informações → Sistema`| Informações do sistema                |
+
+---
+
+## Emuladores Standalone
+
+Alguns sistemas rodam em emuladores standalone fora do RetroArch:
+
+| Emulador       | Como sair                                              |
+| -------------- | ------------------------------------------------------ |
+| DraStic (NDS)  | <kbd>MENU</kbd> → Sair (ou botão voltar do firmware)   |
+| PPSSPP (PSP)   | <kbd>MENU</kbd> + <kbd>START</kbd>                     |
+| ScummVM        | <kbd>START</kbd> → Sair                                |
+
+Se <kbd>MENU</kbd> + <kbd>START</kbd> não funcionar, acesse as configurações do emulador para confirmar o mapeamento — emuladores standalone definem os próprios atalhos.
+
+---
+
+## Controles de Hardware
+
+| Ação                                         | Resultado                                              |
+| -------------------------------------------- | ------------------------------------------------------ |
+| Segurar <kbd>POWER</kbd>                     | Liga o console                                         |
+| Toque curto em <kbd>POWER</kbd>              | Suspensão (muOS/KNULLI) ou salva + desliga (GarlicOS)  |
+| Toque longo em <kbd>POWER</kbd>              | Menu de desligar (muOS / KNULLI)                       |
+| <kbd>Vol+</kbd> / <kbd>Vol-</kbd>            | Ajuste de volume                                       |
+| Botão de Reset (furo lateral)                | Reinicialização de emergência                          |
+| LED verde                                    | Ligado / carregando normalmente                        |
+| LED vermelho                                 | Bateria no último terço                                |
+
+---
+
+## Referência Rápida
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 not-prose">
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-amber-400 mb-3">Durante o Jogo (muOS)</h4>
+    <p className="text-sm text-gray-300">MENU+X → Menu RetroArch</p>
+    <p className="text-sm text-gray-300">MENU+R2 → Salvar Estado</p>
+    <p className="text-sm text-gray-300">MENU+L2 → Carregar Estado</p>
+    <p className="text-sm text-gray-300">MENU+START → Sair</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-green-400 mb-3">Velocidade e FPS</h4>
+    <p className="text-sm text-gray-300">MENU+R1 → Avanço Rápido</p>
+    <p className="text-sm text-gray-300">MENU+Y → Mostrar FPS</p>
+    <p className="text-sm text-gray-300">SELECT (GarlicOS) → Clock</p>
+  </div>
+  <div className="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+    <h4 className="font-bold text-red-400 mb-3">Hardware</h4>
+    <p className="text-sm text-gray-300">MENU+Vol → Brilho</p>
+    <p className="text-sm text-gray-300">Vol+/Vol- → Volume</p>
+    <p className="text-sm text-gray-300">POWER curto → Suspender</p>
+  </div>
+</div>

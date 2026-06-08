@@ -1,0 +1,102 @@
+---
+title: Solução de Problemas
+description: Problemas comuns no Anbernic RG40XX H resolvidos: console não liga, tela preta, Wi-Fi sem sinal, HDMI não detectado, drift nos analógicos, D-pad impreciso, cartão SD corrompido e emulador travando.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+## Console Não Liga
+
+O cartão genérico que acompanha o console é a causa mais comum de falha de boot — uma leitura ruim impede completamente a inicialização.
+
+1. Carregue a bateria por pelo menos 30 minutos antes de tentar de novo
+2. Segure o botão Power por 5 a 8 segundos
+3. Verifique se o cartão está bem encaixado no slot TF1
+4. Se o problema persistir, substitua o cartão por um Samsung Pro Plus ou SanDisk Extreme e regrave o firmware
+
+## Tela Preta ao Ligar
+
+- Confirme que o firmware gravado é para o **RG40XX H** — não confundir com o RG40XX V (versão vertical)
+- Regrave o firmware com Rufus ou Balena Etcher em um cartão de marca
+- A primeira inicialização pode levar vários minutos com a tela escura enquanto o sistema expande arquivos — não desligue forçado
+
+<Alert type="warning" title="Primeiro Boot">
+  Após gravar um firmware novo, o console pode ficar parado na tela de logo por alguns minutos. Espere. Desligar à força nesse momento corrompe o sistema.
+</Alert>
+
+## Cartão SD Não Reconhecido / Corrompido
+
+- Troque por Samsung Pro Plus, SanDisk Extreme ou Kodak — todos classe A1 ou A2
+- Cartões lentos causam falhas de leitura mesmo sem corrupção aparente
+- Regrave o firmware do zero com Balena Etcher
+- Se o Windows pedir para formatar o cartão após gravar, cancele — partições Linux aparecem assim normalmente
+
+## D-Pad com Diagonais Indesejadas
+
+O D-pad do RG40XX H tem sensibilidade levemente elevada. Em jogos de plataforma com movimentos precisos, pequenos toques laterais podem registrar diagonais.
+
+- Em **RetroArch → Settings → Input**, ajuste a zona morta do D-pad
+- Tente um core diferente para o mesmo sistema — alguns têm tolerância maior
+- É uma característica de hardware; não há correção definitiva via firmware
+
+## Analógicos com Drift / Cardinal Snapping
+
+Os analógicos podem apresentar "cardinal snapping" — travamento nos eixos principais que prejudica movimentos suaves em jogos 3D.
+
+- Calibre via **RetroArch → Settings → Input → Port 1 Controls**
+- No muOS: **Menu Principal → Input → Calibration**
+- Se o drift for constante, limpe ao redor do analógico com ar comprimido
+- Drift persistente após calibração é defeito de hardware
+
+## Wi-Fi Não Conecta
+
+- O RG40XX H suporta 2.4 GHz e 5 GHz — teste as duas bandas
+- SSIDs com caracteres especiais ou espaços podem causar falhas de autenticação
+- Redes WPA2 Enterprise (corporativas) não são suportadas
+- No **KNULLI**: Main Menu → Network Settings → Enable Wi-Fi
+- No **muOS**: Main Menu → Configuration → Network → Wi-Fi
+- Se o Wi-Fi aparecer conectado sem acesso à internet, verifique data/hora do sistema — erros de data quebram conexões HTTPS
+
+## HDMI Não Detectado na TV
+
+O RG40XX H usa porta **Micro HDMI**, não Mini HDMI. Confirme o tipo do cabo/adaptador — os conectores são fisicamente diferentes.
+
+- Conecte o cabo **antes** de ligar o console para detecção automática
+- Troque entre as entradas HDMI da TV (HDMI 1, HDMI 2...) manualmente
+- Em alguns firmwares a saída HDMI precisa ser habilitada em **System Settings → Video Output**
+- Adaptadores Micro HDMI → HDMI padrão (UGreen ou similar) funcionam bem
+
+## Superaquecimento
+
+O Allwinner H700 gera calor no canto inferior direito, especialmente em sessões longas ou emulação pesada (N64, Dreamcast, PSP).
+
+- Não cubra as saídas de ventilação enquanto joga
+- Reduza a iluminação RGB dos analógicos para diminuir o consumo de energia
+- Alguns usuários aplicam thermal pad interno no SoC para melhorar dissipação — intervenção que anula a garantia
+
+## Jogos Não Aparecem no Menu
+
+- Confirme que as ROMs estão na pasta correta do sistema (`Roms/GBA/`, `Roms/SNES/`, etc.)
+- Verifique se o formato do arquivo é suportado (`.zip`, `.gba`, `.sfc`, `.chd`, `.iso`)
+- Atualize a lista: no **KNULLI** pressione **Start → Update Games List**; no **muOS** reinicie o console
+- Se as ROMs estão no TF2, confirme que o segundo cartão estava inserido **antes** de ligar
+
+## Emulador Trava / Jogo Fecha Sozinho
+
+- Reduza a resolução interna no RetroArch (**Quick Menu → Core Options**)
+- Desative shaders pesados — CRT e scanlines complexos sobrecarregam o H700
+- Confirme que o arquivo de BIOS está na pasta e no formato correto (PS1, NDS, Dreamcast)
+- Para PSP: use resolução 1x no PPSSPP e desative o framelimit automático
+
+## Áudio com Chiado ou Distorção
+
+- Não deixe o volume no máximo por períodos longos
+- No RetroArch: **Settings → Audio → Latency** — aumente o buffer para 128ms
+- Ajuste nas opções do core específico (**Quick Menu → Core Options**)
+
+## Save State Não Funciona
+
+- Confirme que está usando o atalho correto do firmware instalado (ver [página de Atalhos](/rg40xxh/shortcuts))
+- Verifique espaço disponível no cartão SD
+- No RetroArch, cheque o slot ativo em **Quick Menu → State Slot**
+- Saves corrompem quando o emulador é fechado de forma abrupta — sempre saia pelo menu ou pelo atalho de hotkey

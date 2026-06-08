@@ -1,0 +1,121 @@
+---
+title: Solução de Problemas
+description: Diagnóstico rápido dos problemas mais comuns do RG35XX — console que não liga, tela preta, boot loop, cartão SD não reconhecido, jogos que somem, áudio e saves perdidos.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+A grande maioria dos problemas do RG35XX tem a mesma raiz: **cartão microSD genérico ou leitor de cartão de má qualidade**. Antes de qualquer diagnóstico, troque o cartão pelo original (Samsung, SanDisk ou Kingston) e use um leitor USB 3.0 confiável.
+
+---
+
+## Console não liga
+
+1. Conecte o cabo e carregue por ao menos **30 minutos** antes de tentar ligar
+2. Segure o botão Power por 5 segundos
+3. Confirme que o cartão SD está inserido firmemente no slot TF1
+4. Se nada funcionar, pressione o botão de Reset (pequeno furo na lateral com um palito)
+
+---
+
+## Tela preta ao ligar
+
+- Confirme que o firmware gravado é compatível com o modelo exato do seu RG35XX
+- Regrave a imagem com Balena Etcher ou Rufus em outro cartão de marca confiável
+- Pressione o botão Reset para forçar o boot após troca de firmware
+
+<Alert type="warning" title="Compatibilidade de RAM">
+  O RG35XX original (2023) tem 1 GB de RAM. Alguns firmwares como muOS e KNULLI exigem a versão de **2 GB** do dispositivo. Confirme a versão do seu aparelho antes de instalar.
+</Alert>
+
+---
+
+## Boot loop (reiniciando sozinho)
+
+- Cartão SD corrompido — substitua e refaça a instalação do firmware
+- Imagem gravada incorretamente — use o Balena Etcher e verifique o hash SHA256 do arquivo baixado
+- Nunca desconecte a alimentação na primeira inicialização; o sistema expande arquivos e pode levar vários minutos
+
+---
+
+## Cartão SD não reconhecido
+
+- Remova, aguarde 5 segundos e reinsira com firmeza
+- Limpe os contatos do cartão com pano seco
+- Formate o cartão em FAT32 com o [SD Card Formatter](https://www.sdcard.org/downloads/formatter/) e regrave
+- Teste com outro cartão de marca confiável
+- Troque o leitor de cartão do PC — leitores baratos são causa frequente e subestimada
+
+---
+
+## Jogos não aparecem na lista
+
+- Confirme que as ROMs estão na **pasta correta** para o firmware instalado (veja a tabela em [Cartão SD](/rg35xx/sd-card))
+- Verifique a extensão do arquivo: `.gba`, `.sfc`, `.bin`, `.cue` — formatos errados são ignorados pelo emulador
+- Reinicie o console após copiar os arquivos
+- Evite caracteres especiais e acentos nos nomes de arquivo
+
+---
+
+## Áudio com problemas
+
+- Ajuste o volume com os botões dedicados do console
+- No RetroArch: **Configurações → Áudio → Volume**
+- Verifique se o emulador não está em modo mudo
+- Shaders ativos podem causar travamentos que afetam o áudio em SNES — desative e teste
+
+---
+
+## Desempenho ruim / lentidão
+
+- Desative shaders e filtros no RetroArch, especialmente em SNES e GBA
+- No GarlicOS, <kbd>SELECT</kbd> na tela principal ativa ajustes de clock (`+` overclock leve, `++` overclock maior)
+- Confirme que Avanço Rápido não está ativado acidentalmente
+
+O Allwinner H700 roda PS1 e N64 leve sem dificuldade. PSP é parcialmente compatível. Dreamcast e Saturn têm desempenho fraco por limitação de hardware — não há configuração que resolva isso.
+
+---
+
+## Botões não respondem / mapeamento errado
+
+- RetroArch → **Configurações → Entrada → Porta 1** para remapear
+- Teste em outro firmware para separar problema de hardware do software
+- Reimporte o perfil de controles no RetroArch se os botões estiverem invertidos
+
+---
+
+## Console não carrega
+
+- Use um cabo USB-C de qualidade — cabos finos de dados frequentemente não têm amperagem suficiente para carregar
+- LED vermelho = bateria baixa; LED verde = carregando normalmente
+- Evite carregar e jogar ao mesmo tempo por períodos longos
+
+---
+
+## RetroAchievements não funciona
+
+O RG35XX **não tem Wi-Fi nativo**. Para usar RetroAchievements:
+
+1. Adquira um adaptador Wi-Fi USB com chipset **RTL8188** (melhor compatibilidade)
+2. Conecte via adaptador OTG USB-C ao console
+3. Configure a rede no menu do firmware (suporte varia por firmware)
+
+---
+
+## Saves perdidos após atualização de firmware
+
+- Faça backup da pasta de saves no PC antes de qualquer regravação do TF1
+- No muOS, migre os dados para o TF2 em **Configurações → Opções de Armazenamento** — os saves ficam no cartão de ROMs e sobrevivem à troca de firmware
+- No GarlicOS, os saves ficam no cartão do OS por padrão; backup manual é obrigatório
+
+---
+
+## Primeira inicialização lenta
+
+Normal e esperado. No primeiro boot com um firmware novo, o sistema:
+
+- Expande partições
+- Gera arquivos de configuração
+- Varre o cartão em busca de ROMs
+
+Aguarde de **3 a 10 minutos** sem desligar.

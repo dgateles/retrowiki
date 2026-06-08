@@ -1,0 +1,97 @@
+---
+title: Tutoriais
+description: Como adicionar ROMs ao PowKiddy RGB30, configurar o RetroArch e fazer scraping de capas com o Wi-Fi integrado.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+O Wi-Fi integrado do RGB30 muda bastante o fluxo de uso: scraping, atualizações e RetroAchievements funcionam diretamente no console, sem passar pelo computador.
+
+## Adicionar Jogos (ROMs)
+
+As ROMs ficam organizadas em pastas separadas por sistema. No RGB30, elas
+geralmente ficam no **segundo cartão microSD** (o de jogos).
+
+<Steps>
+  <Step title="Remova o cartão de jogos">
+    Desligue o console e retire o cartão microSD destinado às ROMs (slot 2).
+    Insira-o no computador com um adaptador.
+  </Step>
+  <Step title="Localize as pastas dos sistemas">
+    No cartão você verá pastas como `snes`, `gba`, `psx`, `megadrive`, `nes`,
+    etc. Cada sistema tem sua própria pasta.
+  </Step>
+  <Step title="Copie as ROMs">
+    Coloque cada jogo na pasta do sistema correspondente. Mantenha arquivos
+    `.zip` apenas quando o core suportar (a maioria dos sistemas clássicos
+    aceita).
+  </Step>
+  <Step title="Adicione as BIOS (quando necessário)">
+    Sistemas como PS1, PSP e Dreamcast exigem arquivos de BIOS. Coloque-os na
+    pasta `bios`.
+  </Step>
+  <Step title="Reinsira e atualize as listas">
+    Recoloque o cartão no console, ligue e atualize as listas de jogos
+    (Gamelists) ou reinicie para que os novos jogos apareçam.
+  </Step>
+</Steps>
+
+<Alert type="info" title="Formato 4:3 e 1:1">
+  A tela quadrada 720x720 favorece jogos no formato 4:3 e portáteis clássicos
+  (Game Boy, GBA). Eles ficam excelentes sem distorção. Jogos 16:9 terão barras
+  pretas.
+</Alert>
+
+## Configurar o RetroArch
+
+Durante um jogo, <kbd>SELECT</kbd> + <kbd>X</kbd> abre o menu do RetroArch (padrão no ArkOS, JELOS e ROCKNIX). Os ajustes mais relevantes para o RGB30:
+
+<Steps>
+  <Step title="Proporção de tela">
+    Em `Settings → Video → Scaling`, defina o Aspect Ratio. Para sistemas 4:3
+    use a opção correspondente; a tela quadrada 720x720 exibe esses jogos sem
+    distorção ou barras.
+  </Step>
+  <Step title="Shaders (filtros visuais)">
+    Em `Settings → Video → Shaders`, aplique filtros CRT ou Scanlines. Shaders
+    pesados podem afetar o desempenho em cores mais exigentes no RK3566.
+  </Step>
+  <Step title="Latência de áudio">
+    Se houver estalos, aumente o valor em `Settings → Audio → Latency`. O
+    trade-off é um leve atraso de sincronização áudio/vídeo.
+  </Step>
+  <Step title="Salve os ajustes por core ou por jogo">
+    Use `Quick Menu → Overrides` para salvar configurações específicas sem
+    sobrescrever o perfil global.
+  </Step>
+</Steps>
+
+## Scraping de Capas via Wi-Fi
+
+O RGB30 faz scraping diretamente no console, sem precisar do computador.
+
+<Steps>
+  <Step title="Conecte ao Wi-Fi">
+    No menu do sistema, acesse as configurações de rede e conecte-se à sua rede
+    Wi-Fi (2.4GHz ou 5GHz).
+  </Step>
+  <Step title="Abra o Scraper">
+    No ArkOS/ROCKNIX (EmulationStation), entre no menu principal e procure por
+    "Scraper" / "Raspador".
+  </Step>
+  <Step title="Escolha a fonte">
+    Selecione a fonte de metadados (por exemplo, ScreenScraper). Uma conta
+    gratuita no serviço acelera os downloads.
+  </Step>
+  <Step title="Inicie o scraping">
+    Escolha os sistemas e inicie. O console baixará capas e descrições para a
+    biblioteca inteira.
+  </Step>
+</Steps>
+
+<Alert type="info" title="ScreenScraper e RetroAchievements">
+  Crie uma conta gratuita no ScreenScraper para velocidade de download sem
+  limite. Com o Wi-Fi ativo, habilite o RetroAchievements em `Settings →
+  Achievements` do RetroArch para ganhar troféus em jogos clássicos.
+</Alert>

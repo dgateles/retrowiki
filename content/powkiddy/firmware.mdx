@@ -1,0 +1,97 @@
+---
+title: Firmware
+description: Como instalar ROCKNIX, ArkOS e Batocera no PowKiddy RGB30. Download, gravação com Rufus ou Balena Etcher e configuração inicial.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+import { FirmwareList } from "@/components/mdx/FirmwareList";
+
+# Instalação de Firmware
+
+O RGB30 sai de fábrica com JELOS, mas esse firmware foi descontinuado. O caminho recomendado é o **ROCKNIX** (sucessor direto do JELOS) ou o **ArkOS**. A troca leva menos de 10 minutos.
+
+## Firmwares Recomendados
+
+<FirmwareList
+  items={[
+    {
+      name: "ROCKNIX",
+      owner: "ROCKNIX",
+      repo: "distribution",
+      description:
+        "Continuação oficial do JELOS, com suporte ativo e atualizações frequentes. Melhor opção para o RGB30.",
+    },
+    {
+      name: "ArkOS",
+      owner: "christianhaitian",
+      repo: "arkos",
+      description:
+        "Firmware maduro baseado em EmulationStation, estável e com excelente suporte da comunidade.",
+    },
+    {
+      name: "JELOS",
+      owner: "JustEnoughLinuxOS",
+      repo: "distribution",
+      description:
+        "Sistema que acompanha o RGB30 de fábrica. Descontinuado em favor do ROCKNIX.",
+      deprecated: true,
+    },
+  ]}
+/>
+
+## Firmwares Alternativos
+
+<FirmwareList
+  items={[
+    {
+      name: "Batocera",
+      owner: "batocera-linux",
+      repo: "batocera.linux",
+      description:
+        "Distribuição completa de emulação, multiplataforma e com interface robusta.",
+    },
+    {
+      name: "AmberELEC",
+      owner: "AmberELEC",
+      repo: "AmberELEC",
+      description:
+        "Sistema focado em estabilidade, originalmente para a linha RG351.",
+    },
+  ]}
+/>
+
+<Alert type="warning" title="Verifique a imagem correta">
+  No GitHub de cada firmware, baixe sempre a imagem específica para o
+  **RGB30** (procure por "rgb30" no nome do arquivo). Imagens de outros
+  dispositivos não funcionarão.
+</Alert>
+
+## Passos de Instalação
+
+<Steps>
+  <Step title="Baixe o Firmware">
+    Clique no botão Download do firmware desejado acima e baixe a imagem
+    específica do **RGB30** diretamente do GitHub.
+  </Step>
+  <Step title="Grave a Imagem no Cartão SD">
+    Use o [Rufus](https://rufus.ie/) (Windows) ou [Balena
+    Etcher](https://www.balena.io/etcher/) (Windows/Mac/Linux) para gravar a
+    imagem (`.img.gz` ou `.img.xz`) no cartão SD.
+  </Step>
+  <Step title="Insira no Console">
+    O RGB30 possui dois slots microSD. Insira o cartão com o sistema no slot de
+    sistema (geralmente o slot esquerdo / TF1). O segundo slot é usado para as
+    ROMs.
+  </Step>
+  <Step title="Primeira Inicialização">
+    Ligue o console e aguarde. Na primeira vez, o sistema expande a partição
+    automaticamente — o processo pode demorar até 2 minutos. Não desligue o
+    console nesse intervalo.
+  </Step>
+  <Step title="Conecte ao Wi-Fi">
+    Com o sistema no ar, acesse as configurações de rede. O Wi-Fi integrado
+    permite atualizar o firmware, fazer scraping de capas e habilitar
+    RetroAchievements diretamente no console.
+  </Step>
+</Steps>

@@ -1,0 +1,89 @@
+---
+title: Solução de Problemas
+description: Problemas conhecidos e soluções para o TrimUI Smart Brick — console não liga, boot loop, tela preta, áudio cortando em volume baixo, Bluetooth com MAC aleatório no KNULLI, Wi-Fi instável e cartão SD não reconhecido.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+## Console não liga
+
+1. Conecte o cabo USB-C por pelo menos 30 minutos antes de tentar novamente — a bateria pode estar completamente descarregada.
+2. Segure o botão Power por 5 a 8 segundos.
+3. Remova o cartão SD e tente ligar só com o armazenamento interno.
+4. Se ainda não funcionar com o carregador conectado, o problema provavelmente é hardware.
+
+## Tela preta ao ligar / boot loop
+
+O console trava na logo de inicialização ou reinicia em loop:
+
+- **Remova o cartão SD** e ligue sem ele. O Brick deve iniciar pelo eMMC interno com o firmware de fábrica. Se funcionar, o problema está no cartão ou no firmware gravado nele.
+- Verifique se o cartão está formatado em **FAT32** — exFAT causa boot loop em alguns firmwares.
+- Confirme que o firmware baixado é específico para o **TrimUI Smart Brick**. Firmwares de outros modelos TrimUI (Smart Pro, Smart Pro S etc.) não são intercambiáveis e podem causar boot loop permanente.
+- No KNULLI, se a tela de boot travar por mais de alguns minutos, segure o Power até apagar e ligue novamente — o KNULLI às vezes demora mais na primeira inicialização após uma atualização.
+
+<Alert type="warning" title="Firmware incompatível">
+  Sempre confirme que o arquivo de firmware é específico para o TrimUI Smart Brick antes de gravar. O nome do arquivo geralmente inclui o modelo — verifique antes de extrair no cartão.
+</Alert>
+
+## Jogos não aparecem na lista
+
+- Verifique se as ROMs estão na subpasta correta dentro de `Roms/`.
+- No **NextUI** e **MinUI**, o nome da pasta precisa corresponder exatamente ao sistema reconhecido. Exemplos: `Roms/Game Boy Advance/`, `Roms/Nintendo 64 (N64)/`, `Roms/Nintendo DS (NDS)/`.
+- Após copiar arquivos novos, acesse o menu do firmware e selecione **Refresh ROMs** para que o sistema reconheça os jogos.
+- Confira se a extensão do arquivo está correta e se o formato não é de um compactador não suportado (ex: `.7z` — prefira `.zip`).
+
+## BIOS ausente / emulador não inicia
+
+PS1, Neo Geo, NDS e GBA exigem BIOS:
+
+- No NextUI e MinUI: arquivos de BIOS em `BIOS/[sistema]/` na raiz do SD. Exemplo: `BIOS/PS/scph1001.bin`.
+- No RetroArch (KNULLI e muOS): os arquivos ficam em `RetroArch/.retroarch/system/`.
+- Nomes de arquivo são sensíveis a maiúsculas. `SCPH1001.BIN` não é o mesmo que `scph1001.bin` — um único caractere errado faz o emulador ignorar a BIOS silenciosamente.
+
+## Áudio cortando ou sem som em volume baixo
+
+Este é um bug documentado no TrimUI Smart Brick com KNULLI: o áudio corta quando o volume está abaixo de um determinado limiar. Versões mais recentes do KNULLI corrigiram o problema — atualize o firmware se ainda estiver na versão original.
+
+Outros pontos a verificar:
+- Volume zerado via botões laterais ou atalho do firmware.
+- Fone de ouvido parcialmente inserido no jack 3.5mm — o sistema pode entender que o áudio está sendo redirecionado para o fone e silenciar os alto-falantes.
+- Dentro do RetroArch: `Settings → Audio` — confirme que o áudio está habilitado e o driver correto está selecionado.
+
+## Bluetooth não emparelha / perde emparelhamento a cada boot
+
+Bug conhecido no KNULLI: o Brick gera um **endereço MAC aleatório para o Bluetooth a cada inicialização**, o que invalida o emparelhamento armazenado nos acessórios. Verifique se há atualização disponível para o seu firmware — versões recentes do KNULLI corrigiram isso.
+
+No NextUI e MinUI, o Bluetooth 2.1 funciona com controles e fones compatíveis, mas pode apresentar latência com alguns acessórios. Para reemparelhar: coloque o acessório no modo de emparelhamento e acesse as configurações de Bluetooth no firmware.
+
+## Wi-Fi não conecta ou não exibe redes
+
+- Se a lista de redes aparecer vazia, **saia completamente das configurações de rede e entre de novo** — as redes devem aparecer na segunda tentativa.
+- O NextUI pode não reconectar automaticamente no boot; acesse as configurações manualmente para forçar.
+- No MinUI: o Wi-Fi configurado no firmware de fábrica fica salvo na memória interna. Se você já usou o stock OS com Wi-Fi, o MinUI pode reconhecer a rede automaticamente.
+- Se houver conflito entre Wi-Fi e Bluetooth, desative o Bluetooth temporariamente e tente conectar a rede novamente.
+
+## Cartão SD não reconhecido
+
+- Remova, inspecione os contatos dourados e reinsira firmemente.
+- Teste o cartão em outro dispositivo para descartar falha no próprio cartão.
+- Reformate em **FAT32** com o Rufus ou SD Card Formatter e reinstale o firmware.
+- Cartões genéricos têm histórico ruim de compatibilidade com o Brick. Se o problema persistir com um cartão sem marca, troque por Samsung ou SanDisk.
+
+## Desempenho ruim em um emulador específico
+
+O Brick (A133 Plus, Cortex-A53) tem desempenho excelente até PS1 e NDS, bom no N64 e Dreamcast, e apenas razoável no PSP e Saturn. Se um jogo roda mal dentro do perfil esperado do hardware:
+
+- Verifique se a resolução interna ou filtros visuais estão configurados acima do padrão no RetroArch.
+- Tente um core diferente para o mesmo sistema — no PS1, por exemplo, o PCSX ReARMed costuma ser mais leve que o Beetle PSX HW.
+- No PSP (PPSSPP), reduza a resolução interna para 1x ou 2x.
+
+## Verificar versão do firmware instalado
+
+- **NextUI / MinUI**: Menu principal → Configurações → Sobre o dispositivo.
+- **KNULLI / muOS**: Configurações → Sistema → Informações do dispositivo.
+
+Compare com a versão mais recente no GitHub do projeto. O KNULLI e o NextUI têm recebido atualizações frequentes com correções de bugs — vale manter atualizado.
+
+<Alert type="info" title="Comunidade">
+  Para problemas específicos não cobertos aqui, o Reddit (r/SBCGaming) e o Discord oficial do NextUI têm canais ativos com usuários experientes do Brick.
+</Alert>

@@ -1,0 +1,219 @@
+---
+title: Tutoriais
+description: Tutoriais para o Anbernic RG40XX H: adicionar ROMs, configurar RetroArch, ativar Wi-Fi para scraping e RetroAchievements, e jogar na TV via saída Micro HDMI.
+---
+
+import { Steps, Step } from "@/components/mdx/Steps";
+import { Alert } from "@/components/mdx/Alert";
+
+---
+
+## Adicionar ROMs ao Cartão SD
+
+Você precisará de um leitor de cartão SD, suas ROMs e, para sistemas como PS1, NDS e Dreamcast, os arquivos de BIOS correspondentes.
+
+<Steps>
+  <Step title="Desligue o Console e Remova o Cartão">
+    Desligue o RG40XX H completamente. Remova o cartão do slot **TF2** (ROMs)
+    ou do **TF1** se estiver usando apenas um cartão.
+  </Step>
+
+  <Step title="Insira o Cartão no Computador">
+    No Windows, uma partição chamada **ROMS** ou **Roms** ficará visível.
+    Se aparecer aviso para formatar outra partição, cancele — as partições Linux
+    aparecem assim e estão íntegras.
+  </Step>
+
+  <Step title="Copie as ROMs para as Pastas Corretas">
+    Cada sistema tem sua própria subpasta:
+
+    | Pasta      | Sistema                |
+    | ---------- | ---------------------- |
+    | `GBA/`     | Game Boy Advance       |
+    | `GBC/`     | Game Boy Color         |
+    | `GB/`      | Game Boy               |
+    | `NES/`     | Nintendo NES           |
+    | `SNES/`    | Super Nintendo         |
+    | `MD/`      | Mega Drive / Genesis   |
+    | `PSX/`     | PlayStation 1          |
+    | `NDS/`     | Nintendo DS            |
+    | `PSP/`     | PSP                    |
+
+    Para PS1 e Dreamcast, prefira o formato `.chd` — ocupa menos espaço e
+    elimina os múltiplos arquivos `.bin/.cue`.
+  </Step>
+
+  <Step title="Adicione as BIOS (se necessário)">
+    PS1, NDS e Dreamcast exigem BIOS. Coloque-as na pasta `bios/` na raiz do
+    cartão. No KNULLI o caminho é `/userdata/bios/`; no muOS é `/MUOS/bios/`.
+  </Step>
+
+  <Step title="Reinsira o Cartão e Atualize a Lista">
+    Reinsira o cartão, ligue o console e aguarde o boot. Se os jogos não
+    aparecerem automaticamente:
+    - **KNULLI**: Pressione **Start → Update Games List**
+    - **muOS**: Reinicie o console — ele reescaneará as ROMs automaticamente
+  </Step>
+</Steps>
+
+---
+
+## Configurar o RetroArch
+
+O RetroArch é o motor de emulação do KNULLI e do muOS para a maioria dos sistemas.
+
+<Steps>
+  <Step title="Acesse o Menu em Jogo">
+    Com um jogo aberto, use o atalho do seu firmware:
+    - **muOS**: <kbd>MENU</kbd> + <kbd>X</kbd>
+    - **KNULLI**: <kbd>SELECT</kbd> + <kbd>X</kbd>
+  </Step>
+
+  <Step title="Ajuste a Proporção de Tela">
+    O RG40XX H tem tela 4:3 nativa, então a maioria dos jogos clássicos preenche
+    a tela sem barras. Confirme em **Settings → Video → Scaling → Aspect Ratio → Core Provided**
+    ou **4:3** para garantir.
+  </Step>
+
+  <Step title="Ative Shaders (Opcional)">
+    **Quick Menu → Shaders → Load Shader Preset**.
+    Prefira shaders leves como `crt-geom-flat`. Shaders pesados derrubam o FPS no
+    Allwinner H700 — especialmente em PS1 e N64.
+  </Step>
+
+  <Step title="Configure Save States">
+    - Trocar slot: **Quick Menu → State Slot**
+    - Salvar/carregar: pelos atalhos de hotkey do firmware (ver [página de Atalhos](/rg40xxh/shortcuts))
+
+    Sempre saia pelo menu ou pelo atalho correto. Forçar o fechamento pode corromper
+    saves e estados.
+  </Step>
+
+  <Step title="Salve a Configuração">
+    Para salvar globalmente: **Main Menu → Configuration File → Save Current Configuration**.
+    Para salvar só para o jogo atual: **Quick Menu → Overrides → Save Game Override**.
+  </Step>
+</Steps>
+
+---
+
+## Configurar o Wi-Fi
+
+O RG40XX H tem Wi-Fi 2.4 GHz e 5 GHz integrado. A conexão é necessária para
+RetroAchievements, scraping de capas e atualizações OTA.
+
+### No KNULLI
+
+<Steps>
+  <Step title="Abra as Configurações de Rede">
+    No menu principal: **Main Menu → Network Settings**.
+  </Step>
+
+  <Step title="Conecte à Rede">
+    Ative **Enable Wi-Fi**, selecione o SSID na lista, insira a senha e confirme.
+    O ícone de Wi-Fi aparece no topo da tela após conectar.
+  </Step>
+</Steps>
+
+### No muOS
+
+<Steps>
+  <Step title="Acesse o Wi-Fi">
+    **Configuration → Network → Wi-Fi**. Selecione o SSID, insira a senha e salve.
+    Reinicie se a conexão não estabelecer imediatamente.
+  </Step>
+</Steps>
+
+Redes 5 GHz oferecem transferências mais rápidas. Se tiver dificuldade na primeira configuração, conecte na banda 2.4 GHz e migre depois.
+
+---
+
+## Scraping de Capas e Metadados
+
+O scraping baixa automaticamente capas, descrições e vídeos para sua biblioteca.
+
+### Pelo Console (KNULLI + Wi-Fi)
+
+<Steps>
+  <Step title="Confirme a Conexão Wi-Fi">
+    O scraping exige Wi-Fi ativo. Verifique o ícone de rede no topo da tela.
+  </Step>
+
+  <Step title="Acesse o Scraper">
+    **Main Menu → Scraper**. Selecione a fonte **ScreenScraper** e faça login com
+    sua conta gratuita em [screenscraper.fr](https://www.screenscraper.fr/).
+  </Step>
+
+  <Step title="Configure e Execute">
+    Escolha os sistemas, o tipo de imagem (boxart, screenshot) e inicie. O tempo
+    depende do tamanho da biblioteca e da velocidade da rede.
+  </Step>
+</Steps>
+
+### Via PC (Skraper)
+
+Para bibliotecas grandes ou quando preferir fazer offline, use o [Skraper](https://www.skraper.net/) no PC:
+
+1. Instale o Skraper e configure a pasta de ROMs apontando para o cartão SD
+2. Execute o scraping — as imagens são salvas em `Imgs/` ao lado das pastas de ROMs
+3. Reinsira o cartão no console
+
+---
+
+## RetroAchievements
+
+RetroAchievements adiciona conquistas a jogos retrô, integradas ao seu perfil online.
+
+<Steps>
+  <Step title="Crie uma Conta">
+    Registre-se gratuitamente em [retroachievements.org](https://retroachievements.org/).
+  </Step>
+
+  <Step title="Configure no KNULLI">
+    **Main Menu → Game Settings → RetroAchievements**. Habilite e insira usuário e senha.
+  </Step>
+
+  <Step title="Configure no muOS">
+    No RetroArch: **Settings → Achievements → Enable Achievements**.
+    Use o token de API disponível no perfil do retroachievements.org.
+  </Step>
+
+  <Step title="Jogue com Wi-Fi Ativo">
+    As conquistas são carregadas automaticamente ao iniciar um jogo compatível.
+    Um indicador aparece na tela ao desbloquear. Nem todos os jogos têm suporte —
+    consulte a lista em retroachievements.org.
+  </Step>
+</Steps>
+
+---
+
+## Jogar na TV via Saída HDMI
+
+<Alert type="info" title="Cabo Correto">
+  O RG40XX H usa porta **Micro HDMI**, não Mini HDMI. Os conectores são diferentes — confirme o tipo antes de comprar o cabo.
+</Alert>
+
+<Steps>
+  <Step title="Conecte Antes de Ligar">
+    Com o console desligado, conecte o cabo Micro HDMI na porta superior do
+    RG40XX H e a outra ponta na TV. Ligar após conectar garante a detecção automática.
+  </Step>
+
+  <Step title="Selecione a Entrada na TV">
+    Ligue o console e mude para a entrada HDMI correta na TV.
+    A maioria dos firmwares detecta a saída automaticamente.
+  </Step>
+
+  <Step title="Ajuste a Resolução (se necessário)">
+    Caso a imagem apareça cortada ou em resolução incorreta:
+    - **KNULLI**: Main Menu → System Settings → Video Output
+    - **muOS**: Configuration → Display → Resolution
+
+    A saída padrão é 1080p ou 720p conforme o firmware.
+  </Step>
+
+  <Step title="Multiplayer via Bluetooth">
+    Com o console na TV, pareie controles Bluetooth adicionais para jogar em
+    multiplayer nos jogos que suportam múltiplos jogadores.
+  </Step>
+</Steps>

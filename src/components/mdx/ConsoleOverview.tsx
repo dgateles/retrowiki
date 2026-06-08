@@ -153,14 +153,18 @@ export function ConsoleOverview({
                 <div className="flex flex-col md:flex-row gap-5 items-center">
                     <div className="relative w-48 h-48 md:w-56 md:h-56 shrink-0 flex items-center justify-center">
                         <div className="absolute inset-0 bg-linear-to-br dark:from-emerald-500/10 dark:to-blue-500/10 from-emerald-300/5 to-blue-300/5 blur-xl" />
-                        <Image
-                            src={image}
-                            alt={name}
-                            width={200}
-                            height={200}
-                            className="object-contain relative z-10 drop-shadow-lg max-w-full max-h-full border-0!"
-                            priority
-                        />
+                        {image ? (
+                            <Image
+                                src={image}
+                                alt={name}
+                                width={200}
+                                height={200}
+                                className="object-contain relative z-10 drop-shadow-lg max-w-full max-h-full border-0!"
+                                priority
+                            />
+                        ) : (
+                            <Gamepad2 className="w-24 h-24 relative z-10 text-emerald-500/40 dark:text-emerald-400/30" />
+                        )}
                     </div>
                     <div className="flex-1 text-center md:text-left flex flex-col justify-center">
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">

@@ -1,0 +1,49 @@
+---
+title: Cartão SD
+description: Cartões microSD recomendados para o PowKiddy RGB30 (Samsung, Kingston, Kodak, Lexar), formatação correta e uso dos dois slots para ROCKNIX e ArkOS.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+import { CardLink } from "@/components/mdx/CardLink";
+
+## Dois Slots microSD
+
+O RGB30 possui **dois slots microSD** — uma vantagem concreta sobre a maioria dos handhelds da faixa de preço. A configuração padrão separa sistema e jogos:
+
+- **Slot 1 (TF1 / sistema):** cartão com o firmware (ROCKNIX, ArkOS, etc.).
+- **Slot 2 (TF2 / jogos):** cartão dedicado às ROMs, BIOS e capas.
+
+Essa separação permite trocar de firmware sem mexer na biblioteca de jogos. Cada slot suporta cartões de até 256GB.
+
+Evite cartões genéricos: são a causa número um de corrupção de dados e travamentos no RGB30.
+
+## Cartões Recomendados
+
+| Marca    | Modelo         | Capacidade | Status                 |
+| -------- | -------------- | ---------- | ---------------------- |
+| Samsung  | Pro Plus       | 128GB      | ✅ Recomendado         |
+| Lexar    | -              | 128GB      | ✅ Recomendado         |
+| Kodak    | -              | 256GB      | ✅ Excelente           |
+| Kingston | Canvas Go Plus | 64GB       | ✅ Bom custo-benefício |
+| Genérico | -              | Qualquer   | ❌ Não recomendado     |
+
+<div className="my-6">
+  <CardLink
+    title="Comprar Cartões Originais"
+    description="Links para cartões Samsung, Kingston e Lexar originais no AliExpress."
+    href="/powkiddy/buying-guide"
+  />
+</div>
+
+## Gravando o Firmware
+
+Não formate o cartão manualmente. Use um dos gravadores abaixo diretamente sobre a imagem do firmware:
+
+- **Windows:** [Rufus](https://rufus.ie/) ou [Balena Etcher](https://www.balena.io/etcher/)
+- **macOS/Linux:** [Balena Etcher](https://www.balena.io/etcher/) ou `dd`
+
+Na primeira inicialização, o sistema expande a partição automaticamente para usar todo o espaço disponível no cartão.
+
+<Alert type="warning" title="Atenção">
+  A gravação apaga todos os dados do cartão. Faça backup antes de prosseguir.
+</Alert>

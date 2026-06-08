@@ -1,0 +1,80 @@
+---
+title: Cartão SD
+description: Dois slots microSD, cartões recomendados, capacidade máxima, formatação e organização de pastas para GarlicOS, muOS, KNULLI e MinUI no RG35XX.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+import { CardLink } from "@/components/mdx/CardLink";
+
+<Alert type="warning" title="Descarte o Cartão Original">
+  O cartão que acompanha o RG35XX é de baixíssima qualidade — responsável por 99% dos relatos de falha de boot e corrupção de dados na comunidade. Substitua antes de qualquer outra coisa.
+</Alert>
+
+## Dois Slots microSD
+
+O RG35XX tem **dois slots microSD** (TF1 e TF2) com funções distintas:
+
+| Slot | Localização                    | Função                   | Formato recomendado |
+| ---- | ------------------------------ | ------------------------ | ------------------- |
+| TF1  | Mais próximo ao botão de reset | Sistema operacional (OS) | FAT32               |
+| TF2  | Segundo slot                   | ROMs, BIOS e saves       | FAT32 ou exFAT      |
+
+A configuração mais prática: cartão menor (32–64 GB) no TF1 para o firmware e cartão maior (128–256 GB) no TF2 para os jogos. Dá para usar um único cartão no TF1 com tudo junto, mas dois cartões facilitam a atualização de firmware sem perder dados.
+
+## Cartões Recomendados
+
+| Marca    | Modelo              | Capacidade  | Slot indicado | Status             |
+| -------- | ------------------- | ----------- | ------------- | ------------------ |
+| Samsung  | EVO Plus / Pro Plus | 64 GB       | TF1 (OS)      | Recomendado        |
+| Samsung  | EVO Select          | 128–256 GB  | TF2 (ROMs)    | Excelente          |
+| SanDisk  | Extreme             | 64–128 GB   | TF1 (OS)      | Recomendado        |
+| Kingston | Canvas Go Plus      | 64–128 GB   | TF1 ou TF2    | Bom                |
+| Lexar    | —                   | 128 GB      | TF2 (ROMs)    | Recomendado        |
+| Kodak    | —                   | 64–256 GB   | TF2 (ROMs)    | Bom                |
+| Genérico | —                   | Qualquer    | Nenhum        | Não recomendado    |
+
+O TF2 aceita cartões de até **512 GB**. Sempre compre de vendedor confiável — cartões falsificados são comuns no AliExpress.
+
+## Formatação
+
+### Cartão do Sistema (TF1)
+
+O TF1 recebe a **imagem do firmware** gravada diretamente com um dos programas abaixo:
+
+- **Windows**: [Rufus](https://rufus.ie/) ou [Balena Etcher](https://www.balena.io/etcher/)
+- **macOS**: [Balena Etcher](https://www.balena.io/etcher/)
+- **Linux**: Balena Etcher ou `dd`
+
+Não formate manualmente — o programa de gravação cuida disso.
+
+### Cartão de ROMs (TF2)
+
+Formate em **FAT32** para maior compatibilidade, ou **exFAT** se for usar arquivos acima de 4 GB (ISOs de PS1 grandes):
+
+- **Windows**: [SD Card Formatter](https://www.sdcard.org/downloads/formatter/) — mais confiável que o formatador nativo
+- **macOS / Linux**: Utilitário de Disco ou linha de comando
+
+## Estrutura de Pastas por Firmware
+
+Após instalar o firmware, coloque os arquivos nos caminhos certos. Cada firmware tem sua convenção:
+
+| Firmware         | Pasta de ROMs              | Pasta de BIOS   |
+| ---------------- | -------------------------- | --------------- |
+| Stock / GarlicOS | `/Roms/[SISTEMA]/`         | `/Bios/`        |
+| muOS             | `/ROMS/[SISTEMA]/`         | `/MUOS/bios/`   |
+| KNULLI           | `userdata/roms/[SISTEMA]/` | `userdata/bios/`|
+| MinUI            | `/ROMS/[SISTEMA]/`         | `/BIOS/`        |
+
+**Dica muOS com dois cartões:** após a configuração inicial, acesse **Configurações → Opções de Armazenamento** e migre os dados para o SD2. Os saves e ROMs ficam no TF2 e são preservados em futuras regravações do firmware no TF1.
+
+## Leitor de Cartão
+
+Um leitor de baixa qualidade pode corromper dados durante a gravação — o problema costuma ser atribuído ao cartão quando é o leitor. Use um leitor USB 3.0 de marca conhecida (UGREEN, Anker ou similar). Evite os leitores combinados com hub USB barato.
+
+<div className="my-6">
+  <CardLink
+    title="Cartões SD no Guia de Compras"
+    description="Links para cartões Samsung, Kodak e Kingston com boa procedência."
+    href="/rg35xx/buying-guide"
+  />
+</div>

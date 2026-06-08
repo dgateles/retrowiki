@@ -1,0 +1,53 @@
+---
+title: Solução de Problemas
+description: Problemas comuns do PowKiddy RGB30 e como resolvê-los: console não liga, tela preta, jogos não aparecem, Wi-Fi e cartão SD.
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+## Console não liga
+
+1. Carregue por pelo menos 30 minutos antes de tentar ligar
+2. Segure o botão de ligar por 5 segundos
+3. Confirme que o cartão SD de sistema está no slot correto (TF1 / slot esquerdo)
+4. Teste com outro cabo e carregador USB-C
+
+## Tela preta ao ligar
+
+- Confirme que você gravou a imagem específica do **RGB30** (e não de outro dispositivo)
+- Regrave o firmware com o Rufus ou Balena Etcher
+- Tente outro cartão SD de marca confiável
+- Certifique-se de que o cartão de sistema está no slot correto (slot 1)
+
+## Jogos não aparecem
+
+- Verifique se as ROMs estão na pasta correta de cada sistema (ex.: `snes`, `gba`, `psx`)
+- Confirme que o formato dos arquivos é compatível com o sistema
+- Após adicionar jogos, atualize as listas de jogos (Gamelists) ou reinicie o console
+- Se usar dois cartões, confirme que as ROMs estão no cartão de jogos (slot 2)
+
+## Áudio com problemas
+
+- Ajuste o volume pelo menu ou pelos botões de volume
+- Verifique as configurações de áudio do emulador (RetroArch → Settings → Audio)
+- Alguns jogos têm problemas conhecidos de áudio em determinados cores
+
+## Wi-Fi não conecta
+
+1. Confirme que a rede é 2.4GHz ou 5GHz e está visível na lista
+2. Verifique a senha, incluindo maiúsculas e caracteres especiais
+3. Aproxime o console do roteador e tente novamente
+4. Reinicie o console após salvar a configuração de rede
+
+## Cartão SD não reconhecido
+
+- Reinsira o cartão firmemente no slot
+- Regrave a imagem; gravações corrompidas impedem o boot
+- Evite cartões genéricos, que falham com frequência
+- Teste o cartão em outro dispositivo para descartar defeito de hardware
+
+## Desempenho ruim ou travamentos
+
+- Sistemas pesados (Saturn, PS2, GameCube) têm desempenho limitado no RK3566
+- Em N64, PSP e Dreamcast, ajuste resolução e configurações do core
+- Mantenha o firmware atualizado pelo menu do sistema
