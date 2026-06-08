@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
 import { typeLabel } from "@/lib/articles";
 import { rankForReputation, roleLabel } from "@/lib/ranks";
+import { evaluateBadges, getUserBadges } from "@/lib/badges";
+import { BadgeList } from "@/components/badges/badge-list";
 
 export async function generateMetadata({
   params,
@@ -31,6 +33,8 @@ export default async function ProfilePage({
   if (!profile) notFound();
 
   const rank = rankForReputation(profile.reputation);
+  await evaluateBadges(profile.id);
+  const userBadges = await getUserBadges(profile.id);
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
   );
@@ -84,6 +88,13 @@ export default async function ProfilePage({
               <dd className="profile-stat__value">{roleLabel(profile.role)}</dd>
             </div>
           </dl>
+
+          <section aria-labelledby="p-badges" className="panel-section">
+            <div className="panel-section__head">
+              <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
+            </div>
+            <BadgeList items={userBadges} />
+          </section>
         </aside>
 
         <section aria-labelledby="contrib">

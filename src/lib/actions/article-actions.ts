@@ -10,6 +10,7 @@ import { requireUser, requireRole, can } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { evaluateBadges } from "@/lib/badges";
 import { slugify } from "@/lib/utils";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -134,6 +135,7 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
       .update(articles)
       .set({ status: "published", publishedAt: new Date() })
       .where(eq(articles.id, articleId));
+    await evaluateBadges(article.authorId);
     revalidatePath("/guias");
     revalidatePath(`/guias/${article.slug}`);
     return { ok: true };
@@ -207,6 +209,7 @@ export async function moderateAction(input: unknown): Promise<Result> {
     .catch(() => {});
 
   if (decision === "approved") {
+    await evaluateBadges(article.authorId);
     revalidatePath("/guias");
     revalidatePath(`/guias/${article.slug}`);
   }

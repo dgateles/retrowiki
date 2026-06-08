@@ -15,6 +15,13 @@
       "when": 1780952914496,
       "tag": "0001_even_captain_britain",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1780959434989,
+      "tag": "0002_demonic_shockwave",
+      "breakpoints": true
     }
   ]
 }

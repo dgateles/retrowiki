@@ -8,6 +8,8 @@ import { getCommentCount } from "@/lib/panel";
 import { listNotifications } from "@/lib/notifications";
 import { describeNotification } from "@/lib/notification-text";
 import { rankForReputation } from "@/lib/ranks";
+import { evaluateBadges, getUserBadges } from "@/lib/badges";
+import { BadgeList } from "@/components/badges/badge-list";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Meu painel", robots: { index: false } };
@@ -29,10 +31,12 @@ export default async function PanelPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/entrar");
 
-  const [articles, commentCount, notifications] = await Promise.all([
+  await evaluateBadges(user.id);
+  const [articles, commentCount, notifications, userBadges] = await Promise.all([
     getUserDrafts(user.id),
     getCommentCount(user.id),
     listNotifications(user.id),
+    getUserBadges(user.id),
   ]);
 
   const published = articles.filter((a) => a.status === "published").length;
@@ -84,6 +88,13 @@ export default async function PanelPage() {
           <dt className="stat-card__label">Reputação</dt>
         </div>
       </dl>
+
+      <section aria-labelledby="p-badges" className="panel-section mt-6">
+        <div className="panel-section__head">
+          <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
+        </div>
+        <BadgeList items={userBadges} />
+      </section>
 
       <div className="panel-grid">
         <section aria-labelledby="p-drafts" className="panel-section">

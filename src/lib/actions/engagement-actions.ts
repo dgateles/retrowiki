@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { comments, votes, articles, notifications, auditLog } from "@/db/schema";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { evaluateBadges } from "@/lib/badges";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
 
@@ -39,6 +40,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   if (!article || article.status !== "published") return { ok: false, error: "Artigo indisponível." };
 
   await db.insert(comments).values({ articleId, authorId: Number(user.id), body });
+  await evaluateBadges(Number(user.id));
 
   if (article.authorId !== Number(user.id)) {
     await db

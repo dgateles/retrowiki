@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users, articles } from "@/db/schema";
 
 export type Profile = {
+  id: number;
   handle: string;
   displayName: string;
   role: string;

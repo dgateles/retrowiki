@@ -1016,6 +1016,23 @@
     @apply inline-flex aspect-square items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground focus-visible:outline-2;
   }
 
+  /* Badges (conquistas). */
+  .badges {
+    @apply flex flex-wrap gap-2;
+  }
+  .badge-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
+  }
+  .badge-chip--bronze {
+    @apply border-amber-700/30 bg-amber-700/10 text-amber-700 dark:text-amber-500;
+  }
+  .badge-chip--silver {
+    @apply border-slate-400/40 bg-slate-400/10 text-slate-600 dark:text-slate-300;
+  }
+  .badge-chip--gold {
+    @apply border-yellow-500/40 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400;
+  }
+
   /* Cartão de rank (perfil e menu). */
   .rank {
     @apply rounded-lg border border-border bg-card p-4;

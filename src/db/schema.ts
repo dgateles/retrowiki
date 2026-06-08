@@ -334,6 +334,28 @@ export const auditLog = mysqlTable("audit_log", {
   index("audit_target_idx").on(t.target),
 ]);
 
+// ── Conquistas: badges ───────────────────────────────────────────────────
+export const badges = mysqlTable("badges", {
+  id: pk(),
+  slug: varchar("slug", { length: 80 }).notNull(),
+  name: varchar("name", { length: 120 }).notNull(),
+  description: varchar("description", { length: 300 }).notNull(),
+  icon: varchar("icon", { length: 40 }).notNull().default("award"),
+  tier: mysqlEnum("tier", ["bronze", "silver", "gold"]).notNull().default("bronze"),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("badges_slug_idx").on(t.slug)]);
+
+export const userBadges = mysqlTable("user_badges", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  badgeId: bigint("badge_id", { mode: "number" }).notNull(),
+  awardedAt: createdAt(),
+}, (t) => [
+  uniqueIndex("user_badge_idx").on(t.userId, t.badgeId),
+  index("user_badges_user_idx").on(t.userId),
+]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;
