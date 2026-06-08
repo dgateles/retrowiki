@@ -23,7 +23,7 @@ function specValue(d: DeviceDetail): Record<string, string> {
     Fabricante: d.device.manufacturer,
     Ano: d.device.releaseYear ? String(d.device.releaseYear) : "—",
     Formato: d.device.formFactor,
-    Chip: s?.chip ?? "—",
+    CPU: s?.cpu ?? "—",
     GPU: s?.gpu ?? "—",
     RAM: s?.ramGb ? `${s.ramGb} GB` : "—",
     Armazenamento: s?.storage ?? "—",
@@ -39,7 +39,7 @@ function specValue(d: DeviceDetail): Record<string, string> {
 }
 
 const SPEC_KEYS = [
-  "Fabricante", "Ano", "Formato", "Chip", "GPU", "RAM", "Armazenamento",
+  "Fabricante", "Ano", "Formato", "CPU", "GPU", "RAM", "Armazenamento",
   "Bateria", "Tela", "Resolução", "Sistema", "Wi-Fi", "Bluetooth",
   "Saída de vídeo", "Hall Effect",
 ];

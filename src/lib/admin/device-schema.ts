@@ -7,7 +7,6 @@ const optFloat = (min: number, max: number) =>
   z.coerce.number().min(min).max(max).nullish();
 
 export const SpecSchema = z.object({
-  chip: optStr(160),
   cpu: optStr(160),
   gpu: optStr(160),
   ramGb: optFloat(0, 64),

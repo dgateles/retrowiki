@@ -26,7 +26,6 @@
       ]
     },
     "spec": {
-      "chip": "Qualcomm Snapdragon 662 (Cortex-A73 8-core, até 2.0 GHz)",
       "gpu": "Qualcomm Adreno 610 (1050 MHz)",
       "ramGb": 4,
       "ramType": "LPDDR4X",
@@ -54,7 +53,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": true,
-      "gyroscope": true
+      "gyroscope": true,
+      "cpu": "Qualcomm Snapdragon 662 (Cortex-A73 8-core, até 2.0 GHz)"
     },
     "emulation": [
       {
@@ -150,7 +150,6 @@
       ]
     },
     "spec": {
-      "chip": "SigmaStar SSD202D Dual-core Cortex-A7 1.2GHz",
       "gpu": "Integrada",
       "ramGb": 128,
       "ramType": "DDR3",
@@ -178,7 +177,8 @@
       "l2r2": false,
       "l3r3": false,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "SigmaStar SSD202D Dual-core Cortex-A7 1.2GHz"
     },
     "emulation": [
       {
@@ -260,7 +260,6 @@
       ]
     },
     "spec": {
-      "chip": "Rockchip RK3566 Quad-core 1.8GHz (Cortex-A55)",
       "gpu": "Mali-G52 2EE",
       "ramGb": 1,
       "ramType": "LPDDR4",
@@ -288,7 +287,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "Rockchip RK3566 Quad-core 1.8GHz (Cortex-A55)"
     },
     "emulation": [
       {
@@ -382,7 +382,6 @@
       ]
     },
     "spec": {
-      "chip": "Rockchip RK3326 Quad-core 1.5GHz",
       "gpu": "Mali-G31 MP2",
       "ramGb": 1,
       "ramType": "DDR3L",
@@ -410,7 +409,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "Rockchip RK3326 Quad-core 1.5GHz"
     },
     "emulation": [
       {
@@ -508,7 +508,6 @@
       ]
     },
     "spec": {
-      "chip": "Qualcomm Snapdragon 865 (Cortex-A77, 8 núcleos, até 2.84 GHz)",
       "gpu": "Qualcomm Adreno 650 (587 MHz)",
       "ramGb": 8,
       "ramType": "LPDDR4X",
@@ -536,7 +535,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": true,
-      "gyroscope": true
+      "gyroscope": true,
+      "cpu": "Qualcomm Snapdragon 865 (Cortex-A77, 8 núcleos, até 2.84 GHz)"
     },
     "emulation": [
       {
@@ -647,7 +647,6 @@
       ]
     },
     "spec": {
-      "chip": "Qualcomm Snapdragon 8 Gen 2 (Cortex-X3, até 3.2 GHz)",
       "gpu": "Qualcomm Adreno 740 (680 MHz)",
       "ramGb": 8,
       "ramType": "LPDDR5X",
@@ -675,7 +674,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": true,
-      "gyroscope": true
+      "gyroscope": true,
+      "cpu": "Qualcomm Snapdragon 8 Gen 2 (Cortex-X3, até 3.2 GHz)"
     },
     "emulation": [
       {
@@ -780,7 +780,6 @@
       ]
     },
     "spec": {
-      "chip": "Qualcomm Snapdragon 865 (Cortex-A77, até 2.84 GHz)",
       "gpu": "Qualcomm Adreno 650 (587 MHz)",
       "ramGb": 6,
       "ramType": "LPDDR4X",
@@ -808,7 +807,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": true,
-      "gyroscope": true
+      "gyroscope": true,
+      "cpu": "Qualcomm Snapdragon 865 (Cortex-A77, até 2.84 GHz)"
     },
     "emulation": [
       {
@@ -914,7 +914,6 @@
       ]
     },
     "spec": {
-      "chip": "UNISOC Tiger T820 (Cortex-A76, 8 núcleos, até 2.7 GHz)",
       "gpu": "Mali-G57 MP4 @ 850 MHz",
       "ramGb": 8,
       "ramType": "LPDDR4X",
@@ -942,7 +941,8 @@
       "l2r2": true,
       "l3r3": true,
       "touchScreen": true,
-      "gyroscope": true
+      "gyroscope": true,
+      "cpu": "UNISOC Tiger T820 (Cortex-A76, 8 núcleos, até 2.7 GHz)"
     },
     "emulation": [
       {
@@ -1040,7 +1040,6 @@
       ]
     },
     "spec": {
-      "chip": "Quad-core ARM",
       "gpu": "PowerVR SGX544",
       "ramGb": 1,
       "ramType": "DDR",
@@ -1068,7 +1067,8 @@
       "l2r2": true,
       "l3r3": false,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "Quad-core ARM"
     },
     "emulation": [
       {
@@ -1156,7 +1156,6 @@
       ]
     },
     "spec": {
-      "chip": "Allwinner H700 Quad-core Cortex-A53 1.5GHz",
       "gpu": "Mali-G31 MP2",
       "ramGb": 1,
       "ramType": "LPDDR4",
@@ -1184,7 +1183,8 @@
       "l2r2": true,
       "l3r3": false,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "Allwinner H700 Quad-core Cortex-A53 1.5GHz"
     },
     "emulation": [
       {
@@ -1271,7 +1271,6 @@
       ]
     },
     "spec": {
-      "chip": "Allwinner A133 Plus Quad-core Cortex-A53 1.8-2.0GHz",
       "gpu": "PowerVR GE8300",
       "ramGb": 1,
       "ramType": "LPDDR3",
@@ -1299,7 +1298,8 @@
       "l2r2": false,
       "l3r3": false,
       "touchScreen": false,
-      "gyroscope": false
+      "gyroscope": false,
+      "cpu": "Allwinner A133 Plus Quad-core Cortex-A53 1.8-2.0GHz"
     },
     "emulation": [
       {

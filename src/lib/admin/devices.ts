@@ -67,7 +67,6 @@ export async function getDeviceForEdit(id: number): Promise<(DeviceFormValues & 
     frontImageAlt: front?.alt ?? "",
     emulation: emu,
     spec: {
-      chip: spec?.chip ?? "",
       cpu: spec?.cpu ?? "",
       gpu: spec?.gpu ?? "",
       ramGb: spec?.ramGb ?? null,

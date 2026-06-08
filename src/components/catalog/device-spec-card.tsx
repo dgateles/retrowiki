@@ -76,7 +76,7 @@ export function DeviceSpecCard({ detail }: { detail: DeviceDetail }) {
               <Cpu aria-hidden="true" /> Hardware
             </h2>
             <dl>
-              <SpecRow label="Chip" value={spec.chip} />
+              <SpecRow label="CPU" value={spec.cpu} />
               <SpecRow label="GPU" value={spec.gpu} />
               <SpecRow label="RAM" value={spec.ramGb ? `${spec.ramGb} GB${spec.ramType ? ` ${spec.ramType}` : ""}` : null} />
               <SpecRow label="Armazenamento" value={spec.storage} />

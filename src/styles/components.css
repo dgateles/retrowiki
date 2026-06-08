@@ -61,6 +61,32 @@
     @apply mt-1 text-sm text-muted-foreground;
   }
 
+  /* Editores de lista (repetíveis). */
+  .repeat {
+    @apply space-y-2;
+  }
+  .repeat__legend {
+    @apply text-sm font-medium;
+  }
+  .repeat__row {
+    @apply flex items-center gap-2;
+  }
+  .repeat__grow {
+    @apply flex-1;
+  }
+  .repeat__score {
+    @apply w-24;
+  }
+  .repeat__level {
+    @apply w-20 shrink-0 text-xs font-semibold;
+  }
+  .repeat__remove {
+    @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .repeat__empty {
+    @apply text-sm text-muted-foreground;
+  }
+
   /* Formulário de admin. */
   .admin-form {
     @apply space-y-6;

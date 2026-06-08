@@ -27,7 +27,7 @@ function buildExtra(v: { description?: string; priceRange?: string; pros: string
 function specValues(deviceId: number, s: ReturnType<typeof DeviceFormSchema.parse>["spec"]) {
   return {
     deviceId,
-    chip: nz(s.chip), cpu: nz(s.cpu), gpu: nz(s.gpu),
+    cpu: nz(s.cpu), gpu: nz(s.gpu),
     ramGb: s.ramGb ?? null, ramType: nz(s.ramType), storage: nz(s.storage),
     os: nz(s.os), screenSize: s.screenSize ?? null, resolution: nz(s.resolution),
     aspectRatio: nz(s.aspectRatio), refreshHz: s.refreshHz ?? null, panelType: nz(s.panelType),

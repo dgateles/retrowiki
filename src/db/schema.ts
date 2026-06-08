@@ -105,7 +105,6 @@ export const devices = mysqlTable(
 export const deviceSpecs = mysqlTable("device_specs", {
   id: pk(),
   deviceId: bigint("device_id", { mode: "number" }).notNull(),
-  chip: varchar("chip", { length: 160 }),
   cpu: varchar("cpu", { length: 160 }),
   gpu: varchar("gpu", { length: 160 }),
   ramGb: float("ram_gb"),

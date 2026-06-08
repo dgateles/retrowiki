@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ListEditor, EmulationEditor, type EmuRow } from "@/components/admin/field-editors";
 import { createDeviceAction, updateDeviceAction } from "@/lib/actions/admin-actions";
 import type { DeviceFormValues } from "@/lib/admin/device-schema";
 
@@ -27,6 +28,19 @@ const FEATURES: { key: keyof DeviceFormValues["spec"]; label: string }[] = [
   { key: "cooling", label: "Cooler ativo" },
   { key: "vibration", label: "Vibração" },
 ];
+
+const SPEC_FIELDS: [keyof SpecState, string][] = [
+  ["cpu", "CPU"], ["gpu", "GPU"], ["ramGb", "RAM (GB)"], ["ramType", "Tipo de RAM"],
+  ["storage", "Armazenamento"], ["os", "Sistema"], ["screenSize", "Tela (pol)"],
+  ["resolution", "Resolução"], ["aspectRatio", "Proporção"], ["refreshHz", "Atualização (Hz)"],
+  ["panelType", "Painel"], ["batteryMah", "Bateria (mAh)"],
+];
+
+type SpecState = {
+  cpu: string; gpu: string; ramGb: string; ramType: string; storage: string; os: string;
+  screenSize: string; resolution: string; aspectRatio: string; refreshHz: string;
+  panelType: string; batteryMah: string;
+};
 
 type Props = { initial?: DeviceFormValues & { id: number } };
 
@@ -50,13 +64,10 @@ export function DeviceForm({ initial }: Props) {
     frontImageUrl: initial?.frontImageUrl ?? "",
     frontImageAlt: initial?.frontImageAlt ?? "",
   });
-  const [prosText, setProsText] = useState((initial?.pros ?? []).join("\n"));
-  const [consText, setConsText] = useState((initial?.cons ?? []).join("\n"));
-  const [emuText, setEmuText] = useState(
-    (initial?.emulation ?? []).map((e) => `${e.system}: ${e.score}`).join("\n"),
-  );
-  const [spec, setSpec] = useState(() => ({
-    chip: initial?.spec.chip ?? "",
+  const [pros, setPros] = useState<string[]>(initial?.pros ?? []);
+  const [cons, setCons] = useState<string[]>(initial?.cons ?? []);
+  const [emulation, setEmulation] = useState<EmuRow[]>(initial?.emulation ?? []);
+  const [spec, setSpec] = useState<SpecState>(() => ({
     cpu: initial?.spec.cpu ?? "",
     gpu: initial?.spec.gpu ?? "",
     ramGb: numToStr(initial?.spec.ramGb),
@@ -76,21 +87,9 @@ export function DeviceForm({ initial }: Props) {
     return f;
   });
 
-  const setSpecField = (k: keyof typeof spec, v: string) => setSpec((s) => ({ ...s, [k]: v }));
+  const setSpecField = (k: keyof SpecState, v: string) => setSpec((s) => ({ ...s, [k]: v }));
 
   function buildPayload() {
-    const lines = (t: string) => t.split("\n").map((l) => l.trim()).filter(Boolean);
-    const emulation = lines(emuText)
-      .map((l) => {
-        const idx = l.lastIndexOf(":");
-        if (idx < 0) return null;
-        const system = l.slice(0, idx).trim();
-        const score = Number(l.slice(idx + 1).trim());
-        if (!system || !Number.isFinite(score)) return null;
-        return { system, score };
-      })
-      .filter((x): x is { system: string; score: number } => x !== null);
-
     return {
       name: core.name,
       slug: core.slug,
@@ -101,13 +100,15 @@ export function DeviceForm({ initial }: Props) {
       status: core.status as DeviceFormValues["status"],
       description: core.description,
       priceRange: core.priceRange,
-      pros: lines(prosText),
-      cons: lines(consText),
+      pros: pros.map((p) => p.trim()).filter(Boolean),
+      cons: cons.map((c) => c.trim()).filter(Boolean),
       frontImageUrl: core.frontImageUrl,
       frontImageAlt: core.frontImageAlt,
-      emulation,
+      emulation: emulation
+        .map((e) => ({ system: e.system.trim(), score: e.score }))
+        .filter((e) => e.system && Number.isFinite(e.score)),
       spec: {
-        chip: spec.chip, cpu: spec.cpu, gpu: spec.gpu,
+        cpu: spec.cpu, gpu: spec.gpu,
         ramGb: strToNum(spec.ramGb), ramType: spec.ramType, storage: spec.storage, os: spec.os,
         screenSize: strToNum(spec.screenSize), resolution: spec.resolution,
         aspectRatio: spec.aspectRatio, refreshHz: strToNum(spec.refreshHz), panelType: spec.panelType,
@@ -161,7 +162,7 @@ export function DeviceForm({ initial }: Props) {
           </div>
           <div className="field">
             <Label htmlFor="form">Formato</Label>
-            <select id="form" className="editor__select editor__select--full" value={core.formFactor} onChange={(e) => setCore({ ...core, formFactor: e.target.value })}>
+            <select id="form" aria-label="Formato" className="editor__select editor__select--full" value={core.formFactor} onChange={(e) => setCore({ ...core, formFactor: e.target.value })}>
               <option value="vertical">Vertical</option>
               <option value="horizontal">Horizontal</option>
               <option value="clamshell">Clamshell</option>
@@ -170,7 +171,7 @@ export function DeviceForm({ initial }: Props) {
           </div>
           <div className="field">
             <Label htmlFor="status">Status</Label>
-            <select id="status" className="editor__select editor__select--full" value={core.status} onChange={(e) => setCore({ ...core, status: e.target.value })}>
+            <select id="status" aria-label="Status" className="editor__select editor__select--full" value={core.status} onChange={(e) => setCore({ ...core, status: e.target.value })}>
               <option value="published">Publicado</option>
               <option value="draft">Rascunho</option>
               <option value="archived">Arquivado</option>
@@ -183,7 +184,7 @@ export function DeviceForm({ initial }: Props) {
         </div>
         <div className="field mt-3">
           <Label htmlFor="desc">Descrição</Label>
-          <textarea id="desc" rows={3} className="editor__control" value={core.description} onChange={(e) => setCore({ ...core, description: e.target.value })} />
+          <textarea id="desc" rows={3} aria-label="Descrição" className="editor__control" value={core.description} onChange={(e) => setCore({ ...core, description: e.target.value })} />
         </div>
       </fieldset>
 
@@ -204,13 +205,7 @@ export function DeviceForm({ initial }: Props) {
       <fieldset className="admin-form__section">
         <legend className="admin-form__legend">Especificações</legend>
         <div className="admin-form__grid">
-          {([
-            ["chip", "Chip"], ["cpu", "CPU"], ["gpu", "GPU"],
-            ["ramGb", "RAM (GB)"], ["ramType", "Tipo de RAM"], ["storage", "Armazenamento"],
-            ["os", "Sistema"], ["screenSize", "Tela (pol)"], ["resolution", "Resolução"],
-            ["aspectRatio", "Proporção"], ["refreshHz", "Atualização (Hz)"], ["panelType", "Painel"],
-            ["batteryMah", "Bateria (mAh)"],
-          ] as const).map(([k, label]) => (
+          {SPEC_FIELDS.map(([k, label]) => (
             <div key={k} className="field">
               <Label htmlFor={`spec-${k}`}>{label}</Label>
               <Input id={`spec-${k}`} value={spec[k]} onChange={(e) => setSpecField(k, e.target.value)} />
@@ -235,23 +230,14 @@ export function DeviceForm({ initial }: Props) {
         </div>
       </fieldset>
 
-      <fieldset className="admin-form__section">
-        <legend className="admin-form__legend">Emulação, prós e contras</legend>
-        <div className="admin-form__grid">
-          <div className="field">
-            <Label htmlFor="emu">Emulação (um por linha: Sistema: nota)</Label>
-            <textarea id="emu" rows={6} className="editor__control" value={emuText} onChange={(e) => setEmuText(e.target.value)} placeholder="SNES: 95&#10;PS1: 90" />
-          </div>
-          <div className="field">
-            <Label htmlFor="pros">Prós (um por linha)</Label>
-            <textarea id="pros" rows={6} className="editor__control" value={prosText} onChange={(e) => setProsText(e.target.value)} />
-          </div>
-          <div className="field">
-            <Label htmlFor="cons">Contras (um por linha)</Label>
-            <textarea id="cons" rows={6} className="editor__control" value={consText} onChange={(e) => setConsText(e.target.value)} />
-          </div>
-        </div>
-      </fieldset>
+      <div className="admin-form__section">
+        <EmulationEditor items={emulation} onChange={setEmulation} />
+      </div>
+
+      <div className="admin-form__section admin-form__grid">
+        <ListEditor legend="Prós" items={pros} onChange={setPros} placeholder="Ponto positivo" />
+        <ListEditor legend="Contras" items={cons} onChange={setCons} placeholder="Ponto negativo" />
+      </div>
 
       <div className="btn-row">
         <Button type="submit" disabled={pending || core.name.trim().length < 2}>

@@ -11,30 +11,26 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
-
-  if (!can.admin(user)) {
-    return (
-      <>
-        <SiteHeader />
-        <main id="main" className="page restricted">
-          <ShieldAlert className="restricted__icon" aria-hidden="true" />
-          <h1 className="restricted__title">Acesso restrito</h1>
-          <p className="restricted__text">Esta área é exclusiva para administradores.</p>
-          <Button asChild className="mt-6">
-            <Link href="/">Início</Link>
-          </Button>
-        </main>
-      </>
-    );
-  }
+  const isAdmin = can.admin(user);
 
   return (
     <>
       <SiteHeader />
-      <div className="admin">
-        <AdminNav />
-        <main id="main" className="admin__main">
-          {children}
+      <div className={isAdmin ? "admin" : undefined}>
+        {isAdmin && <AdminNav />}
+        <main id="main" className={isAdmin ? "admin__main" : "page restricted"}>
+          {isAdmin ? (
+            children
+          ) : (
+            <>
+              <ShieldAlert className="restricted__icon" aria-hidden="true" />
+              <h1 className="restricted__title">Acesso restrito</h1>
+              <p className="restricted__text">Esta área é exclusiva para administradores.</p>
+              <Button asChild className="mt-6">
+                <Link href="/">Início</Link>
+              </Button>
+            </>
+          )}
         </main>
       </div>
     </>
