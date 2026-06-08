@@ -272,6 +272,9 @@
   .section-title {
     @apply text-2xl font-bold;
   }
+  .subtitle {
+    @apply text-xl font-semibold;
+  }
   .section-link {
     @apply inline-flex items-center gap-1 text-sm text-primary hover:underline;
   }
@@ -368,6 +371,41 @@
   }
   .site-footer__inner {
     @apply mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground;
+  }
+
+  /* Painel (dashboard) de usuário e moderador. */
+  .panel-grid {
+    @apply mt-6 grid gap-6 lg:grid-cols-[1fr_1fr];
+  }
+  .stat-cards {
+    @apply mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4;
+  }
+  .stat-card {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .stat-card__value {
+    @apply text-2xl font-bold tabular-nums;
+  }
+  .stat-card__label {
+    @apply mt-0.5 text-sm text-muted-foreground;
+  }
+  .panel-section {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .panel-section__head {
+    @apply mb-3 flex items-center justify-between gap-3;
+  }
+  .panel-section__title {
+    @apply font-semibold;
+  }
+  .panel-section__link {
+    @apply text-sm text-primary hover:underline;
+  }
+  .audit-item {
+    @apply flex items-center justify-between gap-3 border-b border-border/60 py-2 text-sm last:border-0;
+  }
+  .audit-item__date {
+    @apply shrink-0 text-xs text-muted-foreground;
   }
 
   /* Cartão genérico. */

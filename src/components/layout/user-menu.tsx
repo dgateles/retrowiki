@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { LogOut, PenLine, ShieldCheck, UserRound, Cog } from "lucide-react";
+import { LogOut, PenLine, ShieldCheck, UserRound, Cog, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { rankForReputation } from "@/lib/ranks";
 import {
@@ -55,6 +55,11 @@ export function UserMenu({
           </p>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/painel">
+            <LayoutDashboard aria-hidden="true" /> Painel
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/estudio">
             <PenLine aria-hidden="true" /> Escrever
