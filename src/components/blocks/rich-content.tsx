@@ -3,13 +3,15 @@ import { highlightCode } from "@/lib/prism";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 
 // Renderiza o documento do editor rico (TipTap/ProseMirror) com segurança:
-// nós e marcas mapeados para elementos via JSX. Sem dangerouslySetInnerHTML de
-// conteúdo do usuário, exceto o bloco de código (Prism escapa o texto).
+// nós e marcas mapeados para elementos via JSX. Estilos inline (cor, tamanho,
+// destaque, alinhamento) vêm de valores já validados por allowlist no schema.
+// Sem dangerouslySetInnerHTML de conteúdo do usuário, exceto o bloco de código
+// (Prism escapa o texto).
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Node = any;
 
-function applyMarks(text: string, marks: { type: string; attrs?: { href?: string } }[] | undefined, key: number) {
+function applyMarks(text: string, marks: Node[] | undefined, key: number) {
   let el: React.ReactNode = text;
   for (const m of marks ?? []) {
     switch (m.type) {
@@ -28,11 +30,31 @@ function applyMarks(text: string, marks: { type: string; attrs?: { href?: string
       case "code":
         el = <code className="blk-inline-code">{el}</code>;
         break;
+      case "subscript":
+        el = <sub>{el}</sub>;
+        break;
+      case "superscript":
+        el = <sup>{el}</sup>;
+        break;
       case "link":
         el = (
           <a href={m.attrs?.href} rel="nofollow noopener noreferrer" target="_blank" className="blk-a">
             {el}
           </a>
+        );
+        break;
+      case "textStyle": {
+        const style: React.CSSProperties = {};
+        if (m.attrs?.color) style.color = m.attrs.color;
+        if (m.attrs?.fontSize && m.attrs.fontSize !== "100%") style.fontSize = m.attrs.fontSize;
+        if (Object.keys(style).length) el = <span style={style}>{el}</span>;
+        break;
+      }
+      case "highlight":
+        el = (
+          <mark className="blk-mark" style={m.attrs?.color ? { backgroundColor: m.attrs.color } : undefined}>
+            {el}
+          </mark>
         );
         break;
     }
@@ -52,15 +74,15 @@ function textOf(nodes: Node[] | undefined): string {
   return (nodes ?? []).map((n) => (n.type === "text" ? n.text : "")).join("");
 }
 
-function renderListItem(li: Node, key: number) {
-  const children = (li.content ?? []).map((child: Node, i: number) => {
-    if (child.type === "paragraph") return <Fragment key={i}>{renderInline(child.content)}</Fragment>;
-    return renderBlock(child, i);
-  });
-  return (
-    <li key={key} className="blk-list__item">
-      {children}
-    </li>
+function alignStyle(node: Node): React.CSSProperties | undefined {
+  const a = node.attrs?.textAlign;
+  return a && a !== "left" ? { textAlign: a } : undefined;
+}
+
+/** Conteúdo de itens de lista e células: parágrafos viram inline. */
+function renderFlow(nodes: Node[] | undefined) {
+  return (nodes ?? []).map((child: Node, i: number) =>
+    child.type === "paragraph" ? <Fragment key={i}>{renderInline(child.content)}</Fragment> : renderBlock(child, i),
   );
 }
 
@@ -68,7 +90,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
   switch (node.type) {
     case "paragraph":
       return (
-        <p key={key} className="blk-p">
+        <p key={key} className="blk-p" style={alignStyle(node)}>
           {renderInline(node.content)}
         </p>
       );
@@ -76,7 +98,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
       const level = Math.min(6, Math.max(1, node.attrs?.level ?? 2));
       const Tag = `h${level}` as "h2";
       return (
-        <Tag key={key} className={`blk-h blk-h--${level <= 4 ? level : 4}`}>
+        <Tag key={key} className={`blk-h blk-h--${level <= 4 ? level : 4}`} style={alignStyle(node)}>
           {renderInline(node.content)}
         </Tag>
       );
@@ -84,13 +106,17 @@ function renderBlock(node: Node, key: number): React.ReactNode {
     case "bulletList":
       return (
         <ul key={key} className="blk-list blk-list--unordered">
-          {(node.content ?? []).map((li: Node, i: number) => renderListItem(li, i))}
+          {(node.content ?? []).map((li: Node, i: number) => (
+            <li key={i} className="blk-list__item">{renderFlow(li.content)}</li>
+          ))}
         </ul>
       );
     case "orderedList":
       return (
         <ol key={key} className="blk-list blk-list--ordered" start={node.attrs?.start ?? 1}>
-          {(node.content ?? []).map((li: Node, i: number) => renderListItem(li, i))}
+          {(node.content ?? []).map((li: Node, i: number) => (
+            <li key={i} className="blk-list__item">{renderFlow(li.content)}</li>
+          ))}
         </ol>
       );
     case "blockquote":
@@ -99,15 +125,62 @@ function renderBlock(node: Node, key: number): React.ReactNode {
           {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
         </blockquote>
       );
+    case "box":
+      return (
+        <div key={key} className="blk-box">
+          {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
+        </div>
+      );
+    case "spoiler":
+      return (
+        <details key={key} className="blk-spoiler">
+          <summary className="blk-spoiler__summary">Spoiler</summary>
+          <div className="blk-spoiler__body">
+            {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
+          </div>
+        </details>
+      );
     case "codeBlock": {
-      const code = textOf(node.content);
-      const { html, lang } = highlightCode(code, node.attrs?.language ?? undefined);
+      const { html, lang } = highlightCode(textOf(node.content), node.attrs?.language ?? undefined);
       return (
         <pre key={key} className={`code-block__pre code-block__pre--plain language-${lang}`}>
           <code className="code-block__code" dangerouslySetInnerHTML={{ __html: html }} />
         </pre>
       );
     }
+    case "image":
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img key={key} src={node.attrs?.src} alt={node.attrs?.alt ?? ""} className="blk-img" loading="lazy" />
+      );
+    case "table":
+      return (
+        <div key={key} className="blk-table-wrap">
+          <table className="blk-table">
+            <tbody>
+              {(node.content ?? []).map((row: Node, i: number) => renderBlock(row, i))}
+            </tbody>
+          </table>
+        </div>
+      );
+    case "tableRow":
+      return (
+        <tr key={key} className="blk-table__row">
+          {(node.content ?? []).map((cell: Node, i: number) => renderBlock(cell, i))}
+        </tr>
+      );
+    case "tableHeader":
+      return (
+        <th key={key} className="blk-table__th" colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
+          {renderFlow(node.content)}
+        </th>
+      );
+    case "tableCell":
+      return (
+        <td key={key} className="blk-table__td" colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
+          {renderFlow(node.content)}
+        </td>
+      );
     case "horizontalRule":
       return <hr key={key} className="blk-hr" />;
     default:

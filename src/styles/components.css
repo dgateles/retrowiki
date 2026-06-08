@@ -619,6 +619,32 @@
   .blk-hr {
     @apply my-8 border-0 border-t border-border;
   }
+  .blk-mark {
+    @apply rounded px-0.5 text-black;
+  }
+  .blk-box {
+    @apply my-5 rounded-lg border border-border bg-muted/30 p-4;
+  }
+  .blk-spoiler {
+    @apply my-5 overflow-hidden rounded-lg border border-border;
+  }
+  .blk-spoiler__summary {
+    @apply cursor-pointer bg-muted/50 px-4 py-2 font-medium;
+  }
+  .blk-spoiler__body {
+    @apply p-4;
+  }
+
+  /* Itens do editor: amostras de cor e grade de emoji. */
+  .rte-swatch {
+    @apply inline-block size-4 shrink-0 rounded border border-border;
+  }
+  .rte-emojis {
+    @apply grid grid-cols-6 gap-0.5;
+  }
+  .rte-emoji {
+    @apply justify-center px-0 text-lg;
+  }
   .blk-figure {
     @apply my-6;
   }
@@ -1353,6 +1379,54 @@
   float: left;
   height: 0;
   pointer-events: none;
+}
+.rte__content .ProseMirror .rte-box {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 30%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+.rte__content .ProseMirror .rte-spoiler {
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  position: relative;
+}
+.rte__content .ProseMirror .rte-spoiler::before {
+  content: "Spoiler";
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-bottom: 0.25rem;
+}
+.rte__content .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.rte__content .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+.rte__content .ProseMirror th,
+.rte__content .ProseMirror td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  min-width: 4rem;
+}
+.rte__content .ProseMirror th {
+  background: color-mix(in srgb, var(--muted) 50%, transparent);
+  font-weight: 600;
+}
+.rte__content .ProseMirror mark {
+  border-radius: 0.2rem;
+  padding: 0 0.1em;
+  color: #000;
+}
+.rte__content .ProseMirror .ProseMirror-selectednode {
+  outline: 2px solid var(--ring);
 }
 
 /* Tema de sintaxe (PrismJS). As classes .token são convenção da biblioteca. */
