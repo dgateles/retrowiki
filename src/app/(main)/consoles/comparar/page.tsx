@@ -97,7 +97,9 @@ export default async function ComparePage({
             <caption className="sr-only">Comparação de especificações e emulação</caption>
             <thead>
               <tr>
-                <th scope="col" className="border-b border-border px-3 py-2 text-left" />
+                <th scope="col" className="border-b border-border px-3 py-2 text-left">
+                  <span className="sr-only">Característica</span>
+                </th>
                 {selected.map((d) => (
                   <th key={d.device.id} scope="col" className="border-b border-border px-3 py-3 text-left align-bottom">
                     <Link href={`/consoles/${d.device.slug}`} className="flex flex-col items-start gap-2 hover:text-primary">

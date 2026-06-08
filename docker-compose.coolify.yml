@@ -20,6 +20,7 @@ services:
       CAPTCHA_SECRET: ${CAPTCHA_SECRET}
       STORAGE_DIR: /app/storage
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      CRON_SECRET: ${CRON_SECRET:-}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       EMAIL_FROM: ${EMAIL_FROM:-RetroWiki <noreply@localhost>}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}

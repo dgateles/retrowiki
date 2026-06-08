@@ -50,7 +50,10 @@ export default async function ArticlePage({
           <span className="text-xs font-medium text-primary">{typeLabel(a.type)}</span>
           <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">{a.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            por @{a.authorHandle}
+            por{" "}
+            <Link href={`/u/${a.authorHandle}`} className="hover:text-foreground underline">
+              @{a.authorHandle}
+            </Link>
             {a.deviceSlug && (
               <>
                 {" · "}
@@ -90,7 +93,9 @@ export default async function ArticlePage({
             {comments.map((c) => (
               <li key={c.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">@{c.authorHandle}</span>
+                  <Link href={`/u/${c.authorHandle}`} className="text-sm font-medium hover:underline">
+                    @{c.authorHandle}
+                  </Link>
                   <time className="text-xs text-muted-foreground" dateTime={new Date(c.createdAt).toISOString()}>
                     {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(c.createdAt))}
                   </time>

@@ -14,6 +14,7 @@ const schema = z.object({
   CAPTCHA_SECRET: z.string().min(16, "CAPTCHA_SECRET must be at least 16 chars"),
   STORAGE_DIR: z.string().default("./storage"),
   GITHUB_TOKEN: z.string().optional(),
+  CRON_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("RetroWiki <noreply@localhost>"),
   SEED_ADMIN_EMAIL: z.email().optional(),
