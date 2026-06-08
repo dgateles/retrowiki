@@ -51,25 +51,38 @@ export async function getDeviceBySlug(slug: string): Promise<DeviceDetail | null
   try {
     const [device] = await db.select().from(devices).where(eq(devices.slug, slug)).limit(1);
     if (!device) return null;
-
-    const [spec] = await db
-      .select()
-      .from(deviceSpecs)
-      .where(eq(deviceSpecs.deviceId, device.id))
-      .limit(1);
-    const emulation = await db
-      .select({ system: emulationScores.system, score: emulationScores.score })
-      .from(emulationScores)
-      .where(eq(emulationScores.deviceId, device.id));
-    const images = await db
-      .select({ url: deviceImages.url, alt: deviceImages.alt })
-      .from(deviceImages)
-      .where(eq(deviceImages.deviceId, device.id));
-
-    return { device, spec: spec ?? null, emulation, images };
+    return loadDetail(device);
   } catch {
     return null;
   }
+}
+
+export async function getDeviceDetailById(id: number): Promise<DeviceDetail | null> {
+  try {
+    const [device] = await db.select().from(devices).where(eq(devices.id, id)).limit(1);
+    if (!device) return null;
+    return loadDetail(device);
+  } catch {
+    return null;
+  }
+}
+
+async function loadDetail(device: Device): Promise<DeviceDetail> {
+  const [spec] = await db
+    .select()
+    .from(deviceSpecs)
+    .where(eq(deviceSpecs.deviceId, device.id))
+    .limit(1);
+  const emulation = await db
+    .select({ system: emulationScores.system, score: emulationScores.score })
+    .from(emulationScores)
+    .where(eq(emulationScores.deviceId, device.id));
+  const images = await db
+    .select({ url: deviceImages.url, alt: deviceImages.alt })
+    .from(deviceImages)
+    .where(eq(deviceImages.deviceId, device.id));
+
+  return { device, spec: spec ?? null, emulation, images };
 }
 
 export async function listManufacturers(): Promise<string[]> {

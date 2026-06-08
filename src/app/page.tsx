@@ -11,7 +11,13 @@ export default function HomePage() {
             <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
             RetroWiki
           </Link>
-          <nav aria-label="Principal" className="flex items-center gap-2">
+          <nav aria-label="Principal" className="flex items-center gap-1 sm:gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/consoles">Consoles</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/guias">Guias</Link>
+            </Button>
             <Button asChild variant="ghost" size="sm">
               <Link href="/auth/entrar">Entrar</Link>
             </Button>
