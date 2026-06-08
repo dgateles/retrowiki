@@ -14,9 +14,10 @@ componentes dinâmicos.
   editar os existentes. O modelo de dados suporta tudo (specs, emulação,
   categorias, imagens), mas falta o formulário de admin e a action segura.
 - **Editor de conteúdo rico.** O editor atual é por blocos com campos simples.
-  O alvo é uma experiência mais próxima de WordPress ou de fóruns (IPB, XenForo),
-  com barra de ferramentas e edição fluida, ainda produzindo a árvore de blocos
-  segura. É a mudança de maior porte da camada de autoria.
+  O alvo é um WYSIWYG completo no estilo IPB, com barra de ferramentas e edição
+  fluida, ainda produzindo a árvore de blocos segura. Especificação detalhada na
+  seção "Editor rico WYSIWYG (referência IPB)". É a mudança de maior porte da
+  camada de autoria.
 
 ## Interface desejada (referências Invision/IPB)
 
@@ -50,6 +51,52 @@ Adaptar ao cenário do RetroWiki, sem copiar literal.
   Substitui o link direto do sino por um dropdown.
 - **Compartilhar conteúdo.** Popover com URL copiável e botões de redes
   (Bluesky, X, Facebook, LinkedIn, Reddit, Pinterest) e "Mais opções".
+
+## Editor rico WYSIWYG (referência IPB)
+
+Substituir o editor por blocos atual por um WYSIWYG completo, no estilo do
+Invision Community. É a mudança de maior porte da autoria. Direção visual e de
+recursos (das referências enviadas):
+
+Barra de ferramentas, da esquerda para a direita:
+
+- **Estilo de bloco (¶).** Dropdown: Parágrafo, Título 1 a 6.
+- **Inserir (+).** Dropdown: lista ordenada, lista com marcadores, bloco de
+  código, Box (cartão destacado), Spoiler (oculta/revela), citação (quote),
+  régua horizontal, tabela.
+- **Negrito, Itálico, Sublinhado.**
+- **Tamanho de fonte (Tt).** Dropdown: 80%, 90%, 100% (padrão), 125%, 150%,
+  175%, 200%.
+- **Cor do texto (A).** Dropdown com amostras: Padrão, Suave, Forte, Vermelho,
+  Laranja, Amarelo, Verde, Azul, Índigo, Violeta.
+- **Link.** Popover com campos Texto e URL (validar URL, `rel` seguro).
+- **Emoji e ícones.** Picker com abas Emojis e Ícones, busca, categorias
+  (emojis nativos; ícones de uma fonte como FontAwesome).
+- **Limpar formatação (Tx).**
+- **Mais (…).** Overflow: código inline, tachado, subscrito, sobrescrito,
+  família de fonte, alinhamento (esquerda, centro, direita, justificado),
+  cor de destaque (highlight: sem destaque, vermelho, laranja, amarelo, verde,
+  azul, etc.).
+
+Implicações de arquitetura:
+
+- O modelo de conteúdo atual guarda parágrafos como texto puro. Um editor rico
+  exige **rich text inline** (marcas: negrito, itálico, sublinhado, tachado,
+  sub/sobrescrito, código inline, cor, destaque, tamanho, link) dentro dos
+  parágrafos e títulos. Será preciso evoluir o schema de blocos para um modelo
+  de nós inline com allowlist, mantendo a renderização sem `dangerouslySetInnerHTML`
+  de conteúdo do usuário.
+- Novos blocos: Box, Spoiler, régua horizontal, citação. Reaproveitar os
+  existentes (heading, listas, código, tabela, imagem).
+- Base sugerida: TipTap/ProseMirror (esquema controlado), serializando para a
+  árvore de blocos segura em vez de HTML livre. Toda marca e atributo deve
+  passar por allowlist no servidor antes de salvar.
+- Segurança (regra do projeto): sanitizar no servidor, proibir scripts, estilos
+  arbitrários e URLs `javascript:`; cores e tamanhos restritos ao conjunto fixo
+  acima; emojis e ícones de catálogo fechado.
+- Acessibilidade: toolbar operável por teclado (padrão APG toolbar), nomes
+  acessíveis nos botões, foco visível, e os popovers (link, emoji) sem armadilha
+  de foco.
 
 ## Conteúdo e lojas
 - **Registro de lojas e guias de compra.** O bloco `store-links` existe e

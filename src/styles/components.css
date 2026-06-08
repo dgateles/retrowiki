@@ -780,6 +780,41 @@
     @apply text-primary;
   }
 
+  /* Configurações em seções. */
+  .settings {
+    @apply mt-8 grid gap-6 md:grid-cols-[220px_1fr];
+  }
+  .settings__nav {
+    @apply flex flex-col gap-0.5;
+  }
+  .settings__link {
+    @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .settings__link--active {
+    @apply bg-accent text-foreground;
+  }
+  .settings__panel {
+    @apply min-w-0;
+  }
+  .settings-section {
+    @apply max-w-xl;
+  }
+  .settings-section__title {
+    @apply text-xl font-semibold;
+  }
+  .settings-section__desc {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  .settings-row {
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border py-4;
+  }
+  .settings-row__label {
+    @apply font-medium;
+  }
+  .settings-row__value {
+    @apply text-sm text-muted-foreground;
+  }
+
   /* Conta. */
   .account__section {
     @apply mt-6 rounded-lg border border-border bg-card p-5;
