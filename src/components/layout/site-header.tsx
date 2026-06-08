@@ -17,7 +17,7 @@ export async function SiteHeader() {
     <header className="site-header">
       <div className="site-header__inner">
         <Link href="/" className="site-header__brand">
-          <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
+          <Gamepad2 className="brand-icon" aria-hidden="true" />
           RetroWiki
         </Link>
 
@@ -40,7 +40,7 @@ export async function SiteHeader() {
                 <Link href="/notificacoes">
                   <Bell className="size-4" aria-hidden="true" />
                   {unread > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    <span className="site-header__badge">
                       {unread > 9 ? "9+" : unread}
                     </span>
                   )}

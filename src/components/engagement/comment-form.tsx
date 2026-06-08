@@ -37,7 +37,7 @@ export function CommentForm({ articleId }: { articleId: number }) {
         minLength={2}
         maxLength={2000}
         rows={3}
-        className="w-full rounded-md border border-input bg-background p-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="editor__control"
         placeholder="Compartilhe sua experiência ou tire uma dúvida"
       />
       <Button type="submit" size="sm" disabled={pending || body.trim().length < 2}>

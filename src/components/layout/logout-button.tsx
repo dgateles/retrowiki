@@ -8,7 +8,7 @@ export function LogoutButton() {
   return (
     <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: "/" })} aria-label="Sair">
       <LogOut className="size-4" aria-hidden="true" />
-      <span className="hidden sm:inline">Sair</span>
+      <span className="logout__label">Sair</span>
     </Button>
   );
 }

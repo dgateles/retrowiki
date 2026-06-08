@@ -39,7 +39,7 @@ export function ModerationActions({ reviewId }: { reviewId: number }) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-2">
+      <div className="btn-row">
         <Button size="sm" disabled={pending} onClick={() => run("approved")}>
           Aprovar
         </Button>
@@ -61,7 +61,7 @@ export function ModerationActions({ reviewId }: { reviewId: number }) {
             O motivo será enviado ao autor.
           </DialogDescription>
           <form
-            className="mt-4 space-y-3"
+            className="form mt-4"
             onSubmit={(e) => {
               e.preventDefault();
               if (modal) run(modal, reason.trim() || undefined);
@@ -74,9 +74,9 @@ export function ModerationActions({ reviewId }: { reviewId: number }) {
               autoFocus
               aria-label="Motivo"
               placeholder="Explique o que precisa mudar"
-              className="w-full rounded-md border border-input bg-background p-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="editor__control"
             />
-            <div className="flex justify-end gap-2">
+            <div className="modal-actions">
               <DialogClose asChild>
                 <Button type="button" variant="ghost" size="sm">Cancelar</Button>
               </DialogClose>

@@ -15,9 +15,9 @@ export default async function ResetPage({
   if (!token) {
     return (
       <AuthShell title="Link inválido">
-        <p className="text-sm text-muted-foreground">
+        <p className="muted">
           Link de redefinição ausente ou inválido.{" "}
-          <Link href="/auth/esqueci" className="text-foreground underline">
+          <Link href="/auth/esqueci" className="link-inline">
             Solicitar novo
           </Link>
         </p>

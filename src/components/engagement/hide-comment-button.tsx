@@ -34,11 +34,7 @@ export function HideCommentButton({ commentId }: { commentId: number }) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-destructive focus-visible:outline-2"
-      >
+      <button type="button" onClick={() => setOpen(true)} className="hide-link">
         <EyeOff className="size-3.5" aria-hidden="true" /> Ocultar
       </button>
 
@@ -48,7 +44,7 @@ export function HideCommentButton({ commentId }: { commentId: number }) {
           <DialogDescription id="hide-desc">
             O comentário deixará de aparecer no guia. A ação fica registrada.
           </DialogDescription>
-          <div className="mt-4 flex justify-end gap-2">
+          <div className="modal-actions">
             <DialogClose asChild>
               <Button type="button" variant="ghost" size="sm">Cancelar</Button>
             </DialogClose>

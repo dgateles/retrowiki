@@ -150,7 +150,7 @@ export function DeviceSpecCard({ detail }: { detail: DeviceDetail }) {
               <ul className="proscons__list">
                 {pros.map((p) => (
                   <li key={p} className="proscons__item">
-                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                    <Check className="icon-pos" aria-hidden="true" />
                     {p}
                   </li>
                 ))}
@@ -163,7 +163,7 @@ export function DeviceSpecCard({ detail }: { detail: DeviceDetail }) {
               <ul className="proscons__list">
                 {cons.map((c) => (
                   <li key={c} className="proscons__item">
-                    <X className="mt-0.5 size-4 shrink-0 text-red-500" aria-hidden="true" />
+                    <X className="icon-neg" aria-hidden="true" />
                     {c}
                   </li>
                 ))}

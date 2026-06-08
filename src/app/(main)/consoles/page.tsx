@@ -67,7 +67,7 @@ export default async function ConsolesPage({
         ]}
       />
 
-      <p className="mt-4 text-sm text-muted-foreground" role="status" aria-live="polite">
+      <p className="page__note" role="status" aria-live="polite">
         {devices.length} {devices.length === 1 ? "console encontrado" : "consoles encontrados"}
       </p>
 

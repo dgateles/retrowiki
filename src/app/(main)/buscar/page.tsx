@@ -33,7 +33,7 @@ export default async function SearchPage({
       </form>
 
       {q.trim().length >= 2 && (
-        <p className="mt-4 text-sm text-muted-foreground" role="status" aria-live="polite">
+        <p className="page__note" role="status" aria-live="polite">
           {total} {total === 1 ? "resultado" : "resultados"} para “{q}”
         </p>
       )}

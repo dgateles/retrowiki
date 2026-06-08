@@ -19,13 +19,13 @@ export default async function VerifyPage({
 
   return (
     <AuthShell title="Confirmação de e-mail">
-      <div className="flex flex-col items-center gap-3 text-center">
+      <div className="confirm">
         {result.ok ? (
-          <CheckCircle2 className="size-10 text-success" aria-hidden="true" />
+          <CheckCircle2 className="confirm__icon--ok" aria-hidden="true" />
         ) : (
-          <XCircle className="size-10 text-destructive" aria-hidden="true" />
+          <XCircle className="confirm__icon--bad" aria-hidden="true" />
         )}
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className="empty__text" role="status">
           {result.ok ? result.message : result.error}
         </p>
         <Button asChild className="w-full">

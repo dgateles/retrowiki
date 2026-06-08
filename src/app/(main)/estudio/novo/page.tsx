@@ -11,8 +11,8 @@ export default async function NewArticlePage() {
 
   return (
     <main id="main" className="page">
-      <h1 className="text-3xl font-bold">Escrever conteúdo</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <h1 className="page__title">Escrever conteúdo</h1>
+      <p className="page__note">
         Monte o conteúdo com blocos. Ao enviar, ele entra na fila de moderação
         antes de publicar.
       </p>

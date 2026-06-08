@@ -11,7 +11,7 @@ export default function ForgotPage() {
       title="Recuperar senha"
       description="Enviaremos um link de redefinição para o seu e-mail."
       footer={
-        <Link href="/auth/entrar" className="text-foreground underline">
+        <Link href="/auth/entrar" className="link-inline">
           Voltar para entrar
         </Link>
       }

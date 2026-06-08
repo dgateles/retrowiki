@@ -221,19 +221,19 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-      <div className="space-y-1.5">
+    <form onSubmit={(e) => e.preventDefault()} className="editor">
+      <div className="field">
         <Label htmlFor="title">Título</Label>
         <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required minLength={8} maxLength={140} />
       </div>
-      <div className="space-y-1.5">
+      <div className="field">
         <Label htmlFor="type">Tipo</Label>
         <select
           id="type"
           aria-label="Tipo do conteúdo"
           value={type}
           onChange={(e) => setType(e.target.value as typeof type)}
-          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="editor__select editor__select--full"
         >
           {TYPES.map((t) => (
             <option key={t.type} value={t.type}>{t.label}</option>
@@ -241,13 +241,13 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
         </select>
       </div>
 
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium">Conteúdo</legend>
+      <fieldset className="editor__fieldset">
+        <legend className="editor__legend">Conteúdo</legend>
         {blocks.map((b) => (
-          <div key={b._id} className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">{b.type}</span>
-              <div className="flex gap-1">
+          <div key={b._id} className="editor__block">
+            <div className="editor__block-head">
+              <span className="editor__block-type">{b.type}</span>
+              <div className="editor__block-actions">
                 <Button type="button" size="icon" variant="ghost" onClick={() => move(b._id, -1)} aria-label="Mover para cima">
                   <ArrowUp className="size-4" />
                 </Button>
@@ -255,7 +255,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   <ArrowDown className="size-4" />
                 </Button>
                 <Button type="button" size="icon" variant="ghost" onClick={() => remove(b._id)} aria-label="Remover bloco">
-                  <Trash2 className="size-4 text-destructive" />
+                  <Trash2 className="icon-danger" />
                 </Button>
               </div>
             </div>
@@ -270,7 +270,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                 placeholder="Escreva o parágrafo"
                 aria-label="Texto do parágrafo"
                 rows={4}
-                className="w-full rounded-md border border-input bg-background p-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="editor__control"
               />
             )}
             {b.type === "callout" && (
@@ -279,7 +279,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   value={b.variant}
                   aria-label="Variante do alerta"
                   onChange={(e) => update(b._id, { variant: e.target.value as "info" })}
-                  className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                  className="editor__select"
                 >
                   <option value="info">Informação</option>
                   <option value="success">Sucesso</option>
@@ -291,7 +291,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   onChange={(e) => update(b._id, { text: e.target.value })}
                   aria-label="Texto do alerta"
                   rows={2}
-                  className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                  className="editor__control"
                 />
               </div>
             )}
@@ -310,7 +310,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   rows={5}
                   spellCheck={false}
                   placeholder="Cole o código aqui"
-                  className="w-full rounded-md border border-input bg-background p-3 font-mono text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  className="editor__control editor__control--mono"
                 />
               </div>
             )}
@@ -321,7 +321,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
               </div>
             )}
             {b.type === "github-releases" && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="editor__grid2">
                 <Input value={b.owner} onChange={(e) => update(b._id, { owner: e.target.value })} placeholder="owner (ex.: ROCKNIX)" />
                 <Input value={b.repo} onChange={(e) => update(b._id, { repo: e.target.value })} placeholder="repo (ex.: distribution)" />
               </div>
@@ -337,7 +337,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
             )}
             {b.type === "list" && (
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm">
+                <label className="editor__check">
                   <input
                     type="checkbox"
                     checked={b.ordered}
@@ -351,7 +351,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   aria-label="Itens da lista, um por linha"
                   rows={4}
                   placeholder="Um item por linha"
-                  className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                  className="editor__control"
                 />
               </div>
             )}
@@ -369,7 +369,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   aria-label="Linhas da tabela"
                   rows={4}
                   placeholder="Uma linha por linha, células separadas por |"
-                  className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                  className="editor__control"
                 />
               </div>
             )}
@@ -380,7 +380,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                 aria-label="Passos, um por linha no formato Título :: descrição"
                 rows={4}
                 placeholder="Um passo por linha: Título :: descrição"
-                className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                className="editor__control"
               />
             )}
             {b.type === "store-links" && (
@@ -395,7 +395,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
         ))}
       </fieldset>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="editor__add">
         {ADD_BUTTONS.map((a) => (
           <Button key={a.type} type="button" variant="outline" size="sm" onClick={() => setBlocks((bs) => [...bs, newBlock(a.type)])}>
             <Plus className="size-4" /> {a.label}
@@ -403,7 +403,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="btn-row">
         <Button type="button" variant="outline" onClick={onSaveDraft} disabled={pending || title.length < 8}>
           {pending ? "Salvando…" : "Salvar rascunho"}
         </Button>

@@ -8,7 +8,7 @@ export default async function HomePage() {
   const devices = await listDevices();
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="home">
       <main id="main" className="flex-1">
         {/* Hero compacto */}
         <section className="hero">
@@ -43,9 +43,7 @@ export default async function HomePage() {
           </div>
 
           {devices.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-              O catálogo será populado pelo seed.
-            </p>
+            <p className="empty">O catálogo será populado pelo seed.</p>
           ) : (
             <ul className="grid-cards">
               {devices.map((d) => (
@@ -68,10 +66,8 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} RetroWiki
-        </div>
+      <footer className="site-footer">
+        <div className="site-footer__inner">© {new Date().getFullYear()} RetroWiki</div>
       </footer>
     </div>
   );

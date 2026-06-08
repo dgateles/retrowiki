@@ -13,7 +13,7 @@ export default function LoginPage() {
       footer={
         <>
           Não tem conta?{" "}
-          <Link href="/auth/cadastrar" className="text-foreground underline">
+          <Link href="/auth/cadastrar" className="link-inline">
             Criar conta
           </Link>
         </>

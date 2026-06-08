@@ -50,7 +50,7 @@ export default async function DevicePage({
           ...(detail.images[0] ? { image: `${BASE}${detail.images[0].url}` } : {}),
         }}
       />
-      <div className="mb-4 flex items-center justify-between">
+      <div className="page__head mb-4">
         <Button asChild variant="ghost" size="sm">
           <Link href="/consoles">
             <ChevronLeft className="size-4" aria-hidden="true" /> Voltar ao catálogo
@@ -64,17 +64,14 @@ export default async function DevicePage({
       <DeviceSpecCard detail={detail} />
 
       {guides.length > 0 && (
-        <section aria-labelledby="guias-device" className="mt-8 rounded-lg border border-border bg-card p-5">
+        <section aria-labelledby="guias-device" className="account__section">
           <h2 id="guias-device" className="font-semibold">Guias deste console</h2>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="link-list link-list--grid mt-3">
             {guides.map((g) => (
               <li key={g.id}>
-                <Link
-                  href={`/guias/${g.slug}`}
-                  className="flex items-center justify-between rounded-md border border-border/60 px-3 py-2 text-sm transition-colors hover:border-primary/50"
-                >
+                <Link href={`/guias/${g.slug}`} className="link-card link-card--sm">
                   {g.title}
-                  <span className="ml-2 shrink-0 text-xs text-muted-foreground">{typeLabel(g.type)}</span>
+                  <span className="link-card__meta">{typeLabel(g.type)}</span>
                 </Link>
               </li>
             ))}

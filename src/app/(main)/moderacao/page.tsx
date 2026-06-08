@@ -40,7 +40,7 @@ export default async function ModerationPage({
   return (
     <main id="main" className="page">
       <h1 className="page__title">Fila de moderação</h1>
-      <p className="mt-2 text-sm text-muted-foreground" role="status">
+      <p className="page__note" role="status">
         {queue.length} {queue.length === 1 ? "item nesta página" : "itens nesta página"}
       </p>
 

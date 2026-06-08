@@ -95,7 +95,7 @@ export default async function ArticlePage({
 
       <div className="engage">
         <VoteButton articleId={a.id} initialCount={vote.count} initialVoted={vote.voted} />
-        <span className="text-sm text-muted-foreground">
+        <span className="muted">
           {comments.length} {comments.length === 1 ? "comentário" : "comentários"}
         </span>
       </div>
@@ -130,7 +130,7 @@ export default async function ArticlePage({
           {userId ? (
             <CommentForm articleId={a.id} />
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="muted">
               <Link href="/auth/entrar" className="underline">Entre</Link> para comentar e votar.
             </p>
           )}

@@ -12,26 +12,26 @@ export default async function AccountPage() {
 
   return (
     <main id="main" className="page">
-      <h1 className="text-3xl font-bold">Minha conta</h1>
+      <h1 className="page__title">Minha conta</h1>
 
-      <section aria-labelledby="perfil" className="mt-6 rounded-lg border border-border bg-card p-5">
+      <section aria-labelledby="perfil" className="account__section">
         <h2 id="perfil" className="font-semibold">Perfil</h2>
-        <dl className="mt-3 space-y-1 text-sm">
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">Usuário:</dt>
+        <dl className="account__dl">
+          <div className="account__row">
+            <dt className="account__label">Usuário:</dt>
             <dd>
               <Link href={`/u/${session.user.handle}`} className="underline">@{session.user.handle}</Link>
             </dd>
           </div>
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">E-mail:</dt>
+          <div className="account__row">
+            <dt className="account__label">E-mail:</dt>
             <dd>{session.user.email}</dd>
           </div>
         </dl>
       </section>
 
-      <section aria-labelledby="senha" className="mt-6 rounded-lg border border-border bg-card p-5">
-        <h2 id="senha" className="mb-4 font-semibold">Alterar senha</h2>
+      <section aria-labelledby="senha" className="account__section">
+        <h2 id="senha" className="account__heading">Alterar senha</h2>
         <ChangePasswordForm />
       </section>
     </main>

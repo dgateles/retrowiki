@@ -84,7 +84,7 @@ export function RetroGuard({
   }, [action, onSolved]);
 
   return (
-    <div className="flex items-center gap-2 text-xs text-muted-foreground" aria-live="polite">
+    <div className="retroguard" aria-live="polite">
       {/* honeypot: invisível e fora da ordem de foco/leitura */}
       <input
         ref={honeypotRef}
@@ -93,22 +93,22 @@ export function RetroGuard({
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        className="absolute h-0 w-0 overflow-hidden opacity-0"
+        className="retroguard__honeypot"
       />
       {state === "loading" && (
         <>
-          <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+          <Loader2 className="retroguard__spinner" aria-hidden="true" />
           Verificando seu navegador…
         </>
       )}
       {state === "ok" && (
         <>
-          <ShieldCheck className="size-3.5 text-emerald-500" aria-hidden="true" />
+          <ShieldCheck className="retroguard__ok" aria-hidden="true" />
           Verificação concluída
         </>
       )}
       {state === "error" && (
-        <span className="text-destructive">
+        <span className="retroguard__error">
           Falha na verificação. Recarregue a página.
         </span>
       )}

@@ -22,8 +22,8 @@ export default async function EditDraftPage({
 
   return (
     <main id="main" className="page">
-      <h1 className="text-3xl font-bold">Editar conteúdo</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <h1 className="page__title">Editar conteúdo</h1>
+      <p className="page__note">
         Ao enviar, o conteúdo volta para a fila de moderação.
       </p>
       <div className="mt-6">

@@ -23,7 +23,7 @@ export function ForgotForm() {
 
   if (done) {
     return (
-      <p className="text-sm text-muted-foreground" role="status">
+      <p className="empty__text" role="status">
         Se houver uma conta com esse e-mail, enviamos as instruções de
         redefinição. Verifique sua caixa de entrada.
       </p>

@@ -127,7 +127,7 @@ export function CalloutBlock({
   const Icon = CALLOUT[variant];
   return (
     <div className={cn("blk-callout", `blk-callout--${variant}`)} role="note">
-      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+      <Icon className="blk-callout__icon" aria-hidden="true" />
       <p className="blk-callout__text">{text}</p>
     </div>
   );

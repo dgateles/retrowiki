@@ -24,7 +24,7 @@ export function UserMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full" aria-label="Menu da conta">
-          <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+          <span className="user-menu__avatar">
             {handle.slice(0, 2).toUpperCase()}
           </span>
         </Button>

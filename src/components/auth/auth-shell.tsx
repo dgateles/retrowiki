@@ -17,7 +17,7 @@ export function AuthShell({
     <main id="main" className="auth-page">
       <div className="auth-page__inner">
         <Link href="/" className="auth-page__brand">
-          <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
+          <Gamepad2 className="brand-icon" aria-hidden="true" />
           RetroWiki
         </Link>
         <Card>

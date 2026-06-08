@@ -39,9 +39,9 @@ export function LoginForm() {
         <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
       <div className="field">
-        <div className="flex items-center justify-between">
+        <div className="field__row">
           <Label htmlFor="password">Senha</Label>
-          <Link href="/auth/esqueci" className="text-xs text-muted-foreground hover:text-foreground">
+          <Link href="/auth/esqueci" className="field__link">
             Esqueci a senha
           </Link>
         </div>
