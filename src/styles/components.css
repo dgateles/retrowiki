@@ -164,6 +164,56 @@
   .user-menu__avatar {
     @apply flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary;
   }
+  .user-menu__rank {
+    @apply px-2 py-2;
+  }
+  .user-menu__rank-head {
+    @apply flex items-baseline justify-between;
+  }
+  .user-menu__rank-label {
+    @apply text-sm font-semibold;
+  }
+  .user-menu__rank-index {
+    @apply text-xs text-muted-foreground;
+  }
+  .user-menu__rank-sub {
+    @apply mt-1 text-xs text-muted-foreground;
+  }
+
+  /* Notificações em dropdown. */
+  .notif-pop {
+    @apply w-80 p-0;
+  }
+  .notif-pop__head {
+    @apply flex items-center justify-between border-b border-border px-3 py-2;
+  }
+  .notif-pop__title {
+    @apply font-semibold;
+  }
+  .notif-pop__settings {
+    @apply text-xs text-primary hover:underline;
+  }
+  .notif-pop__list {
+    @apply max-h-80 overflow-y-auto p-1;
+  }
+  .notif-pop__item {
+    @apply block rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none;
+  }
+  .notif-pop__item--unread {
+    @apply bg-primary/5;
+  }
+  .notif-pop__date {
+    @apply mt-0.5 block text-xs text-muted-foreground;
+  }
+  .notif-pop__empty {
+    @apply px-3 py-10 text-center text-sm text-muted-foreground;
+  }
+  .notif-pop__foot {
+    @apply border-t border-border p-1;
+  }
+  .notif-pop__foot-link {
+    @apply block rounded-md px-2 py-2 text-center text-sm text-primary transition-colors hover:bg-accent;
+  }
   .logout__label {
     @apply hidden sm:inline;
   }

@@ -1,17 +1,30 @@
 import Link from "next/link";
-import { Gamepad2, Bell } from "lucide-react";
-import { auth } from "@/auth";
-import { getUnreadCount } from "@/lib/notifications";
-import { can } from "@/lib/auth-helpers";
+import { Gamepad2 } from "lucide-react";
+import { getCurrentUser, can } from "@/lib/auth-helpers";
+import { getUnreadCount, listNotifications } from "@/lib/notifications";
+import { describeNotification } from "@/lib/notification-text";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { SearchBox } from "@/components/layout/search-box";
 import { UserMenu } from "@/components/layout/user-menu";
+import { NotificationsBell, type NotifItem } from "@/components/layout/notifications-bell";
+
+const fmtDate = (d: Date) =>
+  new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
 export async function SiteHeader() {
-  const session = await auth();
-  const user = session?.user;
-  const unread = user ? await getUnreadCount(Number(user.id)) : 0;
+  const user = await getCurrentUser();
+
+  let unread = 0;
+  let notifItems: NotifItem[] = [];
+  if (user) {
+    const [count, all] = await Promise.all([getUnreadCount(user.id), listNotifications(user.id)]);
+    unread = count;
+    notifItems = all.slice(0, 6).map((n) => {
+      const d = describeNotification(n.type, n.payload);
+      return { id: n.id, text: d.text, href: d.href ?? null, read: Boolean(n.readAt), date: fmtDate(n.createdAt) };
+    });
+  }
 
   return (
     <header className="site-header">
@@ -36,17 +49,13 @@ export async function SiteHeader() {
           <ThemeToggle />
           {user ? (
             <>
-              <Button asChild variant="ghost" size="icon" className="relative" aria-label={`Notificações${unread ? `, ${unread} não lidas` : ""}`}>
-                <Link href="/notificacoes">
-                  <Bell className="size-4" aria-hidden="true" />
-                  {unread > 0 && (
-                    <span className="site-header__badge">
-                      {unread > 9 ? "9+" : unread}
-                    </span>
-                  )}
-                </Link>
-              </Button>
-              <UserMenu handle={user.handle} isStaff={can.moderate(user)} isAdmin={can.admin(user)} />
+              <NotificationsBell unread={unread} items={notifItems} />
+              <UserMenu
+                handle={user.handle}
+                reputation={user.reputation}
+                isStaff={can.moderate(user)}
+                isAdmin={can.admin(user)}
+              />
             </>
           ) : (
             <>
