@@ -1,10 +1,22 @@
 import "dotenv/config";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { drizzle } from "drizzle-orm/mysql2";
 import { eq } from "drizzle-orm";
 import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
-import { categories, users } from "./schema";
+import {
+  categories,
+  users,
+  devices,
+  deviceSpecs,
+  emulationScores,
+  deviceImages,
+} from "./schema";
 import { slugify } from "../lib/utils";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const CATEGORIES = [
   { slug: "staff-pick", label: "Staff Pick", kind: "rating" as const },
@@ -13,6 +25,18 @@ const CATEGORIES = [
   { slug: "powerfull", label: "Potente", kind: "power" as const },
   { slug: "budget", label: "Custo-benefício", kind: "power" as const },
 ];
+
+type SeedDevice = {
+  slug: string;
+  name: string;
+  manufacturer: string;
+  releaseYear: number | null;
+  formFactor: "vertical" | "horizontal" | "clamshell" | "other";
+  extra: unknown;
+  spec: Record<string, unknown>;
+  emulation: { system: string; score: number }[];
+  image: { url: string; alt: string } | null;
+};
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -23,6 +47,44 @@ async function main() {
   let order = 0;
   for (const c of CATEGORIES) {
     await db.insert(categories).values({ ...c, sortOrder: order++ }).catch(() => {});
+  }
+
+  const data: SeedDevice[] = JSON.parse(
+    readFileSync(join(__dirname, "seed-data", "devices.json"), "utf8"),
+  );
+
+  for (const d of data) {
+    const [existing] = await db
+      .select({ id: devices.id })
+      .from(devices)
+      .where(eq(devices.slug, d.slug))
+      .limit(1);
+    if (existing) continue;
+
+    const [res] = await db.insert(devices).values({
+      slug: d.slug,
+      name: d.name,
+      manufacturer: d.manufacturer,
+      releaseYear: d.releaseYear ?? undefined,
+      formFactor: d.formFactor,
+      status: "published",
+      extra: d.extra as object,
+    });
+    const deviceId = (res as unknown as { insertId: number }).insertId;
+
+    await db.insert(deviceSpecs).values({ deviceId, ...(d.spec as object) }).catch(() => {});
+    for (const e of d.emulation) {
+      await db.insert(emulationScores).values({ deviceId, system: e.system, score: e.score }).catch(() => {});
+    }
+    if (d.image) {
+      await db.insert(deviceImages).values({
+        deviceId,
+        url: d.image.url,
+        kind: "front",
+        alt: d.image.alt,
+      }).catch(() => {});
+    }
+    console.log(`device: ${d.slug}`);
   }
 
   const email = process.env.SEED_ADMIN_EMAIL;

@@ -1,0 +1,1363 @@
+[
+  {
+    "slug": "mangmi-air-x",
+    "name": "Mangmi Air X",
+    "manufacturer": "Mangmi",
+    "releaseYear": 2025,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Console Android de entrada lançado em outubro de 2025 pela Mangmi. Com Snapdragon 662, tela IPS Full HD de 5.5 polegadas, Hall Effect sticks, bateria de 5000 mAh e Android 14, entrega emulação excelente de tudo até PSP/Dreamcast/N64 a menos de US$100.",
+      "priceRange": "~US$100",
+      "pros": [
+        "Tela IPS 1080p muito superior a outros consoles na mesma faixa de preço",
+        "Botões e D-Pad com ótima sensação tátil",
+        "Hall Effect sticks mais precisos e duráveis",
+        "Bateria de 5000 mAh para sessões longas",
+        "CFWs disponíveis: GammaOS Next e ROCKNIX",
+        "Touchscreen útil para navegação e jogos de toque",
+        "Grips ergonômicos para conforto em sessões prolongadas",
+        "4 GB de RAM para navegação fluida no Android",
+        "Acesso a jogos mobile e ports de PC via PortMaster"
+      ],
+      "cons": [
+        "Alto-falantes na parte inferior - bons, mas não excepcionais",
+        "Barras pretas laterais ao emular sistemas com proporção 4:3",
+        "Sem saída de vídeo para monitor externo"
+      ]
+    },
+    "spec": {
+      "chip": "Qualcomm Snapdragon 662 (Cortex-A73 8-core, até 2.0 GHz)",
+      "gpu": "Qualcomm Adreno 610 (1050 MHz)",
+      "ramGb": 4,
+      "ramType": "LPDDR4X",
+      "storage": "64 GB eMMC + microSD",
+      "architecture": "ARM",
+      "os": "Android 14",
+      "screenSize": 5.5,
+      "resolution": "1920 x 1080",
+      "aspectRatio": "16:9",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 5000,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": false,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": true,
+      "analogTriggers": true,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": true,
+      "gyroscope": true
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive / Genesis",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 100
+      },
+      {
+        "system": "PSP",
+        "score": 100
+      },
+      {
+        "system": "3DS",
+        "score": 60
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      },
+      {
+        "system": "GameCube",
+        "score": 60
+      },
+      {
+        "system": "PS2",
+        "score": 30
+      },
+      {
+        "system": "Wii",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/retrowiki_mangmi-air-x.webp",
+      "alt": "Mangmi Air X, vista frontal"
+    }
+  },
+  {
+    "slug": "miyoo-mini-plus",
+    "name": "Miyoo Mini Plus",
+    "manufacturer": "Miyoo",
+    "releaseYear": 2023,
+    "formFactor": "vertical",
+    "extra": {
+      "description": "Console ultra-compacto com tela IPS vibrante de 3.5 polegadas. Utiliza o chip SigmaStar SSD202D e suporta firmwares custom como OnionOS, MinUI, Koriki e Allium. Perfeito para emulação de sistemas retro até PS1.",
+      "priceRange": "Regular (entre R$350 e R$450)",
+      "pros": [
+        "Tela IPS com cores vibrantes e excelente qualidade",
+        "Ultra-compacto e extremamente portátil (162g)",
+        "Wi-Fi integrado para RetroAchievements e transferências",
+        "Comunidade muito ativa com CFWs de qualidade (OnionOS)",
+        "Excelente custo-benefício (~$50)",
+        "Grip ergonômico para conforto",
+        "Bateria de 3000mAh com boa duração"
+      ],
+      "cons": [
+        "Sem analógicos (apenas D-pad)",
+        "Sem Bluetooth",
+        "Apenas L1/R1 (sem L2/R2)",
+        "RAM limitada (128MB) para emuladores pesados",
+        "Sem sistema de refrigeração"
+      ]
+    },
+    "spec": {
+      "chip": "SigmaStar SSD202D Dual-core Cortex-A7 1.2GHz",
+      "gpu": "Integrada",
+      "ramGb": 128,
+      "ramType": "DDR3",
+      "storage": "microSD",
+      "architecture": "ARM",
+      "os": "Linux (OnionOS/MinUI)",
+      "screenSize": 3.5,
+      "resolution": "640 x 480",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 3000,
+      "cooling": false,
+      "vibration": false,
+      "wifi": true,
+      "bluetooth": false,
+      "videoOut": false,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": false,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": false,
+      "l3r3": false,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 30
+      },
+      {
+        "system": "PSP",
+        "score": 30
+      },
+      {
+        "system": "Dreamcast",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/miyoo-mini-plus.png",
+      "alt": "Miyoo Mini Plus, vista frontal"
+    }
+  },
+  {
+    "slug": "powkiddy",
+    "name": "PowKiddy RGB30",
+    "manufacturer": "PowKiddy",
+    "releaseYear": 2023,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Console portátil com tela quadrada IPS 1:1 de 720x720, ideal para handhelds clássicos e jogos no formato 4:3. Utiliza o chip Rockchip RK3566, possui Wi-Fi e Bluetooth integrados e roda múltiplos firmwares custom como JELOS, ROCKNIX e ArkOS.",
+      "priceRange": "Acessível (entre R$300,00 e R$500,00)",
+      "pros": [
+        "Tela quadrada 1:1 de 720x720 perfeita para 4:3 e handhelds clássicos",
+        "Wi-Fi e Bluetooth integrados (scraping, RetroAchievements, controles sem fio)",
+        "Dois slots microSD (sistema e jogos separados)",
+        "Bateria grande de 4100mAh",
+        "Suporte ativo da comunidade (JELOS, ROCKNIX, ArkOS)",
+        "Dual analog sticks e gatilhos L2/R2"
+      ],
+      "cons": [
+        "Carcaça de plástico relativamente fina",
+        "Analógicos de qualidade básica (sem Hall Effect)",
+        "Potência limitada para Saturn, PS2 e GameCube",
+        "Tela quadrada deixa barras pretas em jogos 16:9"
+      ]
+    },
+    "spec": {
+      "chip": "Rockchip RK3566 Quad-core 1.8GHz (Cortex-A55)",
+      "gpu": "Mali-G52 2EE",
+      "ramGb": 1,
+      "ramType": "LPDDR4",
+      "storage": "Dual microSD (até 256GB por slot)",
+      "architecture": "ARM",
+      "os": "Linux (JELOS/ROCKNIX/ArkOS)",
+      "screenSize": 4,
+      "resolution": "720 x 720",
+      "aspectRatio": "1:1 (quadrada)",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 4100,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo / NGPC",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 85
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 85
+      },
+      {
+        "system": "PSP",
+        "score": 85
+      },
+      {
+        "system": "Dreamcast",
+        "score": 85
+      },
+      {
+        "system": "Saturn",
+        "score": 30
+      },
+      {
+        "system": "PS2",
+        "score": 30
+      },
+      {
+        "system": "GameCube",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/powkiddy-rgb30.webp",
+      "alt": "PowKiddy RGB30, vista frontal"
+    }
+  },
+  {
+    "slug": "r36s",
+    "name": "R36S",
+    "manufacturer": "Game Console",
+    "releaseYear": 2023,
+    "formFactor": "vertical",
+    "extra": {
+      "description": "Console portátil de baixo custo com excelente custo-benefício. Utiliza o chip RK3326, tela IPS de 3.5 polegadas e suporta múltiplos firmwares custom como ArkOS, AmberELEC e ROCKNIX.",
+      "priceRange": "Barato (entre R$150,00 e R$250,00)",
+      "pros": [
+        "Excelente suporte da comunidade com múltiplos CFWs",
+        "Dispositivo compacto, cabe no bolso",
+        "Preço muito acessível",
+        "Acesso a ports de PC via PortMaster",
+        "Tela IPS de boa qualidade",
+        "Dual analog sticks"
+      ],
+      "cons": [
+        "Controles um pouco rígidos de fábrica",
+        "Sem Wi-Fi (sem RetroAchievements, scraping, transferência)",
+        "Potência limitada para emuladores mais pesados",
+        "Existem clones com hardware inferior"
+      ]
+    },
+    "spec": {
+      "chip": "Rockchip RK3326 Quad-core 1.5GHz",
+      "gpu": "Mali-G31 MP2",
+      "ramGb": 1,
+      "ramType": "DDR3L",
+      "storage": "microSD (até 512GB)",
+      "architecture": "ARM",
+      "os": "Linux (ArkOS/ROCKNIX)",
+      "screenSize": 3.5,
+      "resolution": "640 x 480",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 3200,
+      "cooling": true,
+      "vibration": true,
+      "wifi": false,
+      "bluetooth": false,
+      "videoOut": false,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 85
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 85
+      },
+      {
+        "system": "PSP",
+        "score": 60
+      },
+      {
+        "system": "Dreamcast",
+        "score": 60
+      },
+      {
+        "system": "Saturn",
+        "score": 30
+      },
+      {
+        "system": "PS2",
+        "score": 30
+      },
+      {
+        "system": "GameCube",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/r36s.png",
+      "alt": "R36S, vista frontal"
+    }
+  },
+  {
+    "slug": "retroid-pocket-5",
+    "name": "Retroid Pocket 5",
+    "manufacturer": "Retroid",
+    "releaseYear": 2024,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Handheld Android de médio porte com Snapdragon 865, tela AMOLED de 5.5 polegadas Full HD e sticks Hall Effect. Roda PS2, GameCube e Wii com boa consistência, além de ter acesso completo ao ecossistema Android.",
+      "priceRange": "~US$ 200 (aprox. R$ 1.000–1.200)",
+      "pros": [
+        "Potente o suficiente para emulação de alto nível (PS2, GameCube, Wii)",
+        "Tela AMOLED com cores vibrantes e pretos perfeitos",
+        "Boa comunidade, CFWs disponíveis (ROCKNIX, GammaOSNext)",
+        "Display Full HD de alta resolução",
+        "Acesso a jogos Android e apps da Play Store",
+        "Saída de vídeo para monitores externos",
+        "Acesso a ports de PC via PortMaster",
+        "Bateria grande de 5000 mAh",
+        "Touchscreen útil para jogos com interface tátil",
+        "Navegação fluida graças aos 8 GB de RAM",
+        "Grips ergonômicos para sessões longas",
+        "Sticks Hall Effect mais duráveis e precisos"
+      ],
+      "cons": [
+        "Posição dos analógicos não é ideal para todos os estilos de jogo",
+        "Barras laterais pretas ao jogar sistemas mais antigos (4:3)"
+      ]
+    },
+    "spec": {
+      "chip": "Qualcomm Snapdragon 865 (Cortex-A77, 8 núcleos, até 2.84 GHz)",
+      "gpu": "Qualcomm Adreno 650 (587 MHz)",
+      "ramGb": 8,
+      "ramType": "LPDDR4X",
+      "storage": "128 GB UFS 3.1",
+      "architecture": "ARM",
+      "os": "Android 13 / Linux",
+      "screenSize": 5.5,
+      "resolution": "1920 x 1080",
+      "aspectRatio": "16:9",
+      "refreshHz": 60,
+      "panelType": "AMOLED",
+      "batteryMah": 5000,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": true,
+      "analogTriggers": true,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": true,
+      "gyroscope": true
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive / Genesis",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 100
+      },
+      {
+        "system": "PSP",
+        "score": 100
+      },
+      {
+        "system": "Wii",
+        "score": 100
+      },
+      {
+        "system": "GameCube",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 3DS",
+        "score": 85
+      },
+      {
+        "system": "PS2",
+        "score": 85
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      },
+      {
+        "system": "Nintendo Switch",
+        "score": 60
+      },
+      {
+        "system": "Wii U",
+        "score": 30
+      },
+      {
+        "system": "PS3",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/retrowiki_retroid-pocket-5.webp",
+      "alt": "Retroid Pocket 5, vista frontal"
+    }
+  },
+  {
+    "slug": "retroid-pocket-6",
+    "name": "Retroid Pocket 6",
+    "manufacturer": "Retroid",
+    "releaseYear": 2026,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Lançado em janeiro de 2026, o Retroid Pocket 6 é o topo de linha da Retroid: Snapdragon 8 Gen 2 (o mesmo chip do Galaxy S23), tela AMOLED Full HD de 5.5 polegadas a 120Hz, sticks analógicos com Hall Effect e layout configurável — tudo por cerca de US$240. O resultado prático é emulação de Nintendo Switch, PS2 e GameCube rodando com fluidez que outros portáteis dessa faixa de preço simplesmente não entregam.",
+      "priceRange": "~US$240",
+      "pros": [
+        "Dois layouts de joystick disponíveis (Switch-style ou Xbox-style)",
+        "Poderoso o suficiente para emulação de ponta (PS2, GC, Switch)",
+        "Tela AMOLED com cores vibrantes e pretos perfeitos",
+        "Bateria enorme de 6000 mAh",
+        "Display Full HD — 400 PPI na tela de 5.5\"",
+        "Gameplay suave graças à taxa de 120Hz",
+        "Acesso a jogos e apps Android",
+        "Bom preço para o nível de desempenho oferecido",
+        "Conectável a displays externos via USB-C",
+        "Suporte a ports de PC via PortMaster",
+        "Touchscreen útil para navegação e jogos baseados em toque",
+        "Navegação fluida com 8 GB de RAM",
+        "Grips ergonômicos para sessões longas de jogo",
+        "Sticks analógicos com Hall Effect — mais duráveis e precisos"
+      ],
+      "cons": [
+        "Barras pretas ao jogar sistemas retrô mais antigos (proporção 4:3)"
+      ]
+    },
+    "spec": {
+      "chip": "Qualcomm Snapdragon 8 Gen 2 (Cortex-X3, até 3.2 GHz)",
+      "gpu": "Qualcomm Adreno 740 (680 MHz)",
+      "ramGb": 8,
+      "ramType": "LPDDR5X",
+      "storage": "128 GB",
+      "architecture": "ARM",
+      "os": "Android 13",
+      "screenSize": 5.5,
+      "resolution": "1920 x 1080",
+      "aspectRatio": "16:9",
+      "refreshHz": 120,
+      "panelType": "AMOLED",
+      "batteryMah": 6000,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": true,
+      "analogTriggers": true,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": true,
+      "gyroscope": true
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC / GBA",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 100
+      },
+      {
+        "system": "PSP",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 3DS",
+        "score": 100
+      },
+      {
+        "system": "GameCube",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 2",
+        "score": 85
+      },
+      {
+        "system": "Nintendo Wii",
+        "score": 85
+      },
+      {
+        "system": "Nintendo Switch",
+        "score": 85
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      },
+      {
+        "system": "Wii U",
+        "score": 60
+      },
+      {
+        "system": "PlayStation 3",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/retrowiki_retroid-pocket-6.webp",
+      "alt": "Retroid Pocket 6, vista frontal"
+    }
+  },
+  {
+    "slug": "retroid-pocket-mini-v2",
+    "name": "Retroid Pocket Mini V2",
+    "manufacturer": "Retroid",
+    "releaseYear": 2025,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Lançado em maio de 2025, o Retroid Pocket Mini V2 combina o Snapdragon 865 com uma tela AMOLED de 3.92 polegadas num formato compacto horizontal. Roda Android 13, tem sticks Hall Effect e bateria de 4000 mAh — posicionado entre os melhores custo-benefício do segmento mid-range para quem quer PS2, GameCube e Wii no bolso.",
+      "priceRange": "~US$195",
+      "pros": [
+        "Tela AMOLED com pretos perfeitos e cores vibrantes",
+        "Potente o suficiente para GameCube, Wii e PS2",
+        "Sticks Hall Effect — mais duráveis e precisos",
+        "Bateria grande de 4000 mAh",
+        "6 GB de RAM para navegação fluida no Android",
+        "Saída de vídeo via USB-C",
+        "Wi-Fi 6 e Bluetooth 5.1 integrados",
+        "Acesso a jogos Android e apps nativos",
+        "Touchscreen útil para jogos que exigem toque/stylus",
+        "Grips ergonômicos para sessões longas",
+        "Suporte a PortMaster para ports de PC",
+        "Boa comunidade com CFWs disponíveis (ROCKNIX, GammaOSNext)"
+      ],
+      "cons": [
+        "Proporção de tela 31:27 não é ideal para jogos widescreen"
+      ]
+    },
+    "spec": {
+      "chip": "Qualcomm Snapdragon 865 (Cortex-A77, até 2.84 GHz)",
+      "gpu": "Qualcomm Adreno 650 (587 MHz)",
+      "ramGb": 6,
+      "ramType": "LPDDR4X",
+      "storage": "128 GB UFS 3.1 + microSD",
+      "architecture": "ARM",
+      "os": "Android 13 / Linux",
+      "screenSize": 3.92,
+      "resolution": "1240 x 1080",
+      "aspectRatio": "31:27",
+      "refreshHz": 60,
+      "panelType": "AMOLED",
+      "batteryMah": 4000,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": true,
+      "analogTriggers": true,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": true,
+      "gyroscope": true
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive / Genesis",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 100
+      },
+      {
+        "system": "PSP",
+        "score": 100
+      },
+      {
+        "system": "GameCube",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 3DS",
+        "score": 100
+      },
+      {
+        "system": "Wii",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 2",
+        "score": 85
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      },
+      {
+        "system": "Nintendo Switch",
+        "score": 30
+      },
+      {
+        "system": "Wii U",
+        "score": 30
+      },
+      {
+        "system": "PlayStation 3",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/retrowiki_retroid-pocket-mini-v2.webp",
+      "alt": "Retroid Pocket Mini V2, vista frontal"
+    }
+  },
+  {
+    "slug": "rg-406v",
+    "name": "Anbernic RG-406V",
+    "manufacturer": "Anbernic",
+    "releaseYear": 2024,
+    "formFactor": "vertical",
+    "extra": {
+      "description": "Console vertical Android com tela IPS 4:3 de 4 polegadas e resolução 960x720. Roda Android 13, possui 8 GB de RAM LPDDR4X, armazenamento interno UFS de 128 GB, Hall Effect sticks e saída de vídeo. Suporta GammaOS Next como firmware alternativo.",
+      "priceRange": "~US$155",
+      "pros": [
+        "Desempenho sólido mesmo em sistemas mais exigentes",
+        "Acesso fácil a jogos e apps Android nativos",
+        "Saída de vídeo para monitores e TVs",
+        "Bateria grande de 5500 mAh",
+        "Touchscreen útil para navegar e jogar jogos com stylus",
+        "Navegação rápida graças aos 8 GB de RAM",
+        "Grips ergonômicos para sessões prolongadas",
+        "Hall Effect sticks mais duráveis e precisos"
+      ],
+      "cons": [
+        "Ótima emulação, mas o tamanho da tela não é ideal para jogos widescreen",
+        "Fator de forma bulky comparado a portáteis mais compactos"
+      ]
+    },
+    "spec": {
+      "chip": "UNISOC Tiger T820 (Cortex-A76, 8 núcleos, até 2.7 GHz)",
+      "gpu": "Mali-G57 MP4 @ 850 MHz",
+      "ramGb": 8,
+      "ramType": "LPDDR4X",
+      "storage": "128 GB UFS 2.2 interno + microSD",
+      "architecture": "ARM",
+      "os": "Android 13",
+      "screenSize": 4,
+      "resolution": "960 x 720",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 5500,
+      "cooling": true,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": true,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": true,
+      "touchScreen": true,
+      "gyroscope": true
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive / Genesis",
+        "score": 100
+      },
+      {
+        "system": "PlayStation 1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 100
+      },
+      {
+        "system": "PSP",
+        "score": 100
+      },
+      {
+        "system": "GameCube",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 3DS",
+        "score": 85
+      },
+      {
+        "system": "Wii",
+        "score": 85
+      },
+      {
+        "system": "PlayStation 2",
+        "score": 85
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      },
+      {
+        "system": "Nintendo Switch",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/retrowiki_rg-406v.webp",
+      "alt": "Anbernic RG-406V, vista frontal"
+    }
+  },
+  {
+    "slug": "rg35xx",
+    "name": "RG35XX",
+    "manufacturer": "Anbernic",
+    "releaseYear": 2024,
+    "formFactor": "vertical",
+    "extra": {
+      "description": "Console portátil com design retrô inspirado no Game Boy. Utiliza sistema Linux e suporta firmwares custom como MinUI, muOS, KNULLI, GarlicOS, ROCKNIX e Batocera.",
+      "priceRange": "Barato (entre R$240,00 e R$350,00)",
+      "pros": [
+        "Design nostálgico inspirado no Game Boy",
+        "Excelente custo-benefício (~$50)",
+        "Suporte a múltiplos CFWs (MinUI, muOS, KNULLI, GarlicOS)",
+        "Tela IPS com boa qualidade e proporção 4:3 nativa",
+        "Grip ergonômico e vibração inclusos",
+        "Sistema de refrigeração integrado"
+      ],
+      "cons": [
+        "Sem analógicos (apenas D-pad)",
+        "Sem Wi-Fi ou Bluetooth",
+        "Potência limitada para emuladores mais pesados",
+        "Desempenho fraco em Dreamcast e Saturn"
+      ]
+    },
+    "spec": {
+      "chip": "Quad-core ARM",
+      "gpu": "PowerVR SGX544",
+      "ramGb": 1,
+      "ramType": "DDR",
+      "storage": "microSD",
+      "architecture": "ARM",
+      "os": "Linux",
+      "screenSize": 3.5,
+      "resolution": "640 x 480",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 2600,
+      "cooling": true,
+      "vibration": true,
+      "wifi": false,
+      "bluetooth": false,
+      "videoOut": false,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": false,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": false,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 85
+      },
+      {
+        "system": "PSP",
+        "score": 60
+      },
+      {
+        "system": "Dreamcast",
+        "score": 30
+      },
+      {
+        "system": "Saturn",
+        "score": 30
+      }
+    ],
+    "image": {
+      "url": "/consoles/rg-35xx.png",
+      "alt": "RG35XX, vista frontal"
+    }
+  },
+  {
+    "slug": "rg40xxh",
+    "name": "RG40XX H",
+    "manufacturer": "Anbernic",
+    "releaseYear": 2024,
+    "formFactor": "horizontal",
+    "extra": {
+      "description": "Console horizontal com tela IPS de 4 polegadas e proporção 4:3 nativa. Utiliza o chip Allwinner H700, possui Wi-Fi, Bluetooth, saída HDMI e analógicos com RGB. Suporta firmwares custom como KNULLI, muOS, MinUI e ROCKNIX.",
+      "priceRange": "Regular (entre R$380 e R$500)",
+      "pros": [
+        "Tela IPS 4:3 de boa qualidade (4 polegadas)",
+        "Wi-Fi 5GHz e Bluetooth 4.2 integrados",
+        "Saída HDMI para TV",
+        "Analógicos com iluminação RGB",
+        "Dual analog sticks + L2/R2",
+        "Grip ergonômico confortável",
+        "Dual slot microSD",
+        "Múltiplos firmwares custom disponíveis"
+      ],
+      "cons": [
+        "Resolução ainda 640x480 (igual modelos anteriores)",
+        "Sem triggers analógicos",
+        "Desempenho limitado em PSP e Saturn",
+        "Sem L3/R3"
+      ]
+    },
+    "spec": {
+      "chip": "Allwinner H700 Quad-core Cortex-A53 1.5GHz",
+      "gpu": "Mali-G31 MP2",
+      "ramGb": 1,
+      "ramType": "LPDDR4",
+      "storage": "microSD (dual slot)",
+      "architecture": "ARM",
+      "os": "Linux (KNULLI/muOS/MinUI)",
+      "screenSize": 4,
+      "resolution": "640 x 480",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 3200,
+      "cooling": false,
+      "vibration": true,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": true,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": true,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": true,
+      "l3r3": false,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 85
+      },
+      {
+        "system": "Dreamcast",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 85
+      },
+      {
+        "system": "PSP",
+        "score": 60
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      }
+    ],
+    "image": {
+      "url": "/consoles/rg-40xxh.png",
+      "alt": "RG40XX H, vista frontal"
+    }
+  },
+  {
+    "slug": "trimui-smart-brick",
+    "name": "TrimUI Smart Brick",
+    "manufacturer": "TrimUI",
+    "releaseYear": 2024,
+    "formFactor": "vertical",
+    "extra": {
+      "description": "Console ultra-compacto com tela IPS de alta resolução (1024x768) em formato 4:3. Utiliza o chip Allwinner A133 Plus e suporta firmwares custom como NextUI, MinUI, muOS e KNULLI.",
+      "priceRange": "Regular (entre R$400 e R$500)",
+      "pros": [
+        "Tela IPS de altíssima resolução (1024x768, 400 PPI)",
+        "Proporção 4:3 nativa perfeita para jogos retro",
+        "Design ultra-compacto e leve (159g)",
+        "Wi-Fi e Bluetooth integrados",
+        "Armazenamento interno de 8GB eMMC",
+        "Excelente desempenho em PS1 e Nintendo DS",
+        "Múltiplos firmwares custom disponíveis"
+      ],
+      "cons": [
+        "Sem analógicos (apenas D-pad)",
+        "Apenas L1/R1 (sem L2/R2)",
+        "Tela pequena (3.2 polegadas)",
+        "Bluetooth versão antiga (2.1)"
+      ]
+    },
+    "spec": {
+      "chip": "Allwinner A133 Plus Quad-core Cortex-A53 1.8-2.0GHz",
+      "gpu": "PowerVR GE8300",
+      "ramGb": 1,
+      "ramType": "LPDDR3",
+      "storage": "8GB eMMC + microSD",
+      "architecture": "ARM",
+      "os": "Linux (NextUI/MinUI/muOS)",
+      "screenSize": 3.2,
+      "resolution": "1024 x 768",
+      "aspectRatio": "4:3",
+      "refreshHz": 60,
+      "panelType": "IPS",
+      "batteryMah": 3000,
+      "cooling": false,
+      "vibration": false,
+      "wifi": true,
+      "bluetooth": true,
+      "videoOut": false,
+      "audioJack": true,
+      "usbC": true,
+      "sdCard": true,
+      "analogs": false,
+      "hallEffect": false,
+      "analogTriggers": false,
+      "l1r1": true,
+      "l2r2": false,
+      "l3r3": false,
+      "touchScreen": false,
+      "gyroscope": false
+    },
+    "emulation": [
+      {
+        "system": "NES / Famicom",
+        "score": 100
+      },
+      {
+        "system": "SNES",
+        "score": 100
+      },
+      {
+        "system": "Game Boy / GBC",
+        "score": 100
+      },
+      {
+        "system": "Game Boy Advance",
+        "score": 100
+      },
+      {
+        "system": "Mega Drive",
+        "score": 100
+      },
+      {
+        "system": "Master System",
+        "score": 100
+      },
+      {
+        "system": "Neo Geo",
+        "score": 100
+      },
+      {
+        "system": "PS1",
+        "score": 100
+      },
+      {
+        "system": "Nintendo DS",
+        "score": 100
+      },
+      {
+        "system": "Dreamcast",
+        "score": 85
+      },
+      {
+        "system": "Nintendo 64",
+        "score": 85
+      },
+      {
+        "system": "PSP",
+        "score": 60
+      },
+      {
+        "system": "Saturn",
+        "score": 60
+      }
+    ],
+    "image": {
+      "url": "/consoles/trimui-smart-brick.png",
+      "alt": "TrimUI Smart Brick, vista frontal"
+    }
+  }
+]

@@ -45,6 +45,7 @@ COPY --from=builder --chown=app:app /app/src/db/migrations ./migrations
 COPY --from=deps --chown=app:app /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 COPY --chown=app:app scripts/migrate.mjs ./migrate.mjs
 COPY --chown=app:app scripts/seed.mjs ./seed.mjs
+COPY --from=builder --chown=app:app /app/src/db/seed-data ./seed-data
 COPY --chown=app:app docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 

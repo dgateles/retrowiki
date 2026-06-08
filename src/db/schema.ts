@@ -339,4 +339,5 @@ export const auditLog = mysqlTable("audit_log", {
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;
 export type Device = typeof devices.$inferSelect;
+export type DeviceSpec = typeof deviceSpecs.$inferSelect;
 export type Article = typeof articles.$inferSelect;
