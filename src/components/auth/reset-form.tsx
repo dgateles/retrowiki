@@ -30,11 +30,11 @@ export function ResetForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
+    <form onSubmit={onSubmit} className="form">
+      <div className="field">
         <Label htmlFor="password">Nova senha</Label>
         <Input id="password" name="password" type="password" required minLength={8} autoComplete="new-password" />
-        <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+        <p className="field__hint">Mínimo de 8 caracteres.</p>
       </div>
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Salvando…" : "Redefinir senha"}

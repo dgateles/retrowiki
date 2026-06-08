@@ -31,8 +31,8 @@ export function ForgotForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
+    <form onSubmit={onSubmit} className="form">
+      <div className="field">
         <Label htmlFor="email">E-mail</Label>
         <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>

@@ -93,29 +93,29 @@ export default async function ArticlePage({
         </div>
       </article>
 
-      <div className="mt-8 flex items-center gap-3 border-t border-border pt-6">
+      <div className="engage">
         <VoteButton articleId={a.id} initialCount={vote.count} initialVoted={vote.voted} />
         <span className="text-sm text-muted-foreground">
           {comments.length} {comments.length === 1 ? "comentário" : "comentários"}
         </span>
       </div>
 
-      <section aria-labelledby="comentarios" className="mt-8">
-        <h2 id="comentarios" className="text-lg font-semibold">Comentários</h2>
+      <section aria-labelledby="comentarios" className="comments">
+        <h2 id="comentarios" className="comments__title">Comentários</h2>
 
         {comments.length > 0 && (
-          <ul className="mt-4 space-y-4">
+          <ul className="comments__list">
             {comments.map((c) => (
-              <li key={c.id} className="rounded-lg border border-border bg-card p-4">
-                <div className="flex items-center justify-between">
-                  <Link href={`/u/${c.authorHandle}`} className="text-sm font-medium hover:underline">
+              <li key={c.id} className="comment">
+                <div className="comment__head">
+                  <Link href={`/u/${c.authorHandle}`} className="comment__author">
                     @{c.authorHandle}
                   </Link>
-                  <time className="text-xs text-muted-foreground" dateTime={new Date(c.createdAt).toISOString()}>
+                  <time className="comment__date" dateTime={new Date(c.createdAt).toISOString()}>
                     {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(c.createdAt))}
                   </time>
                 </div>
-                <p className="mt-1.5 whitespace-pre-wrap text-sm text-foreground/90">{c.body}</p>
+                <p className="comment__body">{c.body}</p>
                 {isMod && (
                   <div className="mt-2">
                     <HideCommentButton commentId={c.id} />

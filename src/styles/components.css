@@ -67,6 +67,89 @@
     @apply px-2 py-2 text-sm text-muted-foreground;
   }
 
+  /* Hero da home. */
+  .hero {
+    @apply border-b border-border bg-linear-to-b from-primary/5 to-transparent;
+  }
+  .section-title {
+    @apply text-2xl font-bold;
+  }
+  .section-link {
+    @apply inline-flex items-center gap-1 text-sm text-primary hover:underline;
+  }
+  .hero__inner {
+    @apply mx-auto max-w-6xl px-6 py-14 text-center;
+  }
+  .hero__eyebrow {
+    @apply text-sm font-medium text-primary;
+  }
+  .hero__title {
+    @apply mx-auto mt-2 max-w-3xl text-4xl font-black tracking-tight md:text-5xl;
+  }
+  .hero__lead {
+    @apply mx-auto mt-4 max-w-xl text-muted-foreground;
+  }
+  .hero__actions {
+    @apply mt-6 flex flex-wrap justify-center gap-3;
+  }
+
+  /* Página de autenticação (cartão central). */
+  .auth-page {
+    @apply flex min-h-dvh items-center justify-center bg-background px-4 py-12;
+  }
+  .auth-page__inner {
+    @apply w-full max-w-sm;
+  }
+  .auth-page__brand {
+    @apply mb-6 flex items-center justify-center gap-2 font-bold;
+  }
+  .auth-page__footer {
+    @apply mt-4 text-center text-sm text-muted-foreground;
+  }
+
+  /* Campo de formulário. */
+  .field {
+    @apply space-y-1.5;
+  }
+  .field__hint {
+    @apply text-xs text-muted-foreground;
+  }
+  .form {
+    @apply space-y-4;
+  }
+  .form--narrow {
+    @apply max-w-sm;
+  }
+
+  /* Seção de comentários e engajamento. */
+  .engage {
+    @apply mt-8 flex items-center gap-3 border-t border-border pt-6;
+  }
+  .comments {
+    @apply mt-8;
+  }
+  .comments__title {
+    @apply text-lg font-semibold;
+  }
+  .comments__list {
+    @apply mt-4 space-y-4;
+  }
+  .comment {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .comment__head {
+    @apply flex items-center justify-between;
+  }
+  .comment__author {
+    @apply text-sm font-medium hover:underline;
+  }
+  .comment__date {
+    @apply text-xs text-muted-foreground;
+  }
+  .comment__body {
+    @apply mt-1.5 whitespace-pre-wrap text-sm text-foreground/90;
+  }
+
   /* Barra de filtros. */
   .filter-bar {
     @apply mt-6 flex flex-wrap items-end gap-3;
@@ -148,6 +231,122 @@
     @apply mt-2 text-xs text-muted-foreground;
   }
 
+  /* Ficha técnica do device. */
+  .spec {
+    @apply space-y-6;
+  }
+  .spec__hero {
+    @apply flex flex-col items-center gap-5 rounded-xl border border-border bg-card p-5 md:flex-row md:items-start;
+  }
+  .spec__media {
+    @apply relative size-44 shrink-0 overflow-hidden;
+  }
+  .spec__img {
+    @apply object-contain drop-shadow;
+  }
+  .spec__placeholder {
+    @apply flex size-full items-center justify-center text-muted-foreground/40;
+  }
+  .spec__intro {
+    @apply flex-1 text-center md:text-left;
+  }
+  .spec__brand {
+    @apply text-xs font-medium text-primary;
+  }
+  .spec__name {
+    @apply mt-1 text-2xl font-bold md:text-3xl;
+  }
+  .spec__desc {
+    @apply mt-2 text-sm leading-relaxed text-muted-foreground;
+  }
+  .spec__price {
+    @apply mt-2 text-sm;
+  }
+  .spec__cols {
+    @apply grid gap-6 md:grid-cols-2;
+  }
+  .spec__section {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .spec__section-title {
+    @apply mb-3 inline-flex items-center gap-2 text-base font-semibold;
+  }
+  .spec__section-title svg {
+    @apply size-4 text-primary;
+  }
+  .spec__row {
+    @apply flex justify-between gap-4 border-b border-border/60 py-1.5 text-sm;
+  }
+  .spec__row-label {
+    @apply text-muted-foreground;
+  }
+  .spec__row-value {
+    @apply text-right font-medium;
+  }
+  .spec__features {
+    @apply flex flex-wrap gap-2;
+  }
+
+  /* Selo de recurso (presente/ausente). */
+  .feature {
+    @apply inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium;
+  }
+  .feature--on {
+    @apply border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400;
+  }
+  .feature--off {
+    @apply border-border bg-muted/50 text-muted-foreground;
+  }
+
+  /* Grade de emulação. */
+  .emu-grid {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .emu {
+    @apply flex items-center justify-between rounded-md border px-2.5 py-2 text-xs;
+  }
+  .emu__system {
+    @apply font-medium text-foreground;
+  }
+  .emu__level {
+    @apply font-semibold;
+  }
+  .emu--excellent {
+    @apply border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400;
+  }
+  .emu--good {
+    @apply border-yellow-500/30 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400;
+  }
+  .emu--playable {
+    @apply border-orange-500/30 bg-orange-500/15 text-orange-600 dark:text-orange-400;
+  }
+  .emu--poor {
+    @apply border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-400;
+  }
+
+  /* Prós e contras. */
+  .proscons {
+    @apply grid gap-6 md:grid-cols-2;
+  }
+  .pros {
+    @apply rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-5;
+  }
+  .pros__title {
+    @apply mb-2 font-semibold text-emerald-600 dark:text-emerald-400;
+  }
+  .cons {
+    @apply rounded-lg border border-red-500/30 bg-red-500/5 p-5;
+  }
+  .cons__title {
+    @apply mb-2 font-semibold text-red-600 dark:text-red-400;
+  }
+  .proscons__list {
+    @apply space-y-1.5 text-sm;
+  }
+  .proscons__item {
+    @apply flex gap-2;
+  }
+
   /* Bloco de código com PrismJS. */
   .code-block {
     @apply my-5;
@@ -178,7 +377,7 @@
   font-style: italic;
 }
 .code-block__pre .token.punctuation {
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: var(--muted-foreground);
 }
 .code-block__pre .token.property,
 .code-block__pre .token.tag,

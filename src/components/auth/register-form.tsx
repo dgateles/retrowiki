@@ -37,19 +37,19 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
+    <form onSubmit={onSubmit} className="form">
+      <div className="field">
         <Label htmlFor="handle">Nome de usuário</Label>
         <Input id="handle" name="handle" required minLength={3} maxLength={30} autoComplete="username" />
       </div>
-      <div className="space-y-1.5">
+      <div className="field">
         <Label htmlFor="email">E-mail</Label>
         <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
-      <div className="space-y-1.5">
+      <div className="field">
         <Label htmlFor="password">Senha</Label>
         <Input id="password" name="password" type="password" required minLength={8} autoComplete="new-password" />
-        <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+        <p className="field__hint">Mínimo de 8 caracteres.</p>
       </div>
       <RetroGuard action="register" onSolved={onSolved} />
       <Button type="submit" className="w-full" disabled={pending || !captcha}>

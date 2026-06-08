@@ -33,12 +33,12 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-1.5">
+    <form onSubmit={onSubmit} className="form">
+      <div className="field">
         <Label htmlFor="email">E-mail</Label>
         <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
-      <div className="space-y-1.5">
+      <div className="field">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Senha</Label>
           <Link href="/auth/esqueci" className="text-xs text-muted-foreground hover:text-foreground">

@@ -11,16 +11,16 @@ export default async function HomePage() {
     <div className="flex min-h-dvh flex-col">
       <main id="main" className="flex-1">
         {/* Hero compacto */}
-        <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent">
-          <div className="mx-auto max-w-6xl px-6 py-14 text-center">
-            <p className="text-sm font-medium text-primary">Comunidade de handhelds retrô</p>
-            <h1 className="mx-auto mt-2 max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
+        <section className="hero">
+          <div className="hero__inner">
+            <p className="hero__eyebrow">Comunidade de handhelds retrô</p>
+            <h1 className="hero__title">
               O catálogo e os guias de emulação portátil, feitos pela comunidade
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+            <p className="hero__lead">
               Fichas técnicas, comparador, tutoriais e firmware num só lugar, com curadoria.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <div className="hero__actions">
               <Button asChild size="lg">
                 <Link href="/guias">Explorar guias</Link>
               </Button>
@@ -34,10 +34,10 @@ export default async function HomePage() {
         </section>
 
         {/* Grid de consoles, estilo catálogo */}
-        <section aria-labelledby="consoles" className="mx-auto max-w-6xl px-6 py-12">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 id="consoles" className="text-2xl font-bold">Consoles</h2>
-            <Link href="/consoles" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+        <section aria-labelledby="consoles" className="page">
+          <div className="page__head">
+            <h2 id="consoles" className="section-title">Consoles</h2>
+            <Link href="/consoles" className="section-link">
               Ver todos <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>

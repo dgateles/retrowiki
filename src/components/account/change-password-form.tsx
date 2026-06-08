@@ -29,15 +29,15 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-sm space-y-4">
-      <div className="space-y-1.5">
+    <form onSubmit={onSubmit} className="form form--narrow">
+      <div className="field">
         <Label htmlFor="current">Senha atual</Label>
         <Input id="current" name="current" type="password" required autoComplete="current-password" />
       </div>
-      <div className="space-y-1.5">
+      <div className="field">
         <Label htmlFor="new">Nova senha</Label>
         <Input id="new" name="new" type="password" required minLength={8} autoComplete="new-password" />
-        <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+        <p className="field__hint">Mínimo de 8 caracteres.</p>
       </div>
       <Button type="submit" disabled={pending}>
         {pending ? "Salvando…" : "Alterar senha"}
