@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getDeviceBySlug } from "@/lib/devices";
+import { listArticlesByDevice, typeLabel } from "@/lib/articles";
 import { DeviceSpecCard } from "@/components/catalog/device-spec-card";
 import { Button } from "@/components/ui/button";
 
@@ -30,14 +31,41 @@ export default async function DevicePage({
   const detail = await getDeviceBySlug(slug);
   if (!detail) notFound();
 
+  const guides = await listArticlesByDevice(detail.device.id);
+
   return (
     <main id="main" className="mx-auto max-w-4xl px-6 py-10">
-      <Button asChild variant="ghost" size="sm" className="mb-4">
-        <Link href="/consoles">
-          <ChevronLeft className="size-4" aria-hidden="true" /> Voltar ao catálogo
-        </Link>
-      </Button>
+      <div className="mb-4 flex items-center justify-between">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/consoles">
+            <ChevronLeft className="size-4" aria-hidden="true" /> Voltar ao catálogo
+          </Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/consoles/comparar?a=${detail.device.slug}`}>Comparar</Link>
+        </Button>
+      </div>
+
       <DeviceSpecCard detail={detail} />
+
+      {guides.length > 0 && (
+        <section aria-labelledby="guias-device" className="mt-8 rounded-lg border border-border bg-card p-5">
+          <h2 id="guias-device" className="font-semibold">Guias deste console</h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {guides.map((g) => (
+              <li key={g.id}>
+                <Link
+                  href={`/guias/${g.slug}`}
+                  className="flex items-center justify-between rounded-md border border-border/60 px-3 py-2 text-sm transition-colors hover:border-primary/50"
+                >
+                  {g.title}
+                  <span className="ml-2 shrink-0 text-xs text-muted-foreground">{typeLabel(g.type)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }

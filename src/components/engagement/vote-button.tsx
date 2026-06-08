@@ -39,7 +39,7 @@ export function VoteButton({
       type="button"
       onClick={onClick}
       disabled={pending}
-      aria-pressed={voted}
+      aria-pressed={voted ? "true" : "false"}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         voted

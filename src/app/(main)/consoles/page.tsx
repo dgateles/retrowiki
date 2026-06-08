@@ -35,8 +35,8 @@ export default async function ConsolesPage({
     <main id="main" className="mx-auto max-w-6xl px-6 py-12">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">Consoles</h1>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/">Início</Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/consoles/comparar">Comparar</Link>
         </Button>
       </div>
 

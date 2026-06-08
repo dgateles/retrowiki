@@ -121,6 +121,24 @@ export async function getRevisionBody(revisionId: number): Promise<BlockTree | n
   }
 }
 
+export async function listArticlesByDevice(deviceId: number) {
+  try {
+    return await db
+      .select({
+        id: articles.id,
+        slug: articles.slug,
+        title: articles.title,
+        type: articles.type,
+      })
+      .from(articles)
+      .where(and(eq(articles.deviceId, deviceId), eq(articles.status, "published")))
+      .orderBy(articles.type, articles.title)
+      .limit(40);
+  } catch {
+    return [];
+  }
+}
+
 export async function getUserDrafts(userId: number) {
   try {
     return await db
