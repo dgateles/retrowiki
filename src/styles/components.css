@@ -607,6 +607,18 @@
   .blk-p {
     @apply my-4 leading-relaxed text-foreground/90;
   }
+  .blk-inline-code {
+    @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  .blk-a {
+    @apply text-primary underline underline-offset-2 hover:text-primary/80;
+  }
+  .blk-quote {
+    @apply my-5 border-l-4 border-primary/40 pl-4 italic text-foreground/80;
+  }
+  .blk-hr {
+    @apply my-8 border-0 border-t border-border;
+  }
   .blk-figure {
     @apply my-6;
   }
@@ -1153,6 +1165,29 @@
     @apply mt-4 flex justify-end gap-2;
   }
 
+  /* Editor rico (TipTap). */
+  .rte {
+    @apply rounded-lg border border-input bg-background focus-within:border-ring;
+  }
+  .rte__toolbar {
+    @apply flex flex-wrap items-center gap-0.5 border-b border-border p-1.5;
+  }
+  .rte__btn {
+    @apply inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .rte__btn--active {
+    @apply bg-accent text-foreground;
+  }
+  .rte__select {
+    @apply h-8 rounded-md border border-input bg-background px-2 text-sm;
+  }
+  .rte__sep {
+    @apply mx-1 h-5 w-px bg-border;
+  }
+  .rte__content {
+    @apply min-h-64 px-4 py-3 text-[15px] leading-relaxed;
+  }
+
   /* Editor de blocos. */
   .editor {
     @apply space-y-6;
@@ -1247,6 +1282,77 @@
   .code-block__code {
     @apply font-mono;
   }
+}
+
+/* Conteúdo editável do TipTap (DOM gerado pela biblioteca, fora do BEM). */
+.rte__content .ProseMirror {
+  outline: none;
+  min-height: 14rem;
+}
+.rte__content .ProseMirror > * + * {
+  margin-top: 0.6em;
+}
+.rte__content .ProseMirror h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.rte__content .ProseMirror h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.rte__content .ProseMirror h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.rte__content .ProseMirror h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.rte__content .ProseMirror ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.rte__content .ProseMirror ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.rte__content .ProseMirror blockquote {
+  border-left: 4px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  padding-left: 1rem;
+  font-style: italic;
+}
+.rte__content .ProseMirror pre {
+  background: var(--muted);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875rem;
+  overflow-x: auto;
+}
+.rte__content .ProseMirror code {
+  font-family: var(--font-mono, monospace);
+}
+.rte__content .ProseMirror :not(pre) > code {
+  background: var(--muted);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+.rte__content .ProseMirror a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.rte__content .ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.rte__content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--muted-foreground);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 /* Tema de sintaxe (PrismJS). As classes .token são convenção da biblioteca. */

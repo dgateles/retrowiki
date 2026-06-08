@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
+import type { JSONContent } from "@tiptap/react";
 import { auth } from "@/auth";
 import { getArticleForEdit } from "@/lib/articles";
+import { isRichDoc } from "@/lib/blocks/rich-schema";
 import { BlockEditor } from "@/components/editor/block-editor";
+import { RichArticleEditor } from "@/components/editor/rich-article-editor";
 
 export const metadata: Metadata = { title: "Editar", robots: { index: false } };
 
@@ -20,6 +23,8 @@ export default async function EditDraftPage({
   if (article.authorId !== Number(session.user.id)) notFound();
   if (article.status === "published") redirect(`/guias`);
 
+  const body: unknown = article.body;
+
   return (
     <main id="main" className="page">
       <h1 className="page__title">Editar conteúdo</h1>
@@ -27,14 +32,20 @@ export default async function EditDraftPage({
         Ao enviar, o conteúdo volta para a fila de moderação.
       </p>
       <div className="mt-6">
-        <BlockEditor
-          initial={{
-            articleId: article.id,
-            title: article.title,
-            type: article.type,
-            blocks: article.body.blocks,
-          }}
-        />
+        {isRichDoc(body) ? (
+          <RichArticleEditor
+            initial={{ articleId: article.id, title: article.title, type: article.type, doc: body as JSONContent }}
+          />
+        ) : (
+          <BlockEditor
+            initial={{
+              articleId: article.id,
+              title: article.title,
+              type: article.type,
+              blocks: article.body.blocks,
+            }}
+          />
+        )}
       </div>
     </main>
   );

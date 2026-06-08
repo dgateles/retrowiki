@@ -299,3 +299,44 @@ Item ao final da fila.
   registrar sessões com user-agent e IP.
 - **Preferências de conteúdo.** Seção para preferências de exibição e de
   notificação por tipo, ligada à `notification_prefs`.
+
+## Painel de moderação dedicado (ModeratorCP, referência IPB)
+
+Evolui o `/moderacao` atual (fila + métricas já entregues) para um painel de
+controle de moderação completo, com barra lateral e cabeçalho de métricas.
+Adaptado ao nosso cenário. Item ao final da fila.
+
+Cabeçalho:
+
+- **Métricas.** Denúncias ativas, fila de aprovação e atribuições abertas, com
+  contadores. As duas primeiras já existem (fila pendente do `reviews`); as
+  outras dependem dos sistemas de denúncia e atribuição.
+
+Gerenciar conteúdo:
+
+- **Conteúdo oculto.** Comentários e itens ocultados (status `hidden`), com
+  opção de reverter.
+- **Conteúdo apagado.** Itens removidos, para auditoria e restauração.
+- **Conteúdo destacado.** Curadoria do que aparece em destaque.
+- **Denúncias.** Fila de conteúdo reportado pela comunidade.
+- **Fila de aprovação.** A fila de revisão de guias que já existe.
+- **Atribuições.** Conteúdo encaminhado a um moderador específico.
+
+Gerenciar membros:
+
+- **Alertas.** Mensagens/alertas para membros, com criar e filtrar.
+- **Ferramentas de IP.** Consulta por IP no `audit_log` e sessões.
+- **Gestão de membros.** Busca, papéis e ações de moderação sobre usuários.
+- **Avisos recentes.** Histórico de advertências (depende do sistema de
+  warnings do painel de admin).
+
+Ferramentas:
+
+- **Anúncios.** Avisos no topo do site para todos.
+- (Live Topics e afins do IPB não se aplicam ao nosso cenário.)
+
+Acesso:
+
+- **Atalhos no menu de usuário.** "ModeratorCP" (para moderadores e admins,
+  leva ao `/moderacao`) e "AdminCP" (só admin, leva ao `/admin`), separando o
+  painel de moderação do painel administrativo, como nas referências.

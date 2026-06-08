@@ -12,6 +12,8 @@ import {
 import { GithubReleasesBlock } from "@/components/blocks/github-releases";
 import { StoreLinksBlock } from "@/components/blocks/store-links";
 import { DeviceSpecBlock } from "@/components/blocks/device-spec-block";
+import { RichContent } from "@/components/blocks/rich-content";
+import { RichDocSchema, isRichDoc } from "./rich-schema";
 
 function renderBlock(block: Block, key: number) {
   switch (block.type) {
@@ -45,6 +47,13 @@ function renderBlock(block: Block, key: number) {
 /** Renderiza a árvore de blocos de um artigo. Valida de forma defensiva também
  * na leitura (conteúdo migrado/antigo). */
 export function ArticleBody({ body }: { body: unknown }) {
+  // Formato novo (editor rico, TipTap) é detectado pelo type: "doc".
+  if (isRichDoc(body)) {
+    const rich = RichDocSchema.safeParse(body);
+    if (!rich.success) return null;
+    return <RichContent doc={rich.data} />;
+  }
+  // Formato antigo: árvore de blocos.
   const parsed = BlockTreeSchema.safeParse(body);
   if (!parsed.success) return null;
   return <>{parsed.data.blocks.map((b, i) => renderBlock(b, i))}</>;

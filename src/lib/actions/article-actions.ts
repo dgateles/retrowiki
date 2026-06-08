@@ -9,8 +9,24 @@ import { articles, revisions, reviews, users, notifications, auditLog } from "@/
 import { requireUser, requireRole, can } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
+import { RichDocSchema, isRichDoc, richDocToText } from "@/lib/blocks/rich-schema";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
+
+// Aceita o corpo no formato novo (editor rico, type: "doc") ou no antigo
+// (árvore de blocos). Valida por allowlist e devolve o texto para busca.
+function validateBody(
+  body: unknown,
+): { ok: true; body: unknown; searchText: string } | { ok: false; error: string } {
+  if (isRichDoc(body)) {
+    const r = RichDocSchema.safeParse(body);
+    if (!r.success) return { ok: false, error: r.error.issues[0]?.message ?? "Conteúdo inválido." };
+    return { ok: true, body: r.data, searchText: richDocToText(r.data) };
+  }
+  const b = BlockTreeSchema.safeParse(body);
+  if (!b.success) return { ok: false, error: b.error.issues[0]?.message ?? "Conteúdo inválido." };
+  return { ok: true, body: b.data, searchText: blockTreeToText(b.data) };
+}
 import { slugify } from "@/lib/utils";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -19,7 +35,7 @@ const CreateSchema = z.object({
   title: z.string().min(8, "Título muito curto (mínimo 8 caracteres).").max(140),
   type: z.enum(["tutorial", "buying_guide", "troubleshooting", "firmware", "general"]),
   deviceId: z.number().int().positive().nullable().optional(),
-  body: BlockTreeSchema,
+  body: z.unknown(),
 });
 
 export async function createDraftAction(input: unknown): Promise<Result<{ id: number }>> {
@@ -36,7 +52,10 @@ export async function createDraftAction(input: unknown): Promise<Result<{ id: nu
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
-  const { title, type, deviceId, body } = parsed.data;
+  const { title, type, deviceId } = parsed.data;
+  const checked = validateBody(parsed.data.body);
+  if (!checked.ok) return { ok: false, error: checked.error };
+  const { body, searchText } = checked;
   const slug = `${slugify(title).slice(0, 80)}-${nanoid(6).toLowerCase()}`;
 
   const [res] = await db.insert(articles).values({
@@ -46,7 +65,7 @@ export async function createDraftAction(input: unknown): Promise<Result<{ id: nu
     deviceId: deviceId ?? null,
     authorId: Number(user.id),
     status: "draft",
-    searchText: blockTreeToText(body),
+    searchText,
   });
   const articleId = (res as unknown as { insertId: number }).insertId;
 
@@ -85,7 +104,10 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
     return { ok: false, error: "Conteúdo publicado não pode ser editado por aqui." };
   }
 
-  const { title, type, deviceId, body } = parsed.data;
+  const { title, type, deviceId } = parsed.data;
+  const checked = validateBody(parsed.data.body);
+  if (!checked.ok) return { ok: false, error: checked.error };
+  const { body, searchText } = checked;
   const [rev] = await db.insert(revisions).values({
     articleId,
     body,
@@ -100,7 +122,7 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
       type,
       deviceId: deviceId ?? null,
       currentRevisionId: revisionId,
-      searchText: blockTreeToText(body),
+      searchText,
       status: "draft",
     })
     .where(eq(articles.id, articleId));

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { BlockEditor } from "@/components/editor/block-editor";
+import { RichArticleEditor } from "@/components/editor/rich-article-editor";
 
 export const metadata: Metadata = { title: "Escrever", robots: { index: false } };
 
@@ -13,11 +13,11 @@ export default async function NewArticlePage() {
     <main id="main" className="page">
       <h1 className="page__title">Escrever conteúdo</h1>
       <p className="page__note">
-        Monte o conteúdo com blocos. Ao enviar, ele entra na fila de moderação
+        Escreva com o editor. Ao enviar, o conteúdo entra na fila de moderação
         antes de publicar.
       </p>
       <div className="mt-6">
-        <BlockEditor />
+        <RichArticleEditor />
       </div>
     </main>
   );
