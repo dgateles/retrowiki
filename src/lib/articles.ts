@@ -15,9 +15,29 @@ export function typeLabel(t: string) {
   return TYPE_LABEL[t] ?? t;
 }
 
-export async function listPublishedArticles() {
+export const ARTICLES_PAGE_SIZE = 20;
+
+type ArticleListItem = {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string | null;
+  type: string;
+  publishedAt: Date | null;
+  authorHandle: string;
+};
+
+export async function listPublishedArticles(
+  opts: { page?: number; deviceSlug?: string; type?: string } = {},
+): Promise<{ items: ArticleListItem[]; hasMore: boolean }> {
+  const page = Math.max(1, opts.page ?? 1);
+  const offset = (page - 1) * ARTICLES_PAGE_SIZE;
   try {
-    return await db
+    const where = [eq(articles.status, "published")];
+    if (opts.type) where.push(eq(articles.type, opts.type as "tutorial"));
+    if (opts.deviceSlug) where.push(eq(devices.slug, opts.deviceSlug));
+
+    const rows = await db
       .select({
         id: articles.id,
         slug: articles.slug,
@@ -29,11 +49,15 @@ export async function listPublishedArticles() {
       })
       .from(articles)
       .innerJoin(users, eq(users.id, articles.authorId))
-      .where(eq(articles.status, "published"))
+      .leftJoin(devices, eq(devices.id, articles.deviceId))
+      .where(and(...where))
       .orderBy(desc(articles.publishedAt))
-      .limit(60);
+      .limit(ARTICLES_PAGE_SIZE + 1)
+      .offset(offset);
+
+    return { items: rows.slice(0, ARTICLES_PAGE_SIZE), hasMore: rows.length > ARTICLES_PAGE_SIZE };
   } catch {
-    return [];
+    return { items: [], hasMore: false };
   }
 }
 
@@ -83,9 +107,12 @@ export async function getPublishedArticle(slug: string): Promise<PublishedArticl
   }
 }
 
-export async function getModerationQueue() {
+export const QUEUE_PAGE_SIZE = 20;
+
+export async function getModerationQueue(page = 1) {
+  const offset = (Math.max(1, page) - 1) * QUEUE_PAGE_SIZE;
   try {
-    return await db
+    const rows = await db
       .select({
         articleId: articles.id,
         title: articles.title,
@@ -102,9 +129,11 @@ export async function getModerationQueue() {
       .innerJoin(users, eq(users.id, articles.authorId))
       .where(eq(reviews.decision, "pending"))
       .orderBy(desc(reviews.createdAt))
-      .limit(100);
+      .limit(QUEUE_PAGE_SIZE + 1)
+      .offset(offset);
+    return { items: rows.slice(0, QUEUE_PAGE_SIZE), hasMore: rows.length > QUEUE_PAGE_SIZE };
   } catch {
-    return [];
+    return { items: [], hasMore: false };
   }
 }
 

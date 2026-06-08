@@ -6,10 +6,18 @@ import { getModerationQueue, getRevisionBody, typeLabel } from "@/lib/articles";
 import { ArticleBody } from "@/lib/blocks/render";
 import { ModerationActions } from "@/components/moderation/moderation-actions";
 import { Button } from "@/components/ui/button";
+import { Pager } from "@/components/ui/pager";
 
 export const metadata: Metadata = { title: "Moderação", robots: { index: false } };
+export const dynamic = "force-dynamic";
 
-export default async function ModerationPage() {
+export default async function ModerationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageRaw } = await searchParams;
+  const page = Math.max(1, Number(pageRaw) || 1);
   const user = await getCurrentUser();
   if (!can.moderate(user)) {
     return (
@@ -26,7 +34,7 @@ export default async function ModerationPage() {
     );
   }
 
-  const queue = await getModerationQueue();
+  const { items: queue, hasMore } = await getModerationQueue(page);
   const withBodies = await Promise.all(
     queue.map(async (q) => ({ ...q, body: await getRevisionBody(q.revisionId) })),
   );
@@ -35,7 +43,7 @@ export default async function ModerationPage() {
     <main id="main" className="mx-auto max-w-3xl px-6 py-10">
       <h1 className="text-3xl font-bold">Fila de moderação</h1>
       <p className="mt-2 text-sm text-muted-foreground" role="status">
-        {queue.length} {queue.length === 1 ? "item pendente" : "itens pendentes"}
+        {queue.length} {queue.length === 1 ? "item nesta página" : "itens nesta página"}
       </p>
 
       {withBodies.length === 0 ? (
@@ -66,6 +74,7 @@ export default async function ModerationPage() {
           ))}
         </ul>
       )}
+      <Pager path="/moderacao" page={page} hasMore={hasMore} />
     </main>
   );
 }

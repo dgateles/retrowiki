@@ -14,6 +14,7 @@ type EditorBlock =
   | { _id: string; type: "heading"; level: 2 | 3 | 4; text: string }
   | { _id: string; type: "paragraph"; text: string }
   | { _id: string; type: "callout"; variant: "info" | "success" | "warning" | "danger"; text: string }
+  | { _id: string; type: "code"; code: string; lang: string }
   | { _id: string; type: "image"; url: string; alt: string }
   | { _id: string; type: "github-releases"; owner: string; repo: string; limit: number }
   | { _id: string; type: "device-spec"; deviceId: number }
@@ -41,6 +42,8 @@ function newBlock(type: EditorBlock["type"]): EditorBlock {
       return { _id: uid(), type, text: "" };
     case "callout":
       return { _id: uid(), type, variant: "info", text: "" };
+    case "code":
+      return { _id: uid(), type, code: "", lang: "" };
     case "image":
       return { _id: uid(), type, url: "", alt: "" };
     case "github-releases":
@@ -62,6 +65,7 @@ const ADD_BUTTONS: { type: EditorBlock["type"]; label: string }[] = [
   { type: "heading", label: "Título" },
   { type: "paragraph", label: "Parágrafo" },
   { type: "callout", label: "Alerta" },
+  { type: "code", label: "Código" },
   { type: "image", label: "Imagem" },
   { type: "list", label: "Lista" },
   { type: "table", label: "Tabela" },
@@ -80,6 +84,8 @@ function fromBlockTree(blocks: Block[]): EditorBlock[] {
         return { _id: uid(), type: "paragraph", text: b.text };
       case "callout":
         return { _id: uid(), type: "callout", variant: b.variant, text: b.text };
+      case "code":
+        return { _id: uid(), type: "code", code: b.code, lang: b.lang ?? "" };
       case "image":
         return { _id: uid(), type: "image", url: b.url, alt: b.alt };
       case "github-releases":
@@ -144,6 +150,10 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
           .map((r) => r.split("|").map((c) => c.trim()))
           .filter((r) => r.some(Boolean));
         if (headers.length && rows.length) out.push({ type: "table", headers, rows });
+      } else if (b.type === "code") {
+        if (b.code.trim()) {
+          out.push({ type: "code", code: b.code, ...(b.lang.trim() ? { lang: b.lang.trim() } : {}) });
+        }
       } else if (b.type === "steps") {
         const items = b.itemsText
           .split("\n")
@@ -282,6 +292,25 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   aria-label="Texto do alerta"
                   rows={2}
                   className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                />
+              </div>
+            )}
+            {b.type === "code" && (
+              <div className="space-y-2">
+                <Input
+                  value={b.lang}
+                  onChange={(e) => update(b._id, { lang: e.target.value })}
+                  placeholder="Linguagem (opcional, ex.: bash, json)"
+                  aria-label="Linguagem do código"
+                />
+                <textarea
+                  value={b.code}
+                  onChange={(e) => update(b._id, { code: e.target.value })}
+                  aria-label="Código"
+                  rows={5}
+                  spellCheck={false}
+                  placeholder="Cole o código aqui"
+                  className="w-full rounded-md border border-input bg-background p-3 font-mono text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 />
               </div>
             )}

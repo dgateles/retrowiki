@@ -636,8 +636,8 @@
      "text": "O método mais prático é seguir a estrutura de pastas do ES-DE, compatível com Daijisho e outros frontends:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /sdcard/ROMs/ nes/ snes/ gba/ gbc/ gb/ genesis/ ps1/ psp/ nds/ dreamcast/ n64/ saturn/ gamecube/ ``"
+     "type": "code",
+     "code": "/sdcard/ROMs/\n  nes/\n  snes/\n  gba/\n  gbc/\n  gb/\n  genesis/\n  ps1/\n  psp/\n  nds/\n  dreamcast/\n  n64/\n  saturn/\n  gamecube/"
     },
     {
      "type": "paragraph",
@@ -941,8 +941,13 @@
      "text": "Linux"
     },
     {
+     "type": "code",
+     "code": "sudo mkfs.exfat -n \"MANGMI_SD\" /dev/sdX1",
+     "lang": "bash"
+    },
+    {
      "type": "paragraph",
-     "text": "``bash sudo mkfs.exfat -n \"MANGMI_SD\" /dev/sdX1 ` (substitua /dev/sdX1 pelo dispositivo correto — verifique com lsblk`)"
+     "text": "(substitua /dev/sdX1 pelo dispositivo correto — verifique com lsblk)"
     },
     {
      "type": "heading",
@@ -954,8 +959,8 @@
      "text": "Após formatar, crie a estrutura de pastas para as ROMs. O padrão abaixo é compatível com ES-DE, Daijisho e o launcher nativo M Space:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /ROMs/ arcade/ dreamcast/ gba/ gb/ gbc/ gamecube/ genesis/ mastersystem/ n64/ nds/ nes/ psp/ ps1/ (ou psx/) ps2/ saturn/ snes/ 3ds/ ``"
+     "type": "code",
+     "code": "/ROMs/\n  arcade/\n  dreamcast/\n  gba/\n  gb/\n  gbc/\n  gamecube/\n  genesis/\n  mastersystem/\n  n64/\n  nds/\n  nes/\n  psp/\n  ps1/         (ou psx/)\n  ps2/\n  saturn/\n  snes/\n  3ds/"
     },
     {
      "type": "heading",
@@ -967,8 +972,8 @@
      "text": "Crie também uma pasta para os arquivos de BIOS do RetroArch:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /RetroArch/ system/ dc/ ← BIOS do Dreamcast aqui scph1001.bin ← BIOS do PS1 bios7.bin ← BIOS do Nintendo DS bios9.bin firmware.bin ``"
+     "type": "code",
+     "code": "/RetroArch/\n  system/\n    dc/          ← BIOS do Dreamcast aqui\n    scph1001.bin ← BIOS do PS1\n    bios7.bin    ← BIOS do Nintendo DS\n    bios9.bin\n    firmware.bin"
     },
     {
      "type": "heading",
@@ -1501,8 +1506,9 @@
      "text": "Se os jogos aparecerem duplicados no OnionOS, o macOS criou arquivos ocultos ._* ao copiar. Corrija com:"
     },
     {
-     "type": "paragraph",
-     "text": "``bash dot_clean /Volumes/NOME_DO_CARTAO ``"
+     "type": "code",
+     "code": "dot_clean /Volumes/NOME_DO_CARTAO",
+     "lang": "bash"
     },
     {
      "type": "heading",
@@ -1510,17 +1516,9 @@
      "text": "Linux"
     },
     {
-     "type": "paragraph",
-     "text": "```bash"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Verifique o dispositivo correto com lsblk antes de executar"
-    },
-    {
-     "type": "paragraph",
-     "text": "sudo mkfs.vfat -F 32 /dev/sdX1 ```"
+     "type": "code",
+     "code": "# Verifique o dispositivo correto com lsblk antes de executar\nsudo mkfs.vfat -F 32 /dev/sdX1",
+     "lang": "bash"
     },
     {
      "type": "heading",
@@ -1532,8 +1530,8 @@
      "text": "Após instalar o OnionOS, a raiz do cartão terá esta estrutura:"
     },
     {
-     "type": "paragraph",
-     "text": "`` / ├── Roms/ ← ROMs organizadas por sistema (GBA, PS, SNES…) ├── Saves/ ← Save states e saves in-game ├── BIOS/ ← Arquivos de BIOS (PS1, NDS, Neo Geo) ├── Emu/ ← Configurações dos emuladores ├── App/ ← Aplicativos extras └── miyoo/ ← Arquivos do sistema — não modifique ``"
+     "type": "code",
+     "code": "/\n├── Roms/           ← ROMs organizadas por sistema (GBA, PS, SNES…)\n├── Saves/          ← Save states e saves in-game\n├── BIOS/           ← Arquivos de BIOS (PS1, NDS, Neo Geo)\n├── Emu/            ← Configurações dos emuladores\n├── App/            ← Aplicativos extras\n└── miyoo/          ← Arquivos do sistema — não modifique"
     },
     {
      "type": "paragraph",
@@ -5123,8 +5121,8 @@
      "text": "O RP5 tem 128 GB de armazenamento interno UFS 3.1 e um slot microSD para expansão. A estrutura de pastas recomendada pelos principais frontends (ES-DE, Daijisho) é:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /storage/emulated/0/Roms/ ├── snes/ ├── n64/ ├── psx/ ├── ps2/ ├── gc/ ← GameCube ├── wii/ ├── psp/ ├── nds/ └── 3ds/ ``"
+     "type": "code",
+     "code": "/storage/emulated/0/Roms/\n  ├── snes/\n  ├── n64/\n  ├── psx/\n  ├── ps2/\n  ├── gc/        ← GameCube\n  ├── wii/\n  ├── psp/\n  ├── nds/\n  └── 3ds/"
     },
     {
      "type": "paragraph",
@@ -6439,8 +6437,8 @@
      "text": "Uma estrutura limpa facilita a vida dos frontends (Daijisho, ES-DE):"
     },
     {
-     "type": "paragraph",
-     "text": "`` /storage/emulated/0/ ROMs/ NES/ SNES/ GBA/ PlayStation/ PlayStation2/ GameCube/ Switch/ PSP/ NDS/ BIOS/ ``"
+     "type": "code",
+     "code": "/storage/emulated/0/\n  ROMs/\n    NES/\n    SNES/\n    GBA/\n    PlayStation/\n    PlayStation2/\n    GameCube/\n    Switch/\n    PSP/\n    NDS/\n  BIOS/"
     },
     {
      "type": "paragraph",
@@ -6580,26 +6578,9 @@
      "text": "Linux"
     },
     {
-     "type": "paragraph",
-     "text": "```bash"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Instale exfatprogs se necessário"
-    },
-    {
-     "type": "paragraph",
-     "text": "sudo apt install exfatprogs"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Formate (substitua sdX pelo dispositivo correto — verifique com lsblk)"
-    },
-    {
-     "type": "paragraph",
-     "text": "sudo mkfs.exfat -n \"RP6-ROMS\" /dev/sdX1 ```"
+     "type": "code",
+     "code": "# Instale exfatprogs se necessário\nsudo apt install exfatprogs\n\n# Formate (substitua sdX pelo dispositivo correto — verifique com lsblk)\nsudo mkfs.exfat -n \"RP6-ROMS\" /dev/sdX1",
+     "lang": "bash"
     },
     {
      "type": "heading",
@@ -6682,8 +6663,8 @@
      "text": "Organize as ROMs diretamente no cartão para que frontends como ES-DE e Daijisho encontrem automaticamente:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /sdcard/ ROMs/ NES/ SNES/ GBA/ PlayStation/ ← PS1 PlayStation2/ GameCube/ Wii/ 3DS/ NDS/ PSP/ Switch/ BIOS/ Saves/ ``"
+     "type": "code",
+     "code": "/sdcard/\n  ROMs/\n    NES/\n    SNES/\n    GBA/\n    PlayStation/        ← PS1\n    PlayStation2/\n    GameCube/\n    Wii/\n    3DS/\n    NDS/\n    PSP/\n    Switch/\n  BIOS/\n  Saves/"
     }
    ]
   }
@@ -7672,8 +7653,8 @@
      "text": "Estrutura de pastas recomendada"
     },
     {
-     "type": "paragraph",
-     "text": "`` /storage/emulated/0/ └── RetroArch/ └── roms/ ├── nes/ ├── snes/ ├── gba/ ├── ps1/ ├── n64/ ├── psp/ ├── nds/ ├── gamecube/ └── wii/ ``"
+     "type": "code",
+     "code": "/storage/emulated/0/\n└── RetroArch/\n    └── roms/\n        ├── nes/\n        ├── snes/\n        ├── gba/\n        ├── ps1/\n        ├── n64/\n        ├── psp/\n        ├── nds/\n        ├── gamecube/\n        └── wii/"
     },
     {
      "type": "paragraph",
@@ -7995,8 +7976,8 @@
      "text": "Se você separa ROMs no cartão e outras no armazenamento interno, mantenha a mesma estrutura de pastas nos dois locais para facilitar a configuração dos emuladores:"
     },
     {
-     "type": "paragraph",
-     "text": "`` /sdcard/ (cartão microSD) └── Roms/ ├── Gamecube/ ├── Wii/ ├── PS2/ ├── PSP/ └── ... ``"
+     "type": "code",
+     "code": "/sdcard/  (cartão microSD)\n└── Roms/\n    ├── Gamecube/\n    ├── Wii/\n    ├── PS2/\n    ├── PSP/\n    └── ..."
     },
     {
      "type": "paragraph",
@@ -9134,7 +9115,11 @@
     },
     {
      "type": "paragraph",
-     "text": "Estrutura de pastas recomendada: `` /storage/emulated/0/ROMs/ ├── NES/ ├── SNES/ ├── GBA/ ├── PS1/ ├── PS2/ ├── PSP/ ├── N64/ ├── GCN/ └── ... ``"
+     "text": "Estrutura de pastas recomendada:"
+    },
+    {
+     "type": "code",
+     "code": "/storage/emulated/0/ROMs/\n  ├── NES/\n  ├── SNES/\n  ├── GBA/\n  ├── PS1/\n  ├── PS2/\n  ├── PSP/\n  ├── N64/\n  ├── GCN/\n  └── ..."
     },
     {
      "type": "paragraph",
@@ -9216,26 +9201,9 @@
      "text": "Para transferências mais rápidas via Wi-Fi, ative o Depuração USB em Configurações → Sobre o dispositivo → (toque 7x no número da versão para ativar as opções do desenvolvedor) → Opções do desenvolvedor → Depuração USB."
     },
     {
-     "type": "paragraph",
-     "text": "```bash"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Conectar via Wi-Fi (substitua pelo IP do console)"
-    },
-    {
-     "type": "paragraph",
-     "text": "adb connect 192.168.1.XXX:5555"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Enviar ROMs para o console"
-    },
-    {
-     "type": "paragraph",
-     "text": "adb push /caminho/local/roms/ /storage/emulated/0/ROMs/ ```"
+     "type": "code",
+     "code": "# Conectar via Wi-Fi (substitua pelo IP do console)\nadb connect 192.168.1.XXX:5555\n\n# Enviar ROMs para o console\nadb push /caminho/local/roms/ /storage/emulated/0/ROMs/",
+     "lang": "bash"
     },
     {
      "type": "heading",
@@ -11285,8 +11253,8 @@
      "text": "Após o boot inicial, a pasta de ROMs terá subpastas por sistema:"
     },
     {
-     "type": "paragraph",
-     "text": "`` Roms/ ├── GBA/ ← Game Boy Advance ├── GBC/ ← Game Boy Color ├── GB/ ← Game Boy ├── NES/ ← Nintendo NES ├── SNES/ ← Super Nintendo ├── MD/ ← Mega Drive / Genesis ├── PSX/ ← PlayStation 1 ├── NDS/ ← Nintendo DS ├── PSP/ ← PSP └── PORTS/ ← PortMaster ``"
+     "type": "code",
+     "code": "Roms/\n├── GBA/        ← Game Boy Advance\n├── GBC/        ← Game Boy Color\n├── GB/         ← Game Boy\n├── NES/        ← Nintendo NES\n├── SNES/       ← Super Nintendo\n├── MD/         ← Mega Drive / Genesis\n├── PSX/        ← PlayStation 1\n├── NDS/        ← Nintendo DS\n├── PSP/        ← PSP\n└── PORTS/      ← PortMaster"
     },
     {
      "type": "heading",
@@ -12312,17 +12280,9 @@
      "text": "Linux"
     },
     {
-     "type": "paragraph",
-     "text": "```bash"
-    },
-    {
-     "type": "heading",
-     "level": 2,
-     "text": "Substitua /dev/sdX pelo dispositivo correto"
-    },
-    {
-     "type": "paragraph",
-     "text": "sudo mkfs.vfat -F 32 /dev/sdX1 ```"
+     "type": "code",
+     "code": "# Substitua /dev/sdX pelo dispositivo correto\nsudo mkfs.vfat -F 32 /dev/sdX1",
+     "lang": "bash"
     },
     {
      "type": "heading",

@@ -5,6 +5,19 @@ funcional: catálogo, comparador, busca, conteúdo comunitário com editor de
 blocos, moderação, comentários, votos, notificações, perfis, SEO e o cron dos
 componentes dinâmicos.
 
+## Estruturais prioritários (próximos)
+- **Painéis de usuário, moderador e admin.** Hoje as ações de moderação e conta
+  estão espalhadas em páginas soltas. Falta um painel por papel: o usuário com
+  seus rascunhos, comentários e notificações; o moderador com a fila e métricas;
+  o admin com gestão de devices, usuários, papéis, lojas e integrações.
+- **CRUD de consoles (admin).** Não há tela para cadastrar um console novo nem
+  editar os existentes. O modelo de dados suporta tudo (specs, emulação,
+  categorias, imagens), mas falta o formulário de admin e a action segura.
+- **Editor de conteúdo rico.** O editor atual é por blocos com campos simples.
+  O alvo é uma experiência mais próxima de WordPress ou de fóruns (IPB, XenForo),
+  com barra de ferramentas e edição fluida, ainda produzindo a árvore de blocos
+  segura. É a mudança de maior porte da camada de autoria.
+
 ## Conteúdo e lojas
 - **Registro de lojas e guias de compra.** O bloco `store-links` existe e
   referencia lojas por id, mas não há lojas cadastradas nem uma tela de admin

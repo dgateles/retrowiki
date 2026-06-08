@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Gamepad2 } from "lucide-react";
 import { listDevices, listManufacturers, type DeviceFilters } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
+import { Pager } from "@/components/ui/pager";
 
 export const metadata: Metadata = {
   title: "Consoles",
@@ -19,9 +20,11 @@ const FORM_FACTORS = [
 export default async function ConsolesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ fabricante?: string; formato?: string }>;
+  searchParams: Promise<{ fabricante?: string; formato?: string; page?: string }>;
 }) {
   const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page) || 1);
+  const PAGE_SIZE = 24;
   const filters: DeviceFilters = {
     manufacturer: sp.fabricante || undefined,
     formFactor: (["vertical", "horizontal", "clamshell", "other"].includes(sp.formato ?? "")
@@ -29,7 +32,10 @@ export default async function ConsolesPage({
       : undefined) as DeviceFilters["formFactor"],
   };
 
-  const [devices, manufacturers] = await Promise.all([listDevices(filters), listManufacturers()]);
+  const [all, manufacturers] = await Promise.all([listDevices(filters), listManufacturers()]);
+  const offset = (page - 1) * PAGE_SIZE;
+  const devices = all.slice(offset, offset + PAGE_SIZE);
+  const hasMore = all.length > offset + PAGE_SIZE;
 
   return (
     <main id="main" className="mx-auto max-w-6xl px-6 py-12">
@@ -99,7 +105,7 @@ export default async function ConsolesPage({
               >
                 <div className="flex h-28 items-center justify-center">
                   {d.frontImage ? (
-                    <Image src={d.frontImage} alt={`${d.name}, vista frontal`} width={120} height={112} className="object-contain" />
+                    <Image src={d.frontImage} alt={`${d.name}, vista frontal`} width={140} height={112} className="max-h-full w-auto object-contain" />
                   ) : (
                     <Gamepad2 className="size-12 text-muted-foreground/40" aria-hidden="true" />
                   )}
@@ -111,6 +117,7 @@ export default async function ConsolesPage({
           ))}
         </ul>
       )}
+      <Pager path="/consoles" page={page} hasMore={hasMore} params={{ fabricante: sp.fabricante, formato: sp.formato }} />
     </main>
   );
 }

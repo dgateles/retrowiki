@@ -43,6 +43,12 @@ const Callout = z.object({
   text: z.string().min(1).max(2000),
 });
 
+const CodeBlock = z.object({
+  type: z.literal("code"),
+  code: z.string().min(1).max(8000),
+  lang: z.string().max(20).optional(),
+});
+
 const ListBlock = z.object({
   type: z.literal("list"),
   ordered: z.boolean().default(false),
@@ -79,6 +85,7 @@ export const Block = z.discriminatedUnion("type", [
   ImageBlock,
   Steps,
   Callout,
+  CodeBlock,
   ListBlock,
   TableBlock,
   GithubReleases,
@@ -100,6 +107,7 @@ export function blockTreeToText(tree: BlockTree): string {
     if (b.type === "heading" || b.type === "paragraph") parts.push(b.text);
     else if (b.type === "callout") parts.push(b.text);
     else if (b.type === "steps") b.items.forEach((i) => parts.push(i.title, i.text));
+    else if (b.type === "code") parts.push(b.code);
     else if (b.type === "list") parts.push(...b.items);
     else if (b.type === "table") { parts.push(...b.headers); b.rows.forEach((r) => parts.push(...r)); }
     else if (b.type === "image" && b.caption) parts.push(b.caption);

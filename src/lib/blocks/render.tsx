@@ -5,6 +5,7 @@ import {
   ImageBlock,
   StepsBlock,
   CalloutBlock,
+  CodeBlock,
   ListBlock,
   TableBlock,
 } from "@/components/blocks/static-blocks";
@@ -24,6 +25,8 @@ function renderBlock(block: Block, key: number) {
       return <StepsBlock key={key} items={block.items} />;
     case "callout":
       return <CalloutBlock key={key} variant={block.variant} text={block.text} />;
+    case "code":
+      return <CodeBlock key={key} code={block.code} lang={block.lang} />;
     case "list":
       return <ListBlock key={key} ordered={block.ordered} items={block.items} />;
     case "table":

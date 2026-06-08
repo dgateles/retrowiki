@@ -64,6 +64,24 @@ export function StepsBlock({
   );
 }
 
+export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
+  return (
+    <figure className="my-5">
+      {lang && (
+        <figcaption className="rounded-t-lg border border-b-0 border-border bg-muted/60 px-3 py-1 font-mono text-xs text-muted-foreground">
+          {lang}
+        </figcaption>
+      )}
+      <pre
+        className={`overflow-x-auto border border-border bg-muted/40 p-4 text-sm ${lang ? "rounded-b-lg" : "rounded-lg"}`}
+      >
+        {/* JSX escapa o conteúdo; sem dangerouslySetInnerHTML */}
+        <code className="font-mono">{code}</code>
+      </pre>
+    </figure>
+  );
+}
+
 export function ListBlock({ ordered, items }: { ordered: boolean; items: string[] }) {
   const Tag = ordered ? "ol" : "ul";
   return (

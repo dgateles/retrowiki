@@ -5,6 +5,7 @@ import { getUnreadCount } from "@/lib/notifications";
 import { can } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/layout/logout-button";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export async function SiteHeader() {
   const session = await auth();
@@ -31,6 +32,7 @@ export async function SiteHeader() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/guias">Guias</Link>
           </Button>
+          <ThemeToggle />
 
           {user ? (
             <>
