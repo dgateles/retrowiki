@@ -852,6 +852,17 @@
     @apply mt-1 block text-xs text-muted-foreground;
   }
 
+  /* Abas de escopo da busca. */
+  .scope-tabs {
+    @apply mt-4 inline-flex gap-1 rounded-md border border-border bg-card p-1;
+  }
+  .scope-tabs__link {
+    @apply rounded-sm px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground;
+  }
+  .scope-tabs__link--active {
+    @apply bg-accent text-foreground;
+  }
+
   /* Resultados de busca (página). */
   .results__group {
     @apply mt-6;

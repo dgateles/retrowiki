@@ -1,18 +1,26 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Search, Gamepad2, BookOpen } from "lucide-react";
-import { searchAll } from "@/lib/search";
+import { searchAll, type SearchScope } from "@/lib/search";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Buscar" };
 export const dynamic = "force-dynamic";
 
+const SCOPES: { key: SearchScope; label: string }[] = [
+  { key: "tudo", label: "Tudo" },
+  { key: "consoles", label: "Consoles" },
+  { key: "guias", label: "Guias" },
+];
+
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; escopo?: string }>;
 }) {
-  const { q = "" } = await searchParams;
-  const results = q.trim().length >= 2 ? await searchAll(q) : { devices: [], articles: [] };
+  const { q = "", escopo } = await searchParams;
+  const scope: SearchScope = escopo === "consoles" || escopo === "guias" ? escopo : "tudo";
+  const results = q.trim().length >= 2 ? await searchAll(q, scope) : { devices: [], articles: [] };
   const total = results.devices.length + results.articles.length;
 
   return (
@@ -30,7 +38,21 @@ export default async function SearchPage({
           placeholder="Console, firmware, problema…"
           className="search__input"
         />
+        <input type="hidden" name="escopo" value={scope} />
       </form>
+
+      <nav aria-label="Escopo da busca" className="scope-tabs">
+        {SCOPES.map((s) => (
+          <Link
+            key={s.key}
+            href={`/buscar?q=${encodeURIComponent(q)}&escopo=${s.key}`}
+            aria-current={scope === s.key ? "page" : undefined}
+            className={cn("scope-tabs__link", scope === s.key && "scope-tabs__link--active")}
+          >
+            {s.label}
+          </Link>
+        ))}
+      </nav>
 
       {q.trim().length >= 2 && (
         <p className="page__note" role="status" aria-live="polite">

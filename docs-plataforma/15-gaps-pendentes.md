@@ -151,3 +151,119 @@ Implicações de arquitetura:
   externo) para chamá-lo periodicamente.
 - **CSP completa.** Os headers de segurança estão no `next.config.ts`, mas a
   Content-Security-Policy detalhada do doc 09 ainda não foi aplicada.
+
+## Painel de administração completo (referência IPB)
+
+Expandir o `/admin` atual (que hoje só tem o CRUD de consoles) para um painel de
+administração no estilo Invision Community, adaptado ao nosso cenário (sem
+Commerce, Clubs, Messenger nem CAPTCHA de terceiros; com nossos papéis,
+RetroGuard e os ranks já existentes). Navegação em dois níveis: barra de áreas à
+esquerda e submenu por área. Item adicionado ao final da fila.
+
+Gerenciamento de membros:
+
+- **Lista de membros.** Tabela com avatar, nome de exibição, e-mail, data de
+  entrada, papel, rank (pontos) e último IP. Busca, filtros e ordenação.
+  Ações: criar membro, forçar troca de senha, exportar e importar lista.
+- **Papéis e permissões.** No IPB são "grupos"; aqui são os papéis
+  (member, contributor, moderator, admin). Tela para promover/rebaixar, ver a
+  contagem por papel e editar o que cada papel pode fazer.
+- **Ferramentas de IP e auditoria.** Consultar ações por usuário/IP usando o
+  `audit_log` já existente.
+- **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão
+  da conta e dos dados, e o admin processar.
+
+Gamificação (conquistas):
+
+- **Regras.** Ações que concedem pontos e badges (comentário publicado,
+  primeiro comentário, guia aprovado, reação recebida, login recorrente, etc.),
+  com pontos configuráveis. Alimenta a reputação que já move os ranks.
+- **Ranks.** Hoje os 13 níveis estão fixos em `src/lib/ranks.ts`. Tornar
+  editáveis (nome, ícone, limiar de pontos) via tabela e tela de admin.
+- **Badges.** Catálogo de conquistas com ícone, critério e concessão automática
+  (por regra) ou manual (por moderador). Precisa de tabela de badges e de
+  badges-por-usuário.
+- **Configurações.** Ativar/desativar a gamificação, marcar badge como "raro"
+  abaixo de X% dos membros, limpar o log de atividade após N dias, excluir
+  papéis, limitar pontos manuais por dia. Botão de recalcular conquistas.
+
+Configurações de membros:
+
+- **Campos de perfil.** Campos extras editáveis (bio, localização, links),
+  com grupos de campos e controle de quem vê.
+- **Reputação e reações.** Configurar se está ativa, papéis excluídos, reagir ao
+  próprio conteúdo, limiar para destacar conteúdo, exibir total no perfil,
+  e o conjunto de reações. Abas: configurações, reações, ranking (leaderboard),
+  níveis de reputação.
+- **Notificações.** Tipos de notificação (conquistas, conteúdo seguido,
+  moderação, menções, perfil) com edição por tipo. Conecta com a
+  `notification_prefs` já existente.
+- **Banimentos.** Filtros de banimento por e-mail, IP ou termo, com motivo.
+
+Moderação de conteúdo:
+
+- **Denúncias.** Membros denunciam conteúdo; fila para a equipe. Configurar
+  motivos, obrigatoriedade de mensagem e moderação automática por número de
+  denúncias.
+- **Prevenção de spam.** Tela de configuração do RetroGuard (dificuldade do
+  proof-of-work, honeypot) em vez dos CAPTCHAs de terceiros do IPB.
+- **Avisos (warnings).** Sistema de advertências ao usuário com níveis e
+  consequências.
+- **Atribuições.** Encaminhar conteúdo a um moderador específico.
+
+Equipe:
+
+- **Moderadores e administradores.** Listas da equipe com escopo de permissão.
+- **Diretório da equipe.** Página pública de quem modera a comunidade.
+
+Gerenciamento de páginas e conteúdo:
+
+- **Guias/artigos.** Gerenciar todos os artigos (qualquer status), com workflows
+  de revisão, categorias e campos. Complementa a fila de moderação atual.
+- **Páginas estáticas, blocos e templates.** Construtor de páginas com blocos
+  reutilizáveis (template blocks) e templates, como no Page Builder do IPB.
+- **Mídia.** Biblioteca de imagens (depende do upload de mídia, já no backlog).
+- **Bases de dados.** Tipos de conteúdo personalizados (custom databases).
+
+E-mail em massa:
+
+- **Bulk mail.** Envio segmentado para grupos de membros via Resend, respeitando
+  as supressões (`email_suppressions`) e o opt-out.
+
+Estatísticas:
+
+- **Painel de métricas.** Crescimento de membros, conteúdo publicado, reações e
+  atividade, alimentando as decisões de moderação e curadoria.
+
+## Perfil de usuário (detalhamento)
+
+Estende o perfil rico já entregue (capa, avatar, cartão de rank, estatísticas).
+Elementos adicionais da referência IPB, adaptados. Item ao final da fila.
+
+Cabeçalho:
+
+- **Editar perfil (dropdown).** Para o dono do perfil: editar foto, enviar capa,
+  editar perfil, configurações da conta. Depende do upload de mídia (avatar e
+  capa), hoje só temos a capa em gradiente e o avatar com iniciais.
+- **Presença.** "Entrou em", "Visto por último" e "Agora" (o que está vendo),
+  com indicador de online. Precisa registrar `lastSeenAt` e a atividade atual.
+- **Ver minha atividade.** Botão que abre o feed de atividade do usuário.
+
+Barra lateral:
+
+- **Pontos de advertência.** Cartão com o total de warnings e restrições ativas
+  (depende do sistema de avisos do painel de admin).
+- **Rank.** Já existe.
+- **E-mail.** Visível só para a equipe ("Only staff can see email addresses").
+- **Posts.** Contagem de publicações, com link para a atividade.
+- **Reputação.** Total com rótulo (Neutra, Boa, etc.).
+- **Seguidores.** Contagem e ações de seguir/deixar de seguir. Precisa de tabela
+  de follows entre usuários.
+- **Visitantes recentes do perfil.** Quem visitou o perfil (opcional, com
+  opt-out). Precisa registrar visitas.
+
+Coluna principal:
+
+- **Feed de atividade.** Linha do tempo do usuário (entrou na comunidade,
+  publicou guia, comentou, reagiu, ganhou badge). Depende do log de atividade
+  da gamificação.
