@@ -5,29 +5,6 @@ import { Button } from "@/components/ui/button";
 export default function HomePage() {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2 font-bold">
-            <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
-            RetroWiki
-          </Link>
-          <nav aria-label="Principal" className="flex items-center gap-1 sm:gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/consoles">Consoles</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/guias">Guias</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/auth/entrar">Entrar</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/auth/cadastrar">Criar conta</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
-
       <main id="main" className="flex-1">
         <section className="mx-auto max-w-6xl px-6 py-20">
           <p className="text-sm font-medium text-primary">
