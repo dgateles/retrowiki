@@ -5,10 +5,13 @@ import { ChevronLeft } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
 import { listComments, getVoteState } from "@/lib/comments";
 import { ArticleBody } from "@/lib/blocks/render";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { VoteButton } from "@/components/engagement/vote-button";
 import { CommentForm } from "@/components/engagement/comment-form";
+import { HideCommentButton } from "@/components/engagement/hide-comment-button";
 import { auth } from "@/auth";
+import { can } from "@/lib/auth-helpers";
 
 export async function generateMetadata({
   params,
@@ -32,6 +35,7 @@ export default async function ArticlePage({
 
   const session = await auth();
   const userId = session?.user ? Number(session.user.id) : null;
+  const isMod = can.moderate(session?.user ?? null);
   const [comments, vote] = await Promise.all([
     listComments(a.id),
     getVoteState(a.id, userId),
@@ -39,6 +43,17 @@ export default async function ArticlePage({
 
   return (
     <main id="main" className="mx-auto max-w-3xl px-6 py-10">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          headline: a.title,
+          inLanguage: "pt-BR",
+          author: { "@type": "Person", name: `@${a.authorHandle}` },
+          ...(a.summary ? { description: a.summary } : {}),
+          ...(a.publishedAt ? { datePublished: new Date(a.publishedAt).toISOString() } : {}),
+        }}
+      />
       <Button asChild variant="ghost" size="sm" className="mb-4">
         <Link href="/guias">
           <ChevronLeft className="size-4" aria-hidden="true" /> Guias
@@ -101,6 +116,11 @@ export default async function ArticlePage({
                   </time>
                 </div>
                 <p className="mt-1.5 whitespace-pre-wrap text-sm text-foreground/90">{c.body}</p>
+                {isMod && (
+                  <div className="mt-2">
+                    <HideCommentButton commentId={c.id} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

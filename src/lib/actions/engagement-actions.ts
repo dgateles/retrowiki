@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, votes, articles, notifications } from "@/db/schema";
-import { requireUser } from "@/lib/auth-helpers";
+import { comments, votes, articles, notifications, auditLog } from "@/db/schema";
+import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -52,6 +52,33 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   }
 
   revalidatePath(`/guias/${article.slug}`);
+  return { ok: true };
+}
+
+export async function hideCommentAction(commentId: number): Promise<Result> {
+  let mod;
+  try {
+    mod = await requireRole("moderator");
+  } catch {
+    return { ok: false, error: "Apenas moderadores." };
+  }
+
+  const [row] = await db
+    .select({ id: comments.id, articleId: comments.articleId })
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  if (!row) return { ok: false, error: "Comentário não encontrado." };
+
+  await db.update(comments).set({ status: "hidden" }).where(eq(comments.id, commentId));
+  await db.insert(auditLog).values({
+    actorId: Number(mod.id),
+    action: "hide_comment",
+    target: `comment:${commentId}`,
+  });
+
+  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/guias/${a.slug}`);
   return { ok: true };
 }
 

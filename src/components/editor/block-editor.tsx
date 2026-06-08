@@ -7,7 +7,8 @@ import { Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createDraftAction, submitForReviewAction } from "@/lib/actions/article-actions";
+import { createDraftAction, updateDraftAction, submitForReviewAction } from "@/lib/actions/article-actions";
+import type { Block } from "@/lib/blocks/schema";
 
 type EditorBlock =
   | { _id: string; type: "heading"; level: 2 | 3 | 4; text: string }
@@ -18,6 +19,7 @@ type EditorBlock =
   | { _id: string; type: "device-spec"; deviceId: number }
   | { _id: string; type: "list"; ordered: boolean; itemsText: string }
   | { _id: string; type: "table"; headersText: string; rowsText: string }
+  | { _id: string; type: "steps"; itemsText: string }
   | { _id: string; type: "store-links"; idsText: string };
 
 const TYPES = [
@@ -49,6 +51,8 @@ function newBlock(type: EditorBlock["type"]): EditorBlock {
       return { _id: uid(), type, ordered: false, itemsText: "" };
     case "table":
       return { _id: uid(), type, headersText: "", rowsText: "" };
+    case "steps":
+      return { _id: uid(), type, itemsText: "" };
     case "store-links":
       return { _id: uid(), type, idsText: "" };
   }
@@ -61,16 +65,57 @@ const ADD_BUTTONS: { type: EditorBlock["type"]; label: string }[] = [
   { type: "image", label: "Imagem" },
   { type: "list", label: "Lista" },
   { type: "table", label: "Tabela" },
+  { type: "steps", label: "Passos" },
   { type: "github-releases", label: "Releases do GitHub" },
   { type: "device-spec", label: "Ficha de device" },
   { type: "store-links", label: "Lojas" },
 ];
 
-export function BlockEditor() {
+function fromBlockTree(blocks: Block[]): EditorBlock[] {
+  return blocks.map((b): EditorBlock => {
+    switch (b.type) {
+      case "heading":
+        return { _id: uid(), type: "heading", level: b.level, text: b.text };
+      case "paragraph":
+        return { _id: uid(), type: "paragraph", text: b.text };
+      case "callout":
+        return { _id: uid(), type: "callout", variant: b.variant, text: b.text };
+      case "image":
+        return { _id: uid(), type: "image", url: b.url, alt: b.alt };
+      case "github-releases":
+        return { _id: uid(), type: "github-releases", owner: b.owner, repo: b.repo, limit: b.limit };
+      case "device-spec":
+        return { _id: uid(), type: "device-spec", deviceId: b.deviceId };
+      case "list":
+        return { _id: uid(), type: "list", ordered: b.ordered, itemsText: b.items.join("\n") };
+      case "table":
+        return {
+          _id: uid(),
+          type: "table",
+          headersText: b.headers.join(" | "),
+          rowsText: b.rows.map((r) => r.join(" | ")).join("\n"),
+        };
+      case "steps":
+        return {
+          _id: uid(),
+          type: "steps",
+          itemsText: b.items.map((i) => `${i.title} :: ${i.text}`).join("\n"),
+        };
+      case "store-links":
+        return { _id: uid(), type: "store-links", idsText: b.storeIds.join(", ") };
+    }
+  });
+}
+
+type Initial = { articleId: number; title: string; type: (typeof TYPES)[number]["type"]; blocks: Block[] };
+
+export function BlockEditor({ initial }: { initial?: Initial }) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState<(typeof TYPES)[number]["type"]>("tutorial");
-  const [blocks, setBlocks] = useState<EditorBlock[]>([newBlock("paragraph")]);
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [type, setType] = useState<(typeof TYPES)[number]["type"]>(initial?.type ?? "tutorial");
+  const [blocks, setBlocks] = useState<EditorBlock[]>(
+    initial && initial.blocks.length ? fromBlockTree(initial.blocks) : [newBlock("paragraph")],
+  );
   const [pending, setPending] = useState(false);
 
   const update = (id: string, patch: Partial<EditorBlock>) =>
@@ -99,6 +144,17 @@ export function BlockEditor() {
           .map((r) => r.split("|").map((c) => c.trim()))
           .filter((r) => r.some(Boolean));
         if (headers.length && rows.length) out.push({ type: "table", headers, rows });
+      } else if (b.type === "steps") {
+        const items = b.itemsText
+          .split("\n")
+          .map((l) => {
+            const idx = l.indexOf("::");
+            const title = (idx >= 0 ? l.slice(0, idx) : l).trim();
+            const text = idx >= 0 ? l.slice(idx + 2).trim() : "";
+            return { title, text };
+          })
+          .filter((it) => it.title);
+        if (items.length) out.push({ type: "steps", items });
       } else if (b.type === "store-links") {
         const storeIds = b.idsText
           .split(",")
@@ -114,16 +170,37 @@ export function BlockEditor() {
     return { version: 1 as const, blocks: out };
   }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function ensureSaved(): Promise<number | null> {
+    const body = toBlockTree();
+    const payload = { title, type, deviceId: null, body };
+    const res = initial?.articleId
+      ? await updateDraftAction(initial.articleId, payload)
+      : await createDraftAction(payload);
+    if (!res.ok || !res.data) {
+      toast.error(res.error ?? "Falha ao salvar.");
+      return null;
+    }
+    return res.data.id;
+  }
+
+  async function onSaveDraft() {
     setPending(true);
-    const draft = await createDraftAction({ title, type, deviceId: null, body: toBlockTree() });
-    if (!draft.ok || !draft.data) {
+    const id = await ensureSaved();
+    setPending(false);
+    if (id) {
+      toast.success("Rascunho salvo.");
+      router.push("/estudio");
+    }
+  }
+
+  async function onSubmitReview() {
+    setPending(true);
+    const id = await ensureSaved();
+    if (!id) {
       setPending(false);
-      toast.error(draft.error ?? "Falha ao salvar.");
       return;
     }
-    const sub = await submitForReviewAction(draft.data.id);
+    const sub = await submitForReviewAction(id);
     setPending(false);
     if (sub.ok) {
       toast.success("Enviado para revisão.");
@@ -134,7 +211,7 @@ export function BlockEditor() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
       <div className="space-y-1.5">
         <Label htmlFor="title">Título</Label>
         <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required minLength={8} maxLength={140} />
@@ -267,6 +344,16 @@ export function BlockEditor() {
                 />
               </div>
             )}
+            {b.type === "steps" && (
+              <textarea
+                value={b.itemsText}
+                onChange={(e) => update(b._id, { itemsText: e.target.value })}
+                aria-label="Passos, um por linha no formato Título :: descrição"
+                rows={4}
+                placeholder="Um passo por linha: Título :: descrição"
+                className="w-full rounded-md border border-input bg-background p-3 text-sm"
+              />
+            )}
             {b.type === "store-links" && (
               <Input
                 value={b.idsText}
@@ -287,9 +374,14 @@ export function BlockEditor() {
         ))}
       </div>
 
-      <Button type="submit" disabled={pending || !title || blocks.length === 0}>
-        {pending ? "Enviando…" : "Salvar e enviar para revisão"}
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" onClick={onSaveDraft} disabled={pending || title.length < 8}>
+          {pending ? "Salvando…" : "Salvar rascunho"}
+        </Button>
+        <Button type="button" onClick={onSubmitReview} disabled={pending || title.length < 8 || blocks.length === 0}>
+          Enviar para revisão
+        </Button>
+      </div>
     </form>
   );
 }

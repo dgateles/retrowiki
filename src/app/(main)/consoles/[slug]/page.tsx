@@ -5,7 +5,10 @@ import { ChevronLeft } from "lucide-react";
 import { getDeviceBySlug } from "@/lib/devices";
 import { listArticlesByDevice, typeLabel } from "@/lib/articles";
 import { DeviceSpecCard } from "@/components/catalog/device-spec-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
+
+const BASE = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 export async function generateMetadata({
   params,
@@ -32,9 +35,21 @@ export default async function DevicePage({
   if (!detail) notFound();
 
   const guides = await listArticlesByDevice(detail.device.id);
+  const extra = (detail.device.extra ?? {}) as { description?: string };
 
   return (
     <main id="main" className="mx-auto max-w-4xl px-6 py-10">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: detail.device.name,
+          brand: { "@type": "Brand", name: detail.device.manufacturer },
+          category: "Handheld game console",
+          ...(extra.description ? { description: extra.description } : {}),
+          ...(detail.images[0] ? { image: `${BASE}${detail.images[0].url}` } : {}),
+        }}
+      />
       <div className="mb-4 flex items-center justify-between">
         <Button asChild variant="ghost" size="sm">
           <Link href="/consoles">

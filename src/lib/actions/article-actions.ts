@@ -60,6 +60,53 @@ export async function createDraftAction(input: unknown): Promise<Result<{ id: nu
   return { ok: true, data: { id: articleId } };
 }
 
+const EDITABLE = new Set(["draft", "changes_requested", "rejected", "pending"]);
+
+export async function updateDraftAction(articleId: number, input: unknown): Promise<Result<{ id: number }>> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const rl = await checkRateLimit(`draft:${user.id}`, 20, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas ações. Aguarde um momento." };
+
+  const parsed = CreateSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+  }
+
+  const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+  if (!article) return { ok: false, error: "Conteúdo não encontrado." };
+  if (article.authorId !== Number(user.id)) return { ok: false, error: "Sem permissão." };
+  if (!EDITABLE.has(article.status)) {
+    return { ok: false, error: "Conteúdo publicado não pode ser editado por aqui." };
+  }
+
+  const { title, type, deviceId, body } = parsed.data;
+  const [rev] = await db.insert(revisions).values({
+    articleId,
+    body,
+    editorId: Number(user.id),
+  });
+  const revisionId = (rev as unknown as { insertId: number }).insertId;
+
+  await db
+    .update(articles)
+    .set({
+      title,
+      type,
+      deviceId: deviceId ?? null,
+      currentRevisionId: revisionId,
+      searchText: blockTreeToText(body),
+      status: "draft",
+    })
+    .where(eq(articles.id, articleId));
+
+  return { ok: true, data: { id: articleId } };
+}
+
 export async function submitForReviewAction(articleId: number): Promise<Result> {
   let session;
   try {

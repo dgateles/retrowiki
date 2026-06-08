@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gamepad2, Bell, PenLine, ShieldCheck } from "lucide-react";
+import { Gamepad2, Bell, PenLine, ShieldCheck, Search, UserRound } from "lucide-react";
 import { auth } from "@/auth";
 import { getUnreadCount } from "@/lib/notifications";
 import { can } from "@/lib/auth-helpers";
@@ -20,6 +20,11 @@ export async function SiteHeader() {
         </Link>
 
         <nav aria-label="Principal" className="flex items-center gap-0.5 sm:gap-1">
+          <Button asChild variant="ghost" size="icon" aria-label="Buscar">
+            <Link href="/buscar">
+              <Search className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <Button asChild variant="ghost" size="sm">
             <Link href="/consoles">Consoles</Link>
           </Button>
@@ -30,7 +35,7 @@ export async function SiteHeader() {
           {user ? (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/estudio/novo">
+                <Link href="/estudio">
                   <PenLine className="size-4" aria-hidden="true" />
                   <span className="hidden sm:inline">Escrever</span>
                 </Link>
@@ -50,6 +55,11 @@ export async function SiteHeader() {
                       {unread > 9 ? "9+" : unread}
                     </span>
                   )}
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" size="icon" aria-label="Minha conta">
+                <Link href="/conta">
+                  <UserRound className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
               <LogoutButton />

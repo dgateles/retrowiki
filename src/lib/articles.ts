@@ -139,11 +139,39 @@ export async function listArticlesByDevice(deviceId: number) {
   }
 }
 
+export async function getArticleForEdit(id: number) {
+  try {
+    const [a] = await db
+      .select({
+        id: articles.id,
+        title: articles.title,
+        type: articles.type,
+        deviceId: articles.deviceId,
+        authorId: articles.authorId,
+        status: articles.status,
+        currentRevisionId: articles.currentRevisionId,
+      })
+      .from(articles)
+      .where(eq(articles.id, id))
+      .limit(1);
+    if (!a || !a.currentRevisionId) return null;
+    const [rev] = await db
+      .select({ body: revisions.body })
+      .from(revisions)
+      .where(eq(revisions.id, a.currentRevisionId))
+      .limit(1);
+    return rev ? { ...a, body: rev.body as BlockTree } : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getUserDrafts(userId: number) {
   try {
     return await db
       .select({
         id: articles.id,
+        slug: articles.slug,
         title: articles.title,
         type: articles.type,
         status: articles.status,
