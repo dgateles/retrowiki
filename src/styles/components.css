@@ -69,22 +69,22 @@
     @apply text-sm font-medium;
   }
   .repeat__row {
-    @apply flex items-center gap-2;
-  }
-  .repeat__grow {
-    @apply flex-1;
-  }
-  .repeat__score {
-    @apply w-24;
+    @apply flex items-center gap-3;
   }
   .repeat__level {
-    @apply w-20 shrink-0 text-xs font-semibold;
+    @apply w-20 shrink-0 text-right text-xs font-semibold;
   }
   .repeat__remove {
     @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
   }
   .repeat__empty {
     @apply text-sm text-muted-foreground;
+  }
+  .emu-slider {
+    @apply h-2 w-32 shrink-0 cursor-pointer rounded-full accent-primary sm:w-44;
+  }
+  .emu-value {
+    @apply w-9 shrink-0 text-right text-sm tabular-nums;
   }
 
   /* Formulário de admin. */
@@ -687,20 +687,47 @@
   }
 
   /* Perfil. */
-  .profile__head {
-    @apply flex items-center gap-4;
+  .profile-cover {
+    @apply h-40 rounded-xl border border-border bg-linear-to-br from-primary/25 via-primary/10 to-transparent md:h-52;
   }
-  .profile__avatar {
-    @apply flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground;
+  .profile-id {
+    @apply -mt-12 flex flex-col gap-4 px-4 sm:flex-row sm:items-end;
   }
-  .profile__name {
-    @apply text-2xl font-bold;
+  .profile-id__avatar {
+    @apply flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary;
   }
-  .profile__meta {
+  .profile-id__body {
+    @apply flex flex-1 flex-wrap items-end justify-between gap-3 pb-1;
+  }
+  .profile-id__name {
+    @apply text-2xl font-bold tracking-tight;
+  }
+  .profile-id__role {
+    @apply text-sm font-medium text-primary;
+  }
+  .profile-id__meta {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  .profile-grid {
+    @apply mt-8 grid gap-6 md:grid-cols-[260px_1fr];
+  }
+  .profile-side {
+    @apply space-y-4;
+  }
+  .profile-stats {
+    @apply divide-y divide-border rounded-lg border border-border bg-card;
+  }
+  .profile-stat {
+    @apply flex items-center justify-between px-4 py-3;
+  }
+  .profile-stat__label {
     @apply text-sm text-muted-foreground;
   }
-  .profile__since {
-    @apply mt-0.5 text-xs text-muted-foreground;
+  .profile-stat__value {
+    @apply font-semibold tabular-nums;
+  }
+  .profile-stat__value--accent {
+    @apply text-primary;
   }
 
   /* Conta. */
@@ -850,11 +877,20 @@
   .rank__index {
     @apply text-xs text-muted-foreground;
   }
-  .rank__bar {
-    @apply mt-2 h-2 overflow-hidden rounded-full bg-muted;
+  .rank__progress {
+    @apply mt-2 block h-2 w-full appearance-none overflow-hidden rounded-full border-0 bg-muted;
   }
-  .rank__fill {
-    @apply h-full rounded-full bg-primary;
+  .rank__progress::-webkit-progress-bar {
+    background-color: var(--muted);
+    border-radius: 9999px;
+  }
+  .rank__progress::-webkit-progress-value {
+    background-color: var(--primary);
+    border-radius: 9999px;
+  }
+  .rank__progress::-moz-progress-bar {
+    background-color: var(--primary);
+    border-radius: 9999px;
   }
   .rank__next {
     @apply mt-1.5 text-xs text-muted-foreground;

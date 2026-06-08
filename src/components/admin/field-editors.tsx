@@ -42,7 +42,7 @@ export function ListEditor({
       {items.map((item, i) => (
         <div key={i} className="repeat__row">
           <Input
-            className="repeat__grow"
+            className="min-w-0 flex-1"
             value={item}
             placeholder={placeholder}
             aria-label={`${legend} ${i + 1}`}
@@ -90,22 +90,24 @@ export function EmulationEditor({
         return (
           <div key={i} className="repeat__row">
             <Input
-              className="repeat__grow"
+              className="min-w-0 flex-1"
               list={listId}
               value={row.system}
               placeholder="Sistema"
               aria-label={`Sistema ${i + 1}`}
               onChange={(e) => set(i, { system: e.target.value })}
             />
-            <Input
-              className="repeat__score"
-              type="number"
+            <input
+              type="range"
               min={0}
               max={100}
+              step={5}
               value={row.score}
-              aria-label={`Nota do sistema ${i + 1} (0 a 100)`}
+              className="emu-slider"
+              aria-label={`Nota de ${row.system || `sistema ${i + 1}`} (0 a 100)`}
               onChange={(e) => set(i, { score: Number(e.target.value) })}
             />
+            <span className="emu-value" aria-hidden="true">{row.score}</span>
             <span className={`repeat__level ${lv.mod}`} aria-hidden="true">{lv.label}</span>
             <button type="button" className="repeat__remove" onClick={() => remove(i)} aria-label={`Remover sistema ${i + 1}`}>
               <X className="size-4" aria-hidden="true" />
