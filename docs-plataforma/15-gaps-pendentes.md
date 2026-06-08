@@ -54,9 +54,15 @@ Adaptar ao cenário do RetroWiki, sem copiar literal.
 
 ## Editor rico WYSIWYG (referência IPB)
 
-Substituir o editor por blocos atual por um WYSIWYG completo, no estilo do
-Invision Community. É a mudança de maior porte da autoria. Direção visual e de
-recursos (das referências enviadas):
+STATUS: implementado (TipTap) e em uso nos guias novos. Toolbar completa
+(blocos, listas, código, Box, Spoiler, citação, régua, tabela, imagem por URL,
+negrito/itálico/sublinhado/tachado/código inline, tamanho de fonte, cor,
+destaque, alinhamento, sub/sobrescrito, link, emoji, limpar formatação),
+validação por allowlist e renderizador seguro. Pendências desta feature:
+anexos por upload (dependem do armazenamento de mídia) e a aba de ícones
+(FontAwesome). A imagem por URL cobre o caso de imagem por enquanto.
+
+Direção visual e de recursos (das referências enviadas):
 
 Barra de ferramentas, da esquerda para a direita:
 

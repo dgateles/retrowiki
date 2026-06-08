@@ -104,6 +104,32 @@
     @apply grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4;
   }
 
+  /* Lista de membros (admin). */
+  .member-list {
+    @apply mt-6 space-y-3;
+  }
+  .member-card {
+    @apply flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-card p-4;
+  }
+  .member-card--suspended {
+    @apply border-destructive/40 bg-destructive/5;
+  }
+  .member-card__id {
+    @apply flex min-w-0 items-center gap-3;
+  }
+  .member-card__avatar {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary;
+  }
+  .member-card__name {
+    @apply font-semibold;
+  }
+  .member-card__meta {
+    @apply truncate text-sm text-muted-foreground;
+  }
+  .member-actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
   /* Tabela de admin. */
   .admin-table {
     @apply w-full border-collapse text-sm;

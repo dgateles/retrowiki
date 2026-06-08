@@ -3,6 +3,7 @@ import { Gamepad2, BookOpen, Users } from "lucide-react";
 
 const CARDS = [
   { href: "/admin/consoles", icon: Gamepad2, title: "Consoles", desc: "Cadastrar e editar handhelds, specs, emulação e imagens." },
+  { href: "/admin/membros", icon: Users, title: "Membros", desc: "Papéis, confiança e suspensões dos usuários." },
   { href: "/moderacao", icon: BookOpen, title: "Moderação", desc: "Fila de revisão de guias e tutoriais da comunidade." },
 ];
 
@@ -19,11 +20,6 @@ export default function AdminHome() {
             <p className="admin-card__desc">{c.desc}</p>
           </Link>
         ))}
-        <div className="admin-card opacity-60">
-          <Users className="size-6 text-muted-foreground" aria-hidden="true" />
-          <h2 className="admin-card__title mt-2">Usuários e papéis</h2>
-          <p className="admin-card__desc">Em breve: gestão de usuários, papéis e lojas.</p>
-        </div>
       </div>
     </>
   );
