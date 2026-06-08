@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { listDevices, getDeviceBySlug, type DeviceDetail } from "@/lib/devices";
-import { Button } from "@/components/ui/button";
+import { FilterBar } from "@/components/catalog/filter-bar";
 
 export const metadata: Metadata = {
   title: "Comparar consoles",
@@ -52,57 +52,42 @@ export default async function ComparePage({
   const sp = await searchParams;
   const slots = [sp.a, sp.b, sp.c];
   const all = await listDevices();
+  const options = all.map((d) => ({ value: d.slug, label: d.name }));
 
   const selected = (
     await Promise.all(slots.map((s) => (s ? getDeviceBySlug(s) : Promise.resolve(null))))
   ).filter((d): d is DeviceDetail => !!d);
 
-  // emulação: união de sistemas presentes
   const systems: string[] = [];
   for (const d of selected) for (const e of d.emulation) if (!systems.includes(e.system)) systems.push(e.system);
 
   return (
     <main id="main" className="page">
-      <h1 className="text-3xl font-bold">Comparar consoles</h1>
+      <h1 className="page__title">Comparar consoles</h1>
 
-      <form method="get" className="mt-6 flex flex-wrap items-end gap-3" aria-label="Selecionar consoles para comparar">
-        {(["a", "b", "c"] as const).map((slot, i) => (
-          <div key={slot} className="flex flex-col gap-1.5">
-            <label htmlFor={`slot-${slot}`} className="text-sm font-medium">
-              Console {i + 1}
-            </label>
-            <select
-              id={`slot-${slot}`}
-              name={slot}
-              defaultValue={slots[i] ?? ""}
-              className="h-10 min-w-44 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-            >
-              <option value="">—</option>
-              {all.map((d) => (
-                <option key={d.id} value={d.slug}>{d.name}</option>
-              ))}
-            </select>
-          </div>
-        ))}
-        <Button type="submit" size="sm">Comparar</Button>
-      </form>
+      <FilterBar
+        path="/consoles/comparar"
+        filters={[
+          { name: "a", label: "Console 1", allLabel: "—", value: sp.a ?? "", options },
+          { name: "b", label: "Console 2", allLabel: "—", value: sp.b ?? "", options },
+          { name: "c", label: "Console 3", allLabel: "—", value: sp.c ?? "", options },
+        ]}
+      />
 
       {selected.length < 2 ? (
-        <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          Escolha pelo menos dois consoles para ver a comparação.
-        </p>
+        <p className="empty mt-8">Escolha pelo menos dois consoles para ver a comparação.</p>
       ) : (
-        <div className="mt-8 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+        <div className="compare">
+          <table className="compare__table">
             <caption className="sr-only">Comparação de especificações e emulação</caption>
             <thead>
               <tr>
-                <th scope="col" className="border-b border-border px-3 py-2 text-left">
+                <th scope="col" className="compare__corner">
                   <span className="sr-only">Característica</span>
                 </th>
                 {selected.map((d) => (
-                  <th key={d.device.id} scope="col" className="border-b border-border px-3 py-3 text-left align-bottom">
-                    <Link href={`/consoles/${d.device.slug}`} className="flex flex-col items-start gap-2 hover:text-primary">
+                  <th key={d.device.id} scope="col" className="compare__device">
+                    <Link href={`/consoles/${d.device.slug}`} className="compare__device-link">
                       {d.images[0] && (
                         <Image src={d.images[0].url} alt={d.images[0].alt} width={64} height={64} className="object-contain" />
                       )}
@@ -116,27 +101,27 @@ export default async function ComparePage({
               {SPEC_KEYS.map((key) => {
                 const vals = selected.map((d) => specValue(d)[key] ?? "—");
                 return (
-                  <tr key={key} className="border-b border-border/60">
-                    <th scope="row" className="px-3 py-2 text-left font-medium text-muted-foreground">{key}</th>
+                  <tr key={key} className="compare__row">
+                    <th scope="row" className="compare__key">{key}</th>
                     {vals.map((v, i) => (
-                      <td key={i} className="px-3 py-2">{v}</td>
+                      <td key={i} className="compare__val">{v}</td>
                     ))}
                   </tr>
                 );
               })}
               {systems.length > 0 && (
                 <tr>
-                  <th scope="row" colSpan={selected.length + 1} className="bg-muted/40 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <th scope="row" colSpan={selected.length + 1} className="compare__section">
                     Emulação
                   </th>
                 </tr>
               )}
               {systems.map((sys) => (
-                <tr key={sys} className="border-b border-border/60">
-                  <th scope="row" className="px-3 py-2 text-left font-medium text-muted-foreground">{sys}</th>
+                <tr key={sys} className="compare__row">
+                  <th scope="row" className="compare__key">{sys}</th>
                   {selected.map((d) => {
                     const e = d.emulation.find((x) => x.system === sys);
-                    return <td key={d.device.id} className="px-3 py-2">{e ? emuLabel(e.score) : "—"}</td>;
+                    return <td key={d.device.id} className="compare__val">{e ? emuLabel(e.score) : "—"}</td>;
                   })}
                 </tr>
               ))}

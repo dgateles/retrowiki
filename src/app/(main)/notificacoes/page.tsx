@@ -20,8 +20,8 @@ export default async function NotificationsPage() {
 
   return (
     <main id="main" className="page">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Notificações</h1>
+      <div className="page__head">
+        <h1 className="page__title">Notificações</h1>
         {hasUnread && (
           <form action={markNotificationsReadAction}>
             <Button type="submit" variant="outline" size="sm">
@@ -32,18 +32,18 @@ export default async function NotificationsPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-dashed border-border p-10 text-center">
-          <Bell className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="mt-3 text-sm text-muted-foreground">Nada por aqui ainda.</p>
+        <div className="empty mt-8">
+          <Bell className="empty__icon" aria-hidden="true" />
+          <p className="empty__text">Nada por aqui ainda.</p>
         </div>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="notif-list">
           {items.map((n) => {
             const d = describeNotification(n.type, n.payload);
             const inner = (
-              <div className={`rounded-lg border p-4 ${n.readAt ? "border-border bg-card" : "border-primary/40 bg-primary/5"}`}>
-                <p className="text-sm">{d.text}</p>
-                <time className="mt-1 block text-xs text-muted-foreground" dateTime={new Date(n.createdAt).toISOString()}>
+              <div className={`notif ${n.readAt ? "notif--read" : "notif--unread"}`}>
+                <p className="notif__text">{d.text}</p>
+                <time className="notif__date" dateTime={new Date(n.createdAt).toISOString()}>
                   {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(n.createdAt))}
                 </time>
               </div>

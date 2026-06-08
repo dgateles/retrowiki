@@ -347,6 +347,360 @@
     @apply flex gap-2;
   }
 
+  /* Blocos de conteúdo do artigo (renderer). */
+  .blk-h {
+    @apply mb-3 mt-8 font-semibold;
+  }
+  .blk-h--2 {
+    @apply text-2xl;
+  }
+  .blk-h--3 {
+    @apply text-xl;
+  }
+  .blk-h--4 {
+    @apply text-lg;
+  }
+  .blk-p {
+    @apply my-4 leading-relaxed text-foreground/90;
+  }
+  .blk-figure {
+    @apply my-6;
+  }
+  .blk-img {
+    @apply h-auto w-full rounded-lg border border-border object-cover;
+  }
+  .blk-figcaption {
+    @apply mt-2 text-center text-sm text-muted-foreground;
+  }
+  .blk-steps {
+    @apply my-6 space-y-4;
+  }
+  .blk-step {
+    @apply flex gap-4;
+  }
+  .blk-step__num {
+    @apply flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground;
+  }
+  .blk-step__title {
+    @apply font-semibold;
+  }
+  .blk-step__text {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  .blk-callout {
+    @apply my-5 flex gap-3 rounded-lg border p-4 text-sm;
+  }
+  .blk-callout__text {
+    @apply text-foreground/90;
+  }
+  .blk-callout--info {
+    @apply border-sky-500/30 bg-sky-500/5 text-sky-700 dark:text-sky-300;
+  }
+  .blk-callout--success {
+    @apply border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300;
+  }
+  .blk-callout--warning {
+    @apply border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300;
+  }
+  .blk-callout--danger {
+    @apply border-red-500/30 bg-red-500/5 text-red-700 dark:text-red-300;
+  }
+  .blk-list {
+    @apply my-4 space-y-1.5 pl-5;
+  }
+  .blk-list--unordered {
+    @apply list-disc;
+  }
+  .blk-list--ordered {
+    @apply list-decimal;
+  }
+  .blk-list__item {
+    @apply text-foreground/90;
+  }
+  .blk-table-wrap {
+    @apply my-6 overflow-x-auto;
+  }
+  .blk-table {
+    @apply w-full border-collapse text-sm;
+  }
+  .blk-table__th {
+    @apply border-b border-border bg-muted/50 px-3 py-2 text-left font-semibold;
+  }
+  .blk-table__row {
+    @apply border-b border-border/60;
+  }
+  .blk-table__td {
+    @apply px-3 py-2 align-top;
+  }
+
+  /* Releases do GitHub. */
+  .releases {
+    @apply my-6 space-y-3;
+  }
+  .release {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .release__title {
+    @apply font-semibold;
+  }
+  .release__date {
+    @apply text-sm text-muted-foreground;
+  }
+  .release__assets {
+    @apply mt-2 space-y-1;
+  }
+  .release__asset {
+    @apply inline-flex items-center gap-2 text-sm text-primary hover:underline focus-visible:outline-2;
+  }
+  .release__size {
+    @apply text-muted-foreground;
+  }
+
+  /* Lojas. */
+  .stores {
+    @apply my-6 grid gap-3 sm:grid-cols-2;
+  }
+  .store {
+    @apply flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50 focus-visible:outline-2;
+  }
+  .store__name {
+    @apply font-medium;
+  }
+  .store__trust {
+    @apply inline-flex items-center gap-1 text-xs;
+  }
+  .store__trust--verified {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+  .store__trust--trusted {
+    @apply text-sky-600 dark:text-sky-400;
+  }
+  .store__trust--caution {
+    @apply text-amber-600 dark:text-amber-400;
+  }
+
+  /* Lista genérica de cartões-link (rascunhos, perfil, guias do device, notif). */
+  .link-list {
+    @apply mt-6 space-y-2;
+  }
+  .link-list--grid {
+    @apply grid gap-2 sm:grid-cols-2 space-y-0;
+  }
+  .link-card {
+    @apply flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50;
+  }
+  .link-card--sm {
+    @apply rounded-md border-border/60 px-3 py-2 text-sm;
+  }
+  .link-card__title {
+    @apply font-medium;
+  }
+  .link-card__meta {
+    @apply ml-2 shrink-0 text-xs text-muted-foreground;
+  }
+
+  /* Selo de status. */
+  .status {
+    @apply text-xs font-medium;
+  }
+  .status--muted {
+    @apply text-muted-foreground;
+  }
+  .status--warn {
+    @apply text-amber-600 dark:text-amber-400;
+  }
+  .status--ok {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+  .status--bad {
+    @apply text-destructive;
+  }
+
+  /* Tabela de comparação. */
+  .compare {
+    @apply mt-8 overflow-x-auto;
+  }
+  .compare__table {
+    @apply w-full border-collapse text-sm;
+  }
+  .compare__corner {
+    @apply border-b border-border px-3 py-2 text-left;
+  }
+  .compare__device {
+    @apply border-b border-border px-3 py-3 text-left align-bottom;
+  }
+  .compare__device-link {
+    @apply flex flex-col items-start gap-2 hover:text-primary;
+  }
+  .compare__row {
+    @apply border-b border-border/60;
+  }
+  .compare__key {
+    @apply px-3 py-2 text-left font-medium text-muted-foreground;
+  }
+  .compare__val {
+    @apply px-3 py-2;
+  }
+  .compare__section {
+    @apply bg-muted/40 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+
+  /* Perfil. */
+  .profile__head {
+    @apply flex items-center gap-4;
+  }
+  .profile__avatar {
+    @apply flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground;
+  }
+  .profile__name {
+    @apply text-2xl font-bold;
+  }
+  .profile__meta {
+    @apply text-sm text-muted-foreground;
+  }
+  .profile__since {
+    @apply mt-0.5 text-xs text-muted-foreground;
+  }
+
+  /* Conta. */
+  .account__section {
+    @apply mt-6 rounded-lg border border-border bg-card p-5;
+  }
+  .account__row {
+    @apply flex gap-2;
+  }
+  .account__label {
+    @apply text-muted-foreground;
+  }
+
+  /* Notificações. */
+  .notif-list {
+    @apply mt-6 space-y-2;
+  }
+  .notif {
+    @apply rounded-lg border p-4;
+  }
+  .notif--read {
+    @apply border-border bg-card;
+  }
+  .notif--unread {
+    @apply border-primary/40 bg-primary/5;
+  }
+  .notif__text {
+    @apply text-sm;
+  }
+  .notif__date {
+    @apply mt-1 block text-xs text-muted-foreground;
+  }
+
+  /* Resultados de busca (página). */
+  .results__group {
+    @apply mt-6;
+  }
+  .results__group-title {
+    @apply mb-2 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground;
+  }
+  .results__list {
+    @apply space-y-2;
+  }
+  .results__item {
+    @apply block rounded-lg border border-border bg-card p-3 hover:border-primary/50;
+  }
+  .results__item-title {
+    @apply font-medium;
+  }
+  .results__item-sub {
+    @apply mt-0.5 text-sm text-muted-foreground line-clamp-1;
+  }
+
+  /* Artigo (cabeçalho e corpo). */
+  .article__header {
+    @apply mb-6;
+  }
+  .article__kind {
+    @apply text-xs font-medium text-primary;
+  }
+  .article__title {
+    @apply mt-1 text-3xl font-bold tracking-tight md:text-4xl;
+  }
+  .article__meta {
+    @apply mt-2 text-sm text-muted-foreground;
+  }
+  .article__meta-link {
+    @apply underline hover:text-foreground;
+  }
+  .article__body {
+    @apply text-[15px];
+  }
+
+  /* Fila de moderação. */
+  .mod-list {
+    @apply mt-6 space-y-6;
+  }
+  .mod-item {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .mod-item__head {
+    @apply flex flex-wrap items-start justify-between gap-3;
+  }
+  .mod-item__kind {
+    @apply text-xs font-medium text-primary;
+  }
+  .mod-item__title {
+    @apply font-semibold;
+  }
+  .mod-item__author {
+    @apply text-xs text-muted-foreground;
+  }
+  .mod-preview {
+    @apply mt-4;
+  }
+  .mod-preview__summary {
+    @apply cursor-pointer text-sm text-muted-foreground;
+  }
+  .mod-preview__body {
+    @apply mt-3 rounded-md border border-border/60 p-4 text-sm;
+  }
+
+  /* Acesso restrito. */
+  .restricted {
+    @apply text-center;
+  }
+  .restricted__icon {
+    @apply mx-auto size-10 text-muted-foreground;
+  }
+  .restricted__title {
+    @apply mt-3 text-xl font-bold;
+  }
+  .restricted__text {
+    @apply mt-2 text-sm text-muted-foreground;
+  }
+
+  /* Página de confirmação (verificar e-mail). */
+  .confirm {
+    @apply flex flex-col items-center gap-3 text-center;
+  }
+  .confirm__icon--ok {
+    @apply size-10 text-success;
+  }
+  .confirm__icon--bad {
+    @apply size-10 text-destructive;
+  }
+
+  /* Utilidades de formulário. */
+  .field__row {
+    @apply flex items-center justify-between;
+  }
+  .field__link {
+    @apply text-xs text-muted-foreground hover:text-foreground;
+  }
+  .btn-row {
+    @apply flex flex-wrap gap-2;
+  }
+  .modal-actions {
+    @apply mt-4 flex justify-end gap-2;
+  }
+
   /* Bloco de código com PrismJS. */
   .code-block {
     @apply my-5;

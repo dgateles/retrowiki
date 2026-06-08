@@ -17,21 +17,19 @@ export default async function SearchPage({
 
   return (
     <main id="main" className="page">
-      <h1 className="text-3xl font-bold">Buscar</h1>
+      <h1 className="page__title">Buscar</h1>
 
-      <form method="get" role="search" className="mt-6 flex gap-2">
+      <form method="get" role="search" className="search mt-6">
         <label htmlFor="q" className="sr-only">Buscar consoles e guias</label>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <input
-            id="q"
-            name="q"
-            type="search"
-            defaultValue={q}
-            placeholder="Console, firmware, problema…"
-            className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          />
-        </div>
+        <Search className="search__icon" aria-hidden="true" />
+        <input
+          id="q"
+          name="q"
+          type="search"
+          defaultValue={q}
+          placeholder="Console, firmware, problema…"
+          className="search__input"
+        />
       </form>
 
       {q.trim().length >= 2 && (
@@ -41,16 +39,16 @@ export default async function SearchPage({
       )}
 
       {results.devices.length > 0 && (
-        <section aria-labelledby="r-devices" className="mt-6">
-          <h2 id="r-devices" className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <section aria-labelledby="r-devices" className="results__group">
+          <h2 id="r-devices" className="results__group-title">
             <Gamepad2 className="size-4" aria-hidden="true" /> Consoles
           </h2>
-          <ul className="space-y-2">
+          <ul className="results__list">
             {results.devices.map((d) => (
               <li key={d.slug}>
-                <Link href={`/consoles/${d.slug}`} className="block rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <span className="font-medium">{d.name}</span>
-                  <span className="ml-2 text-xs text-muted-foreground">{d.manufacturer}</span>
+                <Link href={`/consoles/${d.slug}`} className="results__item">
+                  <span className="results__item-title">{d.name}</span>
+                  <span className="link-card__meta">{d.manufacturer}</span>
                 </Link>
               </li>
             ))}
@@ -59,16 +57,16 @@ export default async function SearchPage({
       )}
 
       {results.articles.length > 0 && (
-        <section aria-labelledby="r-articles" className="mt-6">
-          <h2 id="r-articles" className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <section aria-labelledby="r-articles" className="results__group">
+          <h2 id="r-articles" className="results__group-title">
             <BookOpen className="size-4" aria-hidden="true" /> Guias
           </h2>
-          <ul className="space-y-2">
+          <ul className="results__list">
             {results.articles.map((a) => (
               <li key={a.slug}>
-                <Link href={`/guias/${a.slug}`} className="block rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <span className="font-medium">{a.title}</span>
-                  {a.summary && <p className="mt-0.5 text-sm text-muted-foreground line-clamp-1">{a.summary}</p>}
+                <Link href={`/guias/${a.slug}`} className="results__item">
+                  <span className="results__item-title">{a.title}</span>
+                  {a.summary && <p className="results__item-sub">{a.summary}</p>}
                 </Link>
               </li>
             ))}
@@ -77,9 +75,7 @@ export default async function SearchPage({
       )}
 
       {q.trim().length >= 2 && total === 0 && (
-        <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          Nada encontrado para “{q}”. Tente outros termos.
-        </p>
+        <p className="empty mt-8">Nada encontrado para “{q}”. Tente outros termos.</p>
       )}
     </main>
   );

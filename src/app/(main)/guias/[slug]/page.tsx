@@ -61,18 +61,18 @@ export default async function ArticlePage({
       </Button>
 
       <article>
-        <header className="mb-6">
-          <span className="text-xs font-medium text-primary">{typeLabel(a.type)}</span>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">{a.title}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+        <header className="article__header">
+          <span className="article__kind">{typeLabel(a.type)}</span>
+          <h1 className="article__title">{a.title}</h1>
+          <p className="article__meta">
             por{" "}
-            <Link href={`/u/${a.authorHandle}`} className="hover:text-foreground underline">
+            <Link href={`/u/${a.authorHandle}`} className="article__meta-link">
               @{a.authorHandle}
             </Link>
             {a.deviceSlug && (
               <>
                 {" · "}
-                <Link href={`/consoles/${a.deviceSlug}`} className="hover:text-foreground underline">
+                <Link href={`/consoles/${a.deviceSlug}`} className="article__meta-link">
                   {a.deviceSlug}
                 </Link>
               </>
@@ -88,7 +88,7 @@ export default async function ArticlePage({
           </p>
         </header>
 
-        <div className="text-[15px]">
+        <div className="article__body">
           <ArticleBody body={a.body} />
         </div>
       </article>

@@ -1,16 +1,16 @@
 import Image from "next/image";
 import { Info, CheckCircle2, AlertTriangle, OctagonAlert } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { highlightCode } from "@/lib/prism";
 
 export function HeadingBlock({ level, text }: { level: 2 | 3 | 4; text: string }) {
-  const Tag = (`h${level}` as "h2" | "h3" | "h4");
-  const size = level === 2 ? "text-2xl" : level === 3 ? "text-xl" : "text-lg";
-  return <Tag className={`mt-8 mb-3 font-semibold ${size}`}>{text}</Tag>;
+  const Tag = `h${level}` as "h2" | "h3" | "h4";
+  return <Tag className={cn("blk-h", `blk-h--${level}`)}>{text}</Tag>;
 }
 
 export function ParagraphBlock({ text }: { text: string }) {
   // JSX escapa o texto por padrão; sem dangerouslySetInnerHTML.
-  return <p className="my-4 leading-relaxed text-foreground/90">{text}</p>;
+  return <p className="blk-p">{text}</p>;
 }
 
 export function ImageBlock({
@@ -23,41 +23,24 @@ export function ImageBlock({
   caption?: string;
 }) {
   return (
-    <figure className="my-6">
-      <Image
-        src={url}
-        alt={alt}
-        width={1200}
-        height={675}
-        className="h-auto w-full rounded-lg border border-border object-cover"
-      />
-      {caption && (
-        <figcaption className="mt-2 text-center text-sm text-muted-foreground">
-          {caption}
-        </figcaption>
-      )}
+    <figure className="blk-figure">
+      <Image src={url} alt={alt} width={1200} height={675} className="blk-img" />
+      {caption && <figcaption className="blk-figcaption">{caption}</figcaption>}
     </figure>
   );
 }
 
-export function StepsBlock({
-  items,
-}: {
-  items: { title: string; text: string }[];
-}) {
+export function StepsBlock({ items }: { items: { title: string; text: string }[] }) {
   return (
-    <ol className="my-6 space-y-4">
+    <ol className="blk-steps">
       {items.map((item, i) => (
-        <li key={i} className="flex gap-4">
-          <span
-            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
-            aria-hidden="true"
-          >
+        <li key={i} className="blk-step">
+          <span className="blk-step__num" aria-hidden="true">
             {i + 1}
           </span>
           <div>
-            <p className="font-semibold">{item.title}</p>
-            {item.text && <p className="mt-1 text-sm text-muted-foreground">{item.text}</p>}
+            <p className="blk-step__title">{item.title}</p>
+            {item.text && <p className="blk-step__text">{item.text}</p>}
           </div>
         </li>
       ))}
@@ -73,7 +56,11 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
     <figure className="code-block">
       {hasCaption && <figcaption className="code-block__caption">{lang}</figcaption>}
       <pre
-        className={`code-block__pre language-${resolved} ${hasCaption ? "code-block__pre--titled" : "code-block__pre--plain"}`}
+        className={cn(
+          "code-block__pre",
+          `language-${resolved}`,
+          hasCaption ? "code-block__pre--titled" : "code-block__pre--plain",
+        )}
       >
         <code className="code-block__code" dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
@@ -84,9 +71,11 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
 export function ListBlock({ ordered, items }: { ordered: boolean; items: string[] }) {
   const Tag = ordered ? "ol" : "ul";
   return (
-    <Tag className={`my-4 space-y-1.5 pl-5 ${ordered ? "list-decimal" : "list-disc"}`}>
+    <Tag className={cn("blk-list", ordered ? "blk-list--ordered" : "blk-list--unordered")}>
       {items.map((it, i) => (
-        <li key={i} className="text-foreground/90">{it}</li>
+        <li key={i} className="blk-list__item">
+          {it}
+        </li>
       ))}
     </Tag>
   );
@@ -94,16 +83,12 @@ export function ListBlock({ ordered, items }: { ordered: boolean; items: string[
 
 export function TableBlock({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="my-6 overflow-x-auto">
-      <table className="w-full border-collapse text-sm">
+    <div className="blk-table-wrap">
+      <table className="blk-table">
         <thead>
           <tr>
             {headers.map((h, i) => (
-              <th
-                key={i}
-                scope="col"
-                className="border-b border-border bg-muted/50 px-3 py-2 text-left font-semibold"
-              >
+              <th key={i} scope="col" className="blk-table__th">
                 {h}
               </th>
             ))}
@@ -111,9 +96,11 @@ export function TableBlock({ headers, rows }: { headers: string[]; rows: string[
         </thead>
         <tbody>
           {rows.map((r, ri) => (
-            <tr key={ri} className="border-b border-border/60">
+            <tr key={ri} className="blk-table__row">
               {r.map((cell, ci) => (
-                <td key={ci} className="px-3 py-2 align-top">{cell}</td>
+                <td key={ci} className="blk-table__td">
+                  {cell}
+                </td>
               ))}
             </tr>
           ))}
@@ -124,10 +111,10 @@ export function TableBlock({ headers, rows }: { headers: string[]; rows: string[
 }
 
 const CALLOUT = {
-  info: { Icon: Info, cls: "border-sky-500/30 bg-sky-500/5 text-sky-700 dark:text-sky-300" },
-  success: { Icon: CheckCircle2, cls: "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300" },
-  warning: { Icon: AlertTriangle, cls: "border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300" },
-  danger: { Icon: OctagonAlert, cls: "border-red-500/30 bg-red-500/5 text-red-700 dark:text-red-300" },
+  info: Info,
+  success: CheckCircle2,
+  warning: AlertTriangle,
+  danger: OctagonAlert,
 } as const;
 
 export function CalloutBlock({
@@ -137,11 +124,11 @@ export function CalloutBlock({
   variant: "info" | "success" | "warning" | "danger";
   text: string;
 }) {
-  const { Icon, cls } = CALLOUT[variant];
+  const Icon = CALLOUT[variant];
   return (
-    <div className={`my-5 flex gap-3 rounded-lg border p-4 text-sm ${cls}`} role="note">
+    <div className={cn("blk-callout", `blk-callout--${variant}`)} role="note">
       <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-      <p className="text-foreground/90">{text}</p>
+      <p className="blk-callout__text">{text}</p>
     </div>
   );
 }

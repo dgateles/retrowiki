@@ -34,17 +34,17 @@ export default async function ProfilePage({
 
   return (
     <main id="main" className="page">
-      <header className="flex items-center gap-4">
-        <span className="flex size-16 items-center justify-center rounded-full bg-muted" aria-hidden="true">
-          <UserRound className="size-8 text-muted-foreground" />
+      <header className="profile__head">
+        <span className="profile__avatar" aria-hidden="true">
+          <UserRound className="size-8" />
         </span>
         <div>
-          <h1 className="text-2xl font-bold">{profile.displayName}</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="profile__name">{profile.displayName}</h1>
+          <p className="profile__meta">
             @{profile.handle} · {ROLE_LABEL[profile.role] ?? profile.role} ·{" "}
             <span title="Reputação">{profile.reputation} pts</span>
           </p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="profile__since">
             Na comunidade desde{" "}
             <time dateTime={new Date(profile.createdAt).toISOString()}>
               {new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(new Date(profile.createdAt))}
@@ -53,22 +53,19 @@ export default async function ProfilePage({
         </div>
       </header>
 
-      <section aria-labelledby="contrib" className="mt-8">
-        <h2 id="contrib" className="text-lg font-semibold">
+      <section aria-labelledby="contrib" className="comments">
+        <h2 id="contrib" className="comments__title">
           Publicações ({profile.articles.length})
         </h2>
         {profile.articles.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">Nenhuma publicação ainda.</p>
+          <p className="empty__text">Nenhuma publicação ainda.</p>
         ) : (
-          <ul className="mt-4 space-y-2">
+          <ul className="link-list">
             {profile.articles.map((a) => (
               <li key={a.id}>
-                <Link
-                  href={`/guias/${a.slug}`}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
-                >
-                  <span className="font-medium">{a.title}</span>
-                  <span className="ml-2 shrink-0 text-xs text-muted-foreground">{typeLabel(a.type)}</span>
+                <Link href={`/guias/${a.slug}`} className="link-card">
+                  <span className="link-card__title">{a.title}</span>
+                  <span className="link-card__meta">{typeLabel(a.type)}</span>
                 </Link>
               </li>
             ))}

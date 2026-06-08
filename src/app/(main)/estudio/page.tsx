@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = { title: "Meu estúdio", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-const STATUS: Record<string, { label: string; cls: string }> = {
-  draft: { label: "Rascunho", cls: "text-muted-foreground" },
-  pending: { label: "Em revisão", cls: "text-amber-600 dark:text-amber-400" },
-  changes_requested: { label: "Ajustes pedidos", cls: "text-amber-600 dark:text-amber-400" },
-  published: { label: "Publicado", cls: "text-emerald-600 dark:text-emerald-400" },
-  rejected: { label: "Rejeitado", cls: "text-destructive" },
-  archived: { label: "Arquivado", cls: "text-muted-foreground" },
+const STATUS: Record<string, { label: string; mod: string }> = {
+  draft: { label: "Rascunho", mod: "status--muted" },
+  pending: { label: "Em revisão", mod: "status--warn" },
+  changes_requested: { label: "Ajustes pedidos", mod: "status--warn" },
+  published: { label: "Publicado", mod: "status--ok" },
+  rejected: { label: "Rejeitado", mod: "status--bad" },
+  archived: { label: "Arquivado", mod: "status--muted" },
 };
 
 export default async function StudioPage() {
@@ -26,8 +26,8 @@ export default async function StudioPage() {
 
   return (
     <main id="main" className="page">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Meu estúdio</h1>
+      <div className="page__head">
+        <h1 className="page__title">Meu estúdio</h1>
         <Button asChild size="sm">
           <Link href="/estudio/novo">
             <PenLine className="size-4" aria-hidden="true" /> Novo
@@ -36,25 +36,22 @@ export default async function StudioPage() {
       </div>
 
       {drafts.length === 0 ? (
-        <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+        <p className="empty mt-8">
           Você ainda não criou conteúdo. Comece um novo guia ou tutorial.
         </p>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="link-list">
           {drafts.map((d) => {
-            const st = STATUS[d.status] ?? { label: d.status, cls: "" };
+            const st = STATUS[d.status] ?? { label: d.status, mod: "status--muted" };
             const href = d.status === "published" ? `/guias/${d.slug}` : `/estudio/${d.id}`;
             return (
               <li key={d.id}>
-                <Link
-                  href={href}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
-                >
-                  <div>
-                    <span className="font-medium">{d.title}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{typeLabel(d.type)}</span>
-                  </div>
-                  <span className={`text-xs font-medium ${st.cls}`}>{st.label}</span>
+                <Link href={href} className="link-card">
+                  <span>
+                    <span className="link-card__title">{d.title}</span>
+                    <span className="link-card__meta">{typeLabel(d.type)}</span>
+                  </span>
+                  <span className={`status ${st.mod}`}>{st.label}</span>
                 </Link>
               </li>
             );
