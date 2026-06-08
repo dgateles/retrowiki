@@ -50,6 +50,32 @@ const popularConsoles = [
     description: 'Tela 4:3 de alta qualidade',
     href: '/powkiddy',
   },
+  {
+    name: 'Retroid Pocket 5',
+    description: 'Android com AMOLED 5.5" e Snapdragon 865',
+    href: '/retroid-pocket-5',
+    badge: 'Top',
+  },
+  {
+    name: 'Retroid Pocket Mini V2',
+    description: 'Android compacto com tela AMOLED',
+    href: '/retroid-pocket-mini-v2',
+  },
+  {
+    name: 'Anbernic RG-406V',
+    description: 'Android com tela 4:3 quadrada',
+    href: '/rg-406v',
+  },
+  {
+    name: 'Mangmi Air X',
+    description: 'Android fino, leve e potente',
+    href: '/mangmi-air-x',
+  },
+  {
+    name: 'Retroid Pocket 6',
+    description: 'Android top de linha para emulação pesada',
+    href: '/retroid-pocket-6',
+  },
 ];
 
 /**

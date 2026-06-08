@@ -1,0 +1,131 @@
+---
+title: Retroid Pocket 5
+description: "Retroid Pocket 5: handheld Android com Snapdragon 865, tela AMOLED 5.5\" e desempenho sólido até PS2, GameCube e Wii."
+full: true
+---
+
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+
+<ConsoleOverview
+  name="Retroid Pocket 5"
+  manufacturer="Retroid"
+  description="Handheld Android de médio porte com Snapdragon 865, tela AMOLED de 5.5 polegadas Full HD e sticks Hall Effect. Roda PS2, GameCube e Wii com boa consistência, além de ter acesso completo ao ecossistema Android."
+  image="/consoles/retrowiki_retroid-pocket-5.webp"
+  releaseYear={2024}
+  priceRange="~US$ 200 (aprox. R$ 1.000–1.200)"
+  screen={{
+    aspectRatio: "16:9",
+    size: '5.5"',
+    resolution: "1920 x 1080",
+    refreshRate: "60 Hz",
+    type: "AMOLED",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: true,
+    hasVibration: true,
+    speakerPlacement: "Frontal",
+    chargePortPlacement: "Inferior",
+  }}
+  connectivity={{
+    hasWifi: true,
+    hasBluetooth: true,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: true,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: true,
+    hasAnalogSticks: true,
+    hasHallEffect: true,
+    hasL3R3: true,
+    hasTouchScreen: true,
+    hasGyroscope: true,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Qualcomm Snapdragon 865 (Cortex-A77, 8 núcleos, até 2.84 GHz)",
+    gpu: "Qualcomm Adreno 650 (587 MHz)",
+    ram: "8 GB",
+    ramType: "LPDDR4X",
+    architecture: "ARM",
+    storage: "128 GB UFS 3.1",
+    battery: "5000 mAh",
+    os: "Android 13 / Linux",
+    formFactor: "Horizontal",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive / Genesis", level: "excellent" },
+    { system: "PS1", level: "excellent" },
+    { system: "Nintendo DS", level: "excellent" },
+    { system: "Nintendo 64", level: "excellent" },
+    { system: "Dreamcast", level: "excellent" },
+    { system: "PSP", level: "excellent" },
+    { system: "Wii", level: "excellent" },
+    { system: "GameCube", level: "good" },
+    { system: "Nintendo 3DS", level: "good" },
+    { system: "PS2", level: "good" },
+    { system: "Saturn", level: "playable" },
+    { system: "Nintendo Switch", level: "playable" },
+    { system: "Wii U", level: "poor" },
+    { system: "PS3", level: "poor" },
+  ]}
+  pros={[
+    "Potente o suficiente para emulação de alto nível (PS2, GameCube, Wii)",
+    "Tela AMOLED com cores vibrantes e pretos perfeitos",
+    "Boa comunidade, CFWs disponíveis (ROCKNIX, GammaOSNext)",
+    "Display Full HD de alta resolução",
+    "Acesso a jogos Android e apps da Play Store",
+    "Saída de vídeo para monitores externos",
+    "Acesso a ports de PC via PortMaster",
+    "Bateria grande de 5000 mAh",
+    "Touchscreen útil para jogos com interface tátil",
+    "Navegação fluida graças aos 8 GB de RAM",
+    "Grips ergonômicos para sessões longas",
+    "Sticks Hall Effect mais duráveis e precisos",
+  ]}
+  cons={[
+    "Posição dos analógicos não é ideal para todos os estilos de jogo",
+    "Barras laterais pretas ao jogar sistemas mais antigos (4:3)",
+  ]}
+/>
+
+## Guias
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Primeiros Passos"
+    description="Configuração inicial, conta Google, ROMs e BIOS no Android"
+    href="/retroid-pocket-5/primeiros-passos"
+  />
+  <CardLink
+    title="Emuladores e Frontends"
+    description="RetroArch, emuladores standalone e frontends como ES-DE e Daijisho"
+    href="/retroid-pocket-5/emuladores"
+  />
+  <CardLink
+    title="Cartão SD"
+    description="Cartões recomendados, formatação exFAT e dicas de capacidade"
+    href="/retroid-pocket-5/sd-card"
+  />
+  <CardLink
+    title="Controles e Mapeamento"
+    description="Layout, mapeamento por app, hotkeys RetroArch, gyro e touch"
+    href="/retroid-pocket-5/controles"
+  />
+  <CardLink
+    title="Solução de Problemas"
+    description="Throttling, Wi-Fi, áudio Bluetooth e jogos não detectados"
+    href="/retroid-pocket-5/troubleshooting"
+  />
+</CardGrid>

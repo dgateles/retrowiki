@@ -1,0 +1,86 @@
+---
+title: Solução de Problemas
+description: "Problemas comuns do Retroid Pocket 5: throttling térmico, Wi-Fi instável, áudio Bluetooth com delay, analógicos e jogos não detectados."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+## Throttling Térmico (queda de desempenho sob calor)
+
+O RP5 tem sistema de resfriamento ativo, mas sessões longas com jogos pesados (PS2, GameCube) podem fazer o Snapdragon 865 reduzir o clock para controlar a temperatura.
+
+**Sintomas:** FPS caindo progressivamente durante o jogo, não por causa do título em si.
+
+**O que fazer:**
+- Verifique se a ventilação traseira do console não está bloqueada (não jogue com o RP5 apoiado em superfícies macias)
+- No RetroArch, verifique se o **Frame Throttle** não está ativo acidentalmente
+- Reduza a resolução interna do emulador temporariamente para aliviar a GPU
+- Em sessões muito longas, pausas de 10–15 minutos ajudam o chip a resfriar
+
+## Analógico Derivando (stick drift / input incorreto)
+
+Os sticks Hall Effect não têm desgaste mecânico como potenciômetros convencionais, mas podem precisar de calibração inicial.
+
+**No RetroArch:**
+1. Vá em **Configurações → Entrada → Calibrar Dispositivos**
+2. Siga o processo de calibração de dead zone
+3. Aumente ligeiramente o dead zone se o personagem continuar se movendo com o stick solto
+
+**No Android:**
+- Vá em **Configurações → Sistema → Opções de acessibilidade** e veja se há opção de calibração do joystick
+- Alternativamente, use o app **Gamepad Tester** da Play Store para verificar os valores brutos dos eixos
+
+## Wi-Fi Instável ou Lento
+
+O RP5 tem Wi-Fi 6 (802.11ax), mas a qualidade da conexão pode variar dependendo do ambiente.
+
+**Problemas comuns:**
+- **Conexão cai durante o jogo**: verifique se o modo de economia de energia está desligando o Wi-Fi em background. Vá em **Configurações → Bateria → Otimização de bateria** e exclua o app de emulação ou frontend
+- **Velocidade baixa de transferência**: prefira a banda **5 GHz** ao roteador — o RP5 suporta ambas as bandas
+- **Não detecta a rede**: reinicie o roteador e o RP5; verifique se o SSID tem caracteres especiais que possam causar problemas
+
+## Áudio Bluetooth com Delay (latência)
+
+Fones Bluetooth têm latência inerente que pode dessincronizar o áudio do jogo com a imagem.
+
+**O que ajuda:**
+- Use fones com **codecs de baixa latência** como aptX LL ou aptX Adaptive (confirme suporte no fone)
+- No RetroArch, ative **Configurações → Áudio → Latência** e aumente o buffer para compensar
+- Alguns emuladores standalone como PPSSPP têm configuração de delay de áudio — ajuste manualmente
+- Para jogos onde o timing é crítico (rhythm games), fone com cabo P2 elimina o problema completamente
+
+<Alert type="info" title="Bluetooth 5.1">
+  O RP5 usa Bluetooth 5.1, que suporta codecs modernos de áudio. Verifique se seu fone também suporta aptX ou AAC para melhor qualidade e menor latência.
+</Alert>
+
+## Jogos Não Aparecem no Frontend
+
+Se ES-DE, Daijisho ou outro frontend não está listando os jogos após adicioná-los:
+
+1. **Verifique o caminho**: confirme que as ROMs estão na pasta exata configurada no frontend (diferença entre maiúsculas e minúsculas importa no Android)
+2. **Extensão do arquivo**: cada sistema reconhece extensões específicas. PS2 usa `.iso` ou `.chd`; N64 usa `.z64`, `.n64` ou `.v64`
+3. **Force um novo scan**: no ES-DE, pressione Start → **Varrer conteúdo** → marcar o diretório correto
+4. **Arquivos compactados**: `.7z` e `.zip` são suportados pelo RetroArch, mas emuladores standalone geralmente precisam do arquivo descompactado
+
+## Tela com Queima (burn-in) em Displays AMOLED
+
+Telas AMOLED podem desenvolver retenção de imagem com elementos estáticos brilhantes exibidos por horas seguidas (ex: HUD de jogos).
+
+**Prevenção:**
+- Reduza o brilho ao mínimo confortável — é o principal fator
+- Use o modo escuro do Android sempre que possível
+- Ative o protetor de tela quando o console estiver em standby
+- Não deixe o menu do emulador aberto por horas sem atividade
+
+## Console Não Reconhece o Cartão SD
+
+- Remova e reinsira o cartão com o console ligado
+- Verifique se o cartão está formatado em **exFAT** (cartões NTFS não são reconhecidos)
+- Teste o cartão em outro dispositivo para descartar defeito físico
+- Se o cartão foi formatado como "armazenamento interno" em outro Android, precisará ser reformatado antes de funcionar como armazenamento portátil
+
+## Bateria Não Carrega Ou Carrega Lento
+
+- Use o carregador original ou um carregador USB-C compatível com **Power Delivery (PD)**
+- Verifique se o cabo USB-C suporta carga rápida (cabos baratos limitam a corrente)
+- Com o console em uso intenso, carregadores abaixo de 18W podem não conseguir carregar mais rápido do que consome — desligue ou use o modo de economia de energia durante a carga

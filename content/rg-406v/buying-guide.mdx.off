@@ -1,0 +1,117 @@
+---
+title: Guia de Compras
+description: "Onde comprar o Anbernic RG-406V com segurança, lojas confiáveis, acessórios recomendados e dicas para evitar problemas na importação."
+full: true
+---
+
+import { BuyingGuide } from "@/components/mdx/BuyingGuide";
+
+<BuyingGuide
+  consoleName="Anbernic RG-406V"
+  priceRange="~US$155 (aprox. R$800–R$950 com impostos)"
+  stores={[
+    {
+      name: "Anbernic Loja Oficial",
+      description: "Loja oficial do fabricante com garantia direta. Frete internacional disponível, mas pode ser mais lento que AliExpress.",
+      href: "https://anbernic.com",
+      trustLevel: "verified",
+    },
+    {
+      name: "Anbernic Official Store (AliExpress)",
+      description: "Loja oficial da Anbernic no AliExpress. Histórico sólido, proteção de comprador AliExpress e frete rastreável.",
+      href: "https://www.aliexpress.com/store/1101986932",
+      trustLevel: "trusted",
+    },
+    {
+      name: "Outros Vendedores AliExpress",
+      description: "Existem revendedores no AliExpress com preços similares. Verifique o histórico do vendedor e as avaliações antes de comprar.",
+      href: "https://www.aliexpress.com",
+      trustLevel: "caution",
+    },
+  ]}
+  accessories={[
+    {
+      name: "Samsung Pro Plus 256 GB",
+      description: "Melhor opção de microSD para expandir o armazenamento do RG-406V. A2, alta velocidade de leitura e escrita.",
+      href: "https://www.aliexpress.com/item/1005005534695813.html",
+      category: "storage",
+      badge: "Recomendado",
+    },
+    {
+      name: "Lexar PLAY 128 GB",
+      description: "Boa velocidade e compatibilidade comprovada com Android. Custo-benefício excelente.",
+      href: "https://www.aliexpress.com/item/1005006013625677.html",
+      category: "storage",
+    },
+    {
+      name: "Kingston Canvas Go Plus 256 GB",
+      description: "Opção confiável para quem precisa de bastante espaço para jogos de PS2 e GameCube.",
+      href: "https://www.aliexpress.com/item/1005003556618384.html",
+      category: "storage",
+    },
+    {
+      name: "Película de Vidro Temperado",
+      description: "Protege a tela IPS de 4 polegadas contra arranhões. Procure modelos específicos para RG-406V.",
+      href: "https://www.aliexpress.com/w/wholesale-rg-406v-screen-protector.html",
+      category: "protection",
+      badge: "Essencial",
+    },
+    {
+      name: "Case Rígido para RG-406V",
+      description: "Case de transporte com espuma recortada. Essencial para quem leva o console na bolsa.",
+      href: "https://www.aliexpress.com/w/wholesale-rg-406v-case.html",
+      category: "protection",
+    },
+    {
+      name: "Cabo USB-C para USB-C",
+      description: "Cabo extra para carregamento rápido e transferência de dados. Necessário para conectar a monitores com DisplayPort Alt Mode.",
+      href: "https://www.aliexpress.com/w/wholesale-usb-c-cable-fast-charge.html",
+      category: "connectivity",
+    },
+    {
+      name: "Adaptador USB-C para HDMI",
+      description: "O RG-406V tem saída de vídeo via USB-C. Um adaptador USB-C para HDMI permite conectar em TVs e monitores.",
+      href: "https://www.aliexpress.com/w/wholesale-usb-c-hdmi-adapter.html",
+      category: "connectivity",
+      badge: "Para TV",
+    },
+    {
+      name: "Fone Bluetooth",
+      description: "O RG-406V tem Bluetooth 5.0 — aproveite para jogar sem fio com baixa latência.",
+      href: "https://www.aliexpress.com/w/wholesale-bluetooth-gaming-earphones.html",
+      category: "connectivity",
+    },
+  ]}
+  tips={[
+    {
+      title: "Loja Oficial da Anbernic Tem Garantia Mais Clara",
+      description: "Comprando diretamente em anbernic.com você tem suporte direto com o fabricante. No AliExpress a proteção do comprador é uma camada extra de segurança.",
+      type: "tip",
+    },
+    {
+      title: "128 GB Internos — Cartão SD Não é Urgente",
+      description: "O RG-406V já vem com 128 GB UFS rápido de fábrica. Você pode começar sem cartão SD adicional e comprar depois, quando precisar de mais espaço.",
+      type: "tip",
+    },
+    {
+      title: "Saída de Vídeo Funcional",
+      description: "O USB-C do RG-406V suporta saída de vídeo via DisplayPort Alternate Mode. Um adaptador USB-C para HDMI transforma o console em um mini computador de emulação na TV.",
+      type: "tip",
+    },
+    {
+      title: "GammaOS Next Melhora Bastante a Experiência",
+      description: "Se a interface Android padrão da Anbernic parecer pesada ou cheia de bloatware, o GammaOS Next é o custom firmware mais recomendado pela comunidade — mantém Android completo, mais limpo e otimizado.",
+      type: "tip",
+    },
+    {
+      title: "Impostos na Importação",
+      description: "Produtos eletrônicos importados acima de US$50 podem ser taxados na alfândega brasileira. Considere isso no preço final. O valor total com impostos pode ficar entre R$800 e R$1.100 dependendo do câmbio.",
+      type: "warning",
+    },
+    {
+      title: "Links de Afiliado",
+      description: "Alguns links nesta página são links de afiliado — se você comprar por eles, pode gerar uma pequena comissão para o site sem custo adicional para você. Isso ajuda a manter o projeto funcionando.",
+      type: "tip",
+    },
+  ]}
+/>

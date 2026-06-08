@@ -1,0 +1,77 @@
+---
+title: Primeiros Passos
+description: "Configuração inicial do Retroid Pocket 5: conta Google, atualização Android, onde colocar ROMs e BIOS, e dicas essenciais para começar."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O Retroid Pocket 5 chega pronto para usar como qualquer telefone Android — sem gravar firmware em cartão, sem processos complicados. Nas primeiras horas, o objetivo é ter o sistema atualizado, os emuladores instalados e as ROMs acessíveis.
+
+## Primeira Inicialização
+
+Ao ligar pela primeira vez, o Android 13 passa pelo assistente de configuração padrão. Você pode:
+
+- **Conectar uma conta Google** para acessar a Play Store e sincronizar apps — opcional, mas recomendado para instalar emuladores pagos ou usar o RetroAchievements.
+- **Pular** a conta Google caso prefira instalar os emuladores via APK manualmente.
+
+Depois do assistente, conecte ao Wi-Fi e confirme a hora/fuso horário.
+
+## Atualizar o Sistema
+
+Antes de instalar qualquer coisa, verifique se há atualizações pendentes:
+
+1. Abra **Configurações → Sistema → Atualização do sistema**
+2. Aguarde a verificação e instale qualquer pacote disponível
+3. Reinicie quando solicitado
+
+A Retroid costuma lançar patches de firmware que corrigem comportamentos do botão Home e do mapeamento de analógicos — vale instalar logo.
+
+## Onde Colocar as ROMs
+
+O RP5 tem **128 GB de armazenamento interno UFS 3.1** e um slot microSD para expansão. A estrutura de pastas recomendada pelos principais frontends (ES-DE, Daijisho) é:
+
+```
+/storage/emulated/0/Roms/
+  ├── snes/
+  ├── n64/
+  ├── psx/
+  ├── ps2/
+  ├── gc/        ← GameCube
+  ├── wii/
+  ├── psp/
+  ├── nds/
+  └── 3ds/
+```
+
+Se usar cartão microSD, o caminho fica em `/storage/<ID do SD>/Roms/`. Você pode apontar o frontend para esse caminho depois.
+
+<Alert type="info" title="Transferindo arquivos">
+  Use o cabo USB-C com MTP, Wi-Fi via apps como **LocalSend** ou **Samba**, ou simplesmente coloque o microSD num leitor de cartão no computador para transferir ROMs com mais velocidade.
+</Alert>
+
+## BIOS
+
+Alguns emuladores dependem de arquivos de BIOS para funcionar corretamente, especialmente PS1, PS2 e Saturn. Coloque-os na pasta que cada emulador espera:
+
+| Sistema | Emulador       | Pasta de BIOS padrão                         |
+|---------|----------------|----------------------------------------------|
+| PS1     | DuckStation    | `/storage/emulated/0/DuckStation/bios/`      |
+| PS2     | AetherSX2      | `/storage/emulated/0/AetherSX2/bios/`        |
+| Saturn  | RetroArch      | pasta `system/` do RetroArch                 |
+| DS      | DraStic        | Pasta raiz de ROMs do DraStic                |
+
+Consulte a documentação de cada emulador para o nome exato do arquivo de BIOS — a grafia (letras maiúsculas/minúsculas) importa no Android.
+
+## Ativar Opções de Desenvolvedor
+
+Para ter mais controle sobre desempenho, conectar via ADB ou usar ferramentas de debug:
+
+1. Vá em **Configurações → Sobre o dispositivo**
+2. Toque em **Número da versão** 7 vezes até aparecer "Você é um desenvolvedor"
+3. Volte e acesse **Configurações → Sistema → Opções do desenvolvedor**
+
+Com o modo desenvolvedor ativo você consegue habilitar **USB Debugging** (ADB), ajustar limites de processos em segundo plano e ativar sobreposições de desempenho.
+
+## Próximos Passos
+
+Com o sistema pronto e as ROMs no lugar, o passo natural é instalar os emuladores. Confira o guia de [Emuladores e Frontends](/retroid-pocket-5/emuladores) para saber quais apps usar em cada sistema.

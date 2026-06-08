@@ -36,6 +36,31 @@ export const consoleTabs = [
     description: 'Tela 4:3 de alta qualidade',
     url: '/powkiddy',
   },
+  {
+    title: 'Retroid Pocket 5',
+    description: 'Android com tela AMOLED 5.5"',
+    url: '/retroid-pocket-5',
+  },
+  {
+    title: 'Retroid Pocket Mini V2',
+    description: 'Android compacto com AMOLED',
+    url: '/retroid-pocket-mini-v2',
+  },
+  {
+    title: 'Anbernic RG-406V',
+    description: 'Android com tela 4:3 quadrada',
+    url: '/rg-406v',
+  },
+  {
+    title: 'Mangmi Air X',
+    description: 'Android fino e leve',
+    url: '/mangmi-air-x',
+  },
+  {
+    title: 'Retroid Pocket 6',
+    description: 'Android top de linha',
+    url: '/retroid-pocket-6',
+  },
 ];
 
 /**

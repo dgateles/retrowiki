@@ -1,0 +1,101 @@
+---
+title: Guia de Compras
+description: "Onde comprar o Retroid Pocket Mini V2 com segurança, acessórios recomendados e dicas antes de finalizar a compra."
+full: true
+---
+
+import { BuyingGuide } from "@/components/mdx/BuyingGuide";
+
+<BuyingGuide
+  consoleName="Retroid Pocket Mini V2"
+  priceRange="~US$195 (~R$1.100 com impostos)"
+  stores={[
+    {
+      name: "Retroid Oficial (goretroid.com)",
+      description: "Loja oficial da Retroid. Envio direto da China com suporte pós-venda. Preço mais baixo e produto garantidamente original.",
+      href: "https://www.goretroid.com",
+      trustLevel: "verified",
+      badge: "Oficial",
+      highlight: true,
+    },
+    {
+      name: "AliExpress — Lojas especializadas",
+      description: "Revendedores no AliExpress costumam oferecer frete variado. Verifique a reputação da loja (mínimo 95% de avaliações positivas, 1000+ vendas) antes de comprar.",
+      href: "https://www.aliexpress.com/w/wholesale-retroid-pocket-mini-v2.html",
+      trustLevel: "caution",
+    },
+  ]}
+  accessories={[
+    {
+      name: "Samsung Pro Plus 256 GB",
+      description: "Alta velocidade de leitura e escrita, ideal para GameCube, Wii e PS2. Compatibilidade ampla com Android.",
+      href: "https://www.amazon.com.br/s?k=samsung+pro+plus+256gb+microsd",
+      category: "storage",
+      badge: "Recomendado",
+    },
+    {
+      name: "SanDisk Extreme 128 GB",
+      description: "Boa velocidade e preço justo para quem quer expandir a biblioteca sem gastar muito.",
+      href: "https://www.amazon.com.br/s?k=sandisk+extreme+128gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Fone Bluetooth aptX (baixa latência)",
+      description: "O RPMini V2 tem Bluetooth 5.1. Fones com codec aptX Low Latency reduzem o delay para menos de 40ms — mais viável para jogos.",
+      href: "https://www.amazon.com.br/s?k=fone+bluetooth+aptx+low+latency",
+      category: "connectivity",
+    },
+    {
+      name: "Carregador USB-C PD 30W",
+      description: "Carregamento rápido real. Um carregador PD 30W recarrega a bateria de 4000 mAh em cerca de 2 horas.",
+      href: "https://www.amazon.com.br/s?k=carregador+usb-c+pd+30w",
+      category: "connectivity",
+    },
+    {
+      name: "Case rígido para handheld compacto",
+      description: "Proteção para transporte. Procure cases com interior EVA e dimensões compatíveis com ~165 x 77 mm.",
+      href: "https://www.amazon.com.br/s?k=case+rigido+handheld+retro+portatil",
+      category: "protection",
+      badge: "Essencial",
+    },
+    {
+      name: "Película de vidro temperado 4\"",
+      description: "A tela AMOLED vale proteção. Películas de 4 polegadas com bordas arredondadas se encaixam bem no RPMini V2.",
+      href: "https://www.amazon.com.br/s?k=pelicula+vidro+4+polegadas+handheld",
+      category: "protection",
+    },
+    {
+      name: "Cabo USB-C para TV (HDMI Adapter)",
+      description: "O RPMini V2 suporta saída de vídeo via USB-C (DisplayPort Alt Mode). Um adaptador USB-C para HDMI permite jogar na TV.",
+      href: "https://www.amazon.com.br/s?k=adaptador+usb-c+hdmi+displayport",
+      category: "connectivity",
+    },
+  ]}
+  tips={[
+    {
+      title: "Compre direto da Retroid quando possível",
+      description: "A loja oficial goretroid.com tem o menor preço e garante produto original com suporte. O frete internacional pode demorar 2–4 semanas para o Brasil.",
+      type: "tip",
+    },
+    {
+      title: "Wi-Fi 6 e Bluetooth 5.1 já incluídos",
+      description: "Não é necessário nenhum adaptador adicional. O console tem conectividade completa de fábrica.",
+      type: "tip",
+    },
+    {
+      title: "128 GB de armazenamento interno UFS 3.1",
+      description: "Você pode não precisar de cartão SD imediatamente. Avalie sua biblioteca antes de comprar — o interno é mais rápido que qualquer microSD.",
+      type: "tip",
+    },
+    {
+      title: "Tela 31:27 é diferente do widescreen",
+      description: "A proporção quase quadrada é ótima para jogos clássicos 4:3, mas jogos widescreen (PSP, Wii em 16:9) terão barras horizontais. Se isso for incômodo para você, considere o Retroid Pocket 5 (tela 16:9).",
+      type: "warning",
+    },
+    {
+      title: "Links desta página são de busca, não afiliados",
+      description: "Os links acima apontam para buscas em lojas como Amazon Brasil e AliExpress — não são links de afiliado. A Retrowiki não recebe comissão por compras feitas através deles.",
+      type: "tip",
+    },
+  ]}
+/>

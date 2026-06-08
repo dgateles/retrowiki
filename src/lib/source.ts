@@ -5,7 +5,12 @@ import {
   rg35xxDocs,
   trimuiSmartBrickDocs,
   rg40xxhDocs,
-  powkiddyDocs
+  powkiddyDocs,
+  retroidPocket5Docs,
+  retroidPocketMiniV2Docs,
+  rg406vDocs,
+  mangmiAirXDocs,
+  retroidPocket6Docs
 } from 'fumadocs-mdx:collections/server';
 import { type InferPageType, loader, multiple } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
@@ -74,6 +79,51 @@ export const powkiddySource = loader({
 });
 
 /**
+ * Retroid Pocket 5 console documentation source.
+ */
+export const retroidPocket5Source = loader({
+  baseUrl: '/retroid-pocket-5',
+  source: retroidPocket5Docs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
+ * Retroid Pocket Mini V2 console documentation source.
+ */
+export const retroidPocketMiniV2Source = loader({
+  baseUrl: '/retroid-pocket-mini-v2',
+  source: retroidPocketMiniV2Docs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
+ * Anbernic RG-406V console documentation source.
+ */
+export const rg406vSource = loader({
+  baseUrl: '/rg-406v',
+  source: rg406vDocs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
+ * Mangmi Air X console documentation source.
+ */
+export const mangmiAirXSource = loader({
+  baseUrl: '/mangmi-air-x',
+  source: mangmiAirXDocs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
+ * Retroid Pocket 6 console documentation source.
+ */
+export const retroidPocket6Source = loader({
+  baseUrl: '/retroid-pocket-6',
+  source: retroidPocket6Docs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
+});
+
+/**
  * Combined source for search.
  */
 export const searchSource = loader({
@@ -86,6 +136,11 @@ export const searchSource = loader({
     'trimui-smart-brick': trimuiSmartBrickDocs.toFumadocsSource(),
     rg40xxh: rg40xxhDocs.toFumadocsSource(),
     powkiddy: powkiddyDocs.toFumadocsSource(),
+    'retroid-pocket-5': retroidPocket5Docs.toFumadocsSource(),
+    'retroid-pocket-mini-v2': retroidPocketMiniV2Docs.toFumadocsSource(),
+    'rg-406v': rg406vDocs.toFumadocsSource(),
+    'mangmi-air-x': mangmiAirXDocs.toFumadocsSource(),
+    'retroid-pocket-6': retroidPocket6Docs.toFumadocsSource(),
   }),
   plugins: [lucideIconsPlugin()],
 });

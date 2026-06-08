@@ -1,0 +1,104 @@
+---
+title: Primeiros Passos
+description: "Como configurar o Retroid Pocket 6 do zero: conta Google, atualização do sistema, instalação de ROMs e BIOS essenciais."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O Retroid Pocket 6 chega com Android 13 pronto para uso. O processo de configuração inicial leva cerca de 20 minutos — a maioria do tempo é espera de download.
+
+## 1. Carregue antes de ligar
+
+A bateria de 6000 mAh pode vir parcialmente carregada. Conecte o cabo USB-C antes de fazer qualquer configuração: uma bateria baixa no meio da atualização do sistema pode causar problemas.
+
+O carregamento funciona pelo conector USB-C na parte inferior do console. O RP6 suporta carregamento rápido.
+
+## 2. Configuração inicial do Android
+
+Na primeira inicialização, o Android exibe o assistente de configuração. Você pode:
+
+- **Pular a conta Google** por enquanto e adicionar depois em Configurações → Contas
+- **Conectar ao Wi-Fi** (Wi-Fi 7 integrado — o mais rápido disponível em portáteis hoje)
+- Definir fuso horário e idioma
+
+<Alert type="info" title="Wi-Fi 7">
+  O RP6 tem Wi-Fi 7 (802.11be). Se seu roteador for mais antigo, ele conecta normalmente em 5GHz ou 2.4GHz. A diferença aparece especialmente ao transferir ROMs grandes pela rede.
+</Alert>
+
+## 3. Atualização do sistema
+
+Antes de instalar qualquer emulador, verifique se há atualizações de firmware:
+
+1. Vá em **Configurações → Sobre o dispositivo → Atualização do sistema**
+2. Baixe e instale as atualizações disponíveis
+3. O console reinicia automaticamente após a instalação
+
+A Retroid disponibiliza atualizações OTA com frequência. Checar depois de comprar é sempre recomendado.
+
+## 4. Conta Google e Play Store
+
+Para baixar emuladores da Play Store:
+
+1. Abra **Configurações → Contas → Adicionar conta → Google**
+2. Faça login com sua conta
+3. A Play Store estará disponível no launcher
+
+Emuladores como RetroArch, PPSSPP, Dolphin e AetherSX2 (via APK) ficam disponíveis para instalação.
+
+## 5. Launcher da Retroid
+
+O RP6 vem com o **Retroid Launcher** pré-instalado — um frontend otimizado para controles que organiza jogos por plataforma. Para acessar o Android padrão, use o botão Home ou configure nas preferências do launcher.
+
+## 6. Transferindo ROMs para o console
+
+### Via USB (recomendado para arquivos grandes)
+
+1. Conecte o RP6 ao PC com cabo USB-C
+2. Na notificação que aparecer no console, toque em **Transferência de arquivos**
+3. No PC, o RP6 aparece como unidade de armazenamento
+4. Copie as ROMs para as pastas correspondentes (ex.: `ROMs/PlayStation2/`)
+
+### Via rede local (Wi-Fi)
+
+Instale o app **LocalSend** ou use o **Samba** para transferir arquivos sem fio. Com Wi-Fi 7, uma ROM de PS2 de 4 GB transfere em menos de um minuto numa rede boa.
+
+### Via cartão microSD
+
+Formate o cartão no PC (exFAT para cartões acima de 32 GB), copie as ROMs e insira no slot microSD do RP6.
+
+## 7. BIOS essenciais
+
+Alguns sistemas exigem arquivos de BIOS para emulação correta. O caminho padrão no RetroArch é `/storage/emulated/0/RetroArch/system/`.
+
+| Sistema | Arquivo BIOS | Obrigatório |
+|---------|-------------|-------------|
+| PlayStation 1 | `scph1001.bin` ou `scph7502.bin` | Sim (alguns jogos) |
+| PlayStation 2 | `ps2-0230a-20080220.bin` | Sim (AetherSX2/NetherSX2) |
+| Nintendo DS | `bios7.bin`, `bios9.bin`, `firmware.bin` | Recomendado |
+| Game Boy Advance | `gba_bios.bin` | Opcional |
+| Saturn | `saturn_bios.bin` | Sim |
+
+<Alert type="warning" title="BIOS e Legalidade">
+  Arquivos de BIOS são protegidos por direitos autorais. A forma legal de obtê-los é extraindo diretamente dos consoles originais que você possui.
+</Alert>
+
+## 8. Organização de pastas sugerida
+
+Uma estrutura limpa facilita a vida dos frontends (Daijisho, ES-DE):
+
+```
+/storage/emulated/0/
+  ROMs/
+    NES/
+    SNES/
+    GBA/
+    PlayStation/
+    PlayStation2/
+    GameCube/
+    Switch/
+    PSP/
+    NDS/
+  BIOS/
+```
+
+Com tudo configurado, acesse a seção de **Emuladores** para instalar e ajustar cada sistema.

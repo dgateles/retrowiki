@@ -1,0 +1,131 @@
+---
+title: Mangmi Air X
+description: Guia completo do Mangmi Air X - console Android com Snapdragon 662, tela IPS 1080p de 5.5", Hall Effect sticks e bateria de 5000 mAh na faixa de US$90-100.
+full: true
+---
+
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+import { Alert } from "@/components/mdx/Alert";
+
+<ConsoleOverview
+  name="Mangmi Air X"
+  manufacturer="Mangmi"
+  description="Console Android de entrada lançado em outubro de 2025 pela Mangmi. Com Snapdragon 662, tela IPS Full HD de 5.5 polegadas, Hall Effect sticks, bateria de 5000 mAh e Android 14, entrega emulação excelente de tudo até PSP/Dreamcast/N64 a menos de US$100."
+  image="/consoles/retrowiki_mangmi-air-x.webp"
+  releaseYear={2025}
+  priceRange="~US$100"
+  screen={{
+    aspectRatio: "16:9",
+    size: '5.5"',
+    resolution: "1920 x 1080",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: true,
+    hasVibration: true,
+    speakerPlacement: "Inferior",
+    chargePortPlacement: "Inferior",
+  }}
+  connectivity={{
+    hasWifi: true,
+    hasBluetooth: true,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: false,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: true,
+    hasAnalogSticks: true,
+    hasHallEffect: true,
+    hasL3R3: true,
+    hasTouchScreen: true,
+    hasGyroscope: true,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "Qualcomm Snapdragon 662 (Cortex-A73 8-core, até 2.0 GHz)",
+    gpu: "Qualcomm Adreno 610 (1050 MHz)",
+    ram: "4 GB",
+    ramType: "LPDDR4X",
+    architecture: "ARM",
+    storage: "64 GB eMMC + microSD",
+    battery: "5000 mAh",
+    os: "Android 14",
+    formFactor: "Horizontal",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive / Genesis", level: "excellent" },
+    { system: "PlayStation 1", level: "excellent" },
+    { system: "Nintendo DS", level: "excellent" },
+    { system: "Nintendo 64", level: "excellent" },
+    { system: "Dreamcast", level: "excellent" },
+    { system: "PSP", level: "excellent" },
+    { system: "3DS", level: "playable" },
+    { system: "Saturn", level: "playable" },
+    { system: "GameCube", level: "playable" },
+    { system: "PS2", level: "poor" },
+    { system: "Wii", level: "poor" },
+  ]}
+  pros={[
+    "Tela IPS 1080p muito superior a outros consoles na mesma faixa de preço",
+    "Botões e D-Pad com ótima sensação tátil",
+    "Hall Effect sticks mais precisos e duráveis",
+    "Bateria de 5000 mAh para sessões longas",
+    "CFWs disponíveis: GammaOS Next e ROCKNIX",
+    "Touchscreen útil para navegação e jogos de toque",
+    "Grips ergonômicos para conforto em sessões prolongadas",
+    "4 GB de RAM para navegação fluida no Android",
+    "Acesso a jogos mobile e ports de PC via PortMaster",
+  ]}
+  cons={[
+    "Alto-falantes na parte inferior - bons, mas não excepcionais",
+    "Barras pretas laterais ao emular sistemas com proporção 4:3",
+    "Sem saída de vídeo para monitor externo",
+  ]}
+/>
+
+<Alert type="info" title="Marca nova, suporte ativo">
+  A Mangmi é uma marca jovem no mercado de handhelds, mas o Air X acumulou cobertura positiva de múltiplos revisores e conta com dois CFWs: GammaOS Next e ROCKNIX. A comunidade está crescendo ativamente.
+</Alert>
+
+## Guias
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Primeiros Passos"
+    description="Configure o Android, instale emuladores e organize suas ROMs"
+    href="/mangmi-air-x/primeiros-passos"
+  />
+  <CardLink
+    title="Emuladores e Frontends"
+    description="RetroArch, emuladores standalone e frontends como Daijisho e ES-DE"
+    href="/mangmi-air-x/emuladores"
+  />
+  <CardLink
+    title="Cartão SD"
+    description="Cartões recomendados, formatação e organização de ROMs e BIOS"
+    href="/mangmi-air-x/sd-card"
+  />
+  <CardLink
+    title="Controles e Mapeamento"
+    description="Layout dos botões, key mapping no Android e hotkeys do RetroArch"
+    href="/mangmi-air-x/controles"
+  />
+  <CardLink
+    title="Solução de Problemas"
+    description="Problemas comuns de Android handheld e soluções específicas do Air X"
+    href="/mangmi-air-x/troubleshooting"
+  />
+</CardGrid>

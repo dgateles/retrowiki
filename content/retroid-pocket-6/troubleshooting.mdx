@@ -1,0 +1,113 @@
+---
+title: "Solução de Problemas"
+description: "Problemas comuns no Retroid Pocket 6 e como resolvê-los: superaquecimento, emuladores travando, Wi-Fi instável, sticks descalibrados e mais."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+## Console esquenta muito durante emulação pesada
+
+O RP6 tem resfriamento ativo (fan interno), mas o Snapdragon 8 Gen 2 gera calor considerável sob carga máxima — especialmente em sessões longas de PS2, Switch ou GameCube.
+
+**O que fazer:**
+
+- Verifique se a ventilação (saída de ar) não está obstruída pela mão
+- Em **Configurações → Bateria**, ative o modo de performance balanceado em vez de máxima performance
+- No RetroArch: habilite **Frame Delay** em Settings → Audio para reduzir carga de CPU
+- No NetherSX2/AetherSX2: reduza a resolução de 3x para 2x se o throttling aparecer
+- Faça pausas de 10–15 minutos em sessões longas de emulação pesada
+
+O throttling térmico é normal e protege o hardware — não indica defeito.
+
+## Emulador travando ou fechando sozinho
+
+A causa mais comum é **falta de BIOS** ou **ROM corrompida**.
+
+1. Verifique se os arquivos de BIOS estão no caminho correto (ver seção Primeiros Passos)
+2. Teste a ROM em outro emulador ou dispositivo para confirmar integridade
+3. No RetroArch, vá em **Main Menu → Information → Core Information** para checar arquivos de sistema necessários
+4. Para AetherSX2/NetherSX2: o PS2 BIOS é obrigatório — sem ele, não inicia
+
+Se o emulador fechar sem mensagem de erro, provavelmente é RAM insuficiente para o processo:
+- Feche outros apps em segundo plano (**Configurações → Aplicativos → Ver todos**)
+- Reinicie o console antes de sessões de emulação pesada
+
+## Wi-Fi cai ou conecta com velocidade baixa
+
+O Wi-Fi 7 do RP6 pode ter problemas de compatibilidade com roteadores mais antigos.
+
+**Soluções:**
+
+- Force a banda 5 GHz: **Configurações → Wi-Fi → (nome da rede) → Avançado → Frequência preferencial → 5 GHz**
+- Se o roteador for Wi-Fi 5 ou anterior, o Wi-Fi 7 do RP6 negocia automaticamente — mas verifique se o driver de firmware está atualizado
+- Reinicie o roteador se a velocidade estiver anormalmente baixa
+- Para transferência de ROMs, prefira cabo USB-C se a velocidade Wi-Fi for insuficiente
+
+## Sticks analógicos com deriva (drift)
+
+Os sticks Hall Effect do RP6 são muito mais resistentes ao drift do que sticks convencionais, mas podem precisar de calibração inicial.
+
+**Calibração:**
+
+1. Acesse **Configurações → Controles → Calibrar** (se disponível no firmware)
+2. No RetroArch: **Settings → Input → Port 1 Controls → Analog Deadzone** — aumente ligeiramente (0.15 a 0.20) para mascarar microdesvios
+3. No Dolphin: **Settings → GameCube Input → (controle) → Deadzone**
+
+Se o drift persistir mesmo após calibração, entre em contato com o suporte da Retroid — a garantia cobre defeitos de fabricação.
+
+## Tela com brilho irregular ou mancha
+
+A tela AMOLED pode apresentar burn-in em uso prolongado com imagens estáticas (como a HUD de um jogo em pausa).
+
+**Prevenção:**
+
+- Não deixe o console pausado com imagem estática por mais de 30 minutos
+- Use o protetor de tela automático: **Configurações → Display → Suspender tela → 10 minutos**
+- Ative o modo escuro no sistema para reduzir desgaste do painel
+
+Se apareceram manchas ou pixels mortos, isso pode ser defeito de fábrica — registre junto à Retroid dentro do período de garantia.
+
+## Áudio com crackle ou delay
+
+**No RetroArch:**
+
+1. Vá em **Settings → Audio → Output**
+2. Tente trocar o driver de audio: `audiotrack` → `oboe` (ou vice-versa)
+3. Aumente ligeiramente o **Audio Latency** (50 ms → 64 ms)
+4. Desative **Audio Sync** temporariamente para testar
+
+**No Dolphin:**
+
+- **Settings → Audio → DSP HLE** usa menos CPU que DSP LLE, mas pode causar áudio incorreto em alguns jogos
+
+**No PPSSPP:**
+
+- **Settings → Audio → Audio backend → OpenSL ES** costuma ter menos latência no Android
+
+## Jogo Android não reconhece o controle
+
+Alguns jogos Android esperam mapeamentos específicos de botões.
+
+1. Instale o **Mantis Gamepad Pro** ou **Panda Gamepad Pro** para criar sobreposições de toque
+2. Verifique se o jogo está na lista de compatibilidade do app
+3. Para jogos da Play Store com suporte a controles, o RP6 é detectado como gamepad genérico Android — verifique nas opções do jogo se o suporte a controles está ativado
+
+<Alert type="info" title="Netflix Games e Game Pass">
+  Serviços de streaming de jogos (Xbox Cloud, Netflix Games) funcionam no RP6 via navegador ou app. O controle é reconhecido automaticamente na maioria dos títulos.
+</Alert>
+
+## Console não liga após bateria descarregada completamente
+
+1. Conecte o carregador e aguarde pelo menos **15 minutos** antes de tentar ligar
+2. Se a bateria descarregou completamente, pode levar alguns minutos para acumular carga suficiente para o boot
+3. Use o carregador original ou um carregador USB-C com suporte a PD (Power Delivery)
+
+Se o console não ligar após 30 minutos de carregamento, entre em contato com o suporte da Retroid em [goretroid.com](https://www.goretroid.com).
+
+## PortMaster: jogo não abre ou mostra tela preta
+
+O PortMaster requer que alguns ports tenham arquivos de dados originais do jogo (não apenas o port em si).
+
+1. Verifique a documentação do port específico no PortMaster — muitos exigem arquivos `.pak`, `.dat` ou `assets/` do jogo original
+2. Coloque esses arquivos na pasta indicada pelo PortMaster (geralmente `/storage/emulated/0/ports/[nome-do-port]/`)
+3. Reinicie o PortMaster após adicionar os arquivos

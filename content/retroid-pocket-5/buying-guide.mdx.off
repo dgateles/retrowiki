@@ -1,0 +1,100 @@
+---
+title: Guia de Compras
+description: "Onde comprar o Retroid Pocket 5 com segurança, acessórios recomendados e dicas antes de fechar o pedido."
+full: true
+---
+
+import { BuyingGuide } from "@/components/mdx/BuyingGuide";
+
+<BuyingGuide
+  consoleName="Retroid Pocket 5"
+  priceRange="~US$ 200 (aprox. R$ 1.000–1.200)"
+  stores={[
+    {
+      name: "Loja Oficial Retroid (goretroid.com)",
+      description: "Fonte direta da fabricante. Melhor opção para garantir produto original, firmware atualizado e suporte pós-venda. Frete internacional disponível.",
+      href: "https://www.goretroid.com",
+      trustLevel: "verified",
+      badge: "Recomendado",
+    },
+    {
+      name: "AliExpress — Revendedores",
+      description: "Revendedores terceiros no AliExpress podem ter preços similares ou ligeiramente menores, mas verifique a reputação da loja e o histórico de avaliações antes de comprar.",
+      href: "https://www.aliexpress.com",
+      trustLevel: "caution",
+    },
+  ]}
+  accessories={[
+    {
+      name: "Samsung Pro Plus 256 GB",
+      description: "Velocidade de leitura acima de 160 MB/s — boa para ROMs de PS2 e GameCube sem travamentos no carregamento.",
+      href: "https://www.amazon.com.br/s?k=samsung+pro+plus+256gb+microsd",
+      category: "storage",
+      badge: "Recomendado",
+    },
+    {
+      name: "SanDisk Extreme 512 GB",
+      description: "Para bibliotecas extensas com múltiplas gerações. Velocidade e confiabilidade comprovadas.",
+      href: "https://www.amazon.com.br/s?k=sandisk+extreme+512gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Lexar PLAY 128 GB",
+      description: "Boa relação custo-benefício para quem mantém os jogos maiores no armazenamento interno.",
+      href: "https://www.amazon.com.br/s?k=lexar+play+128gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Fone Bluetooth com aptX LL",
+      description: "Codec de baixa latência reduz o delay de áudio durante o jogo. Verifique suporte a aptX LL ou aptX Adaptive no fone escolhido.",
+      href: "https://www.amazon.com.br/s?k=fone+bluetooth+aptx+low+latency",
+      category: "connectivity",
+    },
+    {
+      name: "Case Rígido para Handheld 5.5\"",
+      description: "Proteção para transporte. Procure cases com espuma recortada para o formato do RP5 (similar ao RG505 ou Odin 2 Mini por tamanho).",
+      href: "https://www.aliexpress.com/w/wholesale-retroid-pocket-5-case.html",
+      category: "protection",
+      badge: "Essencial",
+    },
+    {
+      name: "Película de Vidro 5.5\" (18:9 / 16:9)",
+      description: "A tela AMOLED do RP5 é sensível a arranhões. Uma película de vidro temperado mantém o display em bom estado.",
+      href: "https://www.amazon.com.br/s?k=pelicula+vidro+5.5+polegadas",
+      category: "protection",
+    },
+    {
+      name: "Capa de Silicone / Grip Cover",
+      description: "Melhora o grip e protege o plástico do shell. Modelos feitos especificamente para o RP5 aparecem em lojas especializadas.",
+      href: "https://www.aliexpress.com/w/wholesale-retroid-pocket-5-silicone-case.html",
+      category: "protection",
+    },
+  ]}
+  tips={[
+    {
+      title: "Compre direto da Retroid sempre que possível",
+      description: "A goretroid.com é a única fonte que garante produto original com firmware de fábrica atualizado. Revendedores podem ter estoque de versões anteriores.",
+      type: "tip",
+    },
+    {
+      title: "Wi-Fi 6 e Bluetooth 5.1 integrados",
+      description: "Não é necessário nenhum adaptador externo. O RP5 tem conectividade completa de fábrica para transferência de arquivos, RetroAchievements e controles BT.",
+      type: "tip",
+    },
+    {
+      title: "128 GB de armazenamento interno",
+      description: "O armazenamento UFS 3.1 é rápido o suficiente para PS2 e GameCube. Um cartão SD é útil mas não obrigatório para começar.",
+      type: "tip",
+    },
+    {
+      title: "Impostos de importação",
+      description: "Compras internacionais acima de US$ 50 estão sujeitas a taxação no Brasil. Considere o custo total antes de fechar o pedido.",
+      type: "warning",
+    },
+    {
+      title: "Links de afiliado",
+      description: "Os mantenedores desta wiki podem inserir links de afiliado nos acessórios acima. Ao comprar por eles, você apoia o projeto sem custo adicional.",
+      type: "tip",
+    },
+  ]}
+/>

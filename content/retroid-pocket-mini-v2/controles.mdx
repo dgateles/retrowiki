@@ -1,0 +1,116 @@
+---
+title: Controles e Mapeamento
+description: "Layout dos controles do Retroid Pocket Mini V2, mapeamento de botões no Android, hotkeys do RetroArch e atalhos para emuladores standalone."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+import { ButtonLayout } from "@/components/mdx/ButtonLayout";
+
+O RPMini V2 tem um layout de controles completo: dois analógicos simétricos com Hall Effect, gatilhos analógicos L2/R2, L1/R1 empilhados, giroscópio e touchscreen. O formato horizontal com grips ergonômicos é confortável para sessões longas.
+
+## Layout dos Botões
+
+<ButtonLayout screenLabel='AMOLED 3.9"' centerTopLabel="HOME" />
+
+- **D-Pad**: posicionado na parte superior esquerda (acima do analógico esquerdo)
+- **Analógicos**: layout simétrico (como Xbox) — ambos na mesma altura
+- **Sticks Hall Effect**: sem drift por desgaste — magnetismo ao invés de potenciômetro físico
+- **Gatilhos L2/R2**: analógicos, com curso completo para jogos que usam pressão variável
+- **Botões de ombro**: L1/R1 empilhados sobre os gatilhos
+
+## Mapeamento de Botões no Android
+
+O Android reconhece o RPMini V2 como controle genérico. Para apps que não mapeiam automaticamente, você pode remapear via:
+
+- **Configurações → Dispositivos Conectados → Controle** (se disponível no firmware)
+- App **Mantis Gamepad Pro** (Play Store) — permite remapeamento global no Android sem root
+- App **Gamepad Tester** para verificar se todos os botões estão sendo detectados corretamente
+
+### Mapeamento padrão (Android Gamepad)
+
+| Botão físico | Input Android |
+|-------------|--------------|
+| A | Button A |
+| B | Button B |
+| X | Button X |
+| Y | Button Y |
+| L1 | Button L1 |
+| R1 | Button R1 |
+| L2 | Axis LT (analógico) |
+| R2 | Axis RT (analógico) |
+| L3 (stick clicado) | Button L3 |
+| R3 (stick clicado) | Button R3 |
+| SELECT | Button Select |
+| START | Button Start |
+| HOME | Button Home (Android) |
+
+## Hotkeys do RetroArch
+
+O RetroArch usa o botão **SELECT** como tecla modificadora (hotkey) por padrão. Configure em **Configurações → Entrada → Teclas de Atalho**.
+
+### Atalhos em jogo
+
+| Combinação | Função |
+|-----------|--------|
+| <kbd>SELECT</kbd> + <kbd>X</kbd> | Abrir Menu RetroArch |
+| <kbd>SELECT</kbd> + <kbd>R1</kbd> | Salvar Estado (Save State) |
+| <kbd>SELECT</kbd> + <kbd>L1</kbd> | Carregar Estado (Load State) |
+| <kbd>SELECT</kbd> + <kbd>R2</kbd> | Avanço Rápido (Fast Forward) |
+| <kbd>SELECT</kbd> + <kbd>L2</kbd> | Retroceder (Rewind, se habilitado) |
+| <kbd>SELECT</kbd> + <kbd>B</kbd> | Captura de tela |
+| <kbd>SELECT</kbd> + <kbd>Y</kbd> | Mostrar / Ocultar FPS |
+| <kbd>SELECT</kbd> + <kbd>A</kbd> | Reset do jogo |
+| <kbd>SELECT</kbd> + <kbd>START</kbd> | Sair do jogo |
+
+### Trocar slots de Save State
+
+No Menu RetroArch → Quick Menu → State Slot, ou:
+- **SELECT + direita no D-PAD** avança o slot
+- **SELECT + esquerda no D-PAD** retrocede o slot
+
+### Shader rápido
+
+Em Quick Menu → Shaders, você pode salvar um preset e ativá-lo via atalho. Útil para alternar entre shader de CRT e tela limpa.
+
+## Hotkeys do Dolphin (GameCube / Wii)
+
+No Dolphin para Android, configure os controles em **Configurações → Configuração do Gamepad**:
+
+| Função | Configuração sugerida |
+|--------|----------------------|
+| Abrir menu Dolphin | START + SELECT |
+| Save State | L1 + SELECT (configurar manualmente) |
+| Sair | Botão Back do Android (HOME) |
+
+Para jogos de Wii com controles de movimento, o Dolphin suporta o giroscópio integrado do RPMini V2. Ative em **Configurações → Controles Wii → Sensor de Movimento**.
+
+## Hotkeys do PPSSPP (PSP)
+
+| Combinação | Função |
+|-----------|--------|
+| HOME | Abrir menu PPSSPP |
+| <kbd>SELECT</kbd> + <kbd>START</kbd> | Sair do jogo |
+| L1 + R1 (segurar) | Save State rápido (configurar) |
+
+## Configurando o Giroscópio
+
+O RPMini V2 tem giroscópio — útil para alguns jogos de Wii e emuladores que suportam controle de movimento:
+
+- **Dolphin**: ativar em Configurações → Wii Remote → Emulated Wii Remote
+- **Citra (3DS)**: alguns jogos como Ocarina of Time 3D usam giroscópio — ativar em Configurações → Controles
+
+<Alert type="info" title="Hall Effect Sticks">
+  Os sticks Hall Effect do RPMini V2 não têm drift por desgaste mecânico. Se notar algum desvio de centro, verifique a calibração em Configurações → Calibração de Controle no Android — geralmente uma recalibração resolve.
+</Alert>
+
+## Remapeamento por Jogo no RetroArch
+
+Para jogos específicos que precisam de layout diferente:
+
+1. Inicie o jogo
+2. Abra o Menu RetroArch (SELECT + X)
+3. Vá em **Quick Menu → Controles → Port 1 Binds**
+4. Remapeie os botões conforme necessário
+5. Selecione **Salvar Remapeamento do Jogo** — o arquivo fica salvo e carrega automaticamente na próxima vez
+
+Isso é útil para jogos de luta (Street Fighter, Mortal Kombat) onde você pode querer os botões de ataque em posições diferentes do padrão.

@@ -1,0 +1,113 @@
+---
+title: Guia de Compras
+description: "Onde comprar o Retroid Pocket 6 com segurança: loja oficial goretroid.com, AliExpress, versões disponíveis e acessórios recomendados."
+full: true
+---
+
+import { BuyingGuide } from "@/components/mdx/BuyingGuide";
+
+<BuyingGuide
+  consoleName="Retroid Pocket 6"
+  priceRange="~US$240 (aprox. R$1.300–1.500 com impostos)"
+  stores={[
+    {
+      name: "Retroid Official Store (goretroid.com)",
+      description: "Loja oficial da Retroid. Melhor opção para garantia, menor risco de produto falsificado e suporte direto do fabricante.",
+      href: "https://www.goretroid.com",
+      trustLevel: "verified",
+      highlight: true,
+    },
+    {
+      name: "AliExpress — lojas especializadas",
+      description: "Opção para quem quer frete diferenciado ou parcelamento. Escolha lojas com avaliação acima de 4.8 e histórico de vendas do RP6.",
+      href: "https://www.aliexpress.com/w/wholesale-retroid-pocket-6.html",
+      trustLevel: "caution",
+    },
+  ]}
+  accessories={[
+    {
+      name: "Samsung Pro Plus 512 GB",
+      description: "Ideal para coleções de PS2, GameCube e Switch. Alta velocidade de leitura/escrita.",
+      href: "https://www.amazon.com.br/s?k=samsung+pro+plus+512gb+microsd",
+      category: "storage",
+      badge: "Recomendado",
+      highlight: true,
+    },
+    {
+      name: "SanDisk Extreme 256 GB",
+      description: "Equilibrio entre capacidade e preço. 190 MB/s de leitura.",
+      href: "https://www.amazon.com.br/s?k=sandisk+extreme+256gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Kingston Canvas Go Plus 128 GB",
+      description: "Bom custo-benefício para começar com ROMs de sistemas portáteis.",
+      href: "https://www.amazon.com.br/s?k=kingston+canvas+go+plus+128gb",
+      category: "storage",
+    },
+    {
+      name: "Fone Bluetooth 5.x",
+      description: "O RP6 tem Bluetooth 5.3 — aproveite para áudio sem fio de qualidade.",
+      href: "https://www.amazon.com.br/s?k=fone+bluetooth+5+gaming",
+      category: "connectivity",
+    },
+    {
+      name: "Cabo USB-C para HDMI",
+      description: "O RP6 suporta saída de vídeo via USB-C. Conecte em TV ou monitor para jogar na tela grande.",
+      href: "https://www.amazon.com.br/s?k=cabo+usb-c+hdmi+4k",
+      category: "connectivity",
+      badge: "Exclusivo RP6",
+    },
+    {
+      name: "Case rígido para handheld 5.5\"",
+      description: "Proteção essencial para transporte. Procure modelos compatíveis com handhelds de 5-6 polegadas.",
+      href: "https://www.amazon.com.br/s?k=case+rigido+handheld+gaming",
+      category: "protection",
+      badge: "Essencial",
+    },
+    {
+      name: "Película de vidro temperado 5.5\"",
+      description: "Protege a tela AMOLED de riscos. Verifique compatibilidade com telas de 5.5 polegadas.",
+      href: "https://www.amazon.com.br/s?k=pelicula+vidro+temperado+5.5+polegadas",
+      category: "protection",
+    },
+    {
+      name: "Carregador USB-C PD 65W",
+      description: "O RP6 suporta carregamento rápido. Um carregador PD potente reduz o tempo de recarga da bateria de 6000 mAh.",
+      href: "https://www.amazon.com.br/s?k=carregador+usb-c+pd+65w",
+      category: "other",
+    },
+  ]}
+  tips={[
+    {
+      title: "Escolha o layout antes de comprar",
+      description: "O RP6 é vendido em duas variantes: sticks acima dos botões (estilo Switch) e sticks abaixo (estilo Xbox). Não é possível trocar depois — é uma decisão de hardware.",
+      type: "tip",
+    },
+    {
+      title: "Compre na loja oficial para garantia",
+      description: "A goretroid.com oferece garantia e suporte direto. No AliExpress, a garantia depende do vendedor e processos de devolução podem ser complicados.",
+      type: "tip",
+    },
+    {
+      title: "Impostos na importação",
+      description: "Compras internacionais acima de US$50 podem ser tributadas pela Receita Federal (60% do valor declarado). Considere isso no cálculo de custo total.",
+      type: "warning",
+    },
+    {
+      title: "Links desta página",
+      description: "Os links de acessórios desta página apontam para buscas no Amazon.com.br e não contêm códigos de afiliado. A wiki não ganha comissão sobre essas compras.",
+      type: "tip",
+    },
+    {
+      title: "Saída de vídeo nativa",
+      description: "O RP6 suporta saída de vídeo via USB-C (DisplayPort Alt Mode). Um cabo USB-C para HDMI permite jogar na TV sem adaptadores extras.",
+      type: "tip",
+    },
+    {
+      title: "Bateria de 6000 mAh — autonomia real",
+      description: "Em emulação de PS2/GameCube, espere cerca de 4-5 horas de bateria. Em sistemas mais leves (GBA, PS1), pode passar de 7-8 horas.",
+      type: "tip",
+    },
+  ]}
+/>

@@ -9,7 +9,12 @@ import {
     rg35xxSource,
     trimuiSmartBrickSource,
     rg40xxhSource,
-    powkiddySource
+    powkiddySource,
+    retroidPocket5Source,
+    retroidPocketMiniV2Source,
+    rg406vSource,
+    mangmiAirXSource,
+    retroidPocket6Source
 } from '@/lib/source';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -60,5 +65,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...addSource(trimuiSmartBrickSource),
         ...addSource(rg40xxhSource),
         ...addSource(powkiddySource),
+        ...addSource(retroidPocket5Source),
+        ...addSource(retroidPocketMiniV2Source),
+        ...addSource(rg406vSource),
+        ...addSource(mangmiAirXSource),
+        ...addSource(retroidPocket6Source),
     ];
 }

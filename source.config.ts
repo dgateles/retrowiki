@@ -112,6 +112,86 @@ export const powkiddyDocs = defineDocs({
   },
 });
 
+/**
+ * Retroid Pocket 5 console documentation.
+ */
+export const retroidPocket5Docs = defineDocs({
+  dir: 'content/retroid-pocket-5',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
+/**
+ * Retroid Pocket Mini V2 console documentation.
+ */
+export const retroidPocketMiniV2Docs = defineDocs({
+  dir: 'content/retroid-pocket-mini-v2',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
+/**
+ * Anbernic RG-406V console documentation.
+ */
+export const rg406vDocs = defineDocs({
+  dir: 'content/rg-406v',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
+/**
+ * Mangmi Air X console documentation.
+ */
+export const mangmiAirXDocs = defineDocs({
+  dir: 'content/mangmi-air-x',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
+/**
+ * Retroid Pocket 6 console documentation.
+ */
+export const retroidPocket6Docs = defineDocs({
+  dir: 'content/retroid-pocket-6',
+  docs: {
+    schema: frontmatterSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: metaSchema,
+  },
+});
+
 export default defineConfig({
   mdxOptions: {
     // MDX options

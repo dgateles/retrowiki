@@ -5,13 +5,21 @@ import { cn } from '@/lib/cn';
 
 interface ButtonLayoutProps {
     className?: string;
+    /** Label shown inside the screen area (default: "TELA") */
+    screenLabel?: string;
+    /** Center button above SELECT/START (default: "FN"). Pass null to hide. */
+    centerTopLabel?: string | null;
 }
 
 /**
- * Visual representation of the R36S button layout
- * Displays the console controls in an interactive diagram
+ * Visual representation of a handheld button layout.
+ * Defaults match the R36S; customize screenLabel/centerTopLabel for other consoles.
  */
-export function ButtonLayout({ className }: ButtonLayoutProps): React.ReactElement {
+export function ButtonLayout({
+    className,
+    screenLabel = 'TELA',
+    centerTopLabel = 'FN',
+}: ButtonLayoutProps): React.ReactElement {
     return (
         <div className={cn('not-prose my-6', className)}>
             <div
@@ -54,7 +62,7 @@ export function ButtonLayout({ className }: ButtonLayoutProps): React.ReactEleme
                             border: '2px solid #333',
                         }}
                     >
-                        <span className="text-gray-500 text-xs">TELA</span>
+                        <span className="text-gray-500 text-xs">{screenLabel}</span>
                     </div>
 
                     {/* Controls area */}
@@ -100,13 +108,15 @@ export function ButtonLayout({ className }: ButtonLayoutProps): React.ReactEleme
 
                         {/* Center - FN, SELECT, START */}
                         <div className="flex flex-col items-center gap-3">
-                            {/* FN button */}
-                            <div
-                                className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-[8px] text-gray-300 font-bold"
-                                title="Função (Hotkey)"
-                            >
-                                FN
-                            </div>
+                            {/* Center top button (FN / HOME / etc.) */}
+                            {centerTopLabel && (
+                                <div
+                                    className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-[8px] text-gray-300 font-bold"
+                                    title="Função (Hotkey)"
+                                >
+                                    {centerTopLabel}
+                                </div>
+                            )}
 
                             {/* SELECT and START */}
                             <div className="flex gap-4">

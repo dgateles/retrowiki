@@ -1,0 +1,130 @@
+---
+title: Anbernic RG-406V
+description: Guia completo do Anbernic RG-406V — Android 13, tela 4:3 de 4" com 960x720, UNISOC Tiger T820, 8 GB de RAM e Hall Effect sticks.
+full: true
+---
+
+import { ConsoleOverview } from "@/components/mdx/ConsoleOverview";
+import { CardGrid } from "@/components/mdx/CardGrid";
+import { CardLink } from "@/components/mdx/CardLink";
+import { Alert } from "@/components/mdx/Alert";
+
+<ConsoleOverview
+  name="Anbernic RG-406V"
+  manufacturer="Anbernic"
+  description="Console vertical Android com tela IPS 4:3 de 4 polegadas e resolução 960x720. Roda Android 13, possui 8 GB de RAM LPDDR4X, armazenamento interno UFS de 128 GB, Hall Effect sticks e saída de vídeo. Suporta GammaOS Next como firmware alternativo."
+  image="/consoles/retrowiki_rg-406v.webp"
+  releaseYear={2024}
+  priceRange="~US$155"
+  screen={{
+    aspectRatio: "4:3",
+    size: '4.0"',
+    resolution: "960 x 720",
+    refreshRate: "60 Hz",
+    type: "IPS",
+  }}
+  ergonomics={{
+    hasGrip: true,
+    hasCooling: true,
+    hasVibration: true,
+    speakerPlacement: "Bottom",
+    chargePortPlacement: "Top",
+  }}
+  connectivity={{
+    hasWifi: true,
+    hasBluetooth: true,
+    hasAudioJack: true,
+    hasStereoSpeaker: true,
+    hasVideoOut: true,
+    hasUsbC: true,
+    hasSdCard: true,
+  }}
+  controls={{
+    hasL1R1: true,
+    hasL2R2: true,
+    hasAnalogTriggers: false,
+    hasAnalogSticks: true,
+    hasHallEffect: true,
+    hasL3R3: true,
+    hasTouchScreen: true,
+    hasGyroscope: true,
+    hasVolumeButtons: true,
+  }}
+  specs={{
+    cpu: "UNISOC Tiger T820 (Cortex-A76, 8 núcleos, até 2.7 GHz)",
+    gpu: "Mali-G57 MP4 @ 850 MHz",
+    ram: "8 GB",
+    ramType: "LPDDR4X",
+    architecture: "ARM",
+    storage: "128 GB UFS 2.2 interno + microSD",
+    battery: "5500 mAh",
+    os: "Android 13",
+    formFactor: "Vertical",
+  }}
+  emulation={[
+    { system: "NES / Famicom", level: "excellent" },
+    { system: "Game Boy / GBC", level: "excellent" },
+    { system: "SNES", level: "excellent" },
+    { system: "Game Boy Advance", level: "excellent" },
+    { system: "Mega Drive / Genesis", level: "excellent" },
+    { system: "PlayStation 1", level: "excellent" },
+    { system: "Nintendo DS", level: "excellent" },
+    { system: "Nintendo 64", level: "excellent" },
+    { system: "Dreamcast", level: "excellent" },
+    { system: "PSP", level: "excellent" },
+    { system: "GameCube", level: "good" },
+    { system: "Nintendo 3DS", level: "good" },
+    { system: "Wii", level: "good" },
+    { system: "PlayStation 2", level: "good" },
+    { system: "Saturn", level: "playable" },
+    { system: "Nintendo Switch", level: "poor" },
+  ]}
+  pros={[
+    "Desempenho sólido mesmo em sistemas mais exigentes",
+    "Acesso fácil a jogos e apps Android nativos",
+    "Saída de vídeo para monitores e TVs",
+    "Bateria grande de 5500 mAh",
+    "Touchscreen útil para navegar e jogar jogos com stylus",
+    "Navegação rápida graças aos 8 GB de RAM",
+    "Grips ergonômicos para sessões prolongadas",
+    "Hall Effect sticks mais duráveis e precisos",
+  ]}
+  cons={[
+    "Ótima emulação, mas o tamanho da tela não é ideal para jogos widescreen",
+    "Fator de forma bulky comparado a portáteis mais compactos",
+  ]}
+/>
+
+<Alert type="info" title="Android Nativo">
+  O RG-406V roda **Android 13** de fábrica — instale emuladores diretamente da Play Store ou via APK. Para quem prefere uma experiência mais focada em emulação, o **GammaOS Next** é a alternativa custom mais popular.
+</Alert>
+
+## Guias
+
+<CardGrid columns={2}>
+  <CardLink
+    title="Primeiros Passos"
+    description="Configure o Android, instale emuladores, ROMs e BIOS do zero"
+    href="/rg-406v/primeiros-passos"
+  />
+  <CardLink
+    title="Emuladores e Frontends"
+    description="RetroArch, emuladores standalone e frontends para Android"
+    href="/rg-406v/emuladores"
+  />
+  <CardLink
+    title="Cartão SD"
+    description="Cartões recomendados, exFAT e expansão de armazenamento"
+    href="/rg-406v/sd-card"
+  />
+  <CardLink
+    title="Controles e Mapeamento"
+    description="Layout dos botões, mapeamento no Android e hotkeys RetroArch"
+    href="/rg-406v/controles"
+  />
+  <CardLink
+    title="Solução de Problemas"
+    description="Problemas comuns do RG-406V e como resolvê-los"
+    href="/rg-406v/troubleshooting"
+  />
+</CardGrid>

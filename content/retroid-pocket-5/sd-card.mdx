@@ -1,0 +1,57 @@
+---
+title: Cartão SD
+description: "Cartão microSD para o Retroid Pocket 5: capacidade recomendada, formatação exFAT no Android e marcas confiáveis para evitar perda de dados."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O RP5 já vem com 128 GB de armazenamento interno UFS 3.1 — rápido o suficiente para emuladores e jogos Android. O cartão microSD entra para expandir a biblioteca de ROMs, especialmente se você mantém imagens de GameCube, PS2 ou Wii que facilmente passam de 4 GB por jogo.
+
+## Capacidade Recomendada
+
+| Uso                                           | Capacidade sugerida |
+|-----------------------------------------------|---------------------|
+| PS1, PSP, N64 e sistemas anteriores           | 64–128 GB           |
+| PS2, GameCube, Wii adicionando ao acervo      | 256 GB              |
+| Biblioteca completa com múltiplas gerações    | 512 GB              |
+
+Para quem monta uma biblioteca diversificada, **256 GB** é o ponto de equilíbrio entre preço e praticidade.
+
+## Marcas Confiáveis
+
+Evite cartões genéricos sem marca — velocidade inconsistente causa travamentos ao carregar ROMs grandes e pode corromper saves.
+
+| Marca      | Modelo              | Capacidade | Avaliação            |
+|------------|---------------------|------------|----------------------|
+| Samsung    | Pro Plus / Evo Plus | 128–512 GB | Excelente            |
+| SanDisk    | Ultra / Extreme     | 128–512 GB | Excelente            |
+| Lexar      | PLAY / Professional | 128–512 GB | Boa velocidade       |
+| Kingston   | Canvas Go Plus      | 64–256 GB  | Bom custo-benefício  |
+| Genérico   | —                   | Qualquer   | Não recomendado      |
+
+## Formatação no Android
+
+O Android 13 do RP5 reconhece cartões **exFAT** sem necessidade de apps adicionais. É o formato padrão para cartões acima de 32 GB.
+
+**Para formatar direto no RP5:**
+
+1. Insira o cartão com o console ligado
+2. Abra **Configurações → Armazenamento**
+3. Toque no cartão detectado → **Formatar**
+4. Escolha **Usar como armazenamento portátil** (não como armazenamento interno)
+
+<Alert type="warning" title="Não use como armazenamento interno">
+  A opção "Armazenamento interno adotado" criptografa o cartão e o vincula ao aparelho. Se o cartão falhar ou você mudar de dispositivo, perde tudo. Use sempre como armazenamento portátil.
+</Alert>
+
+**Para formatar no computador (antes de inserir no RP5):**
+
+- **Windows**: Clique com botão direito na letra do cartão → Formatar → **exFAT**, Tamanho de unidade de alocação **32KB** ou **64KB**
+- **macOS**: Use o Utilitário de Disco → MS-DOS (FAT) para até 32 GB ou exFAT para maiores
+- **Linux**: `sudo mkfs.exfat -n ROMS /dev/sdX1`
+
+## Velocidade de Leitura
+
+Para ROMs de PS2, GameCube e Wii (arquivos ISO de 4–9 GB), a velocidade de leitura sequencial do cartão importa. Procure cartões com pelo menos **80 MB/s de leitura** para evitar stuttering durante o carregamento.
+
+O storage interno UFS 3.1 do RP5 é significativamente mais rápido que qualquer microSD — se performance for prioridade, mantenha os jogos mais pesados no armazenamento interno.

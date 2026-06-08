@@ -1,0 +1,113 @@
+---
+title: Emuladores e Frontends
+description: "Melhores emuladores para o Retroid Pocket 5: RetroArch, AetherSX2, Dolphin, Lime3DS, PPSSPP e frontends como ES-DE e Daijisho."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O Snapdragon 865 com Adreno 650 é um chip que envelheceu bem para emulação — roda praticamente tudo até PS2/GameCube/Wii em velocidade real, com Nintendo 3DS e Switch funcionando de forma variada. A decisão entre RetroArch e standalone depende do sistema e do quanto você quer personalizar.
+
+## RetroArch
+
+**RetroArch** é o hub central para a maioria dos sistemas 2D e 3D até o início da era PS2. Instale pela Play Store ou direto do site do Libretro.
+
+Cores recomendados para o RP5:
+
+| Sistema              | Core recomendado        | Notas                                    |
+|----------------------|-------------------------|------------------------------------------|
+| NES                  | Mesen                   | Excelente compatibilidade                |
+| SNES                 | Snes9x                  | Mais rápido; bsnes para precisão máxima  |
+| Game Boy / GBC       | Gambatte                | Preciso e leve                           |
+| GBA                  | mGBA                    | Melhor compatibilidade atual             |
+| Mega Drive           | Genesis Plus GX         | Referência para Sega 16-bit              |
+| Neo Geo              | FinalBurn Neo           | Arcade em geral também                   |
+| PS1                  | Beetle PSX HW           | Melhores filtros; use DuckStation standalone para compatibilidade |
+| N64                  | Mupen64Plus-Next        | Ative Vulkan para melhor desempenho      |
+| Nintendo DS          | melonDS                 | Funciona bem; DraStic standalone é mais rápido |
+| Dreamcast            | Flycast                 | Excelente no RP5                         |
+| Saturn               | Beetle Saturn           | Playable, alguns jogos têm problemas     |
+| PSP                  | PPSSPP                  | Use standalone PPSSPP para mais opções   |
+
+<Alert type="info" title="Dica de desempenho">
+  No RetroArch, vá em **Configurações → Vídeo → Driver de Vídeo** e selecione **Vulkan** para sistemas 3D como N64 e Dreamcast. O ganho de desempenho é consistente no Snapdragon 865.
+</Alert>
+
+## Emuladores Standalone
+
+Para os sistemas mais pesados, emuladores standalone oferecem melhor desempenho e mais opções de configuração do que os cores RetroArch.
+
+### PS2 — NetherSX2 / AetherSX2
+
+O **NetherSX2** (fork não-oficial do AetherSX2) é o emulador de PS2 mais recomendado para Android atualmente. O AetherSX2 original não recebe mais updates, mas ainda funciona bem.
+
+- Score de emulação: **86/100** — a maioria dos jogos roda bem, títulos exigentes como God of War podem pedir ajustes
+- Configuração recomendada: Renderer **Vulkan**, resolução interna **2x nativo** (fica ~1080p)
+- Coloque os arquivos de BIOS (`SCPH-77001.bin` ou similar) na pasta de BIOS do app
+
+### GameCube / Wii — Dolphin
+
+**Dolphin** é estável e bem otimizado no Android. O RP5 entrega GameCube com consistência e Wii com poucos travamentos.
+
+- Score GameCube: **90/100** | Score Wii: **100/100**
+- Instale pelo link oficial: [dolphin-emu.org](https://dolphin-emu.org)
+- Use backend **Vulkan**; ative **Dual Core** nas configurações de CPU
+- Para Wii: a maioria dos jogos roda a 60fps; títulos com muita física podem cair
+
+### Nintendo 3DS — Lime3DS / Citra
+
+O **Lime3DS** é o fork mais ativo do Citra para Android após a descontinuação do original.
+
+- Score 3DS: **88/100** — a maioria dos jogos roda bem; títulos mais pesados (Xenoblade Chronicles 3D) podem ser inconsistentes
+- Instale via APK pelo [repositório oficial do Lime3DS](https://github.com/Lime3DS/Lime3DS)
+- Ative JIT e ajuste o limite de clock do CPU para 100%
+
+### PSP — PPSSPP
+
+**PPSSPP** standalone tem mais opções de configuração do que o core RetroArch e normalmente apresenta melhor desempenho.
+
+- Score PSP: **100/100** — roda tudo a velocidade real, muitas vezes em resoluções maiores que o original
+- Disponível na Play Store e no [ppsspp.org](https://www.ppsspp.org)
+- Renderer: **Vulkan**; upscale para **2x ou 3x** sem problemas no RP5
+
+### PS1 — DuckStation
+
+**DuckStation** é a opção mais atualizada e compatível para PS1 no Android.
+
+- Disponível na Play Store
+- Suporta upscale de textura, widescreen e filtros PGXP para correção de polígonos
+
+### Outros Sistemas Notáveis
+
+| Sistema   | App recomendado         | Disponibilidade       |
+|-----------|-------------------------|-----------------------|
+| PS3       | RPCS3 (Android beta)    | Muito experimental; poucos jogos rodam bem |
+| Switch    | Yuzu / Sudachi          | Score 56/100; jogos 2D e indies funcionam melhor |
+| Wii U     | Cemu                    | Score 43/100; suporte Android ainda limitado |
+| Vita      | Vita3K                  | Experimental; compatibilidade crescente |
+| PortMaster | PortMaster App         | Ports de PC nativos para Linux/Android |
+
+## Frontends
+
+Um frontend organiza suas ROMs com capas e metadados, dando uma interface de "console" ao RP5.
+
+### ES-DE (EmulationStation Desktop Edition)
+
+O ES-DE é o frontend mais recomendado pela comunidade atualmente. Suporta scraping automático de metadados, múltiplos temas e funciona bem com a organização de pastas padrão.
+
+- Instale pelo site oficial: [es-de.org](https://es-de.org)
+- Configure os caminhos de ROM nas configurações do app
+- Compatível com todos os emuladores listados acima
+
+### Daijisho
+
+Interface inspirada em launchers de consoles modernos, com foco em estética. Boa opção para quem quer uma visual diferente do ES-DE.
+
+- Disponível na Play Store
+- Permite personalizar cards por sistema com banners e temas
+
+### Pegasus Frontend
+
+Altamente configurável via arquivos de metadados. Preferido por quem gosta de personalizar cada detalhe da interface.
+
+- Instale pelo [pegasus-frontend.org](https://pegasus-frontend.org)
+- Requer configuração manual de coleções, mas tem resultados visuais excelentes

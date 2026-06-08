@@ -1,0 +1,96 @@
+---
+title: Cartão SD
+description: "Cartões microSD recomendados para o Anbernic RG-406V: marcas, capacidade, formatação exFAT e dicas de uso com o armazenamento interno UFS de 128 GB."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+
+O RG-406V tem **128 GB de armazenamento interno UFS 2.2** — rápido o suficiente para instalar emuladores e manter uma boa biblioteca de ROMs sem cartão adicional. O microSD serve principalmente para expandir o espaço quando você começa a acumular jogos de PS2, GameCube ou Wii, que ocupam muito mais espaço.
+
+## Quantos Slots de SD?
+
+O RG-406V possui **um único slot microSD**. Não há dual slot como em alguns modelos Anbernic da linha RG40XX/RG35XX. O slot fica na lateral do console.
+
+## Cartões Recomendados
+
+| Marca | Modelo | Capacidade | Velocidade | Status |
+|-------|--------|-----------|-----------|--------|
+| Samsung | Pro Plus | 256 GB | A2, V30 | Recomendado |
+| Samsung | Evo Plus | 128 GB | A2, V30 | Bom custo-benefício |
+| Lexar | PLAY | 256 GB | A2 | Recomendado |
+| Kodak | — | 256 GB | A2 | Boa opção |
+| Kingston | Canvas Go Plus | 128 GB | A2, V30 | Confiável |
+| SanDisk | Extreme | 256 GB | A2, V30 | Excelente |
+| Genérico | — | Qualquer | — | Não recomendado |
+
+<Alert type="warning" title="Evite Cartões Genéricos">
+  Cartões sem marca ou de marcas desconhecidas do AliExpress são frequentemente falsificações com velocidade e capacidade reais muito abaixo do anunciado. Use apenas marcas conhecidas. Para verificar um cartão suspeito, use o **H2testw** (Windows) ou **F3** (Linux/macOS).
+</Alert>
+
+## Formatação
+
+O Android 13 do RG-406V suporta cartões formatados em **exFAT** (para cartões acima de 32 GB) ou **FAT32** (até 32 GB).
+
+**Recomendação: exFAT para cartões de 64 GB ou mais.**
+
+### Formatando no Windows
+
+1. Insira o cartão no PC via adaptador
+2. Clique com botão direito → **Formatar**
+3. Sistema de arquivos: **exFAT**
+4. Tamanho da unidade de alocação: **128 KB** (ou padrão)
+5. Clique em **Iniciar**
+
+Para cartões grandes, o **SD Memory Card Formatter** (sdcard.org) formata de forma mais confiável que o Windows nativo.
+
+### Formatando no macOS
+
+1. Abra o **Utilitário de Disco**
+2. Selecione o cartão
+3. Clique em **Apagar**
+4. Formato: **ExFAT**
+5. Clique em **Apagar**
+
+### Formatando pelo próprio Android
+
+O RG-406V pode formatar o cartão diretamente:
+- **Configurações → Armazenamento → Cartão SD → Formatar**
+
+<Alert type="info" title="Armazenamento Portátil vs. Interno">
+  O Android oferece duas opções para o cartão SD: **Armazenamento Portátil** (padrão) ou **Armazenamento Interno** (formata e criptografa o cartão). Para emulação, mantenha como **Portátil** — isso facilita acessar as ROMs no PC e trocar o cartão entre dispositivos.
+</Alert>
+
+## Organização do Armazenamento
+
+Com 128 GB internos + cartão SD adicional, uma boa estratégia é:
+
+**Armazenamento Interno (UFS 2.2 — mais rápido):**
+- Emuladores instalados
+- Saves e save states
+- ROMs de sistemas mais exigentes (PS2, GCN, Wii)
+
+**Cartão SD (exFAT):**
+- ROMs de sistemas clássicos (NES, SNES, GBA, MD, PS1, N64)
+- Artes e metadados do frontend
+- Backups de saves
+
+## Velocidade Mínima Recomendada
+
+Para emulação sem stutters durante carregamento:
+
+- **Classe 10 / UHS-I** (mínimo)
+- **A1 ou A2** para acesso aleatório rápido (importante para Android)
+- **V30** para vídeos e jogos grandes
+
+Cartões A2 têm melhor performance de acesso aleatório — mais relevante no Android do que A1.
+
+## Transferindo ROMs para o Cartão
+
+Com o cartão SD formatado e inserido no RG-406V:
+
+1. Conecte o console ao PC via USB-C
+2. Na notificação do Android, selecione **Transferência de Arquivos (MTP)**
+3. No explorador de arquivos do PC, acesse o volume do cartão SD
+4. Crie a estrutura de pastas e copie as ROMs
+
+Alternativamente, remova o cartão SD e use um leitor de cartão no PC — mais rápido para transferências grandes.

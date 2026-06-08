@@ -1,0 +1,93 @@
+---
+title: Guia de Compras
+description: Onde comprar o Mangmi Air X com segurança - loja oficial Mangmi, AliExpress, acessórios recomendados e dicas para evitar problemas na importação.
+full: true
+---
+
+import { BuyingGuide } from "@/components/mdx/BuyingGuide";
+
+<BuyingGuide
+  consoleName="Mangmi Air X"
+  priceRange="~US$90–100"
+  stores={[
+    {
+      name: "Mangmi Official Store",
+      description: "Loja oficial da fabricante. Compra direta com suporte do fabricante e atualizações de firmware garantidas.",
+      href: "https://mangmi.com/products/mangmi-air-x",
+      trustLevel: "trusted",
+    },
+    {
+      name: "AliExpress (vendedores Mangmi verificados)",
+      description: "Busque por 'Mangmi Air X' no AliExpress e filtre por vendedores com histórico positivo e pelo menos 50 avaliações. Verifique se é o vendedor oficial da Mangmi.",
+      href: "https://www.aliexpress.com/w/wholesale-mangmi-air-x.html",
+      trustLevel: "caution",
+    },
+  ]}
+  accessories={[
+    {
+      name: "Samsung Pro Plus 256GB microSD",
+      description: "Alta velocidade de leitura/escrita, ideal para bibliotecas grandes com PSP, Dreamcast e GameCube.",
+      href: "https://www.amazon.com.br/s?k=samsung+pro+plus+256gb+microsd",
+      category: "storage",
+      badge: "Recomendado",
+    },
+    {
+      name: "Lexar Play 128GB microSD",
+      description: "Bom custo-benefício para quem vai emular sistemas até PS1/N64.",
+      href: "https://www.amazon.com.br/s?k=lexar+play+128gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Kingston Canvas Go Plus 64GB",
+      description: "Opção acessível para começar, suficiente para sistemas clássicos.",
+      href: "https://www.amazon.com.br/s?k=kingston+canvas+go+plus+64gb+microsd",
+      category: "storage",
+    },
+    {
+      name: "Película de vidro temperado 5.5\"",
+      description: "Protege a tela IPS 1080p de riscos. Busque por películas para telas de 5.5 polegadas universais.",
+      href: "https://www.aliexpress.com/w/wholesale-tempered-glass-5-5-inch-handheld.html",
+      category: "protection",
+      badge: "Essencial",
+    },
+    {
+      name: "Case rígido para handheld",
+      description: "Case de transporte com espuma protetora para o formato horizontal do Air X.",
+      href: "https://www.aliexpress.com/w/wholesale-retro-handheld-hard-case.html",
+      category: "protection",
+    },
+    {
+      name: "Fone com aptX Low Latency",
+      description: "Para quem prefere áudio sem fio, um fone Bluetooth com aptX LL reduz a latência significativamente.",
+      href: "https://www.amazon.com.br/s?k=fone+bluetooth+aptx+low+latency",
+      category: "connectivity",
+    },
+  ]}
+  tips={[
+    {
+      title: "Loja oficial é o caminho mais seguro",
+      description: "A Mangmi vende diretamente em mangmi.com com suporte ao produto. Para quem está fora dos EUA, considere os custos de importação antes de comparar com o AliExpress.",
+      type: "tip",
+    },
+    {
+      title: "AliExpress: verifique o vendedor",
+      description: "No AliExpress, procure o vendedor oficial da Mangmi (nome 'Mangmi Official Store' ou equivalente). Evite revendedores sem histórico.",
+      type: "warning",
+    },
+    {
+      title: "Cartão SD não incluso",
+      description: "O Air X tem 64 GB de eMMC interno, mas não acompanha microSD. Para uma biblioteca de jogos razoável, planeje comprar um cartão de 128 GB ou 256 GB junto.",
+      type: "tip",
+    },
+    {
+      title: "Película na tela antes de usar",
+      description: "A tela de 5.5 polegadas é o ponto mais exposto do console. Aplique a película antes do primeiro uso para evitar riscos acidentais.",
+      type: "tip",
+    },
+    {
+      title: "Links de afiliado e descontos",
+      description: "Alguns criadores de conteúdo (retrogamecorps, retrohandhelds.gg, joeysretrohandhelds.com) compartilham cupons ou links de afiliado para o Air X. Verifique as descrições dos reviews antes de comprar — pode economizar alguns dólares.",
+      type: "tip",
+    },
+  ]}
+/>

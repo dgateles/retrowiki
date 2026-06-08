@@ -1,0 +1,86 @@
+---
+title: Controles e Mapeamento
+description: "Layout dos controles do Retroid Pocket 5, mapeamento por aplicativo no Android, hotkeys RetroArch e uso do giroscópio e touchscreen."
+---
+
+import { Alert } from "@/components/mdx/Alert";
+import { ButtonLayout } from "@/components/mdx/ButtonLayout";
+
+O RP5 tem um conjunto de controles completo: dois analógicos Hall Effect em layout simétrico, gatilhos analógicos, botões de ombro empilhados (L1/L2 e R1/R2), touchscreen de 5.5" e giroscópio. O layout simétrico (estilo PlayStation) é um ponto de divisão — quem vem de Xbox pode sentir estranheza nos primeiros dias.
+
+## Layout dos Botões
+
+<ButtonLayout screenLabel='AMOLED 5.5"' centerTopLabel="HOME" />
+
+- **Analógicos**: Posição simétrica (ambos na parte inferior), com Hall Effect
+- **Botões de ombro**: Empilhados — L1 acima de L2, R1 acima de R2
+- **Gatilhos L2/R2**: Analógicos (reconhecidos como eixos, não apenas digital)
+- **L3/R3**: Pressionar os analógicos para baixo
+- **Botões de sistema**: Home, Back, Volume +/−
+
+## Mapeamento por Aplicativo no Android
+
+O Android permite remapear botões por aplicativo sem root. O RP5 provavelmente vem com o app da Retroid para gerenciar isso, mas você pode usar o **Mantis Gamepad Pro** ou configurar diretamente em cada emulador.
+
+**Dentro do RetroArch:**
+
+1. Vá em **Configurações → Entrada → Porta 1**
+2. Selecione cada botão e redefina a função desejada
+3. Salve o perfil com um nome (ex: "RP5 padrão")
+
+**Para emuladores standalone** (Dolphin, PPSSPP, etc.):
+
+- Cada app tem sua própria tela de mapeamento
+- Geralmente acessível via **Configurações → Controles / Gamepad**
+- O Dolphin detecta automaticamente o perfil Xinput do RP5
+
+## Hotkeys RetroArch
+
+O RetroArch usa um botão **Hotkey Enable** (por padrão o botão Select/Menu) combinado com outros para ativar funções especiais durante o jogo.
+
+| Combinação                                      | Função                      |
+|-------------------------------------------------|-----------------------------|
+| <kbd>Menu</kbd> + <kbd>X</kbd>                  | Abrir menu RetroArch        |
+| <kbd>Menu</kbd> + <kbd>R1</kbd>                 | Salvar estado               |
+| <kbd>Menu</kbd> + <kbd>L1</kbd>                 | Carregar estado             |
+| <kbd>Menu</kbd> + <kbd>R2</kbd>                 | Avanço rápido               |
+| <kbd>Menu</kbd> + <kbd>L2</kbd>                 | Retroceder (se habilitado)  |
+| <kbd>Menu</kbd> + <kbd>B</kbd>                  | Captura de tela             |
+| <kbd>Menu</kbd> + <kbd>Y</kbd>                  | Mostrar/ocultar FPS         |
+| <kbd>Menu</kbd> + <kbd>A</kbd>                  | Reset do jogo               |
+| <kbd>Menu</kbd> + <kbd>Start</kbd>              | Sair do jogo                |
+
+<Alert type="info" title="Configurar hotkey">
+  Se as combinações acima não funcionarem, verifique qual botão está definido como Hotkey Enable em **Configurações → Entrada → Hotkeys → Enable Hotkey**.
+</Alert>
+
+## Gatilhos Analógicos
+
+Os gatilhos L2/R2 do RP5 são analógicos — transmitem valores de pressão parcial, não apenas 0 ou 100%. Isso é relevante para:
+
+- **Jogos de corrida** que usam gatilho analógico para aceleração/freio (Gran Turismo no PS2, etc.)
+- **Emuladores compatíveis** como Dolphin (aceleradores do Wii) e alguns jogos de PS2
+
+No RetroArch, confirme que os gatilhos estão mapeados como eixos e não como botões digitais em **Configurações → Entrada → Porta 1**.
+
+## Giroscópio
+
+O RP5 tem giroscópio funcional, aproveitável em dois contextos principais:
+
+**1. Jogos de Wii no Dolphin:**
+- Ative em **Dolphin → Configurações → Wii Remote → Real Motion Controls**
+- Requer calibração inicial; funciona bem para jogos como Wii Sports e Zelda: Skyward Sword
+
+**2. Jogos Android nativos:**
+- Apps que suportam controle giroscópio (alguns jogos FPS mobile, por exemplo) reconhecem automaticamente
+
+## Touchscreen
+
+A tela AMOLED de 5.5" é totalmente funcional como touchscreen. Útil para:
+
+- **Navegação nos menus Android** quando é mais rápido tocar do que usar analógico
+- **Jogos de DS no DraStic**: a tela inferior do DS é mapeada na parte inferior da tela tátil
+- **Jogos Android nativos** com controle touch
+- **Teclado virtual** para digitar senhas ou URLs sem precisar de teclado externo
+
+A maioria dos frontends (ES-DE, Daijisho) funciona bem com touch para navegação rápida.
