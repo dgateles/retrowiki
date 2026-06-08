@@ -760,6 +760,106 @@
     @apply mt-0.5 text-sm text-muted-foreground line-clamp-1;
   }
 
+  /* Trilha de navegação. */
+  .crumbs {
+    @apply flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground;
+  }
+  .crumbs__link {
+    @apply hover:text-foreground;
+  }
+  .crumbs__sep {
+    @apply text-muted-foreground/50;
+  }
+  .crumbs__current {
+    @apply truncate font-medium text-foreground;
+  }
+
+  /* Cabeçalho do tópico. */
+  .thread-head {
+    @apply mt-4 flex flex-wrap items-start justify-between gap-3;
+  }
+  .thread-head__title {
+    @apply text-2xl font-bold tracking-tight md:text-3xl;
+  }
+  .thread-head__actions {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  /* Post estilo fórum. */
+  .post {
+    @apply mt-5 overflow-hidden rounded-xl border border-primary/30 bg-card;
+  }
+  .post__header {
+    @apply flex items-start justify-between gap-3 border-b border-border p-4;
+  }
+  .post__author {
+    @apply flex items-center gap-3;
+  }
+  .post__avatar {
+    @apply flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary;
+  }
+  .post__author-name {
+    @apply font-semibold leading-tight hover:underline;
+  }
+  .post__author-sub {
+    @apply text-xs text-muted-foreground;
+  }
+  .post__badge {
+    @apply shrink-0 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-primary;
+  }
+  .post__body {
+    @apply p-5 text-[15px];
+  }
+  .post__footer {
+    @apply flex flex-wrap items-center justify-between gap-3 border-t border-border p-4;
+  }
+  .post__reactors {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Compartilhar (popover). */
+  .share {
+    @apply w-72 p-3;
+  }
+  .share__url {
+    @apply flex items-center gap-2 rounded-md border border-border bg-muted/40 px-2 py-1.5;
+  }
+  .share__url-text {
+    @apply flex-1 truncate text-xs text-muted-foreground;
+  }
+  .share__copy {
+    @apply inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2;
+  }
+  .share__grid {
+    @apply mt-3 grid grid-cols-6 gap-1.5;
+  }
+  .share__btn {
+    @apply inline-flex aspect-square items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground focus-visible:outline-2;
+  }
+
+  /* Cartão de rank (perfil e menu). */
+  .rank {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .rank__head {
+    @apply flex items-center justify-between;
+  }
+  .rank__label {
+    @apply font-semibold;
+  }
+  .rank__index {
+    @apply text-xs text-muted-foreground;
+  }
+  .rank__bar {
+    @apply mt-2 h-2 overflow-hidden rounded-full bg-muted;
+  }
+  .rank__fill {
+    @apply h-full rounded-full bg-primary;
+  }
+  .rank__next {
+    @apply mt-1.5 text-xs text-muted-foreground;
+  }
+
   /* Artigo (cabeçalho e corpo). */
   .article__header {
     @apply mb-6;

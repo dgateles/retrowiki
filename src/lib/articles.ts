@@ -69,6 +69,9 @@ export type PublishedArticle = {
   type: string;
   publishedAt: Date | null;
   authorHandle: string;
+  authorName: string;
+  authorRole: "member" | "contributor" | "moderator" | "admin";
+  authorReputation: number;
   deviceSlug: string | null;
   body: BlockTree;
 };
@@ -85,6 +88,9 @@ export async function getPublishedArticle(slug: string): Promise<PublishedArticl
         publishedAt: articles.publishedAt,
         currentRevisionId: articles.currentRevisionId,
         authorHandle: users.handle,
+        authorName: users.displayName,
+        authorRole: users.role,
+        authorReputation: users.reputation,
         deviceSlug: devices.slug,
       })
       .from(articles)

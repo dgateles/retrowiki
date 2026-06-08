@@ -4,13 +4,7 @@ import { notFound } from "next/navigation";
 import { UserRound } from "lucide-react";
 import { getProfile } from "@/lib/profiles";
 import { typeLabel } from "@/lib/articles";
-
-const ROLE_LABEL: Record<string, string> = {
-  member: "Membro",
-  contributor: "Colaborador",
-  moderator: "Moderador",
-  admin: "Equipe",
-};
+import { rankForReputation, roleLabel } from "@/lib/ranks";
 
 export async function generateMetadata({
   params,
@@ -32,6 +26,8 @@ export default async function ProfilePage({
   const profile = await getProfile(handle);
   if (!profile) notFound();
 
+  const rank = rankForReputation(profile.reputation);
+
   return (
     <main id="main" className="page">
       <header className="profile__head">
@@ -41,7 +37,7 @@ export default async function ProfilePage({
         <div>
           <h1 className="profile__name">{profile.displayName}</h1>
           <p className="profile__meta">
-            @{profile.handle} · {ROLE_LABEL[profile.role] ?? profile.role} ·{" "}
+            @{profile.handle} · {roleLabel(profile.role)} ·{" "}
             <span title="Reputação">{profile.reputation} pts</span>
           </p>
           <p className="profile__since">
@@ -52,6 +48,21 @@ export default async function ProfilePage({
           </p>
         </div>
       </header>
+
+      <section aria-label="Rank" className="rank mt-6">
+        <div className="rank__head">
+          <span className="rank__label">{rank.label}</span>
+          <span className="rank__index">Rank {rank.index} de {rank.total}</span>
+        </div>
+        <div className="rank__bar">
+          <div className="rank__fill" style={{ width: `${Math.round(rank.progress * 100)}%` }} />
+        </div>
+        <p className="rank__next">
+          {rank.next === null
+            ? "Rank máximo alcançado."
+            : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
+        </p>
+      </section>
 
       <section aria-labelledby="contrib" className="comments">
         <h2 id="contrib" className="comments__title">
