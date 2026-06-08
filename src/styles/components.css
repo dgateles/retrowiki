@@ -32,6 +32,66 @@
     @apply flex min-h-dvh flex-col;
   }
 
+  /* Painel de administração. */
+  .admin {
+    @apply mx-auto grid w-full max-w-6xl gap-6 px-6 py-10 md:grid-cols-[200px_1fr];
+  }
+  .admin__nav {
+    @apply flex flex-col gap-1;
+  }
+  .admin__link {
+    @apply rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .admin__link--active {
+    @apply bg-accent text-foreground;
+  }
+  .admin__main {
+    @apply min-w-0;
+  }
+  .admin-cards {
+    @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .admin-card {
+    @apply rounded-xl border border-border bg-card p-5;
+  }
+  .admin-card__title {
+    @apply font-semibold;
+  }
+  .admin-card__desc {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+
+  /* Formulário de admin. */
+  .admin-form {
+    @apply space-y-6;
+  }
+  .admin-form__section {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .admin-form__legend {
+    @apply mb-3 text-sm font-semibold;
+  }
+  .admin-form__grid {
+    @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .admin-form__features {
+    @apply grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4;
+  }
+
+  /* Tabela de admin. */
+  .admin-table {
+    @apply w-full border-collapse text-sm;
+  }
+  .admin-table__th {
+    @apply border-b border-border px-3 py-2 text-left font-semibold;
+  }
+  .admin-table__row {
+    @apply border-b border-border/60;
+  }
+  .admin-table__td {
+    @apply px-3 py-2;
+  }
+
   /* Página: largura única em todo o site (igual ao catálogo). */
   .page {
     @apply mx-auto w-full max-w-6xl px-6 py-10;

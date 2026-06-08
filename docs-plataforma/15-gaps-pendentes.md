@@ -18,6 +18,39 @@ componentes dinâmicos.
   com barra de ferramentas e edição fluida, ainda produzindo a árvore de blocos
   segura. É a mudança de maior porte da camada de autoria.
 
+## Interface desejada (referências Invision/IPB)
+
+O usuário indicou templates de fórum (Invision Community) como direção visual.
+Adaptar ao cenário do RetroWiki, sem copiar literal.
+
+- **Visualização de guia/tutorial estilo post de fórum.** Cabeçalho com título,
+  botões Compartilhar e Seguir; cartão do autor (avatar, nome, selo de papel,
+  data); corpo do conteúdo num cartão destacado; rodapé com reações e contagem
+  ("Fulano e mais 4" + total). Onde o template mostra "Recently Browsing",
+  ficam os comentários. Trilha de navegação no topo e no rodapé.
+- **Perfil de usuário rico.** Capa (cover), avatar sobreposto, nome e papel,
+  "Entrou em" e "Visto por último", botão "Ver conteúdo". Coluna lateral com
+  rank atual, troféu de "dias no topo", badges recentes, estatísticas (posts,
+  soluções, reputação, seguidores), métodos de contato e informações do perfil.
+  Coluna principal com abas (Atividade, Sobre, Imagens) e feed de atividade.
+- **Sistema de pontos e ranks.** Ranks progressivos (ex.: Novato 1/13 a Grão
+  Mestre 13/13), pontos até o próximo rank, reputação, badges/conquistas e
+  "dias no topo". Já existe `reputation` em `users`; falta a tabela de ranks,
+  badges, o cálculo de pontos e a exibição (perfil, menu de usuário, cartão do
+  autor no guia).
+- **Configurações de conta em seções.** Página de Settings com navegação lateral
+  (Visão geral, E-mail, Senha, Segurança e privacidade, Dispositivos recentes,
+  Nome de exibição, Preferências de conteúdo) e painel à direita com linhas
+  (valor atual + botão Alterar). Substitui a página de conta atual.
+- **Busca em overlay.** Ao acionar, abrir um painel com campo grande "Buscar…",
+  botão Buscar e filtros (escopo, título/corpo, criado, atualizado). Complementa
+  o combobox inline já existente.
+- **Notificações em dropdown.** Painel com cabeçalho "Notificações" + botão de
+  configurações, prompt de push do navegador, estado vazio e rodapé "Ver todas".
+  Substitui o link direto do sino por um dropdown.
+- **Compartilhar conteúdo.** Popover com URL copiável e botões de redes
+  (Bluesky, X, Facebook, LinkedIn, Reddit, Pinterest) e "Mais opções".
+
 ## Conteúdo e lojas
 - **Registro de lojas e guias de compra.** O bloco `store-links` existe e
   referencia lojas por id, mas não há lojas cadastradas nem uma tela de admin

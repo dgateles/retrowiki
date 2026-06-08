@@ -46,7 +46,7 @@ export async function SiteHeader() {
                   )}
                 </Link>
               </Button>
-              <UserMenu handle={user.handle} isStaff={can.moderate(user)} />
+              <UserMenu handle={user.handle} isStaff={can.moderate(user)} isAdmin={can.admin(user)} />
             </>
           ) : (
             <>

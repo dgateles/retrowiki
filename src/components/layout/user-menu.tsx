@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { LogOut, PenLine, ShieldCheck, UserRound } from "lucide-react";
+import { LogOut, PenLine, ShieldCheck, UserRound, Cog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,9 +16,11 @@ import {
 export function UserMenu({
   handle,
   isStaff,
+  isAdmin,
 }: {
   handle: string;
   isStaff: boolean;
+  isAdmin: boolean;
 }) {
   return (
     <DropdownMenu>
@@ -41,6 +43,13 @@ export function UserMenu({
           <DropdownMenuItem asChild>
             <Link href="/moderacao">
               <ShieldCheck aria-hidden="true" /> Moderação
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin">
+              <Cog aria-hidden="true" /> Administração
             </Link>
           </DropdownMenuItem>
         )}
