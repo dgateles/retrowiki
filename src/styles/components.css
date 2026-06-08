@@ -38,6 +38,49 @@
     @apply ml-auto flex items-center gap-0.5 lg:ml-2;
   }
 
+  /* Busca como combobox. */
+  .search {
+    @apply relative w-full;
+  }
+  .search__icon {
+    @apply pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground;
+  }
+  .search__input {
+    @apply h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .search__panel {
+    @apply absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md;
+  }
+  .search__group-label {
+    @apply px-2 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+  .search__option {
+    @apply flex cursor-pointer flex-col rounded-sm px-2 py-1.5 text-sm;
+  }
+  .search__option--active {
+    @apply bg-accent text-accent-foreground;
+  }
+  .search__option-sub {
+    @apply text-xs text-muted-foreground;
+  }
+  .search__empty {
+    @apply px-2 py-2 text-sm text-muted-foreground;
+  }
+
+  /* Barra de filtros. */
+  .filter-bar {
+    @apply mt-6 flex flex-wrap items-end gap-3;
+  }
+  .filter-bar[data-pending] {
+    @apply opacity-70;
+  }
+  .filter-bar__field {
+    @apply flex min-w-44 flex-col gap-1.5;
+  }
+  .filter-bar__label {
+    @apply text-sm font-medium;
+  }
+
   /* Cartão genérico. */
   .card {
     @apply rounded-xl border border-border bg-card text-card-foreground;
@@ -49,6 +92,60 @@
   /* Estado vazio. */
   .empty {
     @apply rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground;
+  }
+  .empty__icon {
+    @apply mx-auto size-8 text-muted-foreground;
+  }
+  .empty__text {
+    @apply mt-3 text-sm text-muted-foreground;
+  }
+
+  /* Grade de itens. */
+  .grid-cards {
+    @apply mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4;
+  }
+  .grid-cards--three {
+    @apply lg:grid-cols-3;
+  }
+
+  /* Card de console. */
+  .device-card {
+    @apply flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50;
+  }
+  .device-card__media {
+    @apply relative flex h-28 items-center justify-center overflow-hidden;
+  }
+  .device-card__img {
+    @apply max-h-full w-auto object-contain;
+  }
+  .device-card__placeholder {
+    @apply size-12 text-muted-foreground/30;
+  }
+  .device-card__brand {
+    @apply mt-3 text-xs font-medium text-primary;
+  }
+  .device-card__name {
+    @apply font-semibold leading-tight;
+  }
+
+  /* Card de guia. */
+  .guide-list {
+    @apply mt-6 space-y-3;
+  }
+  .guide-card {
+    @apply block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50;
+  }
+  .guide-card__kind {
+    @apply text-xs font-medium text-primary;
+  }
+  .guide-card__title {
+    @apply mt-1 font-semibold;
+  }
+  .guide-card__summary {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  .guide-card__meta {
+    @apply mt-2 text-xs text-muted-foreground;
   }
 
   /* Bloco de código com PrismJS. */

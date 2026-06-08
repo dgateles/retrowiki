@@ -5,6 +5,7 @@ import { listPublishedArticles, typeLabel } from "@/lib/articles";
 import { listDevices } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
+import { FilterBar } from "@/components/catalog/filter-bar";
 
 export const metadata: Metadata = {
   title: "Guias e tutoriais",
@@ -37,68 +38,48 @@ export default async function GuidesPage({
 
   return (
     <main id="main" className="page">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Guias e tutoriais</h1>
+      <div className="page__head">
+        <h1 className="page__title">Guias e tutoriais</h1>
         <Button asChild size="sm">
           <Link href="/estudio/novo">Escrever</Link>
         </Button>
       </div>
 
-      <form method="get" className="mt-6 flex flex-wrap items-end gap-3" aria-label="Filtros de guias">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="console" className="text-sm font-medium">Console</label>
-          <select
-            id="console"
-            name="console"
-            defaultValue={deviceSlug ?? ""}
-            className="h-10 min-w-44 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <option value="">Todos</option>
-            {devices.map((d) => (
-              <option key={d.id} value={d.slug}>{d.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="tipo" className="text-sm font-medium">Tipo</label>
-          <select
-            id="tipo"
-            name="tipo"
-            defaultValue={type ?? ""}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <option value="">Todos</option>
-            {TYPES.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </select>
-        </div>
-        <Button type="submit" size="sm">Filtrar</Button>
-        {(deviceSlug || type) && (
-          <Button asChild type="button" variant="ghost" size="sm">
-            <Link href="/guias">Limpar</Link>
-          </Button>
-        )}
-      </form>
+      <FilterBar
+        path="/guias"
+        filters={[
+          {
+            name: "console",
+            label: "Console",
+            allLabel: "Todos",
+            value: deviceSlug ?? "",
+            options: devices.map((d) => ({ value: d.slug, label: d.name })),
+          },
+          {
+            name: "tipo",
+            label: "Tipo",
+            allLabel: "Todos",
+            value: type ?? "",
+            options: TYPES,
+          },
+        ]}
+      />
 
       {items.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-dashed border-border p-10 text-center">
-          <BookOpen className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="mt-3 text-sm text-muted-foreground">Nenhum guia com esses filtros.</p>
+        <div className="empty mt-8">
+          <BookOpen className="empty__icon" aria-hidden="true" />
+          <p className="empty__text">Nenhum guia com esses filtros.</p>
         </div>
       ) : (
         <>
-          <ul className="mt-6 space-y-3">
+          <ul className="guide-list">
             {items.map((a) => (
               <li key={a.id}>
-                <Link
-                  href={`/guias/${a.slug}`}
-                  className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50"
-                >
-                  <span className="text-xs font-medium text-primary">{typeLabel(a.type)}</span>
-                  <h2 className="mt-1 font-semibold">{a.title}</h2>
-                  {a.summary && <p className="mt-1 text-sm text-muted-foreground">{a.summary}</p>}
-                  <p className="mt-2 text-xs text-muted-foreground">por @{a.authorHandle}</p>
+                <Link href={`/guias/${a.slug}`} className="guide-card">
+                  <span className="guide-card__kind">{typeLabel(a.type)}</span>
+                  <h2 className="guide-card__title">{a.title}</h2>
+                  {a.summary && <p className="guide-card__summary">{a.summary}</p>}
+                  <p className="guide-card__meta">por @{a.authorHandle}</p>
                 </Link>
               </li>
             ))}

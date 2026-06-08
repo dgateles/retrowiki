@@ -5,6 +5,7 @@ import { Gamepad2 } from "lucide-react";
 import { listDevices, listManufacturers, type DeviceFilters } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
+import { FilterBar } from "@/components/catalog/filter-bar";
 
 export const metadata: Metadata = {
   title: "Consoles",
@@ -39,79 +40,59 @@ export default async function ConsolesPage({
 
   return (
     <main id="main" className="page">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">Consoles</h1>
+      <div className="page__head">
+        <h1 className="page__title">Consoles</h1>
         <Button asChild variant="outline" size="sm">
           <Link href="/consoles/comparar">Comparar</Link>
         </Button>
       </div>
 
-      <form method="get" className="mt-6 flex flex-wrap items-end gap-4" aria-label="Filtros do catálogo">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="fabricante" className="text-sm font-medium">Fabricante</label>
-          <select
-            id="fabricante"
-            name="fabricante"
-            defaultValue={sp.fabricante ?? ""}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <option value="">Todos</option>
-            {manufacturers.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="formato" className="text-sm font-medium">Formato</label>
-          <select
-            id="formato"
-            name="formato"
-            defaultValue={sp.formato ?? ""}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <option value="">Todos</option>
-            {FORM_FACTORS.map((f) => (
-              <option key={f.value} value={f.value}>{f.label}</option>
-            ))}
-          </select>
-        </div>
-        <Button type="submit" size="sm">Filtrar</Button>
-        {(sp.fabricante || sp.formato) && (
-          <Button asChild type="button" variant="ghost" size="sm">
-            <Link href="/consoles">Limpar</Link>
-          </Button>
-        )}
-      </form>
+      <FilterBar
+        path="/consoles"
+        filters={[
+          {
+            name: "fabricante",
+            label: "Fabricante",
+            allLabel: "Todos",
+            value: sp.fabricante ?? "",
+            options: manufacturers.map((m) => ({ value: m, label: m })),
+          },
+          {
+            name: "formato",
+            label: "Formato",
+            allLabel: "Todos",
+            value: sp.formato ?? "",
+            options: FORM_FACTORS,
+          },
+        ]}
+      />
 
       <p className="mt-4 text-sm text-muted-foreground" role="status" aria-live="polite">
         {devices.length} {devices.length === 1 ? "console encontrado" : "consoles encontrados"}
       </p>
 
       {devices.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-dashed border-border p-10 text-center">
-          <Gamepad2 className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="mt-3 text-sm text-muted-foreground">
+        <div className="empty mt-8">
+          <Gamepad2 className="empty__icon" aria-hidden="true" />
+          <p className="empty__text">
             Nenhum console com esses filtros. Rode o seed para popular o catálogo
             ou ajuste os filtros.
           </p>
         </div>
       ) : (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid-cards grid-cards--three">
           {devices.map((d) => (
             <li key={d.id}>
-              <Link
-                href={`/consoles/${d.slug}`}
-                className="flex h-full flex-col rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50"
-              >
-                <div className="flex h-28 items-center justify-center">
+              <Link href={`/consoles/${d.slug}`} className="device-card">
+                <span className="device-card__media">
                   {d.frontImage ? (
-                    <Image src={d.frontImage} alt={`${d.name}, vista frontal`} width={140} height={112} className="max-h-full w-auto object-contain" />
+                    <Image src={d.frontImage} alt={`${d.name}, vista frontal`} fill sizes="160px" className="device-card__img" />
                   ) : (
-                    <Gamepad2 className="size-12 text-muted-foreground/40" aria-hidden="true" />
+                    <Gamepad2 className="device-card__placeholder" aria-hidden="true" />
                   )}
-                </div>
-                <span className="mt-3 text-xs text-primary">{d.manufacturer}</span>
-                <span className="font-semibold">{d.name}</span>
+                </span>
+                <span className="device-card__brand">{d.manufacturer}</span>
+                <span className="device-card__name">{d.name}</span>
               </Link>
             </li>
           ))}

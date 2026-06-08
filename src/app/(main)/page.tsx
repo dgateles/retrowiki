@@ -47,29 +47,19 @@ export default async function HomePage() {
               O catálogo será populado pelo seed.
             </p>
           ) : (
-            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <ul className="grid-cards">
               {devices.map((d) => (
                 <li key={d.id}>
-                  <Link
-                    href={`/consoles/${d.slug}`}
-                    className="group flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50"
-                  >
-                    {/* caixa de imagem com tamanho padrão */}
-                    <div className="flex h-32 items-center justify-center">
+                  <Link href={`/consoles/${d.slug}`} className="device-card">
+                    <span className="device-card__media">
                       {d.frontImage ? (
-                        <Image
-                          src={d.frontImage}
-                          alt={`${d.name}, vista frontal`}
-                          width={160}
-                          height={120}
-                          className="max-h-full w-auto object-contain"
-                        />
+                        <Image src={d.frontImage} alt={`${d.name}, vista frontal`} fill sizes="160px" className="device-card__img" />
                       ) : (
-                        <Gamepad2 className="size-12 text-muted-foreground/30" aria-hidden="true" />
+                        <Gamepad2 className="device-card__placeholder" aria-hidden="true" />
                       )}
-                    </div>
-                    <span className="mt-3 text-xs font-medium text-primary">{d.manufacturer}</span>
-                    <span className="font-semibold leading-tight group-hover:text-primary">{d.name}</span>
+                    </span>
+                    <span className="device-card__brand">{d.manufacturer}</span>
+                    <span className="device-card__name">{d.name}</span>
                   </Link>
                 </li>
               ))}
