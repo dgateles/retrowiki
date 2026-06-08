@@ -95,6 +95,61 @@ async function seedDevices() {
   }
 }
 
+async function seedGithubRepos() {
+  const path = "./seed-data/github-repos.json";
+  if (!existsSync(path)) return;
+  for (const r of JSON.parse(readFileSync(path, "utf8"))) {
+    await connection
+      .execute("INSERT IGNORE INTO github_repos (owner, repo, created_at) VALUES (?, ?, NOW())", [r.owner, r.repo])
+      .catch(() => {});
+  }
+}
+
+async function ensureSystemAuthor() {
+  const [rows] = await connection.execute("SELECT id FROM users WHERE handle='retrowiki' LIMIT 1");
+  if (rows[0]) return rows[0].id;
+  const hash = await bcrypt.hash("seed-" + Date.now() + "-Rw!", 12);
+  const [res] = await connection.execute(
+    "INSERT INTO users (email, handle, display_name, password_hash, role, email_verified_at, created_at, updated_at) VALUES ('conteudo@retrowiki.local','retrowiki','Equipe RetroWiki',?, 'admin', NOW(), NOW(), NOW())",
+    [hash],
+  );
+  return res.insertId;
+}
+
+function blockText(body) {
+  const parts = [];
+  for (const b of body.blocks ?? []) {
+    if (b.text) parts.push(b.text);
+    if (b.items) b.items.forEach((i) => parts.push(typeof i === "string" ? i : `${i.title} ${i.text}`));
+  }
+  return parts.join(" ").slice(0, 8000);
+}
+
+async function seedArticles(authorId) {
+  const path = "./seed-data/articles.json";
+  if (!existsSync(path)) return;
+  const data = JSON.parse(readFileSync(path, "utf8"));
+  const [devs] = await connection.execute("SELECT id, slug FROM devices");
+  const idBySlug = new Map(devs.map((d) => [d.slug, d.id]));
+  let n = 0;
+  for (const a of data) {
+    const [rows] = await connection.execute("SELECT id FROM articles WHERE slug=? LIMIT 1", [a.slug]);
+    if (rows[0]) continue;
+    const [res] = await connection.execute(
+      "INSERT INTO articles (slug, type, title, summary, device_id, author_id, status, search_text, published_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'published', ?, NOW(), NOW(), NOW())",
+      [a.slug, a.type, a.title, a.summary ?? null, idBySlug.get(a.deviceSlug) ?? null, authorId, blockText(a.body)],
+    );
+    const articleId = res.insertId;
+    const [rev] = await connection.execute(
+      "INSERT INTO revisions (article_id, body, editor_id, created_at) VALUES (?, ?, ?, NOW())",
+      [articleId, JSON.stringify(a.body), authorId],
+    );
+    await connection.execute("UPDATE articles SET current_revision_id=? WHERE id=?", [rev.insertId, articleId]);
+    n++;
+  }
+  console.log(`articles: ${n}`);
+}
+
 async function seedAdmin() {
   const email = process.env.SEED_ADMIN_EMAIL;
   const password = process.env.SEED_ADMIN_PASSWORD;
@@ -116,6 +171,10 @@ try {
   await seedCategories();
   console.log("Seed de devices…");
   await seedDevices();
+  await seedGithubRepos();
+  console.log("Seed de artigos…");
+  const systemId = await ensureSystemAuthor();
+  await seedArticles(systemId);
   await seedAdmin();
   console.log("Seed completo.");
 } catch (err) {

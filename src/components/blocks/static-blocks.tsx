@@ -64,6 +64,48 @@ export function StepsBlock({
   );
 }
 
+export function ListBlock({ ordered, items }: { ordered: boolean; items: string[] }) {
+  const Tag = ordered ? "ol" : "ul";
+  return (
+    <Tag className={`my-4 space-y-1.5 pl-5 ${ordered ? "list-decimal" : "list-disc"}`}>
+      {items.map((it, i) => (
+        <li key={i} className="text-foreground/90">{it}</li>
+      ))}
+    </Tag>
+  );
+}
+
+export function TableBlock({ headers, rows }: { headers: string[]; rows: string[][] }) {
+  return (
+    <div className="my-6 overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            {headers.map((h, i) => (
+              <th
+                key={i}
+                scope="col"
+                className="border-b border-border bg-muted/50 px-3 py-2 text-left font-semibold"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, ri) => (
+            <tr key={ri} className="border-b border-border/60">
+              {r.map((cell, ci) => (
+                <td key={ci} className="px-3 py-2 align-top">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 const CALLOUT = {
   info: { Icon: Info, cls: "border-sky-500/30 bg-sky-500/5 text-sky-700 dark:text-sky-300" },
   success: { Icon: CheckCircle2, cls: "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300" },

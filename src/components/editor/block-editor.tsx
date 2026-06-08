@@ -110,6 +110,7 @@ export function BlockEditor() {
         <Label htmlFor="type">Tipo</Label>
         <select
           id="type"
+          aria-label="Tipo do conteúdo"
           value={type}
           onChange={(e) => setType(e.target.value as typeof type)}
           className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -147,6 +148,7 @@ export function BlockEditor() {
                 value={b.text}
                 onChange={(e) => update(b._id, { text: e.target.value })}
                 placeholder="Escreva o parágrafo"
+                aria-label="Texto do parágrafo"
                 rows={4}
                 className="w-full rounded-md border border-input bg-background p-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               />
@@ -155,6 +157,7 @@ export function BlockEditor() {
               <div className="space-y-2">
                 <select
                   value={b.variant}
+                  aria-label="Variante do alerta"
                   onChange={(e) => update(b._id, { variant: e.target.value as "info" })}
                   className="h-9 rounded-md border border-input bg-background px-2 text-sm"
                 >
@@ -166,6 +169,7 @@ export function BlockEditor() {
                 <textarea
                   value={b.text}
                   onChange={(e) => update(b._id, { text: e.target.value })}
+                  aria-label="Texto do alerta"
                   rows={2}
                   className="w-full rounded-md border border-input bg-background p-3 text-sm"
                 />
@@ -189,6 +193,7 @@ export function BlockEditor() {
                 value={b.deviceId || ""}
                 onChange={(e) => update(b._id, { deviceId: Number(e.target.value) })}
                 placeholder="ID do device"
+                aria-label="ID do device"
               />
             )}
           </div>

@@ -5,6 +5,8 @@ import {
   ImageBlock,
   StepsBlock,
   CalloutBlock,
+  ListBlock,
+  TableBlock,
 } from "@/components/blocks/static-blocks";
 import { GithubReleasesBlock } from "@/components/blocks/github-releases";
 import { StoreLinksBlock } from "@/components/blocks/store-links";
@@ -22,6 +24,10 @@ function renderBlock(block: Block, key: number) {
       return <StepsBlock key={key} items={block.items} />;
     case "callout":
       return <CalloutBlock key={key} variant={block.variant} text={block.text} />;
+    case "list":
+      return <ListBlock key={key} ordered={block.ordered} items={block.items} />;
+    case "table":
+      return <TableBlock key={key} headers={block.headers} rows={block.rows} />;
     case "github-releases":
       return <GithubReleasesBlock key={key} owner={block.owner} repo={block.repo} limit={block.limit} />;
     case "store-links":

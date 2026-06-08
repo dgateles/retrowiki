@@ -43,6 +43,18 @@ const Callout = z.object({
   text: z.string().min(1).max(2000),
 });
 
+const ListBlock = z.object({
+  type: z.literal("list"),
+  ordered: z.boolean().default(false),
+  items: z.array(z.string().min(1).max(600)).min(1).max(60),
+});
+
+const TableBlock = z.object({
+  type: z.literal("table"),
+  headers: z.array(z.string().max(120)).min(1).max(8),
+  rows: z.array(z.array(z.string().max(400)).max(8)).min(1).max(120),
+});
+
 // Blocos dinâmicos: guardam referência/IDs, nunca dados ao vivo nem URL livre.
 const GithubReleases = z.object({
   type: z.literal("github-releases"),
@@ -67,6 +79,8 @@ export const Block = z.discriminatedUnion("type", [
   ImageBlock,
   Steps,
   Callout,
+  ListBlock,
+  TableBlock,
   GithubReleases,
   StoreLinks,
   DeviceSpecBlock,
@@ -86,6 +100,8 @@ export function blockTreeToText(tree: BlockTree): string {
     if (b.type === "heading" || b.type === "paragraph") parts.push(b.text);
     else if (b.type === "callout") parts.push(b.text);
     else if (b.type === "steps") b.items.forEach((i) => parts.push(i.title, i.text));
+    else if (b.type === "list") parts.push(...b.items);
+    else if (b.type === "table") { parts.push(...b.headers); b.rows.forEach((r) => parts.push(...r)); }
     else if (b.type === "image" && b.caption) parts.push(b.caption);
   }
   return parts.join(" ").slice(0, 8000);
