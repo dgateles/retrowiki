@@ -6,6 +6,9 @@ import { awardBadgeBySlug, evaluateBadges } from "@/lib/badges";
 import { getAchievementSettings } from "@/lib/settings";
 import { progressQuestsForRule } from "@/lib/admin/quests";
 import { runPromotionsForUser } from "@/lib/admin/promotions";
+import { getRankTierList } from "@/lib/admin/ranks-db";
+import { rankForTiers } from "@/lib/ranks";
+import { createNotification } from "@/lib/notifications";
 
 export type Recipient = { key: "actor" | "target"; label: string };
 export type TriggerDef = { label: string; recipients: Recipient[] };
@@ -178,6 +181,11 @@ export async function runTrigger(
       targetExcluded = target ? excluded.has(roleById.get(target) ?? "") : false;
     }
 
+    // Reputação antes de aplicar os pontos (para detectar subida de rank).
+    const candidates = target ? [ctx.actorId, target] : [ctx.actorId];
+    const beforeRows = await db.select({ id: users.id, reputation: users.reputation }).from(users).where(inArray(users.id, candidates));
+    const beforeRep = new Map(beforeRows.map((r) => [r.id, r.reputation]));
+
     const affected = new Set<number>();
     for (const rule of rules) {
       if (rule.milestone > 0 && cnt !== rule.milestone) continue;
@@ -195,6 +203,16 @@ export async function runTrigger(
     for (const id of affected) {
       await evaluateBadges(id);
       await runPromotionsForUser(id);
+    }
+    // Notifica subida de rank de quem ganhou pontos.
+    if (affected.size > 0) {
+      const tiers = await getRankTierList();
+      const afterRows = await db.select({ id: users.id, reputation: users.reputation }).from(users).where(inArray(users.id, [...affected]));
+      for (const r of afterRows) {
+        const before = rankForTiers(beforeRep.get(r.id) ?? 0, tiers);
+        const now = rankForTiers(r.reputation, tiers);
+        if (now.index > before.index) await createNotification(r.id, "rank.up", { rankLabel: now.label });
+      }
     }
   } catch {
     // nunca bloquear o fluxo principal

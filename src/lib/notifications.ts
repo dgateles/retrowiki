@@ -3,6 +3,15 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 
+/** Cria uma notificação. Best-effort: nunca lança. */
+export async function createNotification(recipientId: number, type: string, payload?: unknown): Promise<void> {
+  try {
+    await db.insert(notifications).values({ recipientId, type, payload: payload ?? null });
+  } catch {
+    // não bloquear o fluxo
+  }
+}
+
 export async function getUnreadCount(userId: number): Promise<number> {
   try {
     const rows = await db

@@ -4,7 +4,10 @@ import { users } from "@/db/schema";
 import { requireRole } from "@/lib/auth-helpers";
 
 function csvCell(v: unknown): string {
-  const s = String(v ?? "");
+  let s = String(v ?? "");
+  // Anti-injeção de fórmula: planilhas executam células iniciadas por estes
+  // caracteres. Prefixa com apóstrofo para neutralizar.
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 

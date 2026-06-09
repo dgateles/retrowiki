@@ -3,6 +3,7 @@ import { eq, and, count, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { badges, userBadges, articles, comments, users } from "@/db/schema";
 import { slugify } from "@/lib/utils";
+import { createNotification } from "@/lib/notifications";
 
 type Tier = "bronze" | "silver" | "gold";
 type Stats = { guides: number; comments: number; reputation: number };
@@ -58,8 +59,9 @@ export async function evaluateBadges(userId: number): Promise<string[]> {
     const earnedSlugs = CATALOG.filter((d) => d.earned(stats)).map((d) => d.slug);
     if (earnedSlugs.length === 0) return [];
 
-    const rows = await db.select({ id: badges.id, slug: badges.slug }).from(badges).where(inArray(badges.slug, earnedSlugs));
+    const rows = await db.select({ id: badges.id, slug: badges.slug, name: badges.name }).from(badges).where(inArray(badges.slug, earnedSlugs));
     const idBySlug = new Map(rows.map((r) => [r.slug, r.id]));
+    const nameBySlug = new Map(rows.map((r) => [r.slug, r.name]));
 
     const owned = await db.select({ badgeId: userBadges.badgeId }).from(userBadges).where(eq(userBadges.userId, userId));
     const ownedIds = new Set(owned.map((o) => o.badgeId));
@@ -70,6 +72,7 @@ export async function evaluateBadges(userId: number): Promise<string[]> {
 
     if (toAward.length === 0) return [];
     await db.insert(userBadges).values(toAward.map((x) => ({ userId, badgeId: x.id }))).onDuplicateKeyUpdate({ set: { badgeId: sql`badge_id` } });
+    for (const x of toAward) await createNotification(userId, "badge.earned", { name: nameBySlug.get(x.slug) });
     return toAward.map((x) => x.slug);
   } catch {
     return [];
@@ -199,13 +202,15 @@ export async function deleteBadge(id: number): Promise<boolean> {
   }
 }
 
-/** Concede manualmente uma badge a um usuário. Idempotente. */
+/** Concede manualmente uma badge a um usuário. Idempotente. Notifica se for nova. */
 export async function awardBadgeBySlug(userId: number, slug: string): Promise<boolean> {
   try {
     await ensureCatalog();
-    const [b] = await db.select({ id: badges.id }).from(badges).where(eq(badges.slug, slug)).limit(1);
+    const [b] = await db.select({ id: badges.id, name: badges.name }).from(badges).where(eq(badges.slug, slug)).limit(1);
     if (!b) return false;
+    const [owned] = await db.select({ id: userBadges.id }).from(userBadges).where(and(eq(userBadges.userId, userId), eq(userBadges.badgeId, b.id))).limit(1);
     await db.insert(userBadges).values({ userId, badgeId: b.id }).onDuplicateKeyUpdate({ set: { badgeId: sql`badge_id` } });
+    if (!owned) await createNotification(userId, "badge.earned", { name: b.name });
     return true;
   } catch {
     return false;

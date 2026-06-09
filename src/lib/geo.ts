@@ -11,26 +11,49 @@ function isPrivateOrLocal(ip: string): boolean {
   return false;
 }
 
-async function fetchGeo(ip: string): Promise<string> {
+function join(parts: (string | undefined)[]): string {
+  return parts.filter(Boolean).join(", ").slice(0, 160);
+}
+
+// Primário: ipwho.is (escolha do projeto). O plano gratuito bloqueia o fetch
+// server-side (403 "CORS not supported"), então caímos para o ip-api.com.
+async function fromIpWho(ip: string): Promise<string> {
   try {
-    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { signal: AbortSignal.timeout(4000) });
+    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return "";
     const j = (await res.json()) as { success?: boolean; city?: string; region?: string; country?: string };
     if (!j.success) return "";
-    return [j.city, j.region, j.country].filter(Boolean).join(", ").slice(0, 160);
+    return join([j.city, j.region, j.country]);
   } catch {
     return "";
   }
 }
 
-/** Geolocalização (cidade, região, país) de um IP, com cache em ip_geo. */
+async function fromIpApi(ip: string): Promise<string> {
+  try {
+    const res = await fetch(`http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,city,regionName,country`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return "";
+    const j = (await res.json()) as { status?: string; city?: string; regionName?: string; country?: string };
+    if (j.status !== "success") return "";
+    return join([j.city, j.regionName, j.country]);
+  } catch {
+    return "";
+  }
+}
+
+async function fetchGeo(ip: string): Promise<string> {
+  return (await fromIpWho(ip)) || (await fromIpApi(ip));
+}
+
+/** Geolocalização (cidade, região, país) de um IP, com cache em ip_geo. Só
+ * cacheia resultados não vazios, para uma falha transitória poder tentar de novo. */
 export async function geoForIp(ip: string): Promise<string> {
   if (isPrivateOrLocal(ip)) return "Local/privado";
   try {
     const [cached] = await db.select({ label: ipGeo.label }).from(ipGeo).where(eq(ipGeo.ip, ip)).limit(1);
-    if (cached) return cached.label;
+    if (cached && cached.label) return cached.label;
     const label = await fetchGeo(ip);
-    await db.insert(ipGeo).values({ ip, label }).onDuplicateKeyUpdate({ set: { label } });
+    if (label) await db.insert(ipGeo).values({ ip, label }).onDuplicateKeyUpdate({ set: { label } });
     return label;
   } catch {
     return "";

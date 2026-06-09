@@ -5,6 +5,9 @@ type Payload = {
   commentId?: number;
   actorName?: string;
   actorAvatar?: string | null;
+  name?: string; // badge
+  roleLabel?: string; // promoção
+  rankLabel?: string; // subida de rank
 };
 
 function asPayload(p: unknown): Payload {
@@ -36,6 +39,14 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `${actor} respondeu ao seu comentário em "${title}".`, href: commentHref, image: p.actorAvatar, actor };
     case "submission.received":
       return { text: `Nova submissão na fila: "${title}".`, href: "/moderacao" };
+    case "badge.earned":
+      return { text: `Você conquistou a badge "${p.name ?? "nova"}".`, href: "/painel" };
+    case "rank.up":
+      return { text: `Você subiu para o rank ${p.rankLabel ?? "novo"}.`, href: "/painel" };
+    case "quest.completed":
+      return { text: `Você concluiu a missão "${title}".`, href: "/missoes" };
+    case "role.promoted":
+      return { text: `Você foi promovido a ${p.roleLabel ?? "um novo papel"}.`, href: "/painel" };
     default:
       return { text: `Atualização em "${title}".`, href: articleHref };
   }

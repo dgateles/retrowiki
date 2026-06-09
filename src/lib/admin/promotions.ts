@@ -3,7 +3,8 @@ import { and, asc, count, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { promotionRules, users, articles, comments, userBadges, badges, auditLog } from "@/db/schema";
 import { rankForReputation } from "@/lib/ranks";
-import { ROLES, type Role } from "@/lib/admin/role-permissions";
+import { ROLES, ROLE_LABEL, type Role } from "@/lib/admin/role-permissions";
+import { createNotification } from "@/lib/notifications";
 
 export type Criteria = {
   minReputation: number;
@@ -132,6 +133,7 @@ export async function runPromotionsForUser(userId: number, actorId?: number): Pr
     if (!target || target === stats.role) return null;
     await db.update(users).set({ role: target }).where(eq(users.id, userId));
     await db.insert(auditLog).values({ actorId: actorId ?? null, action: "auto_promotion", target: `user:${userId}`, meta: { from: stats.role, to: target } });
+    await createNotification(userId, "role.promoted", { roleLabel: ROLE_LABEL[target] });
     return target;
   } catch {
     return null;

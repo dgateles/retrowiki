@@ -3,6 +3,7 @@ import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { quests, questTasks, questTaskCompletions, questCompletions, questOptOuts, comments, articles, votes, users, achievementRules } from "@/db/schema";
 import { awardBadgeBySlug } from "@/lib/badges";
+import { createNotification } from "@/lib/notifications";
 
 export type QuestSettings = {
   rewardBadge: string | null;
@@ -221,8 +222,9 @@ async function maybeCompleteQuest(questId: number, userId: number): Promise<void
   } catch {
     return; // já estava completa
   }
-  const [q] = await db.select({ rewardBadge: quests.rewardBadge }).from(quests).where(eq(quests.id, questId)).limit(1);
+  const [q] = await db.select({ rewardBadge: quests.rewardBadge, title: quests.title }).from(quests).where(eq(quests.id, questId)).limit(1);
   if (q?.rewardBadge) await awardBadgeBySlug(userId, q.rewardBadge);
+  await createNotification(userId, "quest.completed", { title: q?.title });
 }
 
 /** Marca as tarefas ligadas a uma regra como concluídas para o usuário e
