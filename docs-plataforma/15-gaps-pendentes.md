@@ -177,18 +177,55 @@ Commerce, Clubs, Messenger nem CAPTCHA de terceiros; com nossos papéis,
 RetroGuard e os ranks já existentes). Navegação em dois níveis: barra de áreas à
 esquerda e submenu por área. Item adicionado ao final da fila.
 
-Gerenciamento de membros:
+Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
 
-- **Lista de membros.** Tabela com avatar, nome de exibição, e-mail, data de
-  entrada, papel, rank (pontos) e último IP. Busca, filtros e ordenação.
-  Ações: criar membro, forçar troca de senha, exportar e importar lista.
-- **Papéis e permissões.** No IPB são "grupos"; aqui são os papéis
-  (member, contributor, moderator, admin). Tela para promover/rebaixar, ver a
-  contagem por papel e editar o que cada papel pode fazer.
+- **Lista de membros.** STATUS: entregue (versão base: lista com busca, papel,
+  confiável, suspender). Faltam, da referência: colunas avatar / nome / e-mail /
+  data de entrada / grupo(papel) / rank (com pontos, ex. "Novato 5 pts) / último
+  IP; toolbar com Filtrar, Ordenar, Direção, Busca e engrenagem de colunas; ações
+  por linha ao passar o mouse (Ver, Marcar como spammer, Excluir), sem permitir
+  excluir/sinalizar a própria conta; e os botões do topo: Importar lista,
+  Baixar/Exportar lista, Forçar troca de senha, Criar novo membro.
+- **Criar novo membro (modal).** Campos: Nome de exibição, "Definir senha?"
+  (toggle; se off, envia e-mail de confirmação para o usuário definir), E-mail,
+  Grupo/papel, grupos secundários (não se aplica: usamos papel único), idioma e
+  tema (no nosso caso, sem idioma/tema por enquanto). Salvar.
+- **Tela de membro (Member View).** Página de detalhe de um membro no admin,
+  `/admin/membros/{id}`. Adaptar os cartões da referência ao nosso modelo:
+  - **Cabeçalho**: capa, avatar, nome de exibição, e-mail, "Entrou há X". Editar
+    capa, avatar, nome e e-mail (avatar/capa dependem do upload BunnyCDN).
+  - **Account Actions** (dropdown): entrar como o usuário (impersonar; alto
+    risco, avaliar depois), excluir conta, baixar dados pessoais (LGPD), editar
+    preferências, editar senha.
+  - **Estatísticas do topo**: posts (com Definir manualmente / Recontar) e nível
+    de reputação (Definir manualmente / Recontar / Remover reputação dada /
+    recebida).
+  - **Estatísticas de conteúdo**: contagem por tipo (no nosso caso: guias e
+    comentários; sem Blogs/Events/Downloads/Gallery/Commerce do IPB).
+  - **Ranks**: rank atual + barra de progresso + "Ajustar pontos" (definir
+    reputação manualmente). Já temos `ranks.ts` e `reputation`.
+  - **Badges**: badges do usuário + "Gerenciar" (conceder/remover). Já temos.
+  - **Grupos**: papel primário + editar (reusar a troca de papel já feita).
+  - **Dispositivos e IPs**: IP de registro, último IP, fuso, lista de
+    dispositivos. Depende de registrar sessões (user-agent + IP), que ainda não
+    existe.
+  - **Cota de anexos / Messenger**: não se aplica (sem mensageria; cota de mídia
+    fica para o upload BunnyCDN).
+  - **Avisos e restrições**: pontos de aviso, restrições, "Marcar como spammer"
+    e "Banir". Depende do sistema de avisos (warnings) e de banimento.
+  - **Dados de perfil**: Sobre, informações pessoais, sobre mim (a bio editável
+    do detalhamento de perfil).
+  - **Atividade recente da conta** (dropdown: mudanças importantes, assinatura de
+    lista, aceite de termos, toda a atividade): feed por usuário a partir do
+    `audit_log` (ações sobre o usuário e dele) + eventos de conta.
+- **Papéis e permissões.** Promover/rebaixar (feito na lista), ver contagem por
+  papel, e editar o que cada papel pode fazer (sistema de permissões editável
+  ainda não existe; hoje os papéis são checados em código).
 - **Ferramentas de IP e auditoria.** Consultar ações por usuário/IP usando o
-  `audit_log` já existente.
-- **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão
-  da conta e dos dados, e o admin processar.
+  `audit_log`. Liga com Dispositivos e IPs acima.
+- **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão da
+  conta e dos dados, e o admin processar; e o "baixar dados pessoais" do Account
+  Actions.
 
 Gamificação (conquistas):
 

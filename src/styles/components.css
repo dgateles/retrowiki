@@ -129,6 +129,92 @@
   .member-actions {
     @apply flex flex-wrap items-center gap-3;
   }
+  .member-card__name--link {
+    @apply block hover:text-primary hover:underline;
+  }
+
+  /* Detalhe do membro (admin). */
+  .member-head {
+    @apply flex items-center gap-4 rounded-lg border border-border bg-card p-5;
+  }
+  .member-head__avatar {
+    @apply flex size-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary;
+  }
+  .member-head__avatar--img {
+    @apply object-cover;
+  }
+  .member-head__name {
+    @apply text-xl font-bold;
+  }
+  .member-head__meta {
+    @apply truncate text-sm text-muted-foreground;
+  }
+  .member-head__susp {
+    @apply text-destructive;
+  }
+  .member-grid {
+    @apply mt-6 grid gap-4 md:grid-cols-2;
+  }
+  .member-panel {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .member-panel--wide {
+    @apply md:col-span-2;
+  }
+  .member-panel__title {
+    @apply mb-3 font-semibold;
+  }
+  .member-manage {
+    @apply space-y-4;
+  }
+  .member-manage__row {
+    @apply space-y-1.5;
+  }
+  .member-manage__check {
+    @apply flex items-center gap-2 text-sm;
+  }
+  .member-manage__rep {
+    @apply flex items-center gap-2;
+  }
+  .member-stats {
+    @apply grid grid-cols-2 gap-3;
+  }
+  .member-stats__item {
+    @apply rounded-md bg-muted/30 p-2.5;
+  }
+  .member-stats__k {
+    @apply text-xs text-muted-foreground;
+  }
+  .member-stats__v {
+    @apply font-semibold;
+  }
+  .member-progress {
+    @apply mt-3 h-2 overflow-hidden rounded-full bg-muted;
+  }
+  .member-progress__bar {
+    @apply h-full bg-primary;
+  }
+  .member-badges {
+    @apply flex flex-wrap gap-2;
+  }
+  .member-badge {
+    @apply inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs;
+  }
+  .member-badge--bronze {
+    @apply border-amber-700/50;
+  }
+  .member-badge--silver {
+    @apply border-slate-400/50;
+  }
+  .member-badge--gold {
+    @apply border-yellow-500/50;
+  }
+  .member-audit {
+    @apply divide-y divide-border;
+  }
+  .member-audit__row {
+    @apply flex items-center justify-between gap-3 py-2 text-sm;
+  }
 
   /* Gamificação (admin). */
   .gami-tools {

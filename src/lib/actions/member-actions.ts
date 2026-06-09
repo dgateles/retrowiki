@@ -69,3 +69,20 @@ export async function setUserTrustedAction(userId: number, trusted: boolean): Pr
     return { ok: false, error: "Falha ao atualizar." };
   }
 }
+
+export async function setUserReputationAction(userId: number, reputation: number): Promise<Result> {
+  const actor = await asAdmin();
+  if (!actor) return { ok: false, error: "Acesso restrito." };
+  const value = Math.max(0, Math.min(1_000_000, Math.floor(Number(reputation))));
+  if (!Number.isFinite(value)) return { ok: false, error: "Valor inválido." };
+
+  try {
+    await db.update(users).set({ reputation: value }).where(eq(users.id, userId));
+    await audit(Number(actor.id), "user_set_reputation", userId, { reputation: value });
+    revalidatePath("/admin/membros");
+    revalidatePath(`/admin/membros/${userId}`);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha ao atualizar." };
+  }
+}

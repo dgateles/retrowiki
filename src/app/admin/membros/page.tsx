@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Search } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { listMembers } from "@/lib/admin/members";
@@ -54,7 +55,7 @@ export default async function AdminMembersPage({
                 <div className="member-card__id">
                   <span className="member-card__avatar" aria-hidden="true">{initials(m.displayName)}</span>
                   <div className="min-w-0">
-                    <p className="member-card__name">{m.displayName}</p>
+                    <Link href={`/admin/membros/${m.id}`} className="member-card__name member-card__name--link">{m.displayName}</Link>
                     <p className="member-card__meta">
                       @{m.handle} · {m.email} · {roleLabel(m.role)} · {rank.label} ({m.reputation})
                     </p>
