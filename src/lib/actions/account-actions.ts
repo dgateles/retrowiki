@@ -11,6 +11,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email/mailer";
 import { passwordChanged } from "@/lib/email/templates";
 import { isBunnyUrl } from "@/lib/bunny";
+import { getProfileSettings } from "@/lib/settings";
 
 type Result = { ok: boolean; error?: string; message?: string };
 
@@ -57,7 +58,7 @@ export async function setCoverAction(url: string): Promise<Result> {
 }
 
 const DisplayNameSchema = z.object({
-  displayName: z.string().trim().min(2, "Use ao menos 2 caracteres.").max(120),
+  displayName: z.string().trim().min(1).max(200),
 });
 
 export async function updateDisplayNameAction(input: unknown): Promise<Result> {
@@ -72,10 +73,15 @@ export async function updateDisplayNameAction(input: unknown): Promise<Result> {
 
   const parsed = DisplayNameSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+    return { ok: false, error: "Dados inválidos." };
+  }
+  const { nameMin, nameMax } = await getProfileSettings();
+  const name = parsed.data.displayName;
+  if (name.length < nameMin || name.length > nameMax) {
+    return { ok: false, error: `O nome deve ter entre ${nameMin} e ${nameMax} caracteres.` };
   }
 
-  await db.update(users).set({ displayName: parsed.data.displayName }).where(eq(users.id, Number(session.id)));
+  await db.update(users).set({ displayName: name }).where(eq(users.id, Number(session.id)));
   revalidatePath("/conta");
   revalidatePath(`/u/${session.handle}`);
   return { ok: true, message: "Nome atualizado." };

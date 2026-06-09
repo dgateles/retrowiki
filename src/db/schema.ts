@@ -461,6 +461,43 @@ export const questTaskCompletions = mysqlTable("quest_task_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_task_completion_idx").on(t.taskId, t.userId)]);
 
+// ── Campos de perfil customizados (Members > Profiles) ───────────────────
+
+export const profileFieldGroups = mysqlTable("profile_field_groups", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("pfg_order_idx").on(t.sortOrder)]);
+
+export const profileFields = mysqlTable("profile_fields", {
+  id: pk(),
+  groupId: bigint("group_id", { mode: "number" }).notNull(),
+  name: varchar("name", { length: 120 }).notNull(),
+  description: varchar("description", { length: 300 }).notNull().default(""),
+  // text | textarea | editor | url | number | date | select | radio | checkboxset | yesno | color
+  type: varchar("type", { length: 20 }).notNull().default("text"),
+  options: json("options"), // string[] para select/radio/checkboxset
+  required: boolean("required").notNull().default(false),
+  maxLength: int("max_length"), // null = ilimitado
+  regex: varchar("regex", { length: 255 }), // validação opcional
+  showOnRegister: boolean("show_on_register").notNull().default(false),
+  memberEditable: boolean("member_editable").notNull().default(true),
+  // none | staff | staff_owner | all
+  visibility: mysqlEnum("visibility", ["none", "staff", "staff_owner", "all"]).notNull().default("all"),
+  pii: boolean("pii").notNull().default(false), // entra na exportação de dados pessoais
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("pf_group_idx").on(t.groupId), index("pf_order_idx").on(t.sortOrder)]);
+
+export const profileFieldValues = mysqlTable("profile_field_values", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  fieldId: bigint("field_id", { mode: "number" }).notNull(),
+  value: text("value"),
+  updatedAt: createdAt(),
+}, (t) => [uniqueIndex("pfv_user_field_idx").on(t.userId, t.fieldId)]);
+
 export const questCompletions = mysqlTable("quest_completions", {
   id: pk(),
   questId: bigint("quest_id", { mode: "number" }).notNull(),

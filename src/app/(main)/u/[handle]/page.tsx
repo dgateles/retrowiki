@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
+import { getCurrentUser } from "@/lib/auth-helpers";
+import { getVisibleFields } from "@/lib/profile-fields";
+import { ProfileFieldsDisplay } from "@/components/profile/profile-fields-display";
 import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
@@ -34,6 +37,8 @@ export default async function ProfilePage({
   const profile = await getProfile(handle);
   if (!profile) notFound();
 
+  const viewer = await getCurrentUser();
+  const profileFields = await getVisibleFields(profile.id, viewer ? { id: Number(viewer.id), role: viewer.role } : null);
   const gami = await getAchievementSettings();
   const rank = gami.enabled ? await getRankForReputation(profile.reputation) : null;
   if (gami.enabled) await evaluateBadges(profile.id);
@@ -116,7 +121,10 @@ export default async function ProfilePage({
           )}
         </aside>
 
-        <section aria-labelledby="contrib">
+        <div className="profile-main">
+          <ProfileFieldsDisplay groups={profileFields} />
+
+          <section aria-labelledby="contrib">
           <h2 id="contrib" className="comments__title">
             Publicações ({profile.articles.length})
           </h2>
@@ -134,7 +142,8 @@ export default async function ProfilePage({
               ))}
             </ul>
           )}
-        </section>
+          </section>
+        </div>
       </div>
     </main>
   );

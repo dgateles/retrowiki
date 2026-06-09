@@ -52,3 +52,25 @@ export async function getAchievementSettings(): Promise<AchievementSettings> {
   const raw = await getSetting<Partial<AchievementSettings>>("achievements", DEFAULTS);
   return sanitizeAchievementSettings({ ...DEFAULTS, ...raw });
 }
+
+// ── Configurações de perfil (nome de exibição) ───────────────────────────
+
+export type ProfileSettings = {
+  nameMin: number;
+  nameMax: number;
+};
+
+const PROFILE_DEFAULTS: ProfileSettings = { nameMin: 2, nameMax: 120 };
+
+export function sanitizeProfileSettings(raw: unknown): ProfileSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  let nameMin = Math.max(1, Math.min(50, Math.floor(Number(r.nameMin) || PROFILE_DEFAULTS.nameMin)));
+  let nameMax = Math.max(2, Math.min(200, Math.floor(Number(r.nameMax) || PROFILE_DEFAULTS.nameMax)));
+  if (nameMin > nameMax) [nameMin, nameMax] = [nameMax, nameMin];
+  return { nameMin, nameMax };
+}
+
+export async function getProfileSettings(): Promise<ProfileSettings> {
+  const raw = await getSetting<Partial<ProfileSettings>>("profile", PROFILE_DEFAULTS);
+  return sanitizeProfileSettings({ ...PROFILE_DEFAULTS, ...raw });
+}

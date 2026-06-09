@@ -457,6 +457,99 @@
   .member-create {
     @apply mt-3 space-y-3;
   }
+  /* Campos de perfil (admin) */
+  .pf-toolbar {
+    @apply flex justify-end;
+  }
+  .pf-groups {
+    @apply mt-4 space-y-3;
+  }
+  .pf-group {
+    @apply rounded-lg border border-border bg-card;
+  }
+  .pf-group__head {
+    @apply flex items-center justify-between gap-2 px-3 py-2.5;
+  }
+  .pf-group__toggle {
+    @apply flex min-w-0 flex-1 items-center gap-2 text-left font-medium;
+  }
+  .pf-group__name {
+    @apply truncate;
+  }
+  .pf-group__count {
+    @apply rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground;
+  }
+  .pf-group__actions,
+  .pf-field__actions {
+    @apply flex shrink-0 items-center gap-1;
+  }
+  .pf-icon {
+    @apply inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground;
+  }
+  .pf-icon--danger {
+    @apply hover:bg-destructive/10 hover:text-destructive;
+  }
+  .pf-fields {
+    @apply divide-y divide-border border-t border-border;
+  }
+  .pf-field {
+    @apply flex items-center justify-between gap-2 px-3 py-2.5;
+  }
+  .pf-field--empty {
+    @apply justify-center text-sm text-muted-foreground;
+  }
+  .pf-field__name {
+    @apply block truncate font-medium;
+  }
+  .pf-field__meta {
+    @apply block truncate text-xs text-muted-foreground;
+  }
+  .pf-form {
+    @apply mt-3 space-y-3;
+  }
+  .pf-form__legend {
+    @apply mt-4 border-b border-border pb-1 text-sm font-semibold text-muted-foreground first:mt-0;
+  }
+  .pf-inline {
+    @apply flex items-center gap-2;
+  }
+  .pff-options {
+    @apply flex flex-col gap-1.5;
+  }
+  /* Exibição dos campos de perfil no perfil público */
+  .profile-main {
+    @apply flex flex-col gap-8;
+  }
+  .profile-card {
+    @apply flex flex-col gap-6 rounded-xl border border-border bg-card p-5;
+  }
+  .profile-card__title {
+    @apply text-base font-semibold;
+  }
+  .pf-display {
+    @apply flex flex-col gap-3;
+  }
+  .pf-display__list {
+    @apply mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2;
+  }
+  .pf-display__row {
+    @apply min-w-0;
+  }
+  .pf-display__label {
+    @apply text-xs font-medium uppercase tracking-wide text-muted-foreground;
+  }
+  .pf-display__value {
+    @apply mt-0.5 break-words text-sm;
+  }
+  .pf-display__multiline {
+    @apply whitespace-pre-wrap;
+  }
+  .pf-display__color {
+    @apply inline-flex items-center gap-2;
+  }
+  .pf-display__swatch {
+    @apply inline-block size-4 rounded border border-border;
+  }
   .image-upload {
     @apply flex items-center gap-3;
   }

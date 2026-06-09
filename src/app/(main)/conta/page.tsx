@@ -7,6 +7,8 @@ import { ChangePasswordForm } from "@/components/account/change-password-form";
 import { DisplayNameForm } from "@/components/account/display-name-form";
 import { AvatarForm } from "@/components/account/avatar-form";
 import { CoverForm } from "@/components/account/cover-form";
+import { ProfileFieldsForm } from "@/components/account/profile-fields-form";
+import { getEditableFields } from "@/lib/profile-fields";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -33,6 +35,7 @@ export default async function AccountPage({
   const memberSince = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
     new Date(user.createdAt),
   );
+  const profileFieldGroups = active === "perfil" ? await getEditableFields(Number(user.id)) : [];
 
   return (
     <main id="main" className="page">
@@ -96,6 +99,20 @@ export default async function AccountPage({
                   </div>
                 </div>
               </dl>
+            </section>
+          )}
+
+          {active === "perfil" && (
+            <section aria-labelledby="s-perfil" className="settings-section">
+              <h2 id="s-perfil" className="settings-section__title">Perfil</h2>
+              <p className="settings-section__desc">Informações exibidas no seu perfil público.</p>
+              <div className="mt-4">
+                {profileFieldGroups.length === 0 ? (
+                  <p className="muted">Nenhum campo de perfil disponível.</p>
+                ) : (
+                  <ProfileFieldsForm groups={profileFieldGroups} />
+                )}
+              </div>
             </section>
           )}
 
