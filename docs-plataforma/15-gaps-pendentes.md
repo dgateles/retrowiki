@@ -362,6 +362,26 @@ Gamificação (conquistas):
     log de pontos por ação; os marcos são contados dos dados e as badges são
     idempotentes) e "limitar pontos manuais por conteúdo reconhecido por dia"
     (não há o recurso de pontuar conteúdo reconhecido). Anotar para o futuro.
+- **Quests (missões, detalhado do AdminCP).** Missão = conjunto de tarefas; cada
+  tarefa se liga a uma Regra de conquista (completar a ação da regra completa a
+  tarefa). Ao completar a missão, concede a recompensa (badge). Constrói sobre o
+  motor de Regras já feito.
+  - **Lista**: reordenar, título, ativada/desativada, ações (adicionar tarefa,
+    editar, excluir, ver participantes), criar nova.
+  - **Editor da missão**: título, descrição, imagem de capa (Bunny), datas
+    (entre X e Y), público-alvo (papéis ou todos), permitir opt-out, método de
+    pontuação (todas as tarefas / mínimo de pontos), exigir aprovação, regras
+    retroativas (marcar tarefas já cumpridas), tipo de recompensa (badge/outro).
+  - **Tarefa**: título, descrição, link opcional, tipo (usar regra existente /
+    escanear QR code), regra associada.
+  - **Participantes**: tabela membro/status/progresso + adicionar manualmente.
+  - STATUS (fase 1 entregue): tabelas `quests`/`quest_tasks`/
+    `quest_task_completions`/`quest_completions`; CRUD de missão e tarefas
+    (ligadas a regras); conclusão automática (tarefa completa quando a regra
+    dispara no `runTrigger`; missão completa → badge); página pública `/missoes`
+    com progresso. FASE 2 (pendente): QR code, exigir aprovação, pontuação por
+    mínimo de pontos, participantes manuais, datas, público-alvo por papel,
+    opt-out, regras retroativas, imagem de capa.
 
 Configurações de membros:
 

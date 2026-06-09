@@ -310,6 +310,56 @@
     @apply flex justify-end border-t border-border bg-muted/20 p-3;
   }
 
+  /* Missões (quests). */
+  .q-textarea {
+    @apply w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+  .quest-cards {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+  .quest-card {
+    @apply rounded-lg border border-border bg-card p-5;
+  }
+  .quest-card--done {
+    @apply border-emerald-500/40;
+  }
+  .quest-card__head {
+    @apply flex items-center justify-between gap-3;
+  }
+  .quest-card__title {
+    @apply text-lg font-semibold;
+  }
+  .quest-card__done {
+    @apply inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400;
+  }
+  .quest-card__desc {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  .quest-tasks {
+    @apply mt-4 space-y-2;
+  }
+  .quest-task {
+    @apply flex items-start gap-2.5 rounded-md bg-muted/30 px-3 py-2;
+  }
+  .quest-task__mark {
+    @apply mt-0.5 shrink-0 text-muted-foreground;
+  }
+  .quest-task--done .quest-task__mark {
+    @apply text-emerald-500;
+  }
+  .quest-task__title {
+    @apply block font-medium;
+  }
+  .quest-task--done .quest-task__title {
+    @apply text-muted-foreground line-through;
+  }
+  .quest-task__title--link {
+    @apply hover:text-primary hover:underline;
+  }
+  .quest-task__desc {
+    @apply block text-sm text-muted-foreground;
+  }
+
   /* Promoção de grupos (admin). */
   .rule-list {
     @apply mt-6 space-y-2;

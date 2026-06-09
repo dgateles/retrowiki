@@ -54,6 +54,9 @@ export async function SiteHeader() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/guias">Guias</Link>
           </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/missoes">Missões</Link>
+          </Button>
         </nav>
 
         <SearchBox className="site-header__search" />

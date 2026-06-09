@@ -416,6 +416,42 @@ export const promotionRules = mysqlTable("promotion_rules", {
   createdAt: createdAt(),
 }, (t) => [index("promotion_rules_order_idx").on(t.sortOrder)]);
 
+// ── Quests (missões) ─────────────────────────────────────────────────────
+export const quests = mysqlTable("quests", {
+  id: pk(),
+  title: varchar("title", { length: 160 }).notNull(),
+  description: varchar("description", { length: 2000 }).notNull().default(""),
+  enabled: boolean("enabled").notNull().default(false),
+  sortOrder: int("sort_order").notNull().default(0),
+  rewardBadge: varchar("reward_badge", { length: 80 }), // slug da badge (opcional)
+  createdAt: createdAt(),
+}, (t) => [index("quests_order_idx").on(t.sortOrder)]);
+
+export const questTasks = mysqlTable("quest_tasks", {
+  id: pk(),
+  questId: bigint("quest_id", { mode: "number" }).notNull(),
+  title: varchar("title", { length: 160 }).notNull(),
+  description: varchar("description", { length: 1000 }).notNull().default(""),
+  link: varchar("link", { length: 400 }),
+  ruleId: bigint("rule_id", { mode: "number" }).notNull(), // achievement_rules.id
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("quest_tasks_quest_idx").on(t.questId), index("quest_tasks_rule_idx").on(t.ruleId)]);
+
+export const questTaskCompletions = mysqlTable("quest_task_completions", {
+  id: pk(),
+  taskId: bigint("task_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  completedAt: createdAt(),
+}, (t) => [uniqueIndex("quest_task_completion_idx").on(t.taskId, t.userId)]);
+
+export const questCompletions = mysqlTable("quest_completions", {
+  id: pk(),
+  questId: bigint("quest_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  completedAt: createdAt(),
+}, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
+
 // Configurações da plataforma (chave/valor JSON). Genérico e reusável.
 export const appSettings = mysqlTable("app_settings", {
   id: pk(),

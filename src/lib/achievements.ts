@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { achievementRules, users, comments, articles, votes } from "@/db/schema";
 import { awardBadgeBySlug, evaluateBadges } from "@/lib/badges";
 import { getAchievementSettings } from "@/lib/settings";
+import { progressQuestsForRule } from "@/lib/admin/quests";
 
 export type Recipient = { key: "actor" | "target"; label: string };
 export type TriggerDef = { label: string; recipients: Recipient[] };
@@ -182,6 +183,7 @@ export async function runTrigger(
       if (!actorExcluded) {
         await applyReward(ctx.actorId, rule.rewards.actor);
         affected.add(ctx.actorId);
+        await progressQuestsForRule(ctx.actorId, rule.id);
       }
       if (target && !targetExcluded && rule.rewards.target) {
         await applyReward(target, rule.rewards.target);

@@ -85,6 +85,13 @@
       "when": 1781026665799,
       "tag": "0011_dusty_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1781027126799,
+      "tag": "0012_lucky_bedlam",
+      "breakpoints": true
     }
   ]
 }
