@@ -21,7 +21,11 @@ const GROUPS: NavGroup[] = [
   },
   {
     title: "Conquistas",
-    links: [{ href: "/admin/gamificacao", label: "Gamificação" }],
+    links: [
+      { href: "/admin/regras", label: "Regras" },
+      { href: "/admin/ranks", label: "Ranks" },
+      { href: "/admin/gamificacao", label: "Gamificação" },
+    ],
   },
   {
     title: "Conteúdo",

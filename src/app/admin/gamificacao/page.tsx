@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { BookOpen, PenLine, Library, MessageCircle, MessagesSquare, Star, Trophy, Award, type LucideIcon } from "lucide-react";
-import { rankTiers } from "@/lib/ranks";
 import { listBadgesWithCounts } from "@/lib/badges";
 import { GamificationTools } from "@/components/admin/gamification-tools";
 
@@ -12,7 +12,6 @@ const ICONS: Record<string, LucideIcon> = {
 const TIER_LABEL: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro" };
 
 export default async function AdminGamificationPage() {
-  const tiers = rankTiers();
   const badges = await listBadgesWithCounts();
 
   return (
@@ -43,15 +42,9 @@ export default async function AdminGamificationPage() {
 
       <section className="gami-section">
         <h2 className="gami-section__title">Ranks por reputação</h2>
-        <ol className="rank-list">
-          {tiers.map((t) => (
-            <li key={t.index} className="rank-row">
-              <span className="rank-row__index">{t.index}/{tiers.length}</span>
-              <span className="rank-row__label">{t.label}</span>
-              <span className="rank-row__at">{t.at.toLocaleString("pt-BR")} pts</span>
-            </li>
-          ))}
-        </ol>
+        <p className="muted">
+          Os ranks agora são editáveis em <Link href="/admin/ranks" className="link-inline">Conquistas → Ranks</Link>.
+        </p>
       </section>
     </>
   );

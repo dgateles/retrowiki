@@ -12,6 +12,7 @@ import { blockTreeToText } from "@/lib/blocks/schema";
 import { RichDocSchema, isRichDoc, richDocToText } from "@/lib/blocks/rich-schema";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
+import { runTrigger } from "@/lib/achievements";
 
 // Aceita o corpo no formato novo (editor rico, type: "doc") ou no antigo
 // (árvore de blocos). O corpo chega como string JSON, serializado no cliente
@@ -167,6 +168,7 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
       .set({ status: "published", publishedAt: new Date() })
       .where(eq(articles.id, articleId));
     await evaluateBadges(article.authorId);
+    await runTrigger("guide.published", { actorId: article.authorId });
     revalidatePath("/guias");
     revalidatePath(`/guias/${article.slug}`);
     return { ok: true };
@@ -241,6 +243,7 @@ export async function moderateAction(input: unknown): Promise<Result> {
 
   if (decision === "approved") {
     await evaluateBadges(article.authorId);
+    await runTrigger("guide.published", { actorId: article.authorId });
     revalidatePath("/guias");
     revalidatePath(`/guias/${article.slug}`);
   }

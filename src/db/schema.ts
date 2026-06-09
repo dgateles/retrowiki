@@ -415,6 +415,28 @@ export const promotionRules = mysqlTable("promotion_rules", {
   createdAt: createdAt(),
 }, (t) => [index("promotion_rules_order_idx").on(t.sortOrder)]);
 
+// Ranks (níveis por reputação), editáveis. Seed com os 13 padrões de ranks.ts.
+export const ranks = mysqlTable("ranks", {
+  id: pk(),
+  title: varchar("title", { length: 80 }).notNull(),
+  points: int("points").notNull().default(0), // limiar de reputação
+  icon: varchar("icon", { length: 40 }).notNull().default("Shield"),
+  sortOrder: int("sort_order").notNull().default(0),
+}, (t) => [index("ranks_points_idx").on(t.points)]);
+
+// Regras de conquista (motor When/Then): um gatilho concede pontos e/ou badges
+// a destinatários, com condição opcional de marco (a N-ésima ação).
+export const achievementRules = mysqlTable("achievement_rules", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  trigger: varchar("trigger", { length: 40 }).notNull(),
+  milestone: int("milestone").notNull().default(0), // 0 = toda vez; N = só na N-ésima
+  enabled: boolean("enabled").notNull().default(true),
+  sortOrder: int("sort_order").notNull().default(0),
+  rewards: json("rewards").notNull(), // { actor:{points,badge}, target:{points,badge} }
+  createdAt: createdAt(),
+}, (t) => [index("achievement_rules_trigger_idx").on(t.trigger)]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;

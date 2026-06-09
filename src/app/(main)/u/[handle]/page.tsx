@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
 import { typeLabel } from "@/lib/articles";
-import { rankForReputation, roleLabel } from "@/lib/ranks";
+import { roleLabel } from "@/lib/ranks";
+import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
 import { BadgeList } from "@/components/badges/badge-list";
 
@@ -32,7 +33,7 @@ export default async function ProfilePage({
   const profile = await getProfile(handle);
   if (!profile) notFound();
 
-  const rank = rankForReputation(profile.reputation);
+  const rank = await getRankForReputation(profile.reputation);
   await evaluateBadges(profile.id);
   const userBadges = await getUserBadges(profile.id);
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(

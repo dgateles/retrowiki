@@ -5,7 +5,8 @@ import { ChevronLeft } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
 import { recordView } from "@/lib/article-views";
 import { listComments, getVoteState, isFollowing, commentDocFromBody } from "@/lib/comments";
-import { rankForReputation, roleLabel } from "@/lib/ranks";
+import { roleLabel } from "@/lib/ranks";
+import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { ArticleBody } from "@/lib/blocks/render";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ export default async function ArticlePage({
     getVoteState(a.id, userId),
     isFollowing(a.id, userId),
   ]);
-  const rank = rankForReputation(a.authorReputation);
+  const rank = await getRankForReputation(a.authorReputation);
 
   return (
     <main id="main" className="page">

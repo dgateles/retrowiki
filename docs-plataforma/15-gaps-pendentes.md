@@ -293,11 +293,49 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
 
 Gamificação (conquistas):
 
-- **Regras.** Ações que concedem pontos e badges (comentário publicado,
-  primeiro comentário, guia aprovado, reação recebida, login recorrente, etc.),
-  com pontos configuráveis. Alimenta a reputação que já move os ranks.
-- **Ranks.** Hoje os 13 níveis estão fixos em `src/lib/ranks.ts`. Tornar
-  editáveis (nome, ícone, limiar de pontos) via tabela e tela de admin.
+- **Regras (motor When/Then, detalhado do AdminCP).** Hoje a concessão de pontos
+  e badges é fixa em `evaluateBadges`. O alvo é um motor configurável de regras,
+  no estilo do IPB: cada regra é "Quando [gatilho] (e [condições]) Então
+  [recompensas por destinatário]". Disparam toda vez que o gatilho acontece.
+  - **Lista de regras.** Cada linha mostra o gatilho em texto natural (ex.:
+    "Comentário publicado", "Comentário publicado é o 1º/10º/500º do usuário",
+    "Item de conteúdo seguido", "Reação dada"), a recompensa (X pontos + badge
+    opcional) e o destinatário ("para quem publicou", "para quem foi seguido",
+    "para quem recebeu a reação"). Ações por linha: Editar, Copiar, Excluir,
+    Pausar. Botões: Exportar, Importar, Criar nova.
+  - **Editor (Quando / Então).**
+    - **Quando (gatilho).** Lista adaptada ao que temos: comentário publicado,
+      guia/conteúdo publicado, item de conteúdo seguido, membro seguido (se
+      houver follow de usuário), reação/voto dado, conteúdo destacado por
+      reputação, login do dia, perfil completado. NÃO se aplica: cursos,
+      downloads, clubs, doações, produtos, eventos/RSVP, polls, reviews, blog.
+    - **Condições (opcionais, em E).** Marco/milestone: "é o Nº tal" (1º, 10º,
+      500º). Local: "é um [comentário de guia/console/...]". (Filtros de fórum/
+      categoria do IPB viram, no nosso caso, filtro por console/seção, se fizer
+      sentido.) Condição de quest: não se aplica.
+    - **Então (recompensas).** Um bloco por destinatário possível do gatilho
+      (ex.: "para quem publicou": X pontos + badge; "para quem recebeu a
+      reação": X pontos + badge). Pontos alimentam a reputação que move os ranks.
+  - **Persistência e execução.** Tabela de regras (gatilho, condições JSON,
+    recompensas JSON, ativa/pausada, ordem) + tabela de progresso por usuário
+    para os milestones (contagem de comentários, etc.). Um despachante único é
+    chamado nos eventos (publicar comentário/guia, seguir, reagir, login) e
+    avalia as regras do gatilho. Substitui o `evaluateBadges` fixo, reusando o
+    catálogo de badges e o award já existentes. Export/Import em JSON.
+  - **Nota de esforço.** Item grande (motor de regras + editor visual +
+    progresso por usuário). Dá para entregar em fases: começar com os gatilhos
+    que já disparamos hoje (comentário, guia, reação, login) e os milestones
+    simples, depois ampliar gatilhos e condições.
+- **Ranks (detalhado do AdminCP).** Hoje os 13 níveis estão fixos em
+  `src/lib/ranks.ts`. Tornar editáveis via tabela `ranks` + tela de admin.
+  - **Lista**: ícone, nome, nº de membros no rank, limiar de pontos; busca;
+    ações por linha Editar/Copiar/Excluir; Exportar/Importar/Criar nova.
+  - **Editor**: Título (obrigatório), Nº de pontos (obrigatório), "Criar imagem
+    custom" (toggle) + upload de imagem (liga ao Bunny; por enquanto, ícone do
+    conjunto lucide como hoje). Ranks são alcançados por pontos (reputação); o
+    texto remete às Regras de conquista para os critérios.
+  - Migrar `rankForReputation`/`rankTiers` para ler da tabela (com os 13 atuais
+    como seed), mantendo a API usada no perfil e no Member View.
 - **Badges.** Catálogo de conquistas com ícone, critério e concessão automática
   (por regra) ou manual (por moderador). Precisa de tabela de badges e de
   badges-por-usuário.

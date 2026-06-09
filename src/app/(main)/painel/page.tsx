@@ -7,7 +7,7 @@ import { getUserDrafts, typeLabel } from "@/lib/articles";
 import { getCommentCount } from "@/lib/panel";
 import { listNotifications } from "@/lib/notifications";
 import { describeNotification } from "@/lib/notification-text";
-import { rankForReputation } from "@/lib/ranks";
+import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
 import { BadgeList } from "@/components/badges/badge-list";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export default async function PanelPage() {
   ).length;
   const recent = articles.slice(0, 5);
   const recentNotifs = notifications.slice(0, 5);
-  const rank = rankForReputation(user.reputation);
+  const rank = await getRankForReputation(user.reputation);
 
   return (
     <main id="main" className="page">

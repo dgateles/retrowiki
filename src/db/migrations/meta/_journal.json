@@ -57,6 +57,20 @@
       "when": 1781022842409,
       "tag": "0007_bizarre_captain_midlands",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1781024605243,
+      "tag": "0008_even_human_cannonball",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1781025302333,
+      "tag": "0009_cynical_pete_wisdom",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { listMembers } from "@/lib/admin/members";
-import { roleLabel, rankForReputation } from "@/lib/ranks";
+import { roleLabel, rankForTiers } from "@/lib/ranks";
+import { getRankTierList } from "@/lib/admin/ranks-db";
 import { Pager } from "@/components/ui/pager";
 import { MemberRowActions } from "@/components/admin/member-row-actions";
 
@@ -23,6 +24,7 @@ export default async function AdminMembersPage({
   const q = sp.q ?? "";
   const me = await getCurrentUser();
   const { items, hasMore } = await listMembers({ page, q });
+  const tiers = await getRankTierList();
 
   return (
     <>
@@ -46,7 +48,7 @@ export default async function AdminMembersPage({
       ) : (
         <ul className="member-list">
           {items.map((m) => {
-            const rank = rankForReputation(m.reputation);
+            const rank = rankForTiers(m.reputation, tiers);
             return (
               <li
                 key={m.id}

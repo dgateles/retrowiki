@@ -8,6 +8,7 @@ import { comments, votes, articles, notifications, auditLog, articleFollows, use
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
+import { runTrigger } from "@/lib/achievements";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -67,6 +68,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   const [ins] = await db.insert(comments).values({ articleId, authorId: userId, body: valid.json });
   const commentId = (ins as unknown as { insertId: number }).insertId;
   await evaluateBadges(userId);
+  await runTrigger("comment.posted", { actorId: userId, targetId: article.authorId });
 
   // Seguir o tópico ao comentar (se marcado), para receber novas respostas.
   if (parsed.data.follow !== false) {
@@ -259,7 +261,9 @@ export async function voteAction(articleId: number): Promise<Result<{ voted: boo
     voted = true;
   }
 
-  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, articleId)).limit(1);
+  const [a] = await db.select({ slug: articles.slug, authorId: articles.authorId }).from(articles).where(eq(articles.id, articleId)).limit(1);
   if (a) revalidatePath(`/guias/${a.slug}`);
+  // Só concede conquista ao reagir (não ao desfazer o voto).
+  if (voted && a) await runTrigger("reaction.given", { actorId: userId, targetId: a.authorId });
   return { ok: true, data: { voted } };
 }

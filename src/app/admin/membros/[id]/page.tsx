@@ -5,7 +5,8 @@ import { getCurrentUser } from "@/lib/auth-helpers";
 import { getMemberDetail, getMemberAudit } from "@/lib/admin/member-detail";
 import { getMemberIps, deviceLabel } from "@/lib/ip";
 import { getUserBadges } from "@/lib/badges";
-import { rankForReputation, roleLabel } from "@/lib/ranks";
+import { roleLabel } from "@/lib/ranks";
+import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { Button } from "@/components/ui/button";
 import { MemberManage } from "@/components/admin/member-manage";
 
@@ -37,7 +38,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   const [me, member] = await Promise.all([getCurrentUser(), getMemberDetail(memberId)]);
   if (!member) notFound();
   const [badges, audit, ips] = await Promise.all([getUserBadges(memberId), getMemberAudit(memberId), getMemberIps(memberId)]);
-  const rank = rankForReputation(member.reputation);
+  const rank = await getRankForReputation(member.reputation);
   const isSelf = Number(me?.id) === memberId;
   const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
