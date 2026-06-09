@@ -219,3 +219,22 @@ export async function getAssignmentSettings(): Promise<AssignmentSettings> {
   const raw = await getSetting<Partial<AssignmentSettings>>("assignments", ASSIGN_DEFAULTS);
   return sanitizeAssignmentSettings({ ...ASSIGN_DEFAULTS, ...raw });
 }
+
+// ── Configurações de staff (selo, expurgo de logs) ───────────────────────
+
+export type StaffSettings = { showBadge: boolean; logPruneDays: number };
+
+const STAFF_DEFAULTS: StaffSettings = { showBadge: true, logPruneDays: 0 };
+
+export function sanitizeStaffSettings(raw: unknown): StaffSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    showBadge: r.showBadge === undefined ? STAFF_DEFAULTS.showBadge : Boolean(r.showBadge),
+    logPruneDays: Math.max(0, Math.min(3650, Math.floor(Number(r.logPruneDays) || 0))),
+  };
+}
+
+export async function getStaffSettings(): Promise<StaffSettings> {
+  const raw = await getSetting<Partial<StaffSettings>>("staff", STAFF_DEFAULTS);
+  return sanitizeStaffSettings({ ...STAFF_DEFAULTS, ...raw });
+}

@@ -637,6 +637,32 @@
   .warn-list__note {
     @apply block text-sm text-muted-foreground;
   }
+  /* Staff / log de moderação */
+  .staff-groups {
+    @apply flex flex-col divide-y divide-border/60 rounded-lg border border-border;
+  }
+  .staff-groups__row {
+    @apply flex items-center justify-between px-3 py-2.5;
+  }
+  .staff-groups__name {
+    @apply font-medium;
+  }
+  .modlog {
+    @apply overflow-hidden rounded-lg border border-border;
+  }
+  .modlog__head,
+  .modlog__row {
+    @apply grid grid-cols-[1fr_1.4fr_1.2fr_auto] items-center gap-3 px-3 py-2;
+  }
+  .modlog__head {
+    @apply border-b border-border bg-muted/40 text-xs font-medium uppercase tracking-wide text-muted-foreground;
+  }
+  .modlog__row {
+    @apply border-b border-border/60 text-sm last:border-0;
+  }
+  .modlog__target {
+    @apply font-mono text-xs text-muted-foreground;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

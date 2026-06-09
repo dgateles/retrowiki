@@ -485,7 +485,15 @@ Moderação de conteúdo:
 
 Equipe:
 
-- **Moderadores e administradores.** Listas da equipe com escopo de permissão.
+- **Moderadores e administradores.** STATUS: entregue (`/admin/moderadores`).
+  Visão geral da equipe (contagem de Administradores e Moderadores) com link para
+  **Grupos** (onde já moram as permissões de moderador = `role_permissions`).
+  Config de staff: **mostrar selo de staff** no conteúdo (`getStaffSettings`,
+  liga/desliga o badge do autor admin/moderador nos guias — verificado) e expurgo
+  do log. **Log de moderação**: surface paginado do `audit_log` (autor, ação
+  legível via `auditLabel`, alvo, data). "Add Moderator" = definir o papel do
+  membro em Membros (já existe); permissões restritas/irrestritas por papel já
+  ficam em Grupos. ADIADO: log com IP por ação e o expurgo automático (cron).
 - **Diretório da equipe.** Página pública de quem modera a comunidade.
 
 Gerenciamento de páginas e conteúdo:

@@ -61,8 +61,52 @@ const ACTION_LABEL: Record<string, string> = {
   device_create: "cadastrou um console",
   device_update: "editou um console",
   hide_comment: "ocultou um comentário",
+  warn_member: "advertiu um membro",
+  flag_spammer: "marcou como spammer",
+  assign_content: "atribuiu um guia",
+  report_completed: "removeu conteúdo denunciado",
+  report_rejected: "arquivou uma denúncia",
+  ban_filter_create: "criou um filtro de ban",
+  ban_filter_delete: "removeu um filtro de ban",
+  user_create: "criou um membro",
+  user_force_reset: "forçou troca de senha",
+  members_import: "importou membros",
+  notif_prefs_reset: "redefiniu preferências de notificação",
+  user_set_role: "alterou o papel de um membro",
+  user_set_reputation: "ajustou a reputação de um membro",
+  auto_promotion: "promoveu um membro (automático)",
 };
 
 export function auditLabel(action: string): string {
   return ACTION_LABEL[action] ?? action.replace(/_/g, " ");
+}
+
+export type ModLogEntry = { id: number; action: string; target: string; createdAt: Date; actorName: string | null; actorHandle: string | null };
+
+/** Log de moderação paginado (audit_log com o nome do autor). */
+export async function getModeratorLog(page = 1, pageSize = 30): Promise<{ items: ModLogEntry[]; hasMore: boolean }> {
+  try {
+    const offset = Math.max(0, (page - 1) * pageSize);
+    const rows = await db
+      .select({ id: auditLog.id, action: auditLog.action, target: auditLog.target, createdAt: auditLog.createdAt, actorName: users.displayName, actorHandle: users.handle })
+      .from(auditLog)
+      .leftJoin(users, eq(users.id, auditLog.actorId))
+      .orderBy(desc(auditLog.createdAt))
+      .limit(pageSize + 1)
+      .offset(offset);
+    return { items: rows.slice(0, pageSize), hasMore: rows.length > pageSize };
+  } catch {
+    return { items: [], hasMore: false };
+  }
+}
+
+/** Contagem de membros por papel de staff. */
+export async function getStaffCounts(): Promise<{ moderators: number; admins: number }> {
+  try {
+    const [m] = await db.select({ n: count() }).from(users).where(eq(users.role, "moderator"));
+    const [a] = await db.select({ n: count() }).from(users).where(eq(users.role, "admin"));
+    return { moderators: m?.n ?? 0, admins: a?.n ?? 0 };
+  } catch {
+    return { moderators: 0, admins: 0 };
+  }
 }

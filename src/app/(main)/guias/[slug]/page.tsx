@@ -15,7 +15,7 @@ import { listEnabledReactions, getReactionCounts, getUserReaction } from "@/lib/
 import { getReputationSettings, getReportingSettings } from "@/lib/settings";
 import { listReportTypes } from "@/lib/reports";
 import { ReportButton } from "@/components/moderation/report-button";
-import { getAssignmentSettings } from "@/lib/settings";
+import { getAssignmentSettings, getStaffSettings } from "@/lib/settings";
 import { getAssigneeOptions, assignmentsForContent } from "@/lib/assignments";
 import { AssignButton } from "@/components/moderation/assign-button";
 import { SharePopover } from "@/components/engagement/share-popover";
@@ -79,6 +79,7 @@ export default async function ArticlePage({
     listReportTypes(),
   ]);
   const reportTypeOpts = reportTypes.map((t) => ({ id: t.id, title: t.title }));
+  const staffSettings = await getStaffSettings();
 
   // Atribuições (só para moderadores).
   const assignSettings = isMod ? await getAssignmentSettings() : { enabled: false, autoCloseDays: 0 };
@@ -146,7 +147,7 @@ export default async function ArticlePage({
               </p>
             </div>
           </div>
-          {(a.authorRole === "moderator" || a.authorRole === "admin") && (
+          {staffSettings.showBadge && (a.authorRole === "moderator" || a.authorRole === "admin") && (
             <span className="post__badge">{roleLabel(a.authorRole)}</span>
           )}
         </header>
