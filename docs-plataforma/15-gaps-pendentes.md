@@ -148,14 +148,18 @@ Implicações de arquitetura:
   artigo.
 
 ## Comentários
-- **Edição e remoção pelo autor, respostas aninhadas.** Hoje o comentário é
-  simples (criar e, para moderador, ocultar). Falta editar, apagar e responder.
-- **Formulário de resposta rico (referência IPB).** A caixa de resposta usa o
-  editor rico (depende do WYSIWYG no backlog), com avatar do autor, anexos por
-  arrastar-e-soltar (com limite de tamanho), alternância "Seguir tópico"
-  (notificações de novas respostas) e, para a equipe, "Ocultar", além do botão
-  "Enviar resposta". O corpo do comentário deixa de ser texto puro e passa a
-  guardar a árvore de blocos segura, como os guias.
+
+STATUS: implementado. O corpo do comentário agora é rico (editor com toolbar
+reduzida: lista, spoiler, negrito, itálico, sublinhado, cor, destaque, emoji),
+validado pela mesma allowlist dos guias e renderizado com segurança (formato
+antigo de texto puro ainda suportado). Entregue: avatar do autor no comentário e
+no formulário, editar e excluir pelo próprio autor (excluir também por
+moderador), responder com citação (insere o comentário citado num blockquote
+"X atrás, @autor disse:" e foca o editor), seguir o tópico (tabela
+`article_follows`) com notificação aos seguidores a cada nova resposta, e
+"Ocultar" para a equipe. Pendência: anexos por arrastar-e-soltar (dependem do
+armazenamento de mídia) e respostas aninhadas em árvore (hoje a resposta é
+linear, com citação).
 
 ## Operação
 - **Agendar o cron.** O endpoint `/api/cron/sync-github` existe e é protegido por

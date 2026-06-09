@@ -28,7 +28,7 @@ export function RichArticleEditor({ initial }: { initial?: Initial }) {
   const [pending, setPending] = useState(false);
 
   async function ensureSaved(): Promise<number | null> {
-    const payload = { title, type: type as (typeof TYPES)[number]["type"], deviceId: null, body: doc ?? { type: "doc", content: [{ type: "paragraph" }] } };
+    const payload = { title, type: type as (typeof TYPES)[number]["type"], deviceId: null, body: JSON.stringify(doc ?? { type: "doc", content: [{ type: "paragraph" }] }) };
     const res = initial?.articleId
       ? await updateDraftAction(initial.articleId, payload)
       : await createDraftAction(payload);

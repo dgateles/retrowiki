@@ -256,7 +256,18 @@ export const comments = mysqlTable("comments", {
     .notNull()
     .default("visible"),
   createdAt: createdAt(),
+  editedAt: datetime("edited_at"),
 }, (t) => [index("comments_article_idx").on(t.articleId)]);
+
+export const articleFollows = mysqlTable("article_follows", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  articleId: bigint("article_id", { mode: "number" }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("article_follows_user_article_idx").on(t.userId, t.articleId),
+  index("article_follows_article_idx").on(t.articleId),
+]);
 
 export const votes = mysqlTable("votes", {
   id: pk(),

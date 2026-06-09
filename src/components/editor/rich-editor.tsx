@@ -159,7 +159,8 @@ function EmojiMenu({ onPick }: { onPick: (c: string) => void }) {
   );
 }
 
-function Toolbar({ editor }: { editor: Editor }) {
+function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full" | "comment" }) {
+  const full = variant !== "comment";
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [imgOpen, setImgOpen] = useState(false);
@@ -211,28 +212,29 @@ function Toolbar({ editor }: { editor: Editor }) {
   return (
     <>
       <div className="rte__toolbar">
-      <BlockMenu value={s.block} onSet={setBlock} />
+      {full && <BlockMenu value={s.block} onSet={setBlock} />}
 
       <Menu label="Inserir" trigger={<Plus className="size-4" />}>
         <DropdownMenuItem onSelect={() => run(() => chain().toggleBulletList().run())}><List aria-hidden="true" /> Lista com marcadores</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().toggleOrderedList().run())}><ListOrdered aria-hidden="true" /> Lista numerada</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run(() => chain().toggleCodeBlock().run())}><Code2 aria-hidden="true" /> Bloco de código</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("box").run())}><SquareStack aria-hidden="true" /> Box</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("spoiler").run())}><EyeOff aria-hidden="true" /> Spoiler</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run(() => chain().toggleBlockquote().run())}><Quote aria-hidden="true" /> Citação</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run(() => chain().setHorizontalRule().run())}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run(() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())}><TableIcon aria-hidden="true" /> Tabela</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setImgOpen(true)}><ImageIcon aria-hidden="true" /> Imagem</DropdownMenuItem>
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleCodeBlock().run())}><Code2 aria-hidden="true" /> Bloco de código</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("box").run())}><SquareStack aria-hidden="true" /> Box</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleBlockquote().run())}><Quote aria-hidden="true" /> Citação</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().setHorizontalRule().run())}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())}><TableIcon aria-hidden="true" /> Tabela</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => setImgOpen(true)}><ImageIcon aria-hidden="true" /> Imagem</DropdownMenuItem>}
       </Menu>
 
       <span className="rte__sep" aria-hidden="true" />
       <TBtn label="Negrito" active={s.bold} onClick={() => chain().toggleBold().run()}><Bold className="size-4" /></TBtn>
       <TBtn label="Itálico" active={s.italic} onClick={() => chain().toggleItalic().run()}><Italic className="size-4" /></TBtn>
       <TBtn label="Sublinhado" active={s.underline} onClick={() => chain().toggleUnderline().run()}><UnderlineIcon className="size-4" /></TBtn>
-      <TBtn label="Tachado" active={s.strike} onClick={() => chain().toggleStrike().run()}><Strikethrough className="size-4" /></TBtn>
-      <TBtn label="Código inline" active={s.code} onClick={() => chain().toggleCode().run()}><Code className="size-4" /></TBtn>
+      {full && <TBtn label="Tachado" active={s.strike} onClick={() => chain().toggleStrike().run()}><Strikethrough className="size-4" /></TBtn>}
+      {full && <TBtn label="Código inline" active={s.code} onClick={() => chain().toggleCode().run()}><Code className="size-4" /></TBtn>}
 
       <span className="rte__sep" aria-hidden="true" />
+      {full && (
       <Menu label="Tamanho da fonte" trigger={<Type className="size-4" />}>
         {FONT_SIZES.map((fs) => (
           <DropdownMenuItem key={fs} onSelect={() => run(() => (fs === "100%" ? chain().unsetFontSize().run() : chain().setFontSize(fs).run()))}>
@@ -240,6 +242,7 @@ function Toolbar({ editor }: { editor: Editor }) {
           </DropdownMenuItem>
         ))}
       </Menu>
+      )}
 
       <Menu label="Cor do texto" trigger={<Palette className="size-4" />}>
         {TEXT_COLORS.map((c) => (
@@ -257,21 +260,23 @@ function Toolbar({ editor }: { editor: Editor }) {
         ))}
       </Menu>
 
+      {full && (
       <Menu label="Alinhamento" trigger={<AlignLeft className="size-4" />}>
         <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("left").run())}><AlignLeft aria-hidden="true" /> Esquerda</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("center").run())}><AlignCenter aria-hidden="true" /> Centro</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("right").run())}><AlignRight aria-hidden="true" /> Direita</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("justify").run())}><AlignJustify aria-hidden="true" /> Justificado</DropdownMenuItem>
       </Menu>
+      )}
 
       <span className="rte__sep" aria-hidden="true" />
-      <TBtn label="Subscrito" active={s.sub} onClick={() => chain().toggleSubscript().run()}><SubIcon className="size-4" /></TBtn>
-      <TBtn label="Sobrescrito" active={s.sup} onClick={() => chain().toggleSuperscript().run()}><SupIcon className="size-4" /></TBtn>
-      <TBtn label="Link" active={s.link} onClick={openLink}><LinkIcon className="size-4" /></TBtn>
+      {full && <TBtn label="Subscrito" active={s.sub} onClick={() => chain().toggleSubscript().run()}><SubIcon className="size-4" /></TBtn>}
+      {full && <TBtn label="Sobrescrito" active={s.sup} onClick={() => chain().toggleSuperscript().run()}><SupIcon className="size-4" /></TBtn>}
+      {full && <TBtn label="Link" active={s.link} onClick={openLink}><LinkIcon className="size-4" /></TBtn>}
 
       <EmojiMenu onPick={(c) => chain().insertContent(c).run()} />
 
-      <TBtn label="Limpar formatação" onClick={() => chain().unsetAllMarks().run()}><RemoveFormatting className="size-4" /></TBtn>
+      {full && <TBtn label="Limpar formatação" onClick={() => chain().unsetAllMarks().run()}><RemoveFormatting className="size-4" /></TBtn>}
 
       <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
         <DialogContent aria-describedby={undefined}>
@@ -358,14 +363,14 @@ function Toolbar({ editor }: { editor: Editor }) {
   );
 }
 
-export function RichEditor({ value, onChange }: { value?: JSONContent; onChange: (doc: JSONContent) => void }) {
+export function RichEditor({ value, onChange, variant = "full", placeholder = "Escreva o conteúdo do guia…" }: { value?: JSONContent; onChange: (doc: JSONContent) => void; variant?: "full" | "comment"; placeholder?: string }) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] }, link: false, underline: false }),
       Underline,
       Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { rel: "nofollow noopener noreferrer" } }),
-      Placeholder.configure({ placeholder: "Escreva o conteúdo do guia…" }),
+      Placeholder.configure({ placeholder }),
       TextStyle,
       Color,
       FontSize,
@@ -390,7 +395,7 @@ export function RichEditor({ value, onChange }: { value?: JSONContent; onChange:
 
   return (
     <div className="rte">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} variant={variant} />
       <EditorContent editor={editor} />
     </div>
   );

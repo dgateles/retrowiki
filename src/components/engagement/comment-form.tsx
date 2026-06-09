@@ -1,24 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { RichEditor } from "@/components/editor/rich-editor";
+import { CommentAvatar } from "@/components/engagement/comment-avatar";
+import { COMMENT_REPLY_EVENT } from "@/components/engagement/comment-reply-button";
 import { addCommentAction } from "@/lib/actions/engagement-actions";
 
-export function CommentForm({ articleId }: { articleId: number }) {
+const EMPTY: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
+
+// Há texto não vazio em algum nó do doc?
+export function docHasText(doc: JSONContent | undefined): boolean {
+  if (!doc) return false;
+  const walk = (n: JSONContent): boolean => {
+    if (n.type === "text" && (n.text ?? "").trim()) return true;
+    return (n.content ?? []).some(walk);
+  };
+  return (doc.content ?? []).some(walk);
+}
+
+export function CommentForm({ articleId, meName, meAvatar }: { articleId: number; meName: string; meAvatar?: string | null }) {
   const router = useRouter();
-  const [body, setBody] = useState("");
+  const [doc, setDoc] = useState<JSONContent>(EMPTY);
+  const [follow, setFollow] = useState(true);
   const [pending, setPending] = useState(false);
+  const [editorKey, setEditorKey] = useState(0);
+  const ref = useRef<HTMLFormElement>(null);
+
+  // Resposta: recebe a citação do comentário e carrega no editor.
+  useEffect(() => {
+    function onReply(e: Event) {
+      const quote = (e as CustomEvent<JSONContent>).detail;
+      setDoc(quote);
+      setEditorKey((k) => k + 1);
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    window.addEventListener(COMMENT_REPLY_EVENT, onReply);
+    return () => window.removeEventListener(COMMENT_REPLY_EVENT, onReply);
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!docHasText(doc)) return;
     setPending(true);
-    const res = await addCommentAction({ articleId, body });
+    const res = await addCommentAction({ articleId, body: JSON.stringify(doc), follow });
     setPending(false);
     if (res.ok) {
-      setBody("");
+      setDoc(EMPTY);
+      setEditorKey((k) => k + 1);
       toast.success("Comentário publicado.");
       router.refresh();
     } else {
@@ -27,22 +59,20 @@ export function CommentForm({ articleId }: { articleId: number }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-2">
-      <Label htmlFor="comment">Deixe um comentário</Label>
-      <textarea
-        id="comment"
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        required
-        minLength={2}
-        maxLength={2000}
-        rows={3}
-        className="editor__control"
-        placeholder="Compartilhe sua experiência ou tire uma dúvida"
-      />
-      <Button type="submit" size="sm" disabled={pending || body.trim().length < 2}>
-        {pending ? "Enviando…" : "Comentar"}
-      </Button>
+    <form ref={ref} onSubmit={onSubmit} className="comment-form">
+      <CommentAvatar name={meName} src={meAvatar} />
+      <div className="comment-form__main">
+        <RichEditor key={editorKey} value={doc} onChange={setDoc} variant="comment" placeholder="Escreva um comentário…" />
+        <div className="comment-form__foot">
+          <label className="comment-form__follow">
+            <input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} />
+            Seguir o tópico e receber novas respostas
+          </label>
+          <Button type="submit" size="sm" disabled={pending || !docHasText(doc)}>
+            {pending ? "Enviando…" : "Comentar"}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 }

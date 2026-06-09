@@ -14,10 +14,19 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
 
 // Aceita o corpo no formato novo (editor rico, type: "doc") ou no antigo
-// (árvore de blocos). Valida por allowlist e devolve o texto para busca.
+// (árvore de blocos). O corpo chega como string JSON, serializado no cliente
+// para passar limpo pela fronteira do Server Action (objetos do editor viram
+// "client references" e quebram o acesso no servidor). Valida por allowlist.
 function validateBody(
-  body: unknown,
+  raw: unknown,
 ): { ok: true; body: unknown; searchText: string } | { ok: false; error: string } {
+  if (typeof raw !== "string" || raw.length > 2_000_000) return { ok: false, error: "Conteúdo inválido." };
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return { ok: false, error: "Conteúdo inválido." };
+  }
   if (isRichDoc(body)) {
     const r = RichDocSchema.safeParse(body);
     if (!r.success) return { ok: false, error: r.error.issues[0]?.message ?? "Conteúdo inválido." };

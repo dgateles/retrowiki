@@ -1,19 +1,41 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, votes, articles, notifications, auditLog } from "@/db/schema";
+import { comments, votes, articles, notifications, auditLog, articleFollows } from "@/db/schema";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
+import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
 
-const CommentSchema = z.object({
+// Valida e serializa o corpo rico de um comentário (mesma allowlist dos guias).
+// O corpo chega como string JSON (o doc do editor é serializado no cliente para
+// passar limpo pela fronteira do Server Action).
+function validateCommentBody(raw: unknown): { ok: true; json: string; text: string } | { ok: false; error: string } {
+  if (typeof raw !== "string" || raw.length > 200_000) return { ok: false, error: "Comentário inválido." };
+  let doc: unknown;
+  try {
+    doc = JSON.parse(raw);
+  } catch {
+    return { ok: false, error: "Comentário inválido." };
+  }
+  if (!isRichDoc(doc)) return { ok: false, error: "Comentário inválido." };
+  const parsed = RichDocSchema.safeParse(doc);
+  if (!parsed.success) return { ok: false, error: "Comentário inválido." };
+  const text = richDocToText(parsed.data);
+  if (text.trim().length < 2) return { ok: false, error: "Comentário muito curto." };
+  if (text.length > 5000) return { ok: false, error: "Comentário muito longo." };
+  return { ok: true, json: JSON.stringify(parsed.data), text };
+}
+
+const AddSchema = z.object({
   articleId: z.number().int().positive(),
-  body: z.string().trim().min(2, "Comentário muito curto.").max(2000),
+  body: z.string(),
+  follow: z.boolean().optional(),
 });
 
 export async function addCommentAction(input: unknown): Promise<Result> {
@@ -26,11 +48,13 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   const rl = await checkRateLimit(`comment:${user.id}`, 10, 60_000);
   if (!rl.ok) return { ok: false, error: "Muitos comentários. Aguarde um momento." };
 
-  const parsed = CommentSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
-  }
-  const { articleId, body } = parsed.data;
+  const parsed = AddSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Dados inválidos." };
+  const valid = validateCommentBody(parsed.data.body);
+  if (!valid.ok) return { ok: false, error: valid.error };
+
+  const { articleId } = parsed.data;
+  const userId = Number(user.id);
 
   const [article] = await db
     .select({ slug: articles.slug, authorId: articles.authorId, title: articles.title, status: articles.status })
@@ -39,22 +63,118 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     .limit(1);
   if (!article || article.status !== "published") return { ok: false, error: "Artigo indisponível." };
 
-  await db.insert(comments).values({ articleId, authorId: Number(user.id), body });
-  await evaluateBadges(Number(user.id));
+  await db.insert(comments).values({ articleId, authorId: userId, body: valid.json });
+  await evaluateBadges(userId);
 
-  if (article.authorId !== Number(user.id)) {
+  // Seguir o tópico ao comentar (se marcado), para receber novas respostas.
+  if (parsed.data.follow !== false) {
+    await db.insert(articleFollows).values({ userId, articleId }).catch(() => {});
+  }
+
+  // Notificar o autor do artigo e quem segue o tópico, menos quem comentou.
+  const followers = await db
+    .select({ userId: articleFollows.userId })
+    .from(articleFollows)
+    .where(and(eq(articleFollows.articleId, articleId), ne(articleFollows.userId, userId)));
+  const recipients = new Set<number>(followers.map((f) => f.userId));
+  if (article.authorId !== userId) recipients.add(article.authorId);
+  for (const rid of recipients) {
     await db
       .insert(notifications)
-      .values({
-        recipientId: article.authorId,
-        type: "comment.reply",
-        payload: { slug: article.slug, title: article.title },
-      })
+      .values({ recipientId: rid, type: "comment.reply", payload: { slug: article.slug, title: article.title } })
       .catch(() => {});
   }
 
   revalidatePath(`/guias/${article.slug}`);
   return { ok: true };
+}
+
+export async function editCommentAction(commentId: number, body: unknown): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+
+  const [row] = await db
+    .select({ id: comments.id, authorId: comments.authorId, articleId: comments.articleId })
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  if (!row) return { ok: false, error: "Comentário não encontrado." };
+  if (row.authorId !== Number(user.id)) return { ok: false, error: "Você só pode editar seus comentários." };
+
+  const valid = validateCommentBody(body);
+  if (!valid.ok) return { ok: false, error: valid.error };
+
+  await db.update(comments).set({ body: valid.json, editedAt: new Date() }).where(eq(comments.id, commentId));
+
+  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/guias/${a.slug}`);
+  return { ok: true };
+}
+
+export async function deleteCommentAction(commentId: number): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+
+  const [row] = await db
+    .select({ id: comments.id, authorId: comments.authorId, articleId: comments.articleId })
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  if (!row) return { ok: false, error: "Comentário não encontrado." };
+
+  const userId = Number(user.id);
+  let isMod = false;
+  if (row.authorId !== userId) {
+    try {
+      await requireRole("moderator");
+      isMod = true;
+    } catch {
+      return { ok: false, error: "Sem permissão." };
+    }
+  }
+
+  await db.delete(comments).where(eq(comments.id, commentId));
+  if (isMod) {
+    await db.insert(auditLog).values({ actorId: userId, action: "delete_comment", target: `comment:${commentId}` });
+  }
+
+  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/guias/${a.slug}`);
+  return { ok: true };
+}
+
+export async function toggleFollowAction(articleId: number): Promise<Result<{ following: boolean }>> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login para seguir." };
+  }
+  const userId = Number(user.id);
+
+  const [existing] = await db
+    .select({ id: articleFollows.id })
+    .from(articleFollows)
+    .where(and(eq(articleFollows.articleId, articleId), eq(articleFollows.userId, userId)))
+    .limit(1);
+
+  let following: boolean;
+  if (existing) {
+    await db.delete(articleFollows).where(eq(articleFollows.id, existing.id));
+    following = false;
+  } else {
+    await db.insert(articleFollows).values({ userId, articleId }).catch(() => {});
+    following = true;
+  }
+  return { ok: true, data: { following } };
 }
 
 export async function hideCommentAction(commentId: number): Promise<Result> {

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
-import { listComments, getVoteState } from "@/lib/comments";
+import { listComments, getVoteState, isFollowing, commentDocFromBody } from "@/lib/comments";
 import { rankForReputation, roleLabel } from "@/lib/ranks";
 import { ArticleBody } from "@/lib/blocks/render";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import { VoteButton } from "@/components/engagement/vote-button";
 import { SharePopover } from "@/components/engagement/share-popover";
 import { CommentForm } from "@/components/engagement/comment-form";
+import { CommentBody } from "@/components/engagement/comment-body";
+import { CommentActions } from "@/components/engagement/comment-actions";
+import { CommentAvatar } from "@/components/engagement/comment-avatar";
+import { CommentReplyButton } from "@/components/engagement/comment-reply-button";
+import { FollowButton } from "@/components/engagement/follow-button";
 import { HideCommentButton } from "@/components/engagement/hide-comment-button";
 import { auth } from "@/auth";
 import { can } from "@/lib/auth-helpers";
@@ -31,6 +36,17 @@ function initials(name: string) {
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? parts[0]?.[1] ?? "")).toUpperCase();
 }
 
+function relTime(d: Date) {
+  const min = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const days = Math.floor(h / 24);
+  if (days < 30) return `há ${days} d`;
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(d);
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -43,9 +59,10 @@ export default async function ArticlePage({
   const session = await auth();
   const userId = session?.user ? Number(session.user.id) : null;
   const isMod = can.moderate(session?.user ?? null);
-  const [comments, vote] = await Promise.all([
+  const [comments, vote, following] = await Promise.all([
     listComments(a.id),
     getVoteState(a.id, userId),
+    isFollowing(a.id, userId),
   ]);
   const rank = rankForReputation(a.authorReputation);
 
@@ -134,36 +151,60 @@ export default async function ArticlePage({
       </Button>
 
       <section aria-labelledby="comentarios" className="comments">
-        <h2 id="comentarios" className="comments__title">
-          Comentários ({comments.length})
-        </h2>
+        <div className="comments__head">
+          <h2 id="comentarios" className="comments__title">
+            Comentários ({comments.length})
+          </h2>
+          {userId && <FollowButton articleId={a.id} initialFollowing={following} />}
+        </div>
 
         {comments.length > 0 && (
           <ul className="comments__list">
-            {comments.map((c) => (
-              <li key={c.id} className="comment">
-                <div className="comment__head">
-                  <Link href={`/u/${c.authorHandle}`} className="comment__author">
-                    @{c.authorHandle}
-                  </Link>
-                  <time className="comment__date" dateTime={new Date(c.createdAt).toISOString()}>
-                    {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(c.createdAt))}
-                  </time>
-                </div>
-                <p className="comment__body">{c.body}</p>
-                {isMod && (
-                  <div className="mt-2">
-                    <HideCommentButton commentId={c.id} />
+            {comments.map((c) => {
+              const owner = userId === c.authorId;
+              const when = relTime(new Date(c.createdAt));
+              return (
+                <li key={c.id} className="comment">
+                  <CommentAvatar name={c.authorName} src={c.authorAvatar} />
+                  <div className="comment__main">
+                    <div className="comment__head">
+                      <Link href={`/u/${c.authorHandle}`} className="comment__author">
+                        {c.authorName}
+                      </Link>
+                      <time className="comment__date" dateTime={new Date(c.createdAt).toISOString()}>
+                        {when}
+                        {c.editedAt && <span className="comment__edited"> (editado)</span>}
+                      </time>
+                    </div>
+                    <CommentBody body={c.body} />
+                    <div className="comment__foot">
+                      {userId && (
+                        <CommentReplyButton
+                          quotedDoc={commentDocFromBody(c.body) as never}
+                          authorName={c.authorName}
+                          when={when}
+                        />
+                      )}
+                      {(owner || isMod) && (
+                        <CommentActions
+                          commentId={c.id}
+                          initialDoc={commentDocFromBody(c.body) as never}
+                          canEdit={owner}
+                          canDelete={owner || isMod}
+                        />
+                      )}
+                      {isMod && <HideCommentButton commentId={c.id} />}
+                    </div>
                   </div>
-                )}
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
 
         <div className="mt-6">
           {userId ? (
-            <CommentForm articleId={a.id} />
+            <CommentForm articleId={a.id} meName={session?.user?.name ?? "Você"} meAvatar={session?.user?.image ?? null} />
           ) : (
             <p className="muted">
               <Link href="/auth/entrar" className="underline">Entre</Link> para comentar e votar.

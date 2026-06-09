@@ -1,13 +1,32 @@
 import "server-only";
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { comments, users, votes, articles } from "@/db/schema";
+import { comments, users, votes, articles, articleFollows } from "@/db/schema";
+import { isRichDoc } from "@/lib/blocks/rich-schema";
+
+/** Converte o corpo salvo (JSON rico ou texto antigo) num doc para o editor. */
+export function commentDocFromBody(body: string): unknown {
+  try {
+    const p = JSON.parse(body);
+    if (isRichDoc(p)) return p;
+  } catch {
+    // texto puro antigo: envolve num parágrafo
+  }
+  return {
+    type: "doc",
+    content: [{ type: "paragraph", content: body.trim() ? [{ type: "text", text: body }] : [] }],
+  };
+}
 
 export type CommentItem = {
   id: number;
   body: string;
+  authorId: number;
   authorHandle: string;
+  authorName: string;
+  authorAvatar: string | null;
   createdAt: Date;
+  editedAt: Date | null;
 };
 
 export async function listComments(articleId: number): Promise<CommentItem[]> {
@@ -16,8 +35,12 @@ export async function listComments(articleId: number): Promise<CommentItem[]> {
       .select({
         id: comments.id,
         body: comments.body,
+        authorId: comments.authorId,
         authorHandle: users.handle,
+        authorName: users.displayName,
+        authorAvatar: users.avatarUrl,
         createdAt: comments.createdAt,
+        editedAt: comments.editedAt,
       })
       .from(comments)
       .innerJoin(users, eq(users.id, comments.authorId))
@@ -26,6 +49,20 @@ export async function listComments(articleId: number): Promise<CommentItem[]> {
       .limit(200);
   } catch {
     return [];
+  }
+}
+
+export async function isFollowing(articleId: number, userId: number | null): Promise<boolean> {
+  if (!userId) return false;
+  try {
+    const [row] = await db
+      .select({ id: articleFollows.id })
+      .from(articleFollows)
+      .where(and(eq(articleFollows.articleId, articleId), eq(articleFollows.userId, userId)))
+      .limit(1);
+    return !!row;
+  } catch {
+    return false;
   }
 }
 

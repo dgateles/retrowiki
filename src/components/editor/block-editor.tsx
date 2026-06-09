@@ -181,7 +181,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
   }
 
   async function ensureSaved(): Promise<number | null> {
-    const body = toBlockTree();
+    const body = JSON.stringify(toBlockTree());
     const payload = { title, type, deviceId: null, body };
     const res = initial?.articleId
       ? await updateDraftAction(initial.articleId, payload)
