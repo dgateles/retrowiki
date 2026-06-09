@@ -362,7 +362,7 @@ export function RichEditor({ value, onChange }: { value?: JSONContent; onChange:
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] } }),
+      StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] }, link: false, underline: false }),
       Underline,
       Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { rel: "nofollow noopener noreferrer" } }),
       Placeholder.configure({ placeholder: "Escreva o conteúdo do guia…" }),
