@@ -35,6 +35,7 @@ const GROUPS: NavGroup[] = [
     links: [
       { href: "/admin/perfis", label: "Perfis" },
       { href: "/admin/reputacao", label: "Reputação & Reações" },
+      { href: "/admin/notificacoes", label: "Notificações" },
     ],
   },
   {

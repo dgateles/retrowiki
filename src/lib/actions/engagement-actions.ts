@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, ne, sql, count, gte } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, votes, articles, notifications, auditLog, articleFollows, users } from "@/db/schema";
+import { comments, votes, articles, auditLog, articleFollows, users } from "@/db/schema";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -12,6 +12,7 @@ import { runTrigger } from "@/lib/achievements";
 import { canEditOwn, canDeleteOwn, maxReactionsPerDay } from "@/lib/permissions";
 import { getReaction } from "@/lib/reactions";
 import { getReputationSettings } from "@/lib/settings";
+import { createNotification } from "@/lib/notifications";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -96,7 +97,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
 
   // Notificar o usuário citado na resposta (se houver e não for ele mesmo).
   if (quoted && quoted !== userId) {
-    await db.insert(notifications).values({ recipientId: quoted, type: "comment.quote", payload }).catch(() => {});
+    await createNotification(quoted, "comment.quote", payload);
   }
 
   // Notificar o autor do artigo e quem segue o tópico, menos quem comentou e
@@ -109,7 +110,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   if (article.authorId !== userId) recipients.add(article.authorId);
   if (quoted) recipients.delete(quoted);
   for (const rid of recipients) {
-    await db.insert(notifications).values({ recipientId: rid, type: "comment.reply", payload }).catch(() => {});
+    await createNotification(rid, "comment.reply", payload);
   }
 
   revalidatePath(`/guias/${article.slug}`);

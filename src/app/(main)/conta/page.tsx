@@ -9,6 +9,8 @@ import { AvatarForm } from "@/components/account/avatar-form";
 import { CoverForm } from "@/components/account/cover-form";
 import { ProfileFieldsForm } from "@/components/account/profile-fields-form";
 import { getEditableFields } from "@/lib/profile-fields";
+import { NotificationPrefsForm } from "@/components/account/notification-prefs-form";
+import { getMemberPrefs } from "@/lib/notifications-prefs";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -36,6 +38,7 @@ export default async function AccountPage({
     new Date(user.createdAt),
   );
   const profileFieldGroups = active === "perfil" ? await getEditableFields(Number(user.id)) : [];
+  const notifPrefs = active === "notificacoes" ? await getMemberPrefs(Number(user.id)) : [];
 
   return (
     <main id="main" className="page">
@@ -112,6 +115,16 @@ export default async function AccountPage({
                 ) : (
                   <ProfileFieldsForm groups={profileFieldGroups} />
                 )}
+              </div>
+            </section>
+          )}
+
+          {active === "notificacoes" && (
+            <section aria-labelledby="s-notif" className="settings-section">
+              <h2 id="s-notif" className="settings-section__title">Notificações</h2>
+              <p className="settings-section__desc">Escolha como quer ser avisado.</p>
+              <div className="mt-4">
+                <NotificationPrefsForm prefs={notifPrefs} />
               </div>
             </section>
           )}

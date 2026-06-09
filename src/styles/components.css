@@ -575,6 +575,25 @@
   .pff-options {
     @apply flex flex-col gap-1.5;
   }
+  /* Config de notificações (admin) */
+  .notif-cfg {
+    @apply flex flex-col gap-4 px-4 py-3 md:flex-row md:items-start md:justify-between;
+  }
+  .notif-cfg__controls {
+    @apply flex flex-wrap items-end gap-4;
+  }
+  .notif-cfg__channel {
+    @apply flex flex-col gap-1;
+  }
+  .notif-pref {
+    @apply flex flex-col gap-2 border-b border-border/60 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between;
+  }
+  .notif-pref__label {
+    @apply font-medium;
+  }
+  .notif-pref__channels {
+    @apply flex shrink-0 items-center gap-4;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

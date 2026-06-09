@@ -2,10 +2,13 @@ import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
+import { isInAppAllowed } from "@/lib/notifications-prefs";
 
-/** Cria uma notificação. Best-effort: nunca lança. */
+/** Cria uma notificação no sino, respeitando as preferências do destinatário.
+ * Best-effort: nunca lança. */
 export async function createNotification(recipientId: number, type: string, payload?: unknown): Promise<void> {
   try {
+    if (!(await isInAppAllowed(recipientId, type))) return;
     await db.insert(notifications).values({ recipientId, type, payload: payload ?? null });
   } catch {
     // não bloquear o fluxo

@@ -5,7 +5,8 @@ import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db } from "@/db";
-import { articles, revisions, reviews, users, notifications, auditLog } from "@/db/schema";
+import { articles, revisions, reviews, users, auditLog } from "@/db/schema";
+import { createNotification } from "@/lib/notifications";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
@@ -232,15 +233,13 @@ export async function moderateAction(input: unknown): Promise<Result> {
     target: `article:${article.id}`,
   });
 
-  // notificação in-app ao autor
-  await db
-    .insert(notifications)
-    .values({
-      recipientId: article.authorId,
-      type: `article.${decision}`,
-      payload: { articleId: article.id, slug: article.slug, title: article.title, reason },
-    })
-    .catch(() => {});
+  // notificação in-app ao autor (respeita preferências)
+  await createNotification(article.authorId, `article.${decision}`, {
+    articleId: article.id,
+    slug: article.slug,
+    title: article.title,
+    reason,
+  });
 
   if (decision === "approved") {
     await evaluateBadges(article.authorId);

@@ -414,9 +414,19 @@ Configurações de membros:
   **Níveis de reputação**: tabela `reputation_levels` + CRUD + rótulo no perfil
   ao lado do total (distinto dos Ranks, aceita faixas negativas). Tudo verificado
   no navegador.
-- **Notificações.** Tipos de notificação (conquistas, conteúdo seguido,
-  moderação, menções, perfil) com edição por tipo. Conecta com a
-  `notification_prefs` já existente.
+- **Notificações.** STATUS: entregue (`/admin/notificacoes`). Categorias do
+  RetroWiki (Conquistas, Respostas e menções, Moderação do seu conteúdo) mapeando
+  os tipos granulares (badge/rank/quest/promoção, comment.reply/quote,
+  article.approved/rejected/changes). Por categoria: "membro pode editar" +
+  default por canal (sino e e-mail: ligado/desligado/desabilitado). O
+  `createNotification` agora respeita o gate (default do admin + preferência do
+  membro) — inclusive as notificações de comentário e moderação foram roteadas
+  por ele. Botão **redefinir todos os membros** (apaga `notification_prefs`).
+  Página do membro em `/conta?secao=notificacoes`. Verificado: badge concedida
+  com a categoria desabilitada não notifica; reabilitada, notifica; preferência
+  do membro suprime para ele. **Push N/A** (sem app). **E-mail** é só
+  configuração: o envio de e-mail de notificação/digest segue adiado (cron já
+  preparado em outro item).
 - **Banimentos.** Filtros de banimento por e-mail, IP ou termo, com motivo.
 
 Moderação de conteúdo:
