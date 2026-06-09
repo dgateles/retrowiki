@@ -12,6 +12,7 @@ import {
   setUserTrustedAction,
   setUserReputationAction,
   forcePasswordResetAction,
+  flagSpammerAction,
 } from "@/lib/actions/member-actions";
 
 type Props = {
@@ -102,6 +103,20 @@ export function MemberManage({ userId, role, trusted, suspended, reputation, isS
         onClick={() => run(() => forcePasswordResetAction(userId), "E-mail de troca de senha enviado.")}
       >
         Forçar troca de senha
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant="destructive"
+        disabled={isSelf || pending}
+        onClick={() => {
+          if (window.confirm("Marcar como spammer? Aplica as ações configuradas (suspender, ocultar conteúdo, banir e-mail).")) {
+            run(() => flagSpammerAction(userId), "Membro marcado como spammer.");
+          }
+        }}
+      >
+        Marcar como spammer
       </Button>
     </div>
   );

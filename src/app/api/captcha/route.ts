@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { issueChallenge } from "@/lib/captcha";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getSpamSettings } from "@/lib/settings";
 
 const ALLOWED_ACTIONS = new Set(["register", "submit", "comment", "reset"]);
 
@@ -23,8 +24,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
-  // Dificuldade adaptativa poderia escalar por reputação de IP aqui.
-  const challenge = issueChallenge(action, 16);
+  // Dificuldade configurável no admin (Prevenção de spam > RetroGuard).
+  const { difficulty } = await getSpamSettings();
+  const challenge = issueChallenge(action, difficulty);
   return NextResponse.json(challenge, {
     headers: { "Cache-Control": "no-store" },
   });

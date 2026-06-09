@@ -450,8 +450,18 @@ Moderação de conteúdo:
   ADIADO/N-A: regras de auto-moderação por critério de autor (lista estilo
   Promoções, reaproveita o motor de critérios), e denúncia por convidado
   (RetroWiki exige login).
-- **Prevenção de spam.** Tela de configuração do RetroGuard (dificuldade do
-  proof-of-work, honeypot) em vez dos CAPTCHAs de terceiros do IPB.
+- **Prevenção de spam.** STATUS: entregue (`/admin/spam`, 3 abas adaptadas).
+  **RetroGuard:** dificuldade do proof-of-work configurável (ligada ao
+  `/api/captcha`, verificado ao vivo) + ações ao marcar spammer. **Pergunta &
+  Resposta:** CRUD de perguntas (`spam_questions`); se houver perguntas, uma é
+  exibida e exigida no cadastro (verificado: resposta errada bloqueia, certa
+  cadastra). **Geolocalização:** regras por país (`geo_rules`, sinalizar=criar
+  suspenso ou bloquear) aplicadas no cadastro via `countryCodeForIp`. **Marcar
+  como spammer:** botão no Member View aplica as ações configuradas (suspender,
+  ocultar conteúdo do autor, banir e-mail). N-A no RetroWiki: CAPTCHAs de
+  terceiros (Turnstile/reCAPTCHA/hCaptcha — substituídos pelo RetroGuard),
+  Spam Defense externo (StopForumSpam-like) + logs + whitelist, e "Delete Guest
+  Content" (sem conteúdo de convidado).
 - **Avisos (warnings).** Sistema de advertências ao usuário com níveis e
   consequências.
 - **Atribuições.** Encaminhar conteúdo a um moderador específico.

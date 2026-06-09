@@ -14,6 +14,8 @@ import { verifyEmail, resetPassword as resetTpl, passwordChanged } from "@/lib/e
 import { slugify } from "@/lib/utils";
 import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profile-fields";
 import { isBanned } from "@/lib/admin/ban-filters";
+import { hasQuestions, checkAnswer, geoActionForCountry } from "@/lib/spam";
+import { countryCodeForIp } from "@/lib/geo";
 
 type ActionResult = { ok: boolean; message?: string; error?: string };
 
@@ -33,10 +35,11 @@ const RegisterSchema = z.object({
 });
 
 export async function registerAction(
-  input: { email: string; handle: string; password: string; profileFields?: Record<string, string> },
+  input: { email: string; handle: string; password: string; profileFields?: Record<string, string>; qaQuestionId?: number; qaAnswer?: string },
   captcha: Solution | undefined,
 ): Promise<ActionResult> {
-  const rl = await checkRateLimit(`register:${await ip()}`, 5, 10 * 60_000);
+  const clientIp = await ip();
+  const rl = await checkRateLimit(`register:${clientIp}`, 5, 10 * 60_000);
   if (!rl.ok) return { ok: false, error: "Muitas tentativas. Tente mais tarde." };
 
   const parsed = RegisterSchema.safeParse(input);
@@ -49,6 +52,14 @@ export async function registerAction(
     return { ok: false, error: "Falha na verificação anti-bot. Recarregue e tente de novo." };
   }
 
+  // Desafio Pergunta & Resposta (anti-bot), se houver perguntas cadastradas.
+  if (await hasQuestions()) {
+    const qid = Math.floor(Number(input.qaQuestionId) || 0);
+    if (qid <= 0 || !(await checkAnswer(qid, String(input.qaAnswer ?? "")))) {
+      return { ok: false, error: "Resposta do desafio incorreta." };
+    }
+  }
+
   // Campos de perfil exibidos no cadastro: valida antes de criar a conta.
   const profileFields = input.profileFields ?? {};
   const fieldsCheck = await validateRegistrationValues(profileFields);
@@ -58,9 +69,16 @@ export async function registerAction(
   const handle = parsed.data.handle.toLowerCase();
 
   // Filtros de banimento (e-mail, IP, nome). Bloqueio genérico.
-  if (await isBanned({ email, ip: await ip(), name: parsed.data.handle })) {
+  if (await isBanned({ email, ip: clientIp, name: parsed.data.handle })) {
     return { ok: false, error: "Cadastro não permitido." };
   }
+
+  // Geolocalização: bloquear ou sinalizar (criar suspenso) por país.
+  const geoAction = await geoActionForCountry(await countryCodeForIp(clientIp));
+  if (geoAction === "block") {
+    return { ok: false, error: "Cadastro não permitido." };
+  }
+  const flagged = geoAction === "flag";
 
   // anti-enumeração: resposta genérica mesmo se já existir
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
@@ -73,6 +91,7 @@ export async function registerAction(
       handle: finalHandle,
       displayName: parsed.data.handle,
       passwordHash,
+      isSuspended: flagged,
     });
     const userId = (res as unknown as { insertId: number }).insertId;
     await saveRegistrationValues(userId, profileFields);

@@ -60,6 +60,19 @@ export async function geoForIp(ip: string): Promise<string> {
   }
 }
 
+/** Código do país (ISO-2) de um IP, via ip-api. Vazio se privado/falha. */
+export async function countryCodeForIp(ip: string): Promise<string> {
+  if (isPrivateOrLocal(ip)) return "";
+  try {
+    const res = await fetch(`http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,countryCode`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return "";
+    const j = (await res.json()) as { status?: string; countryCode?: string };
+    return j.status === "success" && j.countryCode ? j.countryCode.toUpperCase() : "";
+  } catch {
+    return "";
+  }
+}
+
 /** Resolve a geo de vários IPs (cache + fetch dos faltantes). */
 export async function geoForIps(ips: string[]): Promise<Map<string, string>> {
   const out = new Map<string, string>();

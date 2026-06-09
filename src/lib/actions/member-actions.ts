@@ -198,6 +198,38 @@ export async function importMembersAction(csv: string): Promise<Result<{ created
   return { ok: true, data: { created, skipped, errors } };
 }
 
+/** Marca um membro como spammer: aplica as ações configuradas (suspender,
+ * ocultar conteúdo, banir e-mail). */
+export async function flagSpammerAction(userId: number): Promise<Result> {
+  const actor = await asAdmin();
+  if (!actor) return { ok: false, error: "Acesso restrito." };
+  try {
+    const { getSpamSettings } = await import("@/lib/settings");
+    const settings = await getSpamSettings();
+    const [u] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+    if (!u) return { ok: false, error: "Usuário não encontrado." };
+
+    if (settings.flagRestrict) {
+      await db.update(users).set({ isSuspended: true }).where(eq(users.id, userId));
+    }
+    if (settings.flagHide) {
+      const { articles, comments } = await import("@/db/schema");
+      await db.update(articles).set({ status: "archived" }).where(eq(articles.authorId, userId));
+      await db.update(comments).set({ status: "hidden" }).where(eq(comments.authorId, userId));
+    }
+    if (settings.flagBan && u.email) {
+      const { createBanFilter } = await import("@/lib/admin/ban-filters");
+      await createBanFilter("email", u.email, "Spammer", Number(actor.id));
+    }
+    await audit(Number(actor.id), "flag_spammer", userId);
+    revalidatePath("/admin/membros");
+    revalidatePath(`/admin/membros/${userId}`);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha." };
+  }
+}
+
 export async function forcePasswordResetAction(userId: number): Promise<Result> {
   const actor = await asAdmin();
   if (!actor) return { ok: false, error: "Acesso restrito." };

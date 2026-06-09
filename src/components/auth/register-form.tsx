@@ -19,12 +19,13 @@ function parseSet(v: string): string[] {
   }
 }
 
-export function RegisterForm({ profileFields = [] }: { profileFields?: GroupWithValues[] }) {
+export function RegisterForm({ profileFields = [], qaChallenge = null }: { profileFields?: GroupWithValues[]; qaChallenge?: { id: number; question: string } | null }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [captcha, setCaptcha] = useState<CaptchaSolution | null>(null);
   const onSolved = useCallback((s: CaptchaSolution | null) => setCaptcha(s), []);
   const [pf, setPf] = useState<Record<string, string>>({});
+  const [qaAnswer, setQaAnswer] = useState("");
 
   const setField = (id: number, value: string) => setPf((p) => ({ ...p, [String(id)]: value }));
   const toggleSet = (id: number, opt: string, on: boolean) =>
@@ -44,6 +45,8 @@ export function RegisterForm({ profileFields = [] }: { profileFields?: GroupWith
         handle: String(form.get("handle") ?? ""),
         password: String(form.get("password") ?? ""),
         profileFields: pf,
+        qaQuestionId: qaChallenge?.id,
+        qaAnswer,
       },
       captcha ?? undefined,
     );
@@ -123,6 +126,13 @@ export function RegisterForm({ profileFields = [] }: { profileFields?: GroupWith
             {renderField(f)}
           </div>
         )),
+      )}
+
+      {qaChallenge && (
+        <div className="field">
+          <Label htmlFor="qa-answer">{qaChallenge.question}</Label>
+          <Input id="qa-answer" value={qaAnswer} onChange={(e) => setQaAnswer(e.target.value)} autoComplete="off" required />
+        </div>
       )}
 
       <RetroGuard action="register" onSolved={onSolved} />

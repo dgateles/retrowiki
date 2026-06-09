@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
 import { getRegisterFields } from "@/lib/profile-fields";
+import { randomQuestion } from "@/lib/spam";
 
 export const metadata: Metadata = { title: "Criar conta" };
 export const dynamic = "force-dynamic";
 
 export default async function RegisterPage() {
-  const profileFields = await getRegisterFields();
+  const [profileFields, qaChallenge] = await Promise.all([getRegisterFields(), randomQuestion()]);
   return (
     <AuthShell
       title="Criar conta"
@@ -22,7 +23,7 @@ export default async function RegisterPage() {
         </>
       }
     >
-      <RegisterForm profileFields={profileFields} />
+      <RegisterForm profileFields={profileFields} qaChallenge={qaChallenge} />
     </AuthShell>
   );
 }

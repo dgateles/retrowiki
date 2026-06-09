@@ -525,6 +525,23 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Desafio Pergunta & Resposta no cadastro (anti-bot).
+export const spamQuestions = mysqlTable("spam_questions", {
+  id: pk(),
+  question: varchar("question", { length: 255 }).notNull(),
+  answers: json("answers").notNull(), // string[] de respostas aceitas
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("spam_questions_order_idx").on(t.sortOrder)]);
+
+// Regras de geolocalização no cadastro (por país: moderar ou bloquear).
+export const geoRules = mysqlTable("geo_rules", {
+  id: pk(),
+  countryCode: varchar("country_code", { length: 2 }).notNull(),
+  action: mysqlEnum("action", ["flag", "block"]).notNull().default("flag"),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("geo_rules_country_idx").on(t.countryCode)]);
+
 // Tipos de denúncia (motivos selecionáveis) + textos de notificação ao autor.
 export const reportTypes = mysqlTable("report_types", {
   id: pk(),

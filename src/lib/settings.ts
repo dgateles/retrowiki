@@ -147,3 +147,29 @@ export async function getReportingSettings(): Promise<ReportingSettings> {
   const raw = await getSetting<Partial<ReportingSettings>>("reporting", REPORTING_DEFAULTS);
   return sanitizeReportingSettings({ ...REPORTING_DEFAULTS, ...raw });
 }
+
+// ── Configurações de prevenção de spam (RetroGuard + flag) ───────────────
+
+export type SpamSettings = {
+  difficulty: number; // bits do proof-of-work do RetroGuard (8–24)
+  flagRestrict: boolean; // ao marcar spammer: impedir novos envios (suspender)
+  flagHide: boolean; // ao marcar spammer: ocultar conteúdo já enviado
+  flagBan: boolean; // ao marcar spammer: banir e-mail
+};
+
+const SPAM_DEFAULTS: SpamSettings = { difficulty: 16, flagRestrict: true, flagHide: true, flagBan: false };
+
+export function sanitizeSpamSettings(raw: unknown): SpamSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    difficulty: Math.max(8, Math.min(24, Math.floor(Number(r.difficulty) || SPAM_DEFAULTS.difficulty))),
+    flagRestrict: r.flagRestrict === undefined ? SPAM_DEFAULTS.flagRestrict : Boolean(r.flagRestrict),
+    flagHide: r.flagHide === undefined ? SPAM_DEFAULTS.flagHide : Boolean(r.flagHide),
+    flagBan: Boolean(r.flagBan),
+  };
+}
+
+export async function getSpamSettings(): Promise<SpamSettings> {
+  const raw = await getSetting<Partial<SpamSettings>>("spam", SPAM_DEFAULTS);
+  return sanitizeSpamSettings({ ...SPAM_DEFAULTS, ...raw });
+}
