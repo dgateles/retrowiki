@@ -24,8 +24,14 @@ export type NotificationItem = {
   createdAt: Date;
 };
 
-export async function listNotifications(userId: number): Promise<NotificationItem[]> {
+export async function listNotifications(
+  userId: number,
+  opts?: { unreadOnly?: boolean },
+): Promise<NotificationItem[]> {
   try {
+    const where = opts?.unreadOnly
+      ? and(eq(notifications.recipientId, userId), isNull(notifications.readAt))
+      : eq(notifications.recipientId, userId);
     return await db
       .select({
         id: notifications.id,
@@ -35,12 +41,27 @@ export async function listNotifications(userId: number): Promise<NotificationIte
         createdAt: notifications.createdAt,
       })
       .from(notifications)
-      .where(eq(notifications.recipientId, userId))
+      .where(where)
       .orderBy(desc(notifications.createdAt))
       .limit(50);
   } catch {
     return [];
   }
+}
+
+export async function markOneRead(userId: number, id: number): Promise<void> {
+  await db
+    .update(notifications)
+    .set({ readAt: new Date() })
+    .where(and(eq(notifications.recipientId, userId), eq(notifications.id, id)))
+    .catch(() => {});
+}
+
+export async function deleteOne(userId: number, id: number): Promise<void> {
+  await db
+    .delete(notifications)
+    .where(and(eq(notifications.recipientId, userId), eq(notifications.id, id)))
+    .catch(() => {});
 }
 
 export async function markAllRead(userId: number): Promise<void> {

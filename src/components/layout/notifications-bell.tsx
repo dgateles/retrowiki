@@ -1,14 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import { CommentAvatar } from "@/components/engagement/comment-avatar";
+import { markNotificationReadAction } from "@/lib/actions/notification-actions";
 
 export type NotifItem = {
   id: number;
@@ -16,9 +18,20 @@ export type NotifItem = {
   href: string | null;
   read: boolean;
   date: string;
+  image?: string | null;
+  actor?: string | null;
 };
 
-export function NotificationsBell({ unread, items }: { unread: number; items: NotifItem[] }) {
+export function NotificationsBell({ unread: initialUnread, items: initial }: { unread: number; items: NotifItem[] }) {
+  const [items, setItems] = useState(initial);
+  const [unread, setUnread] = useState(initialUnread);
+
+  function onItemClick(id: number) {
+    setItems((prev) => prev.filter((x) => x.id !== id));
+    setUnread((c) => Math.max(0, c - 1));
+    markNotificationReadAction(id);
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,17 +56,23 @@ export function NotificationsBell({ unread, items }: { unread: number; items: No
         ) : (
           <div className="notif-pop__list">
             {items.map((n) => {
-              const cls = cn("notif-pop__item", !n.read && "notif-pop__item--unread");
               const inner = (
                 <>
-                  <span>{n.text}</span>
-                  <span className="notif-pop__date">{n.date}</span>
+                  <CommentAvatar name={n.actor ?? "?"} src={n.image} />
+                  <span className="notif-pop__body">
+                    <span className="notif-pop__text">{n.text}</span>
+                    <span className="notif-pop__date">{n.date}</span>
+                  </span>
                 </>
               );
               return n.href ? (
-                <Link key={n.id} href={n.href} className={cls}>{inner}</Link>
+                <Link key={n.id} href={n.href} className="notif-pop__item notif-pop__item--unread" onClick={() => onItemClick(n.id)}>
+                  {inner}
+                </Link>
               ) : (
-                <div key={n.id} className={cls}>{inner}</div>
+                <button key={n.id} type="button" className="notif-pop__item notif-pop__item--unread" onClick={() => onItemClick(n.id)}>
+                  {inner}
+                </button>
               );
             })}
           </div>

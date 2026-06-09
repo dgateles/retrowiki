@@ -18,11 +18,24 @@ export async function SiteHeader() {
   let unread = 0;
   let notifItems: NotifItem[] = [];
   if (user) {
-    const [count, all] = await Promise.all([getUnreadCount(user.id), listNotifications(user.id)]);
+    // O popup mostra só as não lidas; ao clicar, somem do popup (mas continuam
+    // na lista completa em /notificacoes, marcadas como lidas).
+    const [count, unreadItems] = await Promise.all([
+      getUnreadCount(user.id),
+      listNotifications(user.id, { unreadOnly: true }),
+    ]);
     unread = count;
-    notifItems = all.slice(0, 6).map((n) => {
+    notifItems = unreadItems.slice(0, 8).map((n) => {
       const d = describeNotification(n.type, n.payload);
-      return { id: n.id, text: d.text, href: d.href ?? null, read: Boolean(n.readAt), date: fmtDate(n.createdAt) };
+      return {
+        id: n.id,
+        text: d.text,
+        href: d.href ?? null,
+        read: false,
+        date: fmtDate(n.createdAt),
+        image: d.image ?? null,
+        actor: d.actor ?? null,
+      };
     });
   }
 

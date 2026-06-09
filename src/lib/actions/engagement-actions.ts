@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, votes, articles, notifications, auditLog, articleFollows } from "@/db/schema";
+import { comments, votes, articles, notifications, auditLog, articleFollows, users } from "@/db/schema";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -64,7 +64,8 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     .limit(1);
   if (!article || article.status !== "published") return { ok: false, error: "Artigo indisponível." };
 
-  await db.insert(comments).values({ articleId, authorId: userId, body: valid.json });
+  const [ins] = await db.insert(comments).values({ articleId, authorId: userId, body: valid.json });
+  const commentId = (ins as unknown as { insertId: number }).insertId;
   await evaluateBadges(userId);
 
   // Seguir o tópico ao comentar (se marcado), para receber novas respostas.
@@ -72,7 +73,20 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     await db.insert(articleFollows).values({ userId, articleId }).catch(() => {});
   }
 
-  const payload = { slug: article.slug, title: article.title };
+  // Dados de quem comentou, para a notificação mostrar avatar e nome, e o link
+  // levar direto ao comentário.
+  const [me] = await db
+    .select({ name: users.displayName, avatar: users.avatarUrl })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  const payload = {
+    slug: article.slug,
+    title: article.title,
+    commentId,
+    actorName: me?.name ?? "Alguém",
+    actorAvatar: me?.avatar ?? null,
+  };
   const quoted = parsed.data.replyToUserId;
 
   // Notificar o usuário citado na resposta (se houver e não for ele mesmo).

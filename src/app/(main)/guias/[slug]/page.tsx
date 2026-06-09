@@ -15,6 +15,7 @@ import { CommentBody } from "@/components/engagement/comment-body";
 import { CommentActions } from "@/components/engagement/comment-actions";
 import { CommentAvatar } from "@/components/engagement/comment-avatar";
 import { CommentReplyButton } from "@/components/engagement/comment-reply-button";
+import { CommentHighlighter } from "@/components/engagement/comment-highlighter";
 import { FollowButton } from "@/components/engagement/follow-button";
 import { HideCommentButton } from "@/components/engagement/hide-comment-button";
 import { auth } from "@/auth";
@@ -151,6 +152,7 @@ export default async function ArticlePage({
       </Button>
 
       <section aria-labelledby="comentarios" className="comments">
+        <CommentHighlighter />
         <div className="comments__head">
           <h2 id="comentarios" className="comments__title">
             Comentários ({comments.length})
@@ -164,7 +166,7 @@ export default async function ArticlePage({
               const owner = userId === c.authorId;
               const when = relTime(new Date(c.createdAt));
               return (
-                <li key={c.id} className="comment">
+                <li key={c.id} id={`comentario-${c.id}`} className="comment">
                   <CommentAvatar name={c.authorName} src={c.authorAvatar} />
                   <div className="comment__main">
                     <div className="comment__head">

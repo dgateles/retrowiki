@@ -223,10 +223,16 @@
     @apply max-h-80 overflow-y-auto p-1;
   }
   .notif-pop__item {
-    @apply block rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none;
+    @apply flex w-full items-start gap-2 rounded-md px-2 py-2 text-left text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none;
   }
   .notif-pop__item--unread {
     @apply bg-primary/5;
+  }
+  .notif-pop__body {
+    @apply min-w-0 flex-1;
+  }
+  .notif-pop__text {
+    @apply block;
   }
   .notif-pop__date {
     @apply mt-0.5 block text-xs text-muted-foreground;
@@ -362,7 +368,10 @@
     @apply mt-4 space-y-4;
   }
   .comment {
-    @apply flex gap-3 rounded-lg border border-border bg-card p-4;
+    @apply flex gap-3 rounded-lg border border-border bg-card p-4 scroll-mt-20;
+  }
+  .comment--flash {
+    animation: comment-flash 2s ease-in-out;
   }
   .comment__main {
     @apply min-w-0 flex-1;
@@ -1088,6 +1097,15 @@
   .notif-list {
     @apply mt-6 space-y-2;
   }
+  .notif-row {
+    @apply flex items-stretch gap-2;
+  }
+  .notif-row__link {
+    @apply block min-w-0 flex-1;
+  }
+  .notif__delete {
+    @apply flex w-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
   .notif {
     @apply rounded-lg border p-4;
   }
@@ -1100,8 +1118,14 @@
   .notif__text {
     @apply text-sm;
   }
+  .notif__foot {
+    @apply mt-1 flex items-center justify-between gap-3;
+  }
   .notif__date {
-    @apply mt-1 block text-xs text-muted-foreground;
+    @apply text-xs text-muted-foreground;
+  }
+  .notif__read {
+    @apply inline-flex items-center gap-1 text-xs font-medium text-sky-500;
   }
 
   /* Abas de escopo da busca. */
@@ -1666,4 +1690,21 @@
 .code-block__pre .token.regex,
 .code-block__pre .token.important {
   color: hsl(40 90% 55%);
+}
+
+/* Destaque do comentário ao chegar via âncora de notificação: pisca a borda
+ * com fade-in/fade-out. */
+@keyframes comment-flash {
+  0% {
+    border-color: var(--border);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  30% {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  100% {
+    border-color: var(--border);
+    box-shadow: 0 0 0 0 transparent;
+  }
 }

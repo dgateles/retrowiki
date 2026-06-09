@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Bell } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { auth } from "@/auth";
 import { listNotifications } from "@/lib/notifications";
 import { describeNotification } from "@/lib/notification-text";
 import { markNotificationsReadAction } from "@/lib/actions/notification-actions";
+import { NotifDelete } from "@/components/notifications/notif-delete";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Notificações", robots: { index: false } };
@@ -43,12 +44,24 @@ export default async function NotificationsPage() {
             const inner = (
               <div className={`notif ${n.readAt ? "notif--read" : "notif--unread"}`}>
                 <p className="notif__text">{d.text}</p>
-                <time className="notif__date" dateTime={new Date(n.createdAt).toISOString()}>
-                  {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(n.createdAt))}
-                </time>
+                <div className="notif__foot">
+                  <time className="notif__date" dateTime={new Date(n.createdAt).toISOString()}>
+                    {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(n.createdAt))}
+                  </time>
+                  {n.readAt && (
+                    <span className="notif__read">
+                      <CheckCheck className="size-3.5" aria-hidden="true" /> Lida
+                    </span>
+                  )}
+                </div>
               </div>
             );
-            return <li key={n.id}>{d.href ? <Link href={d.href}>{inner}</Link> : inner}</li>;
+            return (
+              <li key={n.id} className="notif-row">
+                {d.href ? <Link href={d.href} className="notif-row__link">{inner}</Link> : <div className="notif-row__link">{inner}</div>}
+                <NotifDelete id={n.id} />
+              </li>
+            );
           })}
         </ul>
       )}
