@@ -526,6 +526,35 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Equipes de moderação (grupos nomeados de membros) e atribuições de conteúdo.
+export const modTeams = mysqlTable("mod_teams", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  createdAt: createdAt(),
+});
+
+export const modTeamMembers = mysqlTable("mod_team_members", {
+  id: pk(),
+  teamId: bigint("team_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+}, (t) => [uniqueIndex("mod_team_member_idx").on(t.teamId, t.userId)]);
+
+export const assignments = mysqlTable("assignments", {
+  id: pk(),
+  targetType: mysqlEnum("target_type", ["article"]).notNull().default("article"),
+  targetId: bigint("target_id", { mode: "number" }).notNull(),
+  assigneeType: mysqlEnum("assignee_type", ["user", "team"]).notNull(),
+  assigneeId: bigint("assignee_id", { mode: "number" }).notNull(),
+  note: varchar("note", { length: 500 }).notNull().default(""),
+  status: mysqlEnum("status", ["open", "closed"]).notNull().default("open"),
+  assignedById: bigint("assigned_by_id", { mode: "number" }),
+  closedAt: datetime("closed_at"),
+  createdAt: createdAt(),
+}, (t) => [
+  index("assignments_target_idx").on(t.targetType, t.targetId),
+  index("assignments_status_idx").on(t.status),
+]);
+
 // Sistema de advertências (warnings): motivos, ações por limiar e registros.
 export const warningReasons = mysqlTable("warning_reasons", {
   id: pk(),

@@ -200,3 +200,22 @@ export async function getWarningSettings(): Promise<WarningSettings> {
   const raw = await getSetting<Partial<WarningSettings>>("warnings", WARN_DEFAULTS);
   return sanitizeWarningSettings({ ...WARN_DEFAULTS, ...raw });
 }
+
+// ── Configurações de atribuições (assignments) ───────────────────────────
+
+export type AssignmentSettings = { enabled: boolean; autoCloseDays: number };
+
+const ASSIGN_DEFAULTS: AssignmentSettings = { enabled: true, autoCloseDays: 0 };
+
+export function sanitizeAssignmentSettings(raw: unknown): AssignmentSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    enabled: r.enabled === undefined ? ASSIGN_DEFAULTS.enabled : Boolean(r.enabled),
+    autoCloseDays: Math.max(0, Math.min(3650, Math.floor(Number(r.autoCloseDays) || 0))),
+  };
+}
+
+export async function getAssignmentSettings(): Promise<AssignmentSettings> {
+  const raw = await getSetting<Partial<AssignmentSettings>>("assignments", ASSIGN_DEFAULTS);
+  return sanitizeAssignmentSettings({ ...ASSIGN_DEFAULTS, ...raw });
+}

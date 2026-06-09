@@ -169,6 +169,13 @@
       "when": 1781046339491,
       "tag": "0023_free_jackal",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1781047308331,
+      "tag": "0024_damp_inertia",
+      "breakpoints": true
     }
   ]
 }

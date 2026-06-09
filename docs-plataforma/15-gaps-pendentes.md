@@ -474,7 +474,14 @@ Moderação de conteúdo:
   indefinida) e o membro restrito foi bloqueado ao comentar. ADIADO: "moderate
   content" (forçar revisão), confirmação obrigatória (must-acknowledge) e a
   página do membro ver os próprios avisos (hoje só no Member View do admin).
-- **Atribuições.** Encaminhar conteúdo a um moderador específico.
+- **Atribuições.** STATUS: entregue (`/admin/atribuicoes`, 3 abas). **Equipes**
+  de moderação (`mod_teams`/`mod_team_members`) com CRUD (nome + moderadores).
+  **Atribuir** um guia a um moderador ou equipe pelo botão na página do guia
+  (mod-only); a fila lista as abertas, com fechar. **Configurações:** ativar +
+  fechar automaticamente após N dias (armazenado; o job de auto-fechar fica para
+  o cron). Tabela `assignments`. Verificado: criar equipe, atribuir guia à
+  equipe, listar e fechar. N-A (específico de fórum do IPB): "time to first
+  reply", aplicar a todos os fóruns, atribuir tópicos (RetroWiki atribui guias).
 
 Equipe:
 
