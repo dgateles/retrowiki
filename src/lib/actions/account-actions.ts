@@ -35,6 +35,27 @@ export async function setAvatarAction(url: string): Promise<Result> {
   }
 }
 
+/** Define (ou remove) a capa do perfil. Só aceita URL do nosso CDN. */
+export async function setCoverAction(url: string): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const clean = String(url ?? "").trim();
+  const value = clean && isBunnyUrl(clean) ? clean : clean === "" ? null : undefined;
+  if (value === undefined) return { ok: false, error: "Imagem inválida." };
+  try {
+    await db.update(users).set({ coverUrl: value }).where(eq(users.id, Number(user.id)));
+    revalidatePath("/conta");
+    revalidatePath(`/u/${user.handle}`);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha ao salvar." };
+  }
+}
+
 const DisplayNameSchema = z.object({
   displayName: z.string().trim().min(2, "Use ao menos 2 caracteres.").max(120),
 });

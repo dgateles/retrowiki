@@ -44,10 +44,22 @@ export default async function ProfilePage({
 
   return (
     <main id="main" className="page">
-      <div className="profile-cover" aria-hidden="true" />
+      <div className="profile-cover" aria-hidden="true">
+        {profile.coverUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={profile.coverUrl} alt="" className="profile-cover__img" />
+        )}
+      </div>
 
       <header className="profile-id">
-        <span className="profile-id__avatar" aria-hidden="true">{initials(profile.displayName)}</span>
+        <span className="profile-id__avatar" aria-hidden="true">
+          {profile.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.avatarUrl} alt="" className="profile-id__avatar-img" />
+          ) : (
+            initials(profile.displayName)
+          )}
+        </span>
         <div className="profile-id__body">
           <div>
             <h1 className="profile-id__name">{profile.displayName}</h1>

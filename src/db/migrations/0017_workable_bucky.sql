@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `cover_url` varchar(500);

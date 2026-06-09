@@ -8,6 +8,8 @@ export type Profile = {
   handle: string;
   displayName: string;
   role: string;
+  avatarUrl: string | null;
+  coverUrl: string | null;
   reputation: number;
   createdAt: Date;
   articles: { id: number; slug: string; title: string; type: string }[];
@@ -21,6 +23,8 @@ export async function getProfile(handle: string): Promise<Profile | null> {
         handle: users.handle,
         displayName: users.displayName,
         role: users.role,
+        avatarUrl: users.avatarUrl,
+        coverUrl: users.coverUrl,
         reputation: users.reputation,
         createdAt: users.createdAt,
       })

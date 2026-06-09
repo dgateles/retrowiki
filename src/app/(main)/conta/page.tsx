@@ -6,6 +6,7 @@ import { roleLabel } from "@/lib/ranks";
 import { ChangePasswordForm } from "@/components/account/change-password-form";
 import { DisplayNameForm } from "@/components/account/display-name-form";
 import { AvatarForm } from "@/components/account/avatar-form";
+import { CoverForm } from "@/components/account/cover-form";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -51,6 +52,13 @@ export default async function AccountPage({
                   <dd className="settings-row__value muted">PNG, JPG, WEBP ou GIF (máx. 5 MB).</dd>
                 </div>
                 <AvatarForm initial={user.avatarUrl ?? ""} />
+              </div>
+              <div className="settings-row">
+                <div>
+                  <dt className="settings-row__label">Capa do perfil</dt>
+                  <dd className="settings-row__value muted">Imagem larga exibida no topo do seu perfil.</dd>
+                </div>
+                <CoverForm initial={user.coverUrl ?? ""} />
               </div>
               <dl>
                 <div className="settings-row">

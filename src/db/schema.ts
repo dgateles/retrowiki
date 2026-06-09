@@ -37,6 +37,7 @@ export const users = mysqlTable(
       .notNull()
       .default("member"),
     avatarUrl: varchar("avatar_url", { length: 500 }),
+    coverUrl: varchar("cover_url", { length: 500 }), // capa do perfil (BunnyCDN)
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
