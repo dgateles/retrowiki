@@ -183,7 +183,13 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
     }),
   });
 
-  const run = (fn: () => void) => fn();
+  // Itens de menu (dropdown) aplicam o comando e, após o menu fechar, devolvem o
+  // foco ao editor. Sem isso, ao fechar o dropdown o foco se perde (não volta à
+  // caixa de texto) e fica impossível continuar digitando.
+  const run = (fn: () => void) => {
+    fn();
+    requestAnimationFrame(() => editor.commands.focus());
+  };
   const chain = () => editor.chain().focus();
 
   function setBlock(v: string) {
@@ -274,7 +280,7 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
       {full && <TBtn label="Sobrescrito" active={s.sup} onClick={() => chain().toggleSuperscript().run()}><SupIcon className="size-4" /></TBtn>}
       {full && <TBtn label="Link" active={s.link} onClick={openLink}><LinkIcon className="size-4" /></TBtn>}
 
-      <EmojiMenu onPick={(c) => chain().insertContent(c).run()} />
+      <EmojiMenu onPick={(c) => run(() => chain().insertContent(c).run())} />
 
       {full && <TBtn label="Limpar formatação" onClick={() => chain().unsetAllMarks().run()}><RemoveFormatting className="size-4" /></TBtn>}
 
