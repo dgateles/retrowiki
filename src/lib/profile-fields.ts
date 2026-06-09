@@ -64,9 +64,14 @@ function validate(field: ProfileField, raw: string): { ok: true; value: string }
     return { ok: false, error: `"${field.name}" excede ${field.maxLength} caracteres.` };
   }
   switch (field.type) {
-    case "url":
-      try { new URL(value); } catch { return { ok: false, error: `"${field.name}": URL inválida.` }; }
+    case "url": {
+      let u: URL;
+      try { u = new URL(value); } catch { return { ok: false, error: `"${field.name}": URL inválida.` }; }
+      if (u.protocol !== "http:" && u.protocol !== "https:") {
+        return { ok: false, error: `"${field.name}": use apenas URLs http(s).` };
+      }
       break;
+    }
     case "number":
       if (Number.isNaN(Number(value))) return { ok: false, error: `"${field.name}": número inválido.` };
       break;

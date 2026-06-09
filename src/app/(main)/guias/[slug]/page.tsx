@@ -4,13 +4,15 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
 import { recordView } from "@/lib/article-views";
-import { listComments, getVoteState, isFollowing, commentDocFromBody } from "@/lib/comments";
+import { listComments, isFollowing, commentDocFromBody } from "@/lib/comments";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { ArticleBody } from "@/lib/blocks/render";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
-import { VoteButton } from "@/components/engagement/vote-button";
+import { ReactionPicker } from "@/components/engagement/reaction-picker";
+import { listEnabledReactions, getReactionCounts, getUserReaction } from "@/lib/reactions";
+import { getReputationSettings } from "@/lib/settings";
 import { SharePopover } from "@/components/engagement/share-popover";
 import { CommentForm } from "@/components/engagement/comment-form";
 import { CommentBody } from "@/components/engagement/comment-body";
@@ -63,11 +65,19 @@ export default async function ArticlePage({
   const userId = session?.user ? Number(session.user.id) : null;
   const isMod = can.moderate(session?.user ?? null);
   await recordView(a.id, userId);
-  const [comments, vote, following] = await Promise.all([
+  const [comments, following, repSettings, enabledReactions] = await Promise.all([
     listComments(a.id),
-    getVoteState(a.id, userId),
     isFollowing(a.id, userId),
+    getReputationSettings(),
+    listEnabledReactions(),
   ]);
+  const fallbackReactionId = enabledReactions[0]?.id ?? null;
+  const [reactionCountsMap, myReaction] = await Promise.all([
+    getReactionCounts(a.id, fallbackReactionId),
+    userId ? getUserReaction(userId, a.id, fallbackReactionId) : Promise.resolve(null),
+  ]);
+  const reactionCounts: Record<number, number> = Object.fromEntries(reactionCountsMap);
+  const totalReactions = Object.values(reactionCounts).reduce((s, n) => s + n, 0);
   const rank = await getRankForReputation(a.authorReputation);
 
   return (
@@ -133,11 +143,19 @@ export default async function ArticlePage({
         </div>
 
         <footer className="post__footer">
-          <VoteButton articleId={a.id} initialCount={vote.count} initialVoted={vote.voted} />
+          {repSettings.enabled && enabledReactions.length > 0 && (
+            <ReactionPicker
+              articleId={a.id}
+              reactions={enabledReactions.map((r) => ({ id: r.id, name: r.name, emoji: r.emoji, weight: r.weight }))}
+              initialCounts={reactionCounts}
+              initialReaction={myReaction}
+              display={repSettings.reactionDisplay}
+            />
+          )}
           <span className="post__reactors">
-            {vote.count > 0
-              ? `${vote.count} ${vote.count === 1 ? "pessoa achou" : "pessoas acharam"} útil`
-              : "Seja o primeiro a achar útil"}
+            {totalReactions > 0
+              ? `${totalReactions} ${totalReactions === 1 ? "reação" : "reações"}`
+              : "Seja o primeiro a reagir"}
             {a.deviceSlug && (
               <>
                 {" · "}

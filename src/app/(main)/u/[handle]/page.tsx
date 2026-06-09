@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getVisibleFields } from "@/lib/profile-fields";
+import { getReputationSettings } from "@/lib/settings";
+import { levelForReputation } from "@/lib/reputation-levels";
 import { ProfileFieldsDisplay } from "@/components/profile/profile-fields-display";
 import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
@@ -39,6 +41,8 @@ export default async function ProfilePage({
 
   const viewer = await getCurrentUser();
   const profileFields = await getVisibleFields(profile.id, viewer ? { id: Number(viewer.id), role: viewer.role } : null);
+  const repSettings = await getReputationSettings();
+  const repLevel = repSettings.showOnProfile ? await levelForReputation(profile.reputation) : null;
   const gami = await getAchievementSettings();
   const rank = gami.enabled ? await getRankForReputation(profile.reputation) : null;
   if (gami.enabled) await evaluateBadges(profile.id);
@@ -101,10 +105,15 @@ export default async function ProfilePage({
               <dt className="profile-stat__label">Publicações</dt>
               <dd className="profile-stat__value">{profile.articles.length}</dd>
             </div>
-            <div className="profile-stat">
-              <dt className="profile-stat__label">Reputação</dt>
-              <dd className="profile-stat__value profile-stat__value--accent">{profile.reputation}</dd>
-            </div>
+            {repSettings.showOnProfile && (
+              <div className="profile-stat">
+                <dt className="profile-stat__label">Reputação</dt>
+                <dd className="profile-stat__value profile-stat__value--accent">
+                  {profile.reputation}
+                  {repLevel && <span className="profile-stat__level">{repLevel.title}</span>}
+                </dd>
+              </div>
+            )}
             <div className="profile-stat">
               <dt className="profile-stat__label">Papel</dt>
               <dd className="profile-stat__value">{roleLabel(profile.role)}</dd>

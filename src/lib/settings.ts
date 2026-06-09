@@ -74,3 +74,52 @@ export async function getProfileSettings(): Promise<ProfileSettings> {
   const raw = await getSetting<Partial<ProfileSettings>>("profile", PROFILE_DEFAULTS);
   return sanitizeProfileSettings({ ...PROFILE_DEFAULTS, ...raw });
 }
+
+// ── Configurações de reputação & reações ─────────────────────────────────
+
+export type ReputationSettings = {
+  enabled: boolean;
+  excludeRoles: string[]; // papéis cujo conteúdo não recebe reações
+  reactToOwn: boolean; // pode reagir ao próprio conteúdo
+  showOnProfile: boolean; // exibir reputação total no perfil
+  highlightThreshold: number; // destacar conteúdo com >= X (0 = nunca)
+  reactionDisplay: "individual" | "total";
+  leaderboardEnabled: boolean;
+  leaderboardExcludeRoles: string[];
+  leaderboardTimezone: string;
+};
+
+const REP_DEFAULTS: ReputationSettings = {
+  enabled: true,
+  excludeRoles: [],
+  reactToOwn: false,
+  showOnProfile: true,
+  highlightThreshold: 0,
+  reactionDisplay: "individual",
+  leaderboardEnabled: true,
+  leaderboardExcludeRoles: [],
+  leaderboardTimezone: "UTC",
+};
+
+const REP_ROLES = ["member", "contributor", "moderator", "admin"];
+
+export function sanitizeReputationSettings(raw: unknown): ReputationSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const roles = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => REP_ROLES.includes(x as string)) : []);
+  return {
+    enabled: r.enabled === undefined ? REP_DEFAULTS.enabled : Boolean(r.enabled),
+    excludeRoles: roles(r.excludeRoles),
+    reactToOwn: Boolean(r.reactToOwn),
+    showOnProfile: r.showOnProfile === undefined ? REP_DEFAULTS.showOnProfile : Boolean(r.showOnProfile),
+    highlightThreshold: Math.max(0, Math.min(100000, Math.floor(Number(r.highlightThreshold) || 0))),
+    reactionDisplay: r.reactionDisplay === "total" ? "total" : "individual",
+    leaderboardEnabled: r.leaderboardEnabled === undefined ? REP_DEFAULTS.leaderboardEnabled : Boolean(r.leaderboardEnabled),
+    leaderboardExcludeRoles: roles(r.leaderboardExcludeRoles),
+    leaderboardTimezone: typeof r.leaderboardTimezone === "string" && r.leaderboardTimezone ? r.leaderboardTimezone.slice(0, 60) : "UTC",
+  };
+}
+
+export async function getReputationSettings(): Promise<ReputationSettings> {
+  const raw = await getSetting<Partial<ReputationSettings>>("reputation", REP_DEFAULTS);
+  return sanitizeReputationSettings({ ...REP_DEFAULTS, ...raw });
+}

@@ -10,6 +10,8 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
 import { runTrigger } from "@/lib/achievements";
 import { canEditOwn, canDeleteOwn, maxReactionsPerDay } from "@/lib/permissions";
+import { getReaction } from "@/lib/reactions";
+import { getReputationSettings } from "@/lib/settings";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -236,55 +238,80 @@ export async function hideCommentAction(commentId: number): Promise<Result> {
   return { ok: true };
 }
 
-export async function voteAction(articleId: number): Promise<Result<{ voted: boolean }>> {
+export async function reactAction(articleId: number, reactionId: number): Promise<Result<{ reactionId: number | null }>> {
   let user;
   try {
     user = await requireUser();
   } catch {
-    return { ok: false, error: "Faça login para votar." };
+    return { ok: false, error: "Faça login para reagir." };
   }
-  await checkRateLimit(`vote:${user.id}`, 30, 60_000);
-
+  await checkRateLimit(`react:${user.id}`, 30, 60_000);
   const userId = Number(user.id);
+
+  const settings = await getReputationSettings();
+  if (!settings.enabled) return { ok: false, error: "Reações estão desativadas." };
+
+  const reaction = await getReaction(reactionId);
+  if (!reaction || !reaction.enabled) return { ok: false, error: "Reação inválida." };
+
+  const [a] = await db.select({ slug: articles.slug, authorId: articles.authorId }).from(articles).where(eq(articles.id, articleId)).limit(1);
+  if (!a) return { ok: false, error: "Conteúdo não encontrado." };
+
+  if (a.authorId === userId && !settings.reactToOwn) {
+    return { ok: false, error: "Você não pode reagir ao próprio conteúdo." };
+  }
+  if (settings.excludeRoles.length) {
+    const [author] = await db.select({ role: users.role }).from(users).where(eq(users.id, a.authorId)).limit(1);
+    if (author && settings.excludeRoles.includes(author.role)) {
+      return { ok: false, error: "O conteúdo deste autor não aceita reações." };
+    }
+  }
+
   const [existing] = await db
-    .select({ id: votes.id })
+    .select({ id: votes.id, reactionId: votes.reactionId })
     .from(votes)
     .where(and(eq(votes.articleId, articleId), eq(votes.userId, userId)))
     .limit(1);
 
-  let voted: boolean;
+  let current: number | null;
+  let isNew = false;
   if (existing) {
-    await db.delete(votes).where(eq(votes.id, existing.id));
-    await db
-      .update(articles)
-      .set({ votesUp: sql`GREATEST(${articles.votesUp} - 1, 0)` })
-      .where(eq(articles.id, articleId));
-    voted = false;
+    if ((existing.reactionId ?? reactionId) === reactionId && existing.reactionId !== null) {
+      // mesma reação → desfaz
+      await db.delete(votes).where(eq(votes.id, existing.id));
+      await db.update(articles).set({ votesUp: sql`GREATEST(${articles.votesUp} - 1, 0)` }).where(eq(articles.id, articleId));
+      current = null;
+    } else {
+      // troca a reação (sem reaplicar reputação)
+      await db.update(votes).set({ reactionId, value: reaction.weight }).where(eq(votes.id, existing.id));
+      current = reactionId;
+    }
   } else {
-    // Limite diário de reações do papel (0 = ilimitado).
     const perDay = await maxReactionsPerDay(user.role);
     if (perDay > 0) {
       const since = new Date();
       since.setHours(0, 0, 0, 0);
-      const [today] = await db
-        .select({ n: count() })
-        .from(votes)
-        .where(and(eq(votes.userId, userId), gte(votes.createdAt, since)));
+      const [today] = await db.select({ n: count() }).from(votes).where(and(eq(votes.userId, userId), gte(votes.createdAt, since)));
       if ((today?.n ?? 0) >= perDay) {
         return { ok: false, error: `Limite de ${perDay} reações por dia atingido.` };
       }
     }
-    await db.insert(votes).values({ userId, articleId, value: 1 }).catch(() => {});
-    await db
-      .update(articles)
-      .set({ votesUp: sql`${articles.votesUp} + 1` })
-      .where(eq(articles.id, articleId));
-    voted = true;
+    await db.insert(votes).values({ userId, articleId, reactionId, value: reaction.weight }).catch(() => {});
+    await db.update(articles).set({ votesUp: sql`${articles.votesUp} + 1` }).where(eq(articles.id, articleId));
+    current = reactionId;
+    isNew = true;
   }
 
-  const [a] = await db.select({ slug: articles.slug, authorId: articles.authorId }).from(articles).where(eq(articles.id, articleId)).limit(1);
-  if (a) revalidatePath(`/guias/${a.slug}`);
-  // Só concede conquista ao reagir (não ao desfazer o voto).
-  if (voted && a) await runTrigger("reaction.given", { actorId: userId, targetId: a.authorId });
-  return { ok: true, data: { voted } };
+  revalidatePath(`/guias/${a.slug}`);
+
+  // Reputação só na primeira reação (não reverte ao desfazer/trocar), pelo peso:
+  // positiva concede via regra (badges/quests/rank-up); negativa subtrai 1.
+  if (isNew) {
+    if (reaction.weight > 0) {
+      await runTrigger("reaction.given", { actorId: userId, targetId: a.authorId });
+    } else if (reaction.weight < 0) {
+      await db.update(users).set({ reputation: sql`${users.reputation} - 1` }).where(eq(users.id, a.authorId));
+    }
+  }
+  return { ok: true, data: { reactionId: current } };
 }

@@ -13,7 +13,10 @@ function FieldValue({ field }: { field: FieldWithValue }) {
   const v = field.value;
   switch (field.type) {
     case "url":
-      return <a href={v} className="link-inline" target="_blank" rel="noopener noreferrer nofollow">{v}</a>;
+      // Defesa em profundidade: só vira link se for http(s); senão, texto puro.
+      return /^https?:\/\//i.test(v)
+        ? <a href={v} className="link-inline" target="_blank" rel="noopener noreferrer nofollow">{v}</a>
+        : <span>{v}</span>;
     case "yesno":
       return <span>{v === "1" ? "Sim" : "Não"}</span>;
     case "color":

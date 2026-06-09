@@ -385,12 +385,34 @@ Gamificação (conquistas):
 
 Configurações de membros:
 
-- **Campos de perfil.** Campos extras editáveis (bio, localização, links),
-  com grupos de campos e controle de quem vê.
-- **Reputação e reações.** Configurar se está ativa, papéis excluídos, reagir ao
-  próprio conteúdo, limiar para destacar conteúdo, exibir total no perfil,
-  e o conjunto de reações. Abas: configurações, reações, ranking (leaderboard),
-  níveis de reputação.
+- **Campos de perfil.** STATUS: entregue (aba **Campos de perfil** de
+  `/admin/perfis`). Grupos + campos customizados (tipos: texto, texto longo,
+  editor, URL, número, data, seleção, opção única, múltipla escolha, sim/não,
+  cor), com obrigatoriedade, tamanho máx., regex, visibilidade (não exibir /
+  equipe / equipe e o próprio / todos), "membro pode editar", "mostrar no
+  cadastro" e flag de dado pessoal. Membro preenche em `/conta?secao=perfil`;
+  exibido em `/u/[handle]` respeitando a visibilidade. Tabelas
+  `profile_field_groups` / `profile_fields` / `profile_field_values`. Também
+  entregue a aba **Configurações** (tamanho do nome de exibição, ligado ao
+  `updateDisplayNameAction`).
+  FALTA (adiado): aba **Conclusão de perfil** (etapas pós-cadastro) e aba
+  **Galeria de fotos**. N/A no RetroWiki (sem a feature-base): assinaturas,
+  aniversários, prune de conversas, ignorar membros, formatação de grupo, e o
+  "mostrar no cadastro" só é armazenado (o formulário de cadastro ainda não
+  consome os campos).
+- **Reputação e reações.** STATUS: entregue (`/admin/reputacao`, 4 abas).
+  **Configurações**: ativa, papéis excluídos, reagir ao próprio conteúdo, mostrar
+  reputação no perfil (gate verificado), limiar de destaque, modo de exibição.
+  **Reações**: tipos configuráveis (nome, emoji, peso +1/0/-1, ativa) com CRUD e
+  auto-seed (Curtir/Valeu/Top/Haha/Uau); o voto único "Útil" virou um **seletor
+  multi-reação** nos guias (`votes.reaction_id`); reação positiva concede
+  reputação pela regra `reaction.given` (preserva badges/quests/rank-up), neutra
+  é só sentimento, negativa subtrai 1. **Leaderboard**: página pública
+  `/leaderboard` (destaques de hoje por reputação recebida no fuso configurado,
+  guias em alta, top membros) + aba de config (ativo, grupos excluídos, fuso).
+  **Níveis de reputação**: tabela `reputation_levels` + CRUD + rótulo no perfil
+  ao lado do total (distinto dos Ranks, aceita faixas negativas). Tudo verificado
+  no navegador.
 - **Notificações.** Tipos de notificação (conquistas, conteúdo seguido,
   moderação, menções, perfil) com edição por tipo. Conecta com a
   `notification_prefs` já existente.

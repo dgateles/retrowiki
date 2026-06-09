@@ -276,9 +276,29 @@ export const votes = mysqlTable("votes", {
   id: pk(),
   userId: bigint("user_id", { mode: "number" }).notNull(),
   articleId: bigint("article_id", { mode: "number" }).notNull(),
-  value: int("value").notNull().default(1),
+  reactionId: bigint("reaction_id", { mode: "number" }), // tipo de reação (null = legado "Curtir")
+  value: int("value").notNull().default(1), // peso da reação no momento (para a reputação)
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("votes_user_article_idx").on(t.userId, t.articleId)]);
+
+// Tipos de reação configuráveis (Curtir, Valeu, Haha…). Peso ajusta a reputação.
+export const reactions = mysqlTable("reactions", {
+  id: pk(),
+  name: varchar("name", { length: 60 }).notNull(),
+  emoji: varchar("emoji", { length: 16 }).notNull().default("👍"),
+  weight: int("weight").notNull().default(1), // 1 positiva, 0 neutra, -1 negativa
+  enabled: boolean("enabled").notNull().default(true),
+  sortOrder: int("sort_order").notNull().default(0),
+}, (t) => [index("reactions_order_idx").on(t.sortOrder)]);
+
+// Níveis de reputação (rótulo por limiar, pode ser negativo). Exibido no perfil.
+export const reputationLevels = mysqlTable("reputation_levels", {
+  id: pk(),
+  title: varchar("title", { length: 80 }).notNull(),
+  points: int("points").notNull().default(0), // limiar (>= )
+  badge: varchar("badge", { length: 80 }), // slug de badge opcional
+  sortOrder: int("sort_order").notNull().default(0),
+}, (t) => [index("rep_levels_points_idx").on(t.points)]);
 
 // Visualizações únicas: uma linha por (artigo, visitante). viewerKey = usuário
 // logado ou hash do IP. Alimenta articles.views_count.
