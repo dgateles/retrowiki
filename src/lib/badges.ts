@@ -2,6 +2,7 @@ import "server-only";
 import { eq, and, count, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { badges, userBadges, articles, comments, users } from "@/db/schema";
+import { slugify } from "@/lib/utils";
 
 type Tier = "bronze" | "silver" | "gold";
 type Stats = { guides: number; comments: number; reputation: number };
@@ -29,12 +30,14 @@ const CATALOG: BadgeDef[] = [
 
 const ICONS = new Map(CATALOG.map((d) => [d.slug, d.icon]));
 
-/** Garante que o catálogo de badges existe no banco (sem sobrescrever). */
+/** Semeia o catálogo padrão apenas se a tabela estiver vazia, para que as
+ * edições e exclusões do admin persistam. */
 async function ensureCatalog(): Promise<void> {
+  const [row] = await db.select({ n: count() }).from(badges);
+  if ((row?.n ?? 0) > 0) return;
   await db
     .insert(badges)
-    .values(CATALOG.map((d) => ({ slug: d.slug, name: d.name, description: d.description, icon: d.icon, tier: d.tier, sortOrder: d.sortOrder })))
-    .onDuplicateKeyUpdate({ set: { slug: sql`slug` } });
+    .values(CATALOG.map((d) => ({ slug: d.slug, name: d.name, description: d.description, icon: d.icon, tier: d.tier, sortOrder: d.sortOrder })));
 }
 
 async function statsFor(userId: number): Promise<Stats> {
@@ -107,6 +110,7 @@ export type BadgeWithCount = {
   description: string;
   icon: string;
   tier: Tier;
+  manuallyAwardable: boolean;
   count: number;
 };
 
@@ -122,15 +126,74 @@ export async function listBadgesWithCounts(): Promise<BadgeWithCount[]> {
         description: badges.description,
         icon: badges.icon,
         tier: badges.tier,
+        manuallyAwardable: badges.manuallyAwardable,
         count: count(userBadges.id),
       })
       .from(badges)
       .leftJoin(userBadges, eq(userBadges.badgeId, badges.id))
-      .groupBy(badges.id, badges.slug, badges.name, badges.description, badges.icon, badges.tier, badges.sortOrder)
+      .groupBy(badges.id, badges.slug, badges.name, badges.description, badges.icon, badges.tier, badges.manuallyAwardable, badges.sortOrder)
       .orderBy(badges.sortOrder);
     return rows.map((r) => ({ ...r, count: Number(r.count) }));
   } catch {
     return [];
+  }
+}
+
+// ── CRUD de badges (admin) ──────────────────────────────────────────────
+
+export type BadgeRow = { id: number; slug: string; name: string; description: string; icon: string; tier: Tier; manuallyAwardable: boolean; sortOrder: number };
+
+export async function getBadge(id: number): Promise<BadgeRow | null> {
+  try {
+    const [b] = await db.select().from(badges).where(eq(badges.id, id)).limit(1);
+    return b ? { ...b, tier: b.tier as Tier } : null;
+  } catch {
+    return null;
+  }
+}
+
+async function uniqueSlug(base: string): Promise<string> {
+  const root = slugify(base).slice(0, 60) || "badge";
+  let slug = root;
+  for (let i = 2; i < 100; i++) {
+    const [hit] = await db.select({ id: badges.id }).from(badges).where(eq(badges.slug, slug)).limit(1);
+    if (!hit) return slug;
+    slug = `${root}-${i}`;
+  }
+  return `${root}-${root.length}`;
+}
+
+type BadgeInput = { name: string; description: string; icon: string; tier: Tier; manuallyAwardable: boolean };
+
+export async function createBadge(input: BadgeInput): Promise<number | null> {
+  try {
+    await ensureCatalog();
+    const slug = await uniqueSlug(input.name);
+    const [maxRow] = await db.select({ m: sql<number>`COALESCE(MAX(${badges.sortOrder}), 0)` }).from(badges);
+    const sortOrder = Number(maxRow?.m ?? 0) + 1;
+    const [res] = await db.insert(badges).values({ slug, name: input.name, description: input.description, icon: input.icon, tier: input.tier, manuallyAwardable: input.manuallyAwardable, sortOrder });
+    return (res as unknown as { insertId: number }).insertId;
+  } catch {
+    return null;
+  }
+}
+
+export async function updateBadge(id: number, input: BadgeInput): Promise<boolean> {
+  try {
+    await db.update(badges).set({ name: input.name, description: input.description, icon: input.icon, tier: input.tier, manuallyAwardable: input.manuallyAwardable }).where(eq(badges.id, id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteBadge(id: number): Promise<boolean> {
+  try {
+    await db.delete(userBadges).where(eq(userBadges.badgeId, id));
+    await db.delete(badges).where(eq(badges.id, id));
+    return true;
+  } catch {
+    return false;
   }
 }
 

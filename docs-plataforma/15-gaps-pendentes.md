@@ -336,9 +336,19 @@ Gamificação (conquistas):
     texto remete às Regras de conquista para os critérios.
   - Migrar `rankForReputation`/`rankTiers` para ler da tabela (com os 13 atuais
     como seed), mantendo a API usada no perfil e no Member View.
-- **Badges.** Catálogo de conquistas com ícone, critério e concessão automática
-  (por regra) ou manual (por moderador). Precisa de tabela de badges e de
-  badges-por-usuário.
+- **Badges (detalhado do AdminCP).** Catálogo de conquistas, decoplado das
+  regras: cria-se a badge (metadados) e ela fica disponível para ser atribuída
+  numa Regra de conquista (automática) ou concedida manualmente. Já temos a
+  tabela `badges` + `user_badges`.
+  - **Lista**: ícone (com nº de marco sobreposto, quando aplicável), nome, nº de
+    membros; busca; ações por linha Editar/Copiar/Excluir; Exportar/Importar/
+    Criar nova.
+  - **Editor**: Nome (obrigatório), imagem custom (upload; por enquanto ícone
+    lucide), "Concedível manualmente" (toggle: pode ser dada por moderador ao
+    reconhecer conteúdo ou pelo AdminCP).
+  - Tornar o catálogo totalmente editável: `ensureCatalog` passa a semear só uma
+    vez (tabela vazia), para que edições/exclusões do admin persistam. Badges
+    novas aparecem automaticamente no seletor das Regras.
 - **Configurações.** Ativar/desativar a gamificação, marcar badge como "raro"
   abaixo de X% dos membros, limpar o log de atividade após N dias, excluir
   papéis, limitar pontos manuais por dia. Botão de recalcular conquistas.

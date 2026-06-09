@@ -1,0 +1,1 @@
+ALTER TABLE `badges` ADD `manually_awardable` boolean DEFAULT true NOT NULL;

@@ -386,6 +386,48 @@
   .rank-icon-pick {
     @apply flex items-center gap-2;
   }
+  .badge-chip {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-full text-white;
+  }
+  .badge-chip--bronze {
+    @apply bg-amber-700;
+  }
+  .badge-chip--silver {
+    @apply bg-slate-400;
+  }
+  .badge-chip--gold {
+    @apply bg-yellow-500;
+  }
+  .badge-preview {
+    @apply flex items-center gap-3;
+  }
+  .badge-preview__icon {
+    @apply flex size-12 shrink-0 items-center justify-center rounded-full bg-muted text-foreground;
+  }
+  .badge-preview__icon--bronze {
+    @apply bg-amber-700 text-white;
+  }
+  .badge-preview__icon--silver {
+    @apply bg-slate-400 text-white;
+  }
+  .badge-preview__icon--gold {
+    @apply bg-yellow-500 text-white;
+  }
+  .badge-preview--bronze .badge-preview__icon {
+    @apply bg-amber-700 text-white;
+  }
+  .badge-preview--silver .badge-preview__icon {
+    @apply bg-slate-400 text-white;
+  }
+  .badge-preview--gold .badge-preview__icon {
+    @apply bg-yellow-500 text-white;
+  }
+  .badge-preview__name {
+    @apply font-semibold;
+  }
+  .badge-preview__desc {
+    @apply text-sm text-muted-foreground;
+  }
 
   /* Gamificação (admin). */
   .gami-tools {

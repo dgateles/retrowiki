@@ -381,6 +381,7 @@ export const badges = mysqlTable("badges", {
   icon: varchar("icon", { length: 40 }).notNull().default("award"),
   tier: mysqlEnum("tier", ["bronze", "silver", "gold"]).notNull().default("bronze"),
   sortOrder: int("sort_order").notNull().default(0),
+  manuallyAwardable: boolean("manually_awardable").notNull().default(true),
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("badges_slug_idx").on(t.slug)]);
 
