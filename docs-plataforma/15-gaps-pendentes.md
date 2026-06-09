@@ -427,7 +427,13 @@ Configurações de membros:
   do membro suprime para ele. **Push N/A** (sem app). **E-mail** é só
   configuração: o envio de e-mail de notificação/digest segue adiado (cron já
   preparado em outro item).
-- **Banimentos.** Filtros de banimento por e-mail, IP ou termo, com motivo.
+- **Banimentos.** STATUS: entregue (`/admin/banimentos`). Filtros por **e-mail,
+  IP ou nome de usuário**, com conteúdo aceitando curinga `*` e motivo (tabela
+  `ban_filters`). Admin adiciona/remove pelo dialog. Enforcement no **cadastro**
+  (e-mail + IP + nome) e no **login** (e-mail + IP, no `authorize`), via
+  `isBanned`/`checkBan` com match por curinga. Verificado: filtro `*@dominio`
+  bloqueia o cadastro ("Cadastro não permitido.", conta não criada); e-mail fora
+  do filtro cadastra normal.
 
 Moderação de conteúdo:
 

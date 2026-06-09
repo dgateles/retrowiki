@@ -5,7 +5,8 @@ import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { verifyPassword } from "@/lib/password";
-import { recordMemberIp } from "@/lib/ip";
+import { recordMemberIp, getClientIp } from "@/lib/ip";
+import { isBanned } from "@/lib/admin/ban-filters";
 import type { UserRole } from "@/db/schema";
 
 const credentialsSchema = z.object({
@@ -28,6 +29,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!parsed.success) return null;
 
         const { email, password } = parsed.data;
+
+        // Filtros de banimento (e-mail / IP) bloqueiam o login.
+        if (await isBanned({ email: email.toLowerCase(), ip: await getClientIp() })) return null;
+
         const [user] = await db
           .select()
           .from(users)

@@ -525,6 +525,16 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Filtros de banimento (por e-mail, IP ou nome; aceita curinga *).
+export const banFilters = mysqlTable("ban_filters", {
+  id: pk(),
+  type: mysqlEnum("type", ["email", "ip", "name"]).notNull(),
+  content: varchar("content", { length: 255 }).notNull(),
+  reason: varchar("reason", { length: 255 }).notNull().default(""),
+  actorId: bigint("actor_id", { mode: "number" }),
+  createdAt: createdAt(),
+}, (t) => [index("ban_filters_type_idx").on(t.type)]);
+
 // Cache de geolocalização por IP (via ipwho.is). Evita repetir chamadas.
 export const ipGeo = mysqlTable("ip_geo", {
   id: pk(),

@@ -13,6 +13,7 @@ import { sendEmail } from "@/lib/email/mailer";
 import { verifyEmail, resetPassword as resetTpl, passwordChanged } from "@/lib/email/templates";
 import { slugify } from "@/lib/utils";
 import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profile-fields";
+import { isBanned } from "@/lib/admin/ban-filters";
 
 type ActionResult = { ok: boolean; message?: string; error?: string };
 
@@ -55,6 +56,11 @@ export async function registerAction(
 
   const email = parsed.data.email.toLowerCase();
   const handle = parsed.data.handle.toLowerCase();
+
+  // Filtros de banimento (e-mail, IP, nome). Bloqueio genérico.
+  if (await isBanned({ email, ip: await ip(), name: parsed.data.handle })) {
+    return { ok: false, error: "Cadastro não permitido." };
+  }
 
   // anti-enumeração: resposta genérica mesmo se já existir
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
