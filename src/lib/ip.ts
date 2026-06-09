@@ -1,8 +1,25 @@
 import "server-only";
 import { headers } from "next/headers";
-import { and, desc, eq, like, lt, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, like, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { memberIps, users } from "@/db/schema";
+
+export type StaffLogin = { handle: string; displayName: string; role: string; ip: string; lastUsedAt: Date };
+
+/** Logins recentes da equipe (moderadores e admins), do registro de IPs. */
+export async function getStaffLogins(limit = 20): Promise<StaffLogin[]> {
+  try {
+    return await db
+      .select({ handle: users.handle, displayName: users.displayName, role: users.role, ip: memberIps.ip, lastUsedAt: memberIps.lastUsedAt })
+      .from(memberIps)
+      .innerJoin(users, eq(users.id, memberIps.userId))
+      .where(inArray(users.role, ["moderator", "admin"]))
+      .orderBy(desc(memberIps.lastUsedAt))
+      .limit(limit);
+  } catch {
+    return [];
+  }
+}
 
 export async function getClientIp(): Promise<string> {
   const h = await headers();

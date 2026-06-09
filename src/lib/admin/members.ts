@@ -1,13 +1,21 @@
 import "server-only";
-import { or, like, desc } from "drizzle-orm";
+import { and, or, like, eq, desc } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
 export const MEMBERS_PAGE_SIZE = 20;
 
-export async function listMembers({ page = 1, q }: { page?: number; q?: string }) {
+const ROLES = ["member", "contributor", "moderator", "admin"] as const;
+type Role = (typeof ROLES)[number];
+
+export async function listMembers({ page = 1, q, role }: { page?: number; q?: string; role?: string }) {
   const offset = (Math.max(1, page) - 1) * MEMBERS_PAGE_SIZE;
   const term = q && q.trim().length >= 2 ? `%${q.trim().replace(/[%_]/g, "\\$&")}%` : null;
+  const roleFilter = ROLES.includes(role as Role) ? (role as Role) : null;
+  const conds = [
+    term ? or(like(users.handle, term), like(users.displayName, term), like(users.email, term)) : undefined,
+    roleFilter ? eq(users.role, roleFilter) : undefined,
+  ].filter(Boolean);
   try {
     const rows = await db
       .select({
@@ -22,7 +30,7 @@ export async function listMembers({ page = 1, q }: { page?: number; q?: string }
         createdAt: users.createdAt,
       })
       .from(users)
-      .where(term ? or(like(users.handle, term), like(users.displayName, term), like(users.email, term)) : undefined)
+      .where(conds.length ? and(...conds) : undefined)
       .orderBy(desc(users.createdAt))
       .limit(MEMBERS_PAGE_SIZE + 1)
       .offset(offset);

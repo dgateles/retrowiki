@@ -18,14 +18,16 @@ function initials(name: string) {
 export default async function AdminMembersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; q?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; role?: string }>;
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
   const q = sp.q ?? "";
+  const role = sp.role ?? "";
   const me = await getCurrentUser();
-  const { items, hasMore } = await listMembers({ page, q });
+  const { items, hasMore } = await listMembers({ page, q, role });
   const tiers = await getRankTierList();
+  const roleFiltered = role ? roleLabel(role) : null;
 
   return (
     <>
@@ -47,7 +49,15 @@ export default async function AdminMembersPage({
           aria-label="Buscar membros"
           className="search__input"
         />
+        {role && <input type="hidden" name="role" value={role} />}
       </form>
+
+      {roleFiltered && (
+        <p className="muted mt-3 text-sm">
+          Filtrando por papel: <strong>{roleFiltered}</strong>{" "}
+          <Link href="/admin/membros" className="link-inline">limpar filtro</Link>
+        </p>
+      )}
 
       {items.length === 0 ? (
         <p className="empty mt-6">Nenhum membro encontrado.</p>
@@ -82,7 +92,7 @@ export default async function AdminMembersPage({
         </ul>
       )}
 
-      <Pager path="/admin/membros" page={page} hasMore={hasMore} params={{ q }} />
+      <Pager path="/admin/membros" page={page} hasMore={hasMore} params={{ q, role }} />
     </>
   );
 }

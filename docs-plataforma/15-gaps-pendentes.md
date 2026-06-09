@@ -494,6 +494,12 @@ Equipe:
   legível via `auditLabel`, alvo, data). "Add Moderator" = definir o papel do
   membro em Membros (já existe); permissões restritas/irrestritas por papel já
   ficam em Grupos. ADIADO: log com IP por ação e o expurgo automático (cron).
+  **Administradores** (mesma tela, adaptada — IPB separa, RetroWiki unifica):
+  **Mostrar administradores/moderadores** = links para `/admin/membros?role=...`
+  (filtro de papel adicionado a `listMembers`, com indicador e "limpar filtro" —
+  verificado); **Logins recentes da equipe** = surface de `member_ips` (membro,
+  papel, IP, último acesso) para mod/admin. N-A: log de login com sucesso/falha
+  (só acessos bem-sucedidos por IP são registrados; tentativas falhas não).
 - **Diretório da equipe.** Página pública de quem modera a comunidade.
 
 Gerenciamento de páginas e conteúdo:
