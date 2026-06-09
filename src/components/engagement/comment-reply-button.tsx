@@ -8,14 +8,18 @@ export const COMMENT_REPLY_EVENT = "rw-comment-reply";
 type Props = {
   quotedDoc: JSONContent;
   authorName: string;
+  authorId: number;
   when: string;
 };
 
+export type CommentReplyDetail = { doc: JSONContent; authorId: number };
+
 // Ao responder, insere o comentário citado (blockquote com cabeçalho) no editor
-// do formulário e foca, para o usuário escrever a resposta abaixo.
-export function CommentReplyButton({ quotedDoc, authorName, when }: Props) {
+// do formulário e foca, para o usuário escrever a resposta abaixo. O id do autor
+// citado segue junto para notificá-lo.
+export function CommentReplyButton({ quotedDoc, authorName, authorId, when }: Props) {
   function reply() {
-    const quote: JSONContent = {
+    const doc: JSONContent = {
       type: "doc",
       content: [
         {
@@ -31,7 +35,7 @@ export function CommentReplyButton({ quotedDoc, authorName, when }: Props) {
         { type: "paragraph" },
       ],
     };
-    window.dispatchEvent(new CustomEvent(COMMENT_REPLY_EVENT, { detail: quote }));
+    window.dispatchEvent(new CustomEvent<CommentReplyDetail>(COMMENT_REPLY_EVENT, { detail: { doc, authorId } }));
   }
 
   return (

@@ -157,9 +157,10 @@ no formulário, editar e excluir pelo próprio autor (excluir também por
 moderador), responder com citação (insere o comentário citado num blockquote
 "X atrás, @autor disse:" e foca o editor), seguir o tópico (tabela
 `article_follows`) com notificação aos seguidores a cada nova resposta, e
-"Ocultar" para a equipe. Pendência: anexos por arrastar-e-soltar (dependem do
-armazenamento de mídia) e respostas aninhadas em árvore (hoje a resposta é
-linear, com citação).
+"Ocultar" para a equipe. Ao responder, o usuário citado é notificado
+(`comment.quote`). Anexos por arrastar-e-soltar e respostas aninhadas em árvore
+foram dispensados pelo dono do projeto: a resposta linear com citação e a
+notificação ao citado atendem.
 
 ## Operação
 - **Agendar o cron.** O endpoint `/api/cron/sync-github` existe e é protegido por

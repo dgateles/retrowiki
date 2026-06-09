@@ -7,7 +7,7 @@ import type { JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { CommentAvatar } from "@/components/engagement/comment-avatar";
-import { COMMENT_REPLY_EVENT } from "@/components/engagement/comment-reply-button";
+import { COMMENT_REPLY_EVENT, type CommentReplyDetail } from "@/components/engagement/comment-reply-button";
 import { addCommentAction } from "@/lib/actions/engagement-actions";
 
 const EMPTY: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
@@ -28,13 +28,16 @@ export function CommentForm({ articleId, meName, meAvatar }: { articleId: number
   const [follow, setFollow] = useState(true);
   const [pending, setPending] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
+  const [replyTo, setReplyTo] = useState<number | null>(null);
   const ref = useRef<HTMLFormElement>(null);
 
-  // Resposta: recebe a citação do comentário e carrega no editor.
+  // Resposta: recebe a citação do comentário, carrega no editor e guarda o autor
+  // citado para notificá-lo ao enviar.
   useEffect(() => {
     function onReply(e: Event) {
-      const quote = (e as CustomEvent<JSONContent>).detail;
+      const { doc: quote, authorId } = (e as CustomEvent<CommentReplyDetail>).detail;
       setDoc(quote);
+      setReplyTo(authorId);
       setEditorKey((k) => k + 1);
       ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -46,10 +49,11 @@ export function CommentForm({ articleId, meName, meAvatar }: { articleId: number
     e.preventDefault();
     if (!docHasText(doc)) return;
     setPending(true);
-    const res = await addCommentAction({ articleId, body: JSON.stringify(doc), follow });
+    const res = await addCommentAction({ articleId, body: JSON.stringify(doc), follow, replyToUserId: replyTo ?? undefined });
     setPending(false);
     if (res.ok) {
       setDoc(EMPTY);
+      setReplyTo(null);
       setEditorKey((k) => k + 1);
       toast.success("Comentário publicado.");
       router.refresh();

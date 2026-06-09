@@ -182,6 +182,7 @@ export default async function ArticlePage({
                         <CommentReplyButton
                           quotedDoc={commentDocFromBody(c.body) as never}
                           authorName={c.authorName}
+                          authorId={c.authorId}
                           when={when}
                         />
                       )}

@@ -19,6 +19,8 @@ export function describeNotification(type: string, payloadRaw: unknown): { text:
       return { text: `"${title}" foi rejeitado${p.reason ? `: ${p.reason}` : "."}`, href };
     case "comment.reply":
       return { text: `Novo comentário em "${title}".`, href };
+    case "comment.quote":
+      return { text: `Responderam ao seu comentário em "${title}".`, href };
     case "submission.received":
       return { text: `Nova submissão na fila: "${title}".`, href: "/moderacao" };
     default:

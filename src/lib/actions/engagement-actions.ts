@@ -36,6 +36,7 @@ const AddSchema = z.object({
   articleId: z.number().int().positive(),
   body: z.string(),
   follow: z.boolean().optional(),
+  replyToUserId: z.number().int().positive().optional(),
 });
 
 export async function addCommentAction(input: unknown): Promise<Result> {
@@ -71,18 +72,25 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     await db.insert(articleFollows).values({ userId, articleId }).catch(() => {});
   }
 
-  // Notificar o autor do artigo e quem segue o tópico, menos quem comentou.
+  const payload = { slug: article.slug, title: article.title };
+  const quoted = parsed.data.replyToUserId;
+
+  // Notificar o usuário citado na resposta (se houver e não for ele mesmo).
+  if (quoted && quoted !== userId) {
+    await db.insert(notifications).values({ recipientId: quoted, type: "comment.quote", payload }).catch(() => {});
+  }
+
+  // Notificar o autor do artigo e quem segue o tópico, menos quem comentou e
+  // menos o citado (que já recebeu a notificação específica).
   const followers = await db
     .select({ userId: articleFollows.userId })
     .from(articleFollows)
     .where(and(eq(articleFollows.articleId, articleId), ne(articleFollows.userId, userId)));
   const recipients = new Set<number>(followers.map((f) => f.userId));
   if (article.authorId !== userId) recipients.add(article.authorId);
+  if (quoted) recipients.delete(quoted);
   for (const rid of recipients) {
-    await db
-      .insert(notifications)
-      .values({ recipientId: rid, type: "comment.reply", payload: { slug: article.slug, title: article.title } })
-      .catch(() => {});
+    await db.insert(notifications).values({ recipientId: rid, type: "comment.reply", payload }).catch(() => {});
   }
 
   revalidatePath(`/guias/${article.slug}`);
