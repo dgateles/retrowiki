@@ -551,8 +551,17 @@
   .guide-card__summary {
     @apply mt-1 text-sm text-muted-foreground;
   }
+  .guide-card__foot {
+    @apply mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1;
+  }
   .guide-card__meta {
-    @apply mt-2 text-xs text-muted-foreground;
+    @apply text-xs text-muted-foreground;
+  }
+  .guide-card__stats {
+    @apply flex flex-wrap items-center gap-4 text-xs text-muted-foreground;
+  }
+  .guide-card__stat {
+    @apply inline-flex items-center gap-1;
   }
 
   /* Ficha técnica do device. */

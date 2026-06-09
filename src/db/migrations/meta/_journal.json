@@ -29,6 +29,13 @@
       "when": 1781011699304,
       "tag": "0003_wealthy_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1781016760888,
+      "tag": "0004_wonderful_doorman",
+      "breakpoints": true
     }
   ]
 }

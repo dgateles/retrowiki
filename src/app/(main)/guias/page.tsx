@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Eye, MessageSquare } from "lucide-react";
 import { listPublishedArticles, typeLabel } from "@/lib/articles";
 import { listDevices } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,21 @@ const TYPES = [
   { value: "firmware", label: "Firmware" },
   { value: "general", label: "Geral" },
 ];
+
+function relTime(d: Date) {
+  const min = Math.floor((Date.now() - new Date(d).getTime()) / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const days = Math.floor(h / 24);
+  if (days < 30) return `há ${days} d`;
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(d));
+}
+
+function plural(n: number, s: string, p: string) {
+  return `${n} ${n === 1 ? s : p}`;
+}
 
 export default async function GuidesPage({
   searchParams,
@@ -79,7 +94,22 @@ export default async function GuidesPage({
                   <span className="guide-card__kind">{typeLabel(a.type)}</span>
                   <h2 className="guide-card__title">{a.title}</h2>
                   {a.summary && <p className="guide-card__summary">{a.summary}</p>}
-                  <p className="guide-card__meta">por @{a.authorHandle}</p>
+                  <div className="guide-card__foot">
+                    <p className="guide-card__meta">
+                      por @{a.authorHandle}
+                      {a.publishedAt && <> · {relTime(a.publishedAt)}</>}
+                    </p>
+                    <div className="guide-card__stats">
+                      <span className="guide-card__stat">
+                        <Eye className="size-3.5" aria-hidden="true" /> {plural(Number(a.viewsCount), "visualização", "visualizações")}
+                      </span>
+                      {Number(a.commentCount) > 0 && (
+                        <span className="guide-card__stat">
+                          <MessageSquare className="size-3.5" aria-hidden="true" /> {plural(Number(a.commentCount), "comentário", "comentários")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </Link>
               </li>
             ))}

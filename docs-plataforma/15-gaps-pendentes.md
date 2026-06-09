@@ -351,3 +351,64 @@ Acesso:
 - **Atalhos no menu de usuário.** "ModeratorCP" (para moderadores e admins,
   leva ao `/moderacao`) e "AdminCP" (só admin, leva ao `/admin`), separando o
   painel de moderação do painel administrativo, como nas referências.
+
+## Upload de imagens via BunnyCDN (storage)
+
+Todo envio de imagem da plataforma passa a usar o BunnyCDN Storage, não mais URL
+manual. Cobre: avatar e capa do perfil, imagens de device, imagens de artigo
+(no editor rico, substituindo o "imagem por URL"), e anexos de comentário.
+
+- **Storage Zone:** `https://br.storage.bunnycdn.com/retrowiki` (região BR).
+- **API:** REST de Storage do Bunny. Upload `PUT {base}/{caminho}/{arquivo}`,
+  leitura via Pull Zone (CDN), exclusão `DELETE`. Autenticação por header
+  `AccessKey` com a chave da Storage Zone.
+- **Segurança (regra do projeto):** a `AccessKey` é segredo, vai em variável de
+  ambiente (`BUNNY_STORAGE_KEY`, `BUNNY_STORAGE_ZONE`, `BUNNY_PULL_ZONE`), nunca
+  no código nem no cliente. O upload acontece no servidor (Server Action ou route
+  handler): o cliente envia o arquivo para o nosso backend, que valida e repassa
+  ao Bunny; a chave nunca chega ao navegador.
+- **Validação antes de subir:** tipo permitido (jpeg, png, webp, gif), tamanho
+  máximo, e reprocessamento (remoção de EXIF, redimensionamento/otimização)
+  conforme o doc de segurança. Nome de arquivo gerado pelo servidor (sem confiar
+  no nome do cliente), caminho por tipo (ex.: `avatars/`, `artigos/`,
+  `devices/`, `comentarios/`).
+- **No editor rico:** trocar o diálogo "imagem por URL" por upload (com
+  arrastar-e-soltar), retornando a URL pública da Pull Zone para inserir no
+  documento. Isso destrava os anexos de comentário e a imagem de artigo.
+- **Substitui** o item "Upload de imagens" da seção Mídia acima (que ficava
+  pendente por falta de armazenamento).
+
+## Login com Google e avatar/capa
+
+Reverte a decisão anterior de "só e-mail/senha": passa a permitir cadastro e
+login com Google, e dá ao usuário controle sobre avatar e capa.
+
+- **Login/cadastro com Google.** Adicionar o provider Google ao Auth.js
+  (NextAuth). `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` em variável de
+  ambiente. Criar a conta no primeiro login (handle gerado, papel `member`),
+  preservando o fluxo de e-mail/senha existente.
+- **Vinculação de contas (cuidado de segurança).** Se o e-mail do Google já
+  existe como conta de e-mail/senha, não vincular automaticamente sem prova de
+  posse. Como o Google entrega o e-mail verificado, vincular só quando o e-mail
+  vier verificado pelo Google; caso contrário, pedir confirmação. Evitar
+  account takeover por e-mail não verificado.
+- **Avatar.**
+  - Logado com Google: oferecer usar a foto do Google (a `picture` do perfil).
+  - Permitir trocar por **link** (URL de imagem) ou por **upload** (BunnyCDN, ver
+    seção acima).
+- **Capa.** Permitir **upload** (BunnyCDN) ou **link**. Hoje a capa é um
+  gradiente.
+- **Sanitização de links de imagem (anti-imagem falsa/exploit).** Quando o
+  usuário informar um link em vez de upload:
+  - Aceitar só esquema `https` (e `http`), bloquear `javascript:`, `data:` e
+    afins. Validar a URL antes de salvar.
+  - Não confiar na extensão: buscar a imagem no servidor e checar o
+    `Content-Type` real (apenas tipos de imagem permitidos) e o tamanho.
+  - **Mitigar SSRF:** ao buscar a URL no servidor, bloquear IPs privados/loopback
+    e redirecionamentos para eles, e limitar tempo/tamanho.
+  - **Abordagem mais segura (recomendada):** re-hospedar a imagem do link no
+    BunnyCDN após reprocessar (re-encode + remover EXIF), servindo sempre pela
+    Pull Zone. Isso neutraliza payloads embutidos e hotlink malicioso, e dá um
+    domínio confiável para a CSP. Guardar a URL final do nosso CDN, não a do
+    usuário.
+  - Reforçar a CSP de `img-src` para o domínio do nosso CDN quando re-hospedar.

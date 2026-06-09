@@ -207,6 +207,7 @@ export const articles = mysqlTable(
     currentRevisionId: bigint("current_revision_id", { mode: "number" }),
     searchText: text("search_text"),
     votesUp: int("votes_up").notNull().default(0),
+    viewsCount: int("views_count").notNull().default(0),
     publishedAt: datetime("published_at"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -275,6 +276,15 @@ export const votes = mysqlTable("votes", {
   articleId: bigint("article_id", { mode: "number" }).notNull(),
   value: int("value").notNull().default(1),
 }, (t) => [uniqueIndex("votes_user_article_idx").on(t.userId, t.articleId)]);
+
+// Visualizações únicas: uma linha por (artigo, visitante). viewerKey = usuário
+// logado ou hash do IP. Alimenta articles.views_count.
+export const articleViews = mysqlTable("article_views", {
+  id: pk(),
+  articleId: bigint("article_id", { mode: "number" }).notNull(),
+  viewerKey: varchar("viewer_key", { length: 64 }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("article_views_article_viewer_idx").on(t.articleId, t.viewerKey)]);
 
 // ── Componentes dinâmicos: allowlists ────────────────────────────────────
 export const stores = mysqlTable("stores", {

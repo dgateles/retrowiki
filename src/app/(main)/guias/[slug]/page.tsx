@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
+import { recordView } from "@/lib/article-views";
 import { listComments, getVoteState, isFollowing, commentDocFromBody } from "@/lib/comments";
 import { rankForReputation, roleLabel } from "@/lib/ranks";
 import { ArticleBody } from "@/lib/blocks/render";
@@ -60,6 +61,7 @@ export default async function ArticlePage({
   const session = await auth();
   const userId = session?.user ? Number(session.user.id) : null;
   const isMod = can.moderate(session?.user ?? null);
+  await recordView(a.id, userId);
   const [comments, vote, following] = await Promise.all([
     listComments(a.id),
     getVoteState(a.id, userId),

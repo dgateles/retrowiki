@@ -1,7 +1,7 @@
 import "server-only";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { articles, revisions, reviews, users, devices } from "@/db/schema";
+import { articles, revisions, reviews, users, devices, comments } from "@/db/schema";
 import type { BlockTree } from "@/lib/blocks/schema";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -25,6 +25,8 @@ type ArticleListItem = {
   type: string;
   publishedAt: Date | null;
   authorHandle: string;
+  viewsCount: number;
+  commentCount: number;
 };
 
 export async function listPublishedArticles(
@@ -46,6 +48,8 @@ export async function listPublishedArticles(
         type: articles.type,
         publishedAt: articles.publishedAt,
         authorHandle: users.handle,
+        viewsCount: articles.viewsCount,
+        commentCount: sql<number>`(select count(*) from ${comments} where ${comments.articleId} = ${articles.id} and ${comments.status} = 'visible')`,
       })
       .from(articles)
       .innerJoin(users, eq(users.id, articles.authorId))
