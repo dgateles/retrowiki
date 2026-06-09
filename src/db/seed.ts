@@ -37,7 +37,7 @@ type Db = MySql2Database<Record<string, never>>;
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is required.");
-  const connection = await mysql.createConnection({ uri: url });
+  const connection = await mysql.createConnection({ uri: url, charset: "utf8mb4" });
   const db = drizzle(connection, { casing: "snake_case" });
 
   let order = 0;

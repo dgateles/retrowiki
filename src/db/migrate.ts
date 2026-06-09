@@ -12,6 +12,7 @@ async function main() {
   const connection = await mysql.createConnection({
     uri: url,
     multipleStatements: true,
+    charset: "utf8mb4",
   });
   const db = drizzle(connection);
 
