@@ -41,6 +41,7 @@ export const users = mysqlTable(
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
     emailVerifiedAt: datetime("email_verified_at"),
+    lastSeenAt: datetime("last_seen_at"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -285,6 +286,22 @@ export const articleViews = mysqlTable("article_views", {
   viewerKey: varchar("viewer_key", { length: 64 }).notNull(),
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("article_views_article_viewer_idx").on(t.articleId, t.viewerKey)]);
+
+// IPs por membro (agregado). Uma linha por (usuário, IP), com user-agent,
+// contagem de usos e primeiro/último uso. Dado pessoal (LGPD): expurgar com o
+// tempo e acesso só por admin.
+export const memberIps = mysqlTable("member_ips", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  ip: varchar("ip", { length: 45 }).notNull(),
+  userAgent: varchar("user_agent", { length: 400 }),
+  uses: int("uses").notNull().default(1),
+  firstUsedAt: datetime("first_used_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  lastUsedAt: datetime("last_used_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (t) => [
+  uniqueIndex("member_ips_user_ip_idx").on(t.userId, t.ip),
+  index("member_ips_ip_idx").on(t.ip),
+]);
 
 // ── Componentes dinâmicos: allowlists ────────────────────────────────────
 export const stores = mysqlTable("stores", {

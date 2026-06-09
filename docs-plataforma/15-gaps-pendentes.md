@@ -266,8 +266,27 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
   - **Execução**: avaliar as regras periodicamente (cron) e/ou em eventos
     (ao ganhar reputação/badge, ao publicar). Respeitar a flag "ignorar
     promoção" do papel (das configurações de grupo).
-- **Ferramentas de IP e auditoria.** Consultar ações por usuário/IP usando o
-  `audit_log`. Liga com Dispositivos e IPs acima.
+- **Ferramentas de IP (detalhado do AdminCP).** Tela forense por IP. Depende de
+  uma infra que ainda não existe: **registrar os IPs** por login/ação. Hoje só
+  guardamos um hash de IP em `article_views` (views únicas) e o `audit_log` não
+  grava IP. Pré-requisito: uma tabela de eventos de IP (ou colunas de IP nos
+  registros relevantes) com user-agent e timestamp, e enriquecimento de
+  geolocalização (provedor externo).
+  - **Busca por IP** (com curinga `*`, ex.: `127.0.*`): lista os membros/eventos
+    que usaram aquele IP.
+  - **Busca por membro** (autocomplete por nome): lista todos os IPs que o membro
+    usou. Tabela: IP, localização estimada (geo), nº de usos, primeiro uso,
+    último uso; ordenar/buscar; ação "Ver usos".
+  - **Detalhe do IP**: "Informações associadas ao IP" — contadores por tipo de
+    evento ligados àquele IP (logins de admin, logs de admin, logins de
+    dispositivo, histórico do membro, registros, logs de defesa de spam, posts,
+    etc.) e a geolocalização. Adaptar ao nosso conjunto de eventos (sem
+    Blogs/Events/Downloads/Commerce do IPB).
+  - **Privacidade/LGPD (crítico).** IP é dado pessoal. Definir retenção (expurgo
+    após N dias), acesso só por admin, e o uso no fluxo de exclusão de dados
+    (PII). Considerar guardar IP truncado/anonimizado fora do necessário para
+    moderação. Liga com Dispositivos & IPs do Member View e com as solicitações
+    de exclusão (LGPD).
 - **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão da
   conta e dos dados, e o admin processar; e o "baixar dados pessoais" do Account
   Actions.

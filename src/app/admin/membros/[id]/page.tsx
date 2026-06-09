@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, Award } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getMemberDetail, getMemberAudit } from "@/lib/admin/member-detail";
+import { getMemberIps, deviceLabel } from "@/lib/ip";
 import { getUserBadges } from "@/lib/badges";
 import { rankForReputation, roleLabel } from "@/lib/ranks";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
 
   const [me, member] = await Promise.all([getCurrentUser(), getMemberDetail(memberId)]);
   if (!member) notFound();
-  const [badges, audit] = await Promise.all([getUserBadges(memberId), getMemberAudit(memberId)]);
+  const [badges, audit, ips] = await Promise.all([getUserBadges(memberId), getMemberAudit(memberId), getMemberIps(memberId)]);
   const rank = rankForReputation(member.reputation);
   const isSelf = Number(me?.id) === memberId;
   const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
@@ -110,6 +111,28 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
           <p className="muted mt-2">
             <Link href="/admin/gamificacao" className="link-inline">Conceder ou remover</Link> na Gamificação.
           </p>
+        </section>
+
+        <section className="member-panel member-panel--wide">
+          <h2 className="member-panel__title">Dispositivos & IPs</h2>
+          {ips.length === 0 ? (
+            <p className="muted">Nenhum IP registrado ainda.</p>
+          ) : (
+            <div className="iptable">
+              <div className="iptable__head iptable__head--member">
+                <span>IP</span><span>Dispositivo</span><span>Usos</span><span>Primeiro</span><span>Último</span>
+              </div>
+              {ips.map((r, i) => (
+                <div key={`${r.ip}-${i}`} className="iptable__row iptable__row--member">
+                  <span className="iptable__ip">{r.ip}</span>
+                  <span>{deviceLabel(r.userAgent)}</span>
+                  <span>{r.uses}</span>
+                  <span className="muted">{fmt(r.firstUsedAt)}</span>
+                  <span className="muted">{fmt(r.lastUsedAt)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="member-panel member-panel--wide">

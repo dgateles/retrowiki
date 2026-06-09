@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { verifyPassword } from "@/lib/password";
+import { recordMemberIp } from "@/lib/ip";
 import type { UserRole } from "@/db/schema";
 
 const credentialsSchema = z.object({
@@ -37,6 +38,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const ok = await verifyPassword(password, user.passwordHash);
         if (!ok) return null;
+
+        await recordMemberIp(user.id);
 
         return {
           id: String(user.id),

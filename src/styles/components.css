@@ -37,7 +37,13 @@
     @apply mx-auto grid w-full max-w-6xl gap-6 px-6 py-10 md:grid-cols-[200px_1fr];
   }
   .admin__nav {
-    @apply flex flex-col gap-1;
+    @apply flex flex-col gap-4;
+  }
+  .admin__group {
+    @apply flex flex-col gap-0.5;
+  }
+  .admin__group-title {
+    @apply mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
   }
   .admin__link {
     @apply rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
@@ -214,6 +220,41 @@
   }
   .member-audit__row {
     @apply flex items-center justify-between gap-3 py-2 text-sm;
+  }
+
+  /* Ferramentas de IP (admin). */
+  .iptool {
+    @apply mt-6 rounded-lg border border-border bg-card p-5;
+  }
+  .iptool__title {
+    @apply font-semibold;
+  }
+  .iptool__form {
+    @apply mt-3 flex items-center gap-2;
+  }
+  .iptool__members {
+    @apply space-y-1;
+  }
+  .iptool__member {
+    @apply block rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent;
+  }
+  .iptable {
+    @apply overflow-hidden rounded-lg border border-border text-sm;
+  }
+  .iptable__head {
+    @apply grid grid-cols-[1fr_1fr_auto_auto] gap-3 border-b border-border bg-muted/40 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+  .iptable__head--member {
+    @apply grid-cols-[1.4fr_1fr_auto_auto_auto];
+  }
+  .iptable__row {
+    @apply grid grid-cols-[1fr_1fr_auto_auto] items-center gap-3 border-b border-border/50 px-3 py-2 last:border-0;
+  }
+  .iptable__row--member {
+    @apply grid-cols-[1.4fr_1fr_auto_auto_auto];
+  }
+  .iptable__ip {
+    @apply truncate font-mono text-xs;
   }
 
   /* Grupos e permissões (admin). */
