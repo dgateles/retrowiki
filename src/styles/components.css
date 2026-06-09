@@ -611,6 +611,19 @@
   .bantable__content {
     @apply truncate font-mono text-xs;
   }
+  /* Denúncias */
+  .report-trigger {
+    @apply inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-destructive;
+  }
+  .report-row {
+    @apply flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+  .report-row__title {
+    @apply truncate font-medium;
+  }
+  .report-row__actions {
+    @apply flex shrink-0 items-center gap-2;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

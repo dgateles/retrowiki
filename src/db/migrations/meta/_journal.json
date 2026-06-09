@@ -148,6 +148,13 @@
       "when": 1781042213232,
       "tag": "0020_stiff_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1781043122326,
+      "tag": "0021_magenta_post",
+      "breakpoints": true
     }
   ]
 }

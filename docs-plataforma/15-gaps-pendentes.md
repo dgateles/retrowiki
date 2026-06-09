@@ -437,9 +437,19 @@ Configurações de membros:
 
 Moderação de conteúdo:
 
-- **Denúncias.** Membros denunciam conteúdo; fila para a equipe. Configurar
-  motivos, obrigatoriedade de mensagem e moderação automática por número de
-  denúncias.
+- **Denúncias.** STATUS: entregue (`/admin/denuncias`). Membros denunciam guias
+  e comentários (botão "Denunciar" → motivo + mensagem); fila para a equipe com
+  resolver **Remover conteúdo** (oculta: artigo→archived, comentário→hidden) ou
+  **Arquivar**; tipos de denúncia configuráveis (`report_types`, seed
+  Ofensivo/Spam/Off-topic) com textos de e-mail ao autor por decisão (enviados
+  via Resend, tags {name}/{reason}); configurações: mensagem obrigatória, ativar
+  moderação automática + limiar de denunciantes únicos para ocultar. O autor
+  recebe notificação no sino ao resolver. Tabelas `report_types` /
+  `content_reports`. Verificado: denunciar → auto-ocultar (limiar) → fila →
+  resolver → autor notificado.
+  ADIADO/N-A: regras de auto-moderação por critério de autor (lista estilo
+  Promoções, reaproveita o motor de critérios), e denúncia por convidado
+  (RetroWiki exige login).
 - **Prevenção de spam.** Tela de configuração do RetroGuard (dificuldade do
   proof-of-work, honeypot) em vez dos CAPTCHAs de terceiros do IPB.
 - **Avisos (warnings).** Sistema de advertências ao usuário com níveis e

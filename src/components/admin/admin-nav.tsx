@@ -40,6 +40,10 @@ const GROUPS: NavGroup[] = [
     ],
   },
   {
+    title: "Moderação de conteúdo",
+    links: [{ href: "/admin/denuncias", label: "Denúncias" }],
+  },
+  {
     title: "Conteúdo",
     links: [{ href: "/admin/consoles", label: "Consoles" }],
   },

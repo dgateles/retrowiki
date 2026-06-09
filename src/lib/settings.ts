@@ -123,3 +123,27 @@ export async function getReputationSettings(): Promise<ReputationSettings> {
   const raw = await getSetting<Partial<ReputationSettings>>("reputation", REP_DEFAULTS);
   return sanitizeReputationSettings({ ...REP_DEFAULTS, ...raw });
 }
+
+// ── Configurações de denúncias (moderação de conteúdo) ───────────────────
+
+export type ReportingSettings = {
+  messageMandatory: boolean;
+  autoModEnabled: boolean;
+  autoModThreshold: number; // nº de denunciantes únicos para ocultar
+};
+
+const REPORTING_DEFAULTS: ReportingSettings = { messageMandatory: false, autoModEnabled: false, autoModThreshold: 5 };
+
+export function sanitizeReportingSettings(raw: unknown): ReportingSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    messageMandatory: Boolean(r.messageMandatory),
+    autoModEnabled: Boolean(r.autoModEnabled),
+    autoModThreshold: Math.max(1, Math.min(1000, Math.floor(Number(r.autoModThreshold) || REPORTING_DEFAULTS.autoModThreshold))),
+  };
+}
+
+export async function getReportingSettings(): Promise<ReportingSettings> {
+  const raw = await getSetting<Partial<ReportingSettings>>("reporting", REPORTING_DEFAULTS);
+  return sanitizeReportingSettings({ ...REPORTING_DEFAULTS, ...raw });
+}

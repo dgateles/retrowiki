@@ -12,7 +12,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { ReactionPicker } from "@/components/engagement/reaction-picker";
 import { listEnabledReactions, getReactionCounts, getUserReaction } from "@/lib/reactions";
-import { getReputationSettings } from "@/lib/settings";
+import { getReputationSettings, getReportingSettings } from "@/lib/settings";
+import { listReportTypes } from "@/lib/reports";
+import { ReportButton } from "@/components/moderation/report-button";
 import { SharePopover } from "@/components/engagement/share-popover";
 import { CommentForm } from "@/components/engagement/comment-form";
 import { CommentBody } from "@/components/engagement/comment-body";
@@ -65,12 +67,15 @@ export default async function ArticlePage({
   const userId = session?.user ? Number(session.user.id) : null;
   const isMod = can.moderate(session?.user ?? null);
   await recordView(a.id, userId);
-  const [comments, following, repSettings, enabledReactions] = await Promise.all([
+  const [comments, following, repSettings, enabledReactions, reportingSettings, reportTypes] = await Promise.all([
     listComments(a.id),
     isFollowing(a.id, userId),
     getReputationSettings(),
     listEnabledReactions(),
+    getReportingSettings(),
+    listReportTypes(),
   ]);
+  const reportTypeOpts = reportTypes.map((t) => ({ id: t.id, title: t.title }));
   const fallbackReactionId = enabledReactions[0]?.id ?? null;
   const [reactionCountsMap, myReaction] = await Promise.all([
     getReactionCounts(a.id, fallbackReactionId),
@@ -163,6 +168,9 @@ export default async function ArticlePage({
               </>
             )}
           </span>
+          {userId && userId !== a.authorId && reportTypeOpts.length > 0 && (
+            <ReportButton targetType="article" targetId={a.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} />
+          )}
         </footer>
       </article>
 
@@ -218,6 +226,9 @@ export default async function ArticlePage({
                         />
                       )}
                       {isMod && <HideCommentButton commentId={c.id} />}
+                      {userId && !owner && reportTypeOpts.length > 0 && (
+                        <ReportButton targetType="comment" targetId={c.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} variant="icon" />
+                      )}
                     </div>
                   </div>
                 </li>

@@ -525,6 +525,34 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Tipos de denúncia (motivos selecionáveis) + textos de notificação ao autor.
+export const reportTypes = mysqlTable("report_types", {
+  id: pk(),
+  title: varchar("title", { length: 120 }).notNull(),
+  completedNotification: text("completed_notification"),
+  rejectedNotification: text("rejected_notification"),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("report_types_order_idx").on(t.sortOrder)]);
+
+// Denúncias de conteúdo (guia ou comentário) por membros.
+export const contentReports = mysqlTable("content_reports", {
+  id: pk(),
+  reporterId: bigint("reporter_id", { mode: "number" }).notNull(),
+  targetType: mysqlEnum("target_type", ["article", "comment"]).notNull(),
+  targetId: bigint("target_id", { mode: "number" }).notNull(),
+  reportTypeId: bigint("report_type_id", { mode: "number" }).notNull(),
+  message: varchar("message", { length: 1000 }).notNull().default(""),
+  status: mysqlEnum("status", ["open", "completed", "rejected"]).notNull().default("open"),
+  resolvedById: bigint("resolved_by_id", { mode: "number" }),
+  resolvedAt: datetime("resolved_at"),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("content_reports_unique_idx").on(t.reporterId, t.targetType, t.targetId),
+  index("content_reports_target_idx").on(t.targetType, t.targetId),
+  index("content_reports_status_idx").on(t.status),
+]);
+
 // Filtros de banimento (por e-mail, IP ou nome; aceita curinga *).
 export const banFilters = mysqlTable("ban_filters", {
   id: pk(),

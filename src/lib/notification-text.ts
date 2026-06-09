@@ -8,6 +8,7 @@ type Payload = {
   name?: string; // badge
   roleLabel?: string; // promoção
   rankLabel?: string; // subida de rank
+  decision?: string; // denúncia resolvida
 };
 
 function asPayload(p: unknown): Payload {
@@ -47,6 +48,8 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `Você concluiu a missão "${title}".`, href: "/missoes" };
     case "role.promoted":
       return { text: `Você foi promovido a ${p.roleLabel ?? "um novo papel"}.`, href: "/painel" };
+    case "report.resolved":
+      return { text: p.decision === "completed" ? "Um conteúdo seu foi removido após denúncias." : "Uma denúncia sobre seu conteúdo foi analisada e arquivada." };
     default:
       return { text: `Atualização em "${title}".`, href: articleHref };
   }
