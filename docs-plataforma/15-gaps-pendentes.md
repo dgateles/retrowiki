@@ -395,11 +395,12 @@ Configurações de membros:
   `profile_field_groups` / `profile_fields` / `profile_field_values`. Também
   entregue a aba **Configurações** (tamanho do nome de exibição, ligado ao
   `updateDisplayNameAction`).
+  O **"mostrar no cadastro"** está ligado: os campos marcados aparecem no
+  formulário de cadastro (`/auth/cadastrar`), são validados antes de criar a
+  conta e salvos no novo usuário.
   FALTA (adiado): aba **Conclusão de perfil** (etapas pós-cadastro) e aba
   **Galeria de fotos**. N/A no RetroWiki (sem a feature-base): assinaturas,
-  aniversários, prune de conversas, ignorar membros, formatação de grupo, e o
-  "mostrar no cadastro" só é armazenado (o formulário de cadastro ainda não
-  consome os campos).
+  aniversários, prune de conversas, ignorar membros, formatação de grupo.
 - **Reputação e reações.** STATUS: entregue (`/admin/reputacao`, 4 abas).
   **Configurações**: ativa, papéis excluídos, reagir ao próprio conteúdo, mostrar
   reputação no perfil (gate verificado), limiar de destaque, modo de exibição.

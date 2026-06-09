@@ -12,6 +12,7 @@ import { verifyCaptcha, type Solution } from "@/lib/captcha";
 import { sendEmail } from "@/lib/email/mailer";
 import { verifyEmail, resetPassword as resetTpl, passwordChanged } from "@/lib/email/templates";
 import { slugify } from "@/lib/utils";
+import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profile-fields";
 
 type ActionResult = { ok: boolean; message?: string; error?: string };
 
@@ -31,7 +32,7 @@ const RegisterSchema = z.object({
 });
 
 export async function registerAction(
-  input: { email: string; handle: string; password: string },
+  input: { email: string; handle: string; password: string; profileFields?: Record<string, string> },
   captcha: Solution | undefined,
 ): Promise<ActionResult> {
   const rl = await checkRateLimit(`register:${await ip()}`, 5, 10 * 60_000);
@@ -46,6 +47,11 @@ export async function registerAction(
   if (!(await verifyCaptcha(captcha, { action: "register" }))) {
     return { ok: false, error: "Falha na verificação anti-bot. Recarregue e tente de novo." };
   }
+
+  // Campos de perfil exibidos no cadastro: valida antes de criar a conta.
+  const profileFields = input.profileFields ?? {};
+  const fieldsCheck = await validateRegistrationValues(profileFields);
+  if (!fieldsCheck.ok) return { ok: false, error: fieldsCheck.error };
 
   const email = parsed.data.email.toLowerCase();
   const handle = parsed.data.handle.toLowerCase();
@@ -63,6 +69,7 @@ export async function registerAction(
       passwordHash,
     });
     const userId = (res as unknown as { insertId: number }).insertId;
+    await saveRegistrationValues(userId, profileFields);
     const raw = await createToken("email_verify", email, userId);
     const tpl = verifyEmail(finalHandle, raw);
     try {

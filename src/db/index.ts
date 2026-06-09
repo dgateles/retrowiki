@@ -16,6 +16,7 @@ const pool =
     connectionLimit: 10,
     waitForConnections: true,
     timezone: "Z",
+    charset: "utf8mb4", // garante acentos e emoji (4 bytes)
   });
 
 if (env.NODE_ENV !== "production") {

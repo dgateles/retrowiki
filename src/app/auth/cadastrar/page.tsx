@@ -2,10 +2,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
+import { getRegisterFields } from "@/lib/profile-fields";
 
 export const metadata: Metadata = { title: "Criar conta" };
+export const dynamic = "force-dynamic";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const profileFields = await getRegisterFields();
   return (
     <AuthShell
       title="Criar conta"
@@ -19,7 +22,7 @@ export default function RegisterPage() {
         </>
       }
     >
-      <RegisterForm />
+      <RegisterForm profileFields={profileFields} />
     </AuthShell>
   );
 }

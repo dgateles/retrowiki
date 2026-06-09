@@ -102,30 +102,68 @@ function validate(field: ProfileField, raw: string): { ok: true; value: string }
   return { ok: true, value };
 }
 
+/** Valida e grava os valores de um conjunto de campos (transação lógica). */
+async function persistValues(userId: number, fields: ProfileField[], input: Record<string, string>): Promise<{ ok: boolean; error?: string }> {
+  const resolved: { fieldId: number; value: string }[] = [];
+  for (const field of fields) {
+    const res = validate(field, input[String(field.id)] ?? "");
+    if (!res.ok) return { ok: false, error: res.error };
+    resolved.push({ fieldId: field.id, value: res.value });
+  }
+  for (const { fieldId, value } of resolved) {
+    if (value === "") {
+      await db.delete(profileFieldValues).where(and(eq(profileFieldValues.userId, userId), eq(profileFieldValues.fieldId, fieldId)));
+    } else {
+      await db.insert(profileFieldValues).values({ userId, fieldId, value }).onDuplicateKeyUpdate({ set: { value } });
+    }
+  }
+  return { ok: true };
+}
+
 /** Salva os valores enviados pelo membro (só campos editáveis). */
 export async function saveValues(userId: number, input: Record<string, string>): Promise<{ ok: boolean; error?: string }> {
   try {
     const editable = (await getEditableFields(userId)).flatMap((g) => g.fields);
-    // Valida tudo antes de gravar (transação lógica: ou salva tudo, ou nada).
-    const resolved: { fieldId: number; value: string }[] = [];
-    for (const field of editable) {
+    return await persistValues(userId, editable, input);
+  } catch {
+    return { ok: false, error: "Falha ao salvar." };
+  }
+}
+
+/** Campos exibidos no cadastro (definições, sem valores). */
+export async function getRegisterFields(): Promise<GroupWithValues[]> {
+  try {
+    const groups = await listGroupsWithFields();
+    return groups
+      .map((g) => ({ id: g.id, name: g.name, fields: g.fields.filter((f) => f.showOnRegister).map((f) => ({ ...f, value: "" })) }))
+      .filter((g) => g.fields.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+/** Valida e grava os campos de cadastro de um novo usuário. */
+export async function saveRegistrationValues(userId: number, input: Record<string, string>): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const fields = (await getRegisterFields()).flatMap((g) => g.fields);
+    if (fields.length === 0) return { ok: true };
+    return await persistValues(userId, fields, input);
+  } catch {
+    return { ok: false, error: "Falha ao salvar os campos." };
+  }
+}
+
+/** Valida os campos de cadastro sem gravar (para checar antes de criar o usuário). */
+export async function validateRegistrationValues(input: Record<string, string>): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const fields = (await getRegisterFields()).flatMap((g) => g.fields);
+    for (const field of fields) {
       const res = validate(field, input[String(field.id)] ?? "");
       if (!res.ok) return { ok: false, error: res.error };
-      resolved.push({ fieldId: field.id, value: res.value });
-    }
-    for (const { fieldId, value } of resolved) {
-      if (value === "") {
-        await db.delete(profileFieldValues).where(and(eq(profileFieldValues.userId, userId), eq(profileFieldValues.fieldId, fieldId)));
-      } else {
-        await db
-          .insert(profileFieldValues)
-          .values({ userId, fieldId, value })
-          .onDuplicateKeyUpdate({ set: { value } });
-      }
     }
     return { ok: true };
   } catch {
-    return { ok: false, error: "Falha ao salvar." };
+    return { ok: true };
   }
 }
 
