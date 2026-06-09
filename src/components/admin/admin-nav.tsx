@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/admin/consoles", label: "Consoles", exact: false },
   { href: "/admin/membros", label: "Membros", exact: false },
   { href: "/admin/grupos", label: "Grupos", exact: false },
+  { href: "/admin/promocoes", label: "Promoções", exact: false },
   { href: "/admin/gamificacao", label: "Gamificação", exact: false },
 ];
 

@@ -387,6 +387,17 @@ export const rolePermissions = mysqlTable("role_permissions", {
   updatedAt: updatedAt(),
 }, (t) => [uniqueIndex("role_permissions_role_idx").on(t.role)]);
 
+// Regras de auto-promoção de papel por critérios.
+export const promotionRules = mysqlTable("promotion_rules", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  sortOrder: int("sort_order").notNull().default(0),
+  criteria: json("criteria").notNull(),
+  targetRole: varchar("target_role", { length: 20 }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [index("promotion_rules_order_idx").on(t.sortOrder)]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;

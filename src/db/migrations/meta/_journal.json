@@ -43,6 +43,13 @@
       "when": 1781020302722,
       "tag": "0005_condemned_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1781021206317,
+      "tag": "0006_black_domino",
+      "breakpoints": true
     }
   ]
 }

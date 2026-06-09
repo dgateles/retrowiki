@@ -244,7 +244,28 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
       Bunny); ver histórico de nome; reações (máx. por dia, ver quem reagiu, ver
       quem achou útil); follows (ver informações de seguidores).
   - Permissões viram flags por papel, persistidas e checadas por um helper único
-    (substituindo os checks espalhados em código). Item grande.
+    (substituindo os checks espalhados em código). Item grande. STATUS: a tela
+    de Grupos (lista de papéis + formulário de permissões em abas, persistido em
+    `role_permissions`) já foi entregue; falta o enforcement das flags.
+- **Promoção de grupos (auto-promoção por critérios, detalhado do AdminCP).**
+  Regras que movem o membro de papel automaticamente quando ele atende a
+  critérios. Lista de regras (ordem importa: a última regra cujo critério bate é
+  a aplicada) + "Criar nova". Cada regra:
+  - **Detalhes**: nome (obrigatório), ativada (toggle).
+  - **Filtros (critérios)** adaptados ao nosso cenário: pontos de conquista /
+    reputação (qualquer / comparação >=, <=, entre), filtrar por badge(s),
+    filtrar por rank, banido/suspenso (qualquer/sim/não), contagem de conteúdo
+    (guias + comentários), papel atual (em quais papéis a regra se aplica),
+    entrou (qualquer / entre datas / há mais de X dias / há menos de X dias),
+    último post e última visita (mesmo padrão; dependem de registrar
+    presença/`lastSeenAt`), marcado como spammer (qualquer/sim/não). NÃO se
+    aplica: assinatura de bulk mail, "expert da comunidade", membro do dia,
+    sobre mim, referrals, blog/events/quests/courses/gallery, doações.
+  - **Ações**: mover para o papel (não mudar / [papel]). Grupos secundários
+    (adicionar/remover) NÃO se aplica (papel único).
+  - **Execução**: avaliar as regras periodicamente (cron) e/ou em eventos
+    (ao ganhar reputação/badge, ao publicar). Respeitar a flag "ignorar
+    promoção" do papel (das configurações de grupo).
 - **Ferramentas de IP e auditoria.** Consultar ações por usuário/IP usando o
   `audit_log`. Liga com Dispositivos e IPs acima.
 - **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão da
