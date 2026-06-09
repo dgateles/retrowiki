@@ -173,3 +173,30 @@ export async function getSpamSettings(): Promise<SpamSettings> {
   const raw = await getSetting<Partial<SpamSettings>>("spam", SPAM_DEFAULTS);
   return sanitizeSpamSettings({ ...SPAM_DEFAULTS, ...raw });
 }
+
+// ── Configurações de advertências (warnings) ─────────────────────────────
+
+export type WarningSettings = {
+  enabled: boolean;
+  cannotWarnRoles: string[];
+  membersCanSee: boolean;
+  mustAcknowledge: boolean;
+};
+
+const WARN_DEFAULTS: WarningSettings = { enabled: true, cannotWarnRoles: ["admin"], membersCanSee: true, mustAcknowledge: false };
+const WARN_ROLES = ["member", "contributor", "moderator", "admin"];
+
+export function sanitizeWarningSettings(raw: unknown): WarningSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    enabled: r.enabled === undefined ? WARN_DEFAULTS.enabled : Boolean(r.enabled),
+    cannotWarnRoles: Array.isArray(r.cannotWarnRoles) ? r.cannotWarnRoles.filter((x): x is string => WARN_ROLES.includes(x as string)) : [],
+    membersCanSee: r.membersCanSee === undefined ? WARN_DEFAULTS.membersCanSee : Boolean(r.membersCanSee),
+    mustAcknowledge: Boolean(r.mustAcknowledge),
+  };
+}
+
+export async function getWarningSettings(): Promise<WarningSettings> {
+  const raw = await getSetting<Partial<WarningSettings>>("warnings", WARN_DEFAULTS);
+  return sanitizeWarningSettings({ ...WARN_DEFAULTS, ...raw });
+}

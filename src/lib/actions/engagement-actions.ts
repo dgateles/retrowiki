@@ -13,6 +13,7 @@ import { canEditOwn, canDeleteOwn, maxReactionsPerDay } from "@/lib/permissions"
 import { getReaction } from "@/lib/reactions";
 import { getReputationSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
+import { isPostingRestricted } from "@/lib/warnings";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -53,6 +54,10 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   }
   const rl = await checkRateLimit(`comment:${user.id}`, 10, 60_000);
   if (!rl.ok) return { ok: false, error: "Muitos comentários. Aguarde um momento." };
+
+  if (await isPostingRestricted(Number(user.id))) {
+    return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
+  }
 
   const parsed = AddSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Dados inválidos." };

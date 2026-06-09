@@ -7,6 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { articles, revisions, reviews, users, auditLog } from "@/db/schema";
 import { createNotification } from "@/lib/notifications";
+import { isPostingRestricted } from "@/lib/warnings";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
@@ -148,6 +149,10 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
     session = await requireUser();
   } catch {
     return { ok: false, error: "Faça login." };
+  }
+
+  if (await isPostingRestricted(Number(session.id))) {
+    return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
   }
 
   const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);

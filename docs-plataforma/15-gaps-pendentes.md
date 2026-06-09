@@ -462,8 +462,18 @@ Moderação de conteúdo:
   terceiros (Turnstile/reCAPTCHA/hCaptcha — substituídos pelo RetroGuard),
   Spam Defense externo (StopForumSpam-like) + logs + whitelist, e "Delete Guest
   Content" (sem conteúdo de convidado).
-- **Avisos (warnings).** Sistema de advertências ao usuário com níveis e
-  consequências.
+- **Avisos (warnings).** STATUS: entregue (`/admin/avisos`, 3 abas). **Motivos**
+  (`warning_reasons`, seed Spam/Linguagem/Abusivo/Off-topic) com pontos, expiração
+  opcional, dedução de reputação e nota padrão. **Ações** (`warning_actions`):
+  ao atingir N pontos ativos, restringe postagem e/ou bane (por horas ou
+  indefinido). **Configurações:** ativar, grupos que não podem ser advertidos,
+  membros veem os próprios, exigir confirmação. Ferramenta **Advertir** no Member
+  View (registra `user_warnings`, deduz reputação, aplica a ação). Enforcement:
+  `users.posting_restricted_until` bloqueia comentar e submeter guia; ban →
+  `is_suspended`. Verificado: advertência de 3 pts disparou a ação (restrição
+  indefinida) e o membro restrito foi bloqueado ao comentar. ADIADO: "moderate
+  content" (forçar revisão), confirmação obrigatória (must-acknowledge) e a
+  página do membro ver os próprios avisos (hoje só no Member View do admin).
 - **Atribuições.** Encaminhar conteúdo a um moderador específico.
 
 Equipe:

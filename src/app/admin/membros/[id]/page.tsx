@@ -10,6 +10,9 @@ import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { Button } from "@/components/ui/button";
 import { MemberManage } from "@/components/admin/member-manage";
+import { WarnMember } from "@/components/admin/warn-member";
+import { listReasons, listUserWarnings, activePoints } from "@/lib/warnings";
+import { getWarningSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +42,11 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   const [me, member] = await Promise.all([getCurrentUser(), getMemberDetail(memberId)]);
   if (!member) notFound();
   const [badges, audit, ips] = await Promise.all([getUserBadges(memberId), getMemberAudit(memberId), getMemberIps(memberId)]);
+  const warnSettings = await getWarningSettings();
+  const [warnReasons, warnings, warnPoints] = warnSettings.enabled
+    ? await Promise.all([listReasons(), listUserWarnings(memberId), activePoints(memberId)])
+    : [[], [], 0];
+  const fmtWarn = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
   const ipGeo = ips.length ? await geoForIps(ips.map((r) => r.ip)) : new Map<string, string>();
   const rank = await getRankForReputation(member.reputation);
   const isSelf = Number(me?.id) === memberId;
@@ -81,6 +89,30 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
             isSelf={isSelf}
           />
         </section>
+
+        {warnSettings.enabled && (
+          <section className="member-panel">
+            <div className="page__head">
+              <h2 className="member-panel__title">Advertências {warnPoints > 0 && <span className="badge-rare">{warnPoints} pts ativos</span>}</h2>
+              {!isSelf && <WarnMember userId={member.id} reasons={warnReasons.map((r) => ({ id: r.id, name: r.name, points: r.points, defaultNote: r.defaultNote }))} />}
+            </div>
+            {warnings.length === 0 ? (
+              <p className="muted mt-2">Nenhuma advertência.</p>
+            ) : (
+              <ul className="warn-list mt-3">
+                {warnings.map((w) => (
+                  <li key={w.id} className="warn-list__item">
+                    <div className="min-w-0">
+                      <span className="warn-list__reason">{w.reasonName} · {w.points} pt</span>
+                      {w.note && <span className="warn-list__note">{w.note}</span>}
+                    </div>
+                    <span className="muted shrink-0 text-xs">{fmtWarn(w.createdAt)}{w.expiresAt ? "" : " · permanente"}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
         <section className="member-panel">
           <h2 className="member-panel__title">Estatísticas</h2>

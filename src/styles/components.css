@@ -624,6 +624,19 @@
   .report-row__actions {
     @apply flex shrink-0 items-center gap-2;
   }
+  /* Advertências */
+  .warn-list {
+    @apply flex flex-col gap-2;
+  }
+  .warn-list__item {
+    @apply flex items-start justify-between gap-3 rounded-md border border-border/60 px-3 py-2;
+  }
+  .warn-list__reason {
+    @apply block font-medium;
+  }
+  .warn-list__note {
+    @apply block text-sm text-muted-foreground;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

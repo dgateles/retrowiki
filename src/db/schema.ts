@@ -38,6 +38,7 @@ export const users = mysqlTable(
       .default("member"),
     avatarUrl: varchar("avatar_url", { length: 500 }),
     coverUrl: varchar("cover_url", { length: 500 }), // capa do perfil (BunnyCDN)
+    postingRestrictedUntil: datetime("posting_restricted_until"), // advertências
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
@@ -524,6 +525,40 @@ export const questCompletions = mysqlTable("quest_completions", {
   userId: bigint("user_id", { mode: "number" }).notNull(),
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
+
+// Sistema de advertências (warnings): motivos, ações por limiar e registros.
+export const warningReasons = mysqlTable("warning_reasons", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  points: int("points").notNull().default(1),
+  removeAfterHours: int("remove_after_hours"), // null = nunca expira
+  deductReputation: int("deduct_reputation").notNull().default(0),
+  defaultNote: varchar("default_note", { length: 500 }).notNull().default(""),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("warning_reasons_order_idx").on(t.sortOrder)]);
+
+export const warningActions = mysqlTable("warning_actions", {
+  id: pk(),
+  points: int("points").notNull(), // limiar de pontos ativos
+  restrictHours: int("restrict_hours").notNull().default(0), // 0 = nenhum, -1 = indefinido
+  banHours: int("ban_hours").notNull().default(0),
+  moderateHours: int("moderate_hours").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("warning_actions_points_idx").on(t.points)]);
+
+export const userWarnings = mysqlTable("user_warnings", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  reasonId: bigint("reason_id", { mode: "number" }),
+  reasonName: varchar("reason_name", { length: 120 }).notNull().default(""),
+  points: int("points").notNull().default(0),
+  note: varchar("note", { length: 500 }).notNull().default(""),
+  issuedById: bigint("issued_by_id", { mode: "number" }),
+  acknowledged: boolean("acknowledged").notNull().default(false),
+  expiresAt: datetime("expires_at"), // null = nunca
+  createdAt: createdAt(),
+}, (t) => [index("user_warnings_user_idx").on(t.userId)]);
 
 // Desafio Pergunta & Resposta no cadastro (anti-bot).
 export const spamQuestions = mysqlTable("spam_questions", {

@@ -162,6 +162,13 @@
       "when": 1781045125482,
       "tag": "0022_fuzzy_nekra",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1781046339491,
+      "tag": "0023_free_jackal",
+      "breakpoints": true
     }
   ]
 }
