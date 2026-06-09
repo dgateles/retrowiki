@@ -48,10 +48,39 @@ export const CODE_LANGS: { label: string; value: string }[] = [
 
 export const HEX_COLOR = /^#[0-9a-fA-F]{3,8}$/;
 
-export const EMOJIS = [
-  "😀", "😄", "😁", "😅", "😂", "🙂", "😉", "😊", "😍", "😘",
-  "😎", "🤓", "🤔", "😴", "😢", "😭", "😡", "🤯", "🥳", "😬",
-  "👍", "👎", "👏", "🙌", "🙏", "💪", "🤝", "👌", "✌️", "🤙",
-  "❤️", "🔥", "⭐", "✨", "🎉", "🚀", "💡", "⚡", "✅", "❌",
-  "🎮", "🕹️", "👾", "🎯", "🏆", "🥇", "📦", "🔋", "📱", "💾",
-] as const;
+// Emojis com palavras-chave para a busca do picker.
+export const EMOJIS: { c: string; n: string }[] = [
+  { c: "😀", n: "sorriso feliz grin" }, { c: "😄", n: "feliz sorriso alegre" },
+  { c: "😁", n: "sorriso dentes grin" }, { c: "😅", n: "suor riso nervoso" },
+  { c: "😂", n: "rir lagrima lol" }, { c: "🙂", n: "leve sorriso" },
+  { c: "😉", n: "piscada wink" }, { c: "😊", n: "feliz corar" },
+  { c: "😍", n: "apaixonado coracao olhos love" }, { c: "😘", n: "beijo love" },
+  { c: "😎", n: "oculos legal cool" }, { c: "🤓", n: "nerd oculos" },
+  { c: "🤔", n: "pensar duvida" }, { c: "😴", n: "dormir sono" },
+  { c: "😢", n: "triste lagrima" }, { c: "😭", n: "chorar triste" },
+  { c: "😡", n: "raiva bravo angry" }, { c: "🤯", n: "explodir mente surpresa" },
+  { c: "🥳", n: "festa comemorar party" }, { c: "😬", n: "tenso careta" },
+  { c: "🤩", n: "estrela olhos uau" }, { c: "😌", n: "alivio aliviado calmo" },
+  { c: "🙄", n: "olhos revirar" }, { c: "😏", n: "malicioso smirk" },
+  { c: "😱", n: "medo grito scream" }, { c: "🤗", n: "abraco hug" },
+  { c: "👍", n: "joia like positivo" }, { c: "👎", n: "negativo dislike" },
+  { c: "👏", n: "palmas aplausos clap" }, { c: "🙌", n: "maos celebrar" },
+  { c: "🙏", n: "obrigado reza please" }, { c: "💪", n: "forca musculo" },
+  { c: "🤝", n: "aperto mao acordo deal" }, { c: "👌", n: "ok perfeito" },
+  { c: "✌️", n: "paz vitoria peace" }, { c: "🤙", n: "liga call shaka" },
+  { c: "👋", n: "tchau ola wave" }, { c: "🫡", n: "saudacao salute" },
+  { c: "❤️", n: "coracao amor love red" }, { c: "🧡", n: "coracao laranja" },
+  { c: "💛", n: "coracao amarelo" }, { c: "💚", n: "coracao verde" },
+  { c: "💙", n: "coracao azul" }, { c: "💜", n: "coracao roxo" },
+  { c: "🔥", n: "fogo quente fire" }, { c: "⭐", n: "estrela star" },
+  { c: "✨", n: "brilho sparkle" }, { c: "🎉", n: "festa comemorar party" },
+  { c: "🚀", n: "foguete rocket" }, { c: "💡", n: "ideia luz lampada" },
+  { c: "⚡", n: "raio energia" }, { c: "✅", n: "certo check ok" },
+  { c: "❌", n: "errado x cancelar" }, { c: "⚠️", n: "atencao aviso warning" },
+  { c: "🎮", n: "jogo controle game" }, { c: "🕹️", n: "joystick arcade" },
+  { c: "👾", n: "alien game invader" }, { c: "🎯", n: "alvo mira target" },
+  { c: "🏆", n: "trofeu vitoria" }, { c: "🥇", n: "medalha ouro primeiro" },
+  { c: "📦", n: "caixa pacote box" }, { c: "🔋", n: "bateria" },
+  { c: "📱", n: "celular telefone" }, { c: "💾", n: "salvar disquete save" },
+  { c: "💻", n: "notebook computador" }, { c: "🖥️", n: "monitor computador" },
+];

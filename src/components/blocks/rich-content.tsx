@@ -98,7 +98,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
       const level = Math.min(6, Math.max(1, node.attrs?.level ?? 2));
       const Tag = `h${level}` as "h2";
       return (
-        <Tag key={key} className={`blk-h blk-h--${level <= 4 ? level : 4}`} style={alignStyle(node)}>
+        <Tag key={key} className={`blk-h blk-h--${level}`} style={alignStyle(node)}>
           {renderInline(node.content)}
         </Tag>
       );
@@ -125,16 +125,28 @@ function renderBlock(node: Node, key: number): React.ReactNode {
           {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
         </blockquote>
       );
-    case "box":
+    case "box": {
+      const boxTitle = (node.attrs?.title as string) || "";
+      const body = (node.content ?? []).map((c: Node, i: number) => renderBlock(c, i));
+      if (node.attrs?.collapsed) {
+        return (
+          <details key={key} className="blk-box">
+            <summary className="blk-box__title">{boxTitle || "Detalhes"}</summary>
+            <div className="blk-box__body">{body}</div>
+          </details>
+        );
+      }
       return (
         <div key={key} className="blk-box">
-          {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
+          {boxTitle && <p className="blk-box__title">{boxTitle}</p>}
+          <div className="blk-box__body">{body}</div>
         </div>
       );
+    }
     case "spoiler":
       return (
         <details key={key} className="blk-spoiler">
-          <summary className="blk-spoiler__summary">Spoiler</summary>
+          <summary className="blk-spoiler__summary">{(node.attrs?.title as string) || "Spoiler"}</summary>
           <div className="blk-spoiler__body">
             {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
           </div>

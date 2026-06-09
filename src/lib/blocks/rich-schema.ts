@@ -87,8 +87,8 @@ export type RichNode =
   | { type: "orderedList"; attrs?: { start?: number }; content?: RichNode[] }
   | { type: "listItem"; content?: RichNode[] }
   | { type: "blockquote"; content?: RichNode[] }
-  | { type: "box"; content?: RichNode[] }
-  | { type: "spoiler"; content?: RichNode[] }
+  | { type: "box"; attrs?: { title?: string | null; collapsed?: boolean }; content?: RichNode[] }
+  | { type: "spoiler"; attrs?: { title?: string | null }; content?: RichNode[] }
   | { type: "codeBlock"; attrs?: { language?: string | null }; content?: RichNode[] }
   | { type: "table"; content?: RichNode[] }
   | { type: "tableRow"; content?: RichNode[] }
@@ -99,7 +99,7 @@ export type RichNode =
 
 const arr = () => z.array(Node).max(400).optional();
 
-const Node: z.ZodType<RichNode> = z.lazy(() =>
+const Node = z.lazy(() =>
   z.union([
     TextNode,
     ImageNode,
@@ -113,8 +113,16 @@ const Node: z.ZodType<RichNode> = z.lazy(() =>
     z.object({ type: z.literal("orderedList"), attrs: z.object({ start: z.coerce.number().int().min(1).optional() }).optional(), content: arr() }),
     z.object({ type: z.literal("listItem"), content: arr() }),
     z.object({ type: z.literal("blockquote"), content: arr() }),
-    z.object({ type: z.literal("box"), content: arr() }),
-    z.object({ type: z.literal("spoiler"), content: arr() }),
+    z.object({
+      type: z.literal("box"),
+      attrs: z.object({ title: z.string().max(200).nullish(), collapsed: z.boolean().nullish() }).partial().optional(),
+      content: arr(),
+    }),
+    z.object({
+      type: z.literal("spoiler"),
+      attrs: z.object({ title: z.string().max(200).nullish() }).partial().optional(),
+      content: arr(),
+    }),
     z.object({ type: z.literal("codeBlock"), attrs: z.object({ language: z.string().max(20).nullish() }).optional(), content: arr() }),
     z.object({ type: z.literal("table"), content: arr() }),
     z.object({ type: z.literal("tableRow"), content: arr() }),
@@ -123,7 +131,7 @@ const Node: z.ZodType<RichNode> = z.lazy(() =>
     z.object({ type: z.literal("horizontalRule") }),
     z.object({ type: z.literal("hardBreak") }),
   ]),
-);
+) as unknown as z.ZodType<RichNode>;
 
 export const RichDocSchema = z.object({
   type: z.literal("doc"),

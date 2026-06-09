@@ -630,6 +630,12 @@
   .blk-h--4 {
     @apply text-lg;
   }
+  .blk-h--5 {
+    @apply text-base;
+  }
+  .blk-h--6 {
+    @apply text-sm uppercase tracking-wide text-muted-foreground;
+  }
   .blk-p {
     @apply my-4 leading-relaxed text-foreground/90;
   }
@@ -651,6 +657,38 @@
   .blk-box {
     @apply my-5 rounded-lg border border-border bg-muted/30 p-4;
   }
+  .blk-box__title {
+    @apply mb-2 cursor-pointer font-semibold;
+  }
+  .blk-box__body > :first-child {
+    @apply mt-0;
+  }
+
+  /* Box/Spoiler no editor (NodeView). */
+  .rte-cv {
+    @apply my-3 rounded-lg border;
+  }
+  .rte-cv--box {
+    @apply border-border bg-muted/30;
+  }
+  .rte-cv--spoiler {
+    @apply border-dashed border-border;
+  }
+  .rte-cv__head {
+    @apply flex items-center gap-2 px-3 pt-2;
+  }
+  .rte-cv__toggle {
+    @apply inline-flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .rte-cv__icon {
+    @apply size-4 shrink-0 text-muted-foreground;
+  }
+  .rte-cv__title {
+    @apply flex-1 bg-transparent text-sm font-semibold outline-none placeholder:font-normal placeholder:text-muted-foreground;
+  }
+  .rte-cv__body {
+    @apply px-3 pb-2 pt-1;
+  }
   .blk-spoiler {
     @apply my-5 overflow-hidden rounded-lg border border-border;
   }
@@ -665,11 +703,60 @@
   .rte-swatch {
     @apply inline-block size-4 shrink-0 rounded border border-border;
   }
-  .rte-emojis {
-    @apply grid grid-cols-6 gap-0.5;
+
+  /* Seletor de bloco (ícone ¶ com prévia dos títulos). */
+  .rte__blockbtn {
+    @apply inline-flex h-8 items-center gap-1 rounded-md px-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
   }
-  .rte-emoji {
-    @apply justify-center px-0 text-lg;
+  .rte-blockmenu {
+    @apply w-56;
+  }
+  .rte-blockopt {
+    @apply leading-tight;
+  }
+  .rte-blockopt--active {
+    @apply bg-primary text-primary-foreground focus:bg-primary focus:text-primary-foreground;
+  }
+  .rte-blockopt--p {
+    @apply text-sm;
+  }
+  .rte-blockopt--h1 {
+    @apply text-2xl font-bold;
+  }
+  .rte-blockopt--h2 {
+    @apply text-xl font-bold;
+  }
+  .rte-blockopt--h3 {
+    @apply text-lg font-bold;
+  }
+  .rte-blockopt--h4 {
+    @apply text-base font-semibold;
+  }
+  .rte-blockopt--h5 {
+    @apply text-sm font-semibold;
+  }
+  .rte-blockopt--h6 {
+    @apply text-xs font-semibold;
+  }
+
+  /* Picker de emoji (grade com busca). */
+  .rte-emoji-pop {
+    @apply w-72 p-2;
+  }
+  .rte-emoji-search {
+    @apply mb-2 flex items-center gap-2 rounded-md border border-border px-2;
+  }
+  .rte-emoji-input {
+    @apply h-8 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground;
+  }
+  .rte-emoji-grid {
+    @apply grid max-h-56 grid-cols-7 gap-0.5 overflow-y-auto;
+  }
+  .rte-emoji-cell {
+    @apply flex aspect-square items-center justify-center rounded text-lg transition-colors hover:bg-accent;
+  }
+  .rte-emoji-empty {
+    @apply col-span-7 py-4 text-center text-sm text-muted-foreground;
   }
   .blk-figure {
     @apply my-6;
@@ -1362,6 +1449,16 @@
 .rte__content h4 {
   font-size: 1.05rem;
   font-weight: 600;
+}
+.rte__content h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.rte__content h6 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 .rte__content ul {
   list-style: disc;
