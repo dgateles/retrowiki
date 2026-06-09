@@ -4,7 +4,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { LogOut, PenLine, ShieldCheck, UserRound, Cog, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { rankForReputation } from "@/lib/ranks";
+import type { Rank } from "@/lib/ranks";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,16 +16,15 @@ import {
 
 export function UserMenu({
   handle,
-  reputation,
+  rank,
   isStaff,
   isAdmin,
 }: {
   handle: string;
-  reputation: number;
+  rank: Rank | null;
   isStaff: boolean;
   isAdmin: boolean;
 }) {
-  const rank = rankForReputation(reputation);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,23 +36,25 @@ export function UserMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuLabel className="truncate">@{handle}</DropdownMenuLabel>
-        <div className="user-menu__rank">
-          <div className="user-menu__rank-head">
-            <span className="user-menu__rank-label">{rank.label}</span>
-            <span className="user-menu__rank-index">{rank.index}/{rank.total}</span>
+        {rank && (
+          <div className="user-menu__rank">
+            <div className="user-menu__rank-head">
+              <span className="user-menu__rank-label">{rank.label}</span>
+              <span className="user-menu__rank-index">{rank.index}/{rank.total}</span>
+            </div>
+            <progress
+              className="rank__progress"
+              value={Math.round(rank.progress * 100)}
+              max={100}
+              aria-label={`Progresso no rank ${rank.label}`}
+            />
+            <p className="user-menu__rank-sub">
+              {rank.next === null
+                ? "Rank máximo"
+                : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo`}
+            </p>
           </div>
-          <progress
-            className="rank__progress"
-            value={Math.round(rank.progress * 100)}
-            max={100}
-            aria-label={`Progresso no rank ${rank.label}`}
-          />
-          <p className="user-menu__rank-sub">
-            {rank.next === null
-              ? "Rank máximo"
-              : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo`}
-          </p>
-        </div>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/painel">

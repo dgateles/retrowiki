@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Check, Circle, CheckCircle2 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getQuestsForUser } from "@/lib/admin/quests";
+import { QuestOptOut } from "@/components/quests/quest-opt-out";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,11 @@ export default async function MissoesPage() {
       ) : (
         <ul className="quest-cards mt-6">
           {quests.map((q) => (
-            <li key={q.id} className={`quest-card${q.completed ? " quest-card--done" : ""}`}>
+            <li key={q.id} className={`quest-card${q.completed ? " quest-card--done" : ""}${q.optedOut ? " quest-card--out" : ""}`}>
+              {q.coverImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={q.coverImage} alt="" className="quest-card__cover" />
+              )}
               <div className="quest-card__head">
                 <h2 className="quest-card__title">{q.title}</h2>
                 {q.completed && (
@@ -58,6 +63,11 @@ export default async function MissoesPage() {
                   </li>
                 ))}
               </ul>
+              {user && q.allowOptOut && !q.completed && (
+                <div className="quest-card__foot">
+                  <QuestOptOut questId={q.id} optedOut={q.optedOut} />
+                </div>
+              )}
             </li>
           ))}
         </ul>

@@ -276,6 +276,7 @@ export const votes = mysqlTable("votes", {
   userId: bigint("user_id", { mode: "number" }).notNull(),
   articleId: bigint("article_id", { mode: "number" }).notNull(),
   value: int("value").notNull().default(1),
+  createdAt: createdAt(),
 }, (t) => [uniqueIndex("votes_user_article_idx").on(t.userId, t.articleId)]);
 
 // Visualizações únicas: uma linha por (artigo, visitante). viewerKey = usuário
@@ -379,6 +380,7 @@ export const badges = mysqlTable("badges", {
   name: varchar("name", { length: 120 }).notNull(),
   description: varchar("description", { length: 300 }).notNull(),
   icon: varchar("icon", { length: 40 }).notNull().default("award"),
+  image: varchar("image", { length: 500 }), // imagem custom (BunnyCDN); cai no ícone se vazio
   tier: mysqlEnum("tier", ["bronze", "silver", "gold"]).notNull().default("bronze"),
   sortOrder: int("sort_order").notNull().default(0),
   manuallyAwardable: boolean("manually_awardable").notNull().default(true),
@@ -424,8 +426,21 @@ export const quests = mysqlTable("quests", {
   enabled: boolean("enabled").notNull().default(false),
   sortOrder: int("sort_order").notNull().default(0),
   rewardBadge: varchar("reward_badge", { length: 80 }), // slug da badge (opcional)
+  coverImage: varchar("cover_image", { length: 500 }), // capa (BunnyCDN)
+  startsAt: datetime("starts_at"), // janela de disponibilidade (opcional)
+  endsAt: datetime("ends_at"),
+  audienceRoles: json("audience_roles"), // string[] de papéis; vazio/null = todos
+  allowOptOut: boolean("allow_opt_out").notNull().default(false),
+  retroactive: boolean("retroactive").notNull().default(false),
   createdAt: createdAt(),
 }, (t) => [index("quests_order_idx").on(t.sortOrder)]);
+
+export const questOptOuts = mysqlTable("quest_opt_outs", {
+  id: pk(),
+  questId: bigint("quest_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("quest_opt_out_idx").on(t.questId, t.userId)]);
 
 export const questTasks = mysqlTable("quest_tasks", {
   id: pk(),
@@ -452,6 +467,14 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Cache de geolocalização por IP (via ipwho.is). Evita repetir chamadas.
+export const ipGeo = mysqlTable("ip_geo", {
+  id: pk(),
+  ip: varchar("ip", { length: 45 }).notNull(),
+  label: varchar("label", { length: 160 }).notNull().default(""),
+  fetchedAt: createdAt(),
+}, (t) => [uniqueIndex("ip_geo_ip_idx").on(t.ip)]);
+
 // Configurações da plataforma (chave/valor JSON). Genérico e reusável.
 export const appSettings = mysqlTable("app_settings", {
   id: pk(),
@@ -466,6 +489,7 @@ export const ranks = mysqlTable("ranks", {
   title: varchar("title", { length: 80 }).notNull(),
   points: int("points").notNull().default(0), // limiar de reputação
   icon: varchar("icon", { length: 40 }).notNull().default("Shield"),
+  image: varchar("image", { length: 500 }), // imagem custom (BunnyCDN)
   sortOrder: int("sort_order").notNull().default(0),
 }, (t) => [index("ranks_points_idx").on(t.points)]);
 

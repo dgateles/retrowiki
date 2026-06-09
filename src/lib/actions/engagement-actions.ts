@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne, sql, count, gte } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { comments, votes, articles, notifications, auditLog, articleFollows, users } from "@/db/schema";
@@ -9,6 +9,7 @@ import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
 import { runTrigger } from "@/lib/achievements";
+import { canEditOwn, canDeleteOwn, maxReactionsPerDay } from "@/lib/permissions";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -122,12 +123,15 @@ export async function editCommentAction(commentId: number, body: unknown): Promi
   }
 
   const [row] = await db
-    .select({ id: comments.id, authorId: comments.authorId, articleId: comments.articleId })
+    .select({ id: comments.id, authorId: comments.authorId, articleId: comments.articleId, createdAt: comments.createdAt })
     .from(comments)
     .where(eq(comments.id, commentId))
     .limit(1);
   if (!row) return { ok: false, error: "Comentário não encontrado." };
   if (row.authorId !== Number(user.id)) return { ok: false, error: "Você só pode editar seus comentários." };
+
+  const edit = await canEditOwn(user, row.createdAt);
+  if (!edit.ok) return { ok: false, error: edit.error };
 
   const valid = validateCommentBody(body);
   if (!valid.ok) return { ok: false, error: valid.error };
@@ -163,6 +167,10 @@ export async function deleteCommentAction(commentId: number): Promise<Result> {
     } catch {
       return { ok: false, error: "Sem permissão." };
     }
+  }
+
+  if (!isMod && !(await canDeleteOwn(user))) {
+    return { ok: false, error: "Seu papel não permite excluir conteúdo." };
   }
 
   await db.delete(comments).where(eq(comments.id, commentId));
@@ -253,6 +261,19 @@ export async function voteAction(articleId: number): Promise<Result<{ voted: boo
       .where(eq(articles.id, articleId));
     voted = false;
   } else {
+    // Limite diário de reações do papel (0 = ilimitado).
+    const perDay = await maxReactionsPerDay(user.role);
+    if (perDay > 0) {
+      const since = new Date();
+      since.setHours(0, 0, 0, 0);
+      const [today] = await db
+        .select({ n: count() })
+        .from(votes)
+        .where(and(eq(votes.userId, userId), gte(votes.createdAt, since)));
+      if ((today?.n ?? 0) >= perDay) {
+        return { ok: false, error: `Limite de ${perDay} reações por dia atingido.` };
+      }
+    }
     await db.insert(votes).values({ userId, articleId, value: 1 }).catch(() => {});
     await db
       .update(articles)

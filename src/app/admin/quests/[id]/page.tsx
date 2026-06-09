@@ -5,10 +5,18 @@ import { Button } from "@/components/ui/button";
 import { getQuest } from "@/lib/admin/quests";
 import { listBadgesWithCounts } from "@/lib/badges";
 import { listRules, TRIGGERS } from "@/lib/achievements";
+import { ROLES, ROLE_LABEL } from "@/lib/admin/role-permissions";
 import { QuestForm } from "@/components/admin/quest-form";
 import { TaskDelete } from "@/components/admin/quest-row-actions";
 
 export const dynamic = "force-dynamic";
+
+function toLocalInput(d: Date | null): string {
+  if (!d) return "";
+  const dt = new Date(d);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+}
 
 export default async function EditQuestPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,6 +27,7 @@ export default async function EditQuestPage({ params }: { params: Promise<{ id: 
 
   const [badges, rules] = await Promise.all([listBadgesWithCounts(), listRules()]);
   const ruleName = new Map(rules.map((r) => [r.id, `${r.name} · ${TRIGGERS[r.trigger]?.label ?? r.trigger}`]));
+  const roles = ROLES.map((r) => ({ value: r, label: ROLE_LABEL[r] }));
 
   return (
     <>
@@ -30,8 +39,19 @@ export default async function EditQuestPage({ params }: { params: Promise<{ id: 
       <QuestForm
         mode="edit"
         questId={quest.id}
-        initial={{ title: quest.title, description: quest.description, rewardBadge: quest.rewardBadge ?? "" }}
+        initial={{
+          title: quest.title,
+          description: quest.description,
+          rewardBadge: quest.rewardBadge ?? "",
+          coverImage: quest.coverImage ?? "",
+          startsAt: toLocalInput(quest.startsAt),
+          endsAt: toLocalInput(quest.endsAt),
+          audienceRoles: quest.audienceRoles,
+          allowOptOut: quest.allowOptOut,
+          retroactive: quest.retroactive,
+        }}
         badges={badges.map((b) => ({ value: b.slug, label: b.name }))}
+        roles={roles}
       />
 
       <div className="page__head mt-8">

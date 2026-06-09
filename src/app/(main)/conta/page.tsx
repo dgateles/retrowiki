@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth-helpers";
 import { roleLabel } from "@/lib/ranks";
 import { ChangePasswordForm } from "@/components/account/change-password-form";
 import { DisplayNameForm } from "@/components/account/display-name-form";
+import { AvatarForm } from "@/components/account/avatar-form";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -44,6 +45,13 @@ export default async function AccountPage({
           {active === "geral" && (
             <section aria-labelledby="s-geral" className="settings-section">
               <h2 id="s-geral" className="settings-section__title">Visão geral</h2>
+              <div className="settings-row">
+                <div>
+                  <dt className="settings-row__label">Avatar</dt>
+                  <dd className="settings-row__value muted">PNG, JPG, WEBP ou GIF (máx. 5 MB).</dd>
+                </div>
+                <AvatarForm initial={user.avatarUrl ?? ""} />
+              </div>
               <dl>
                 <div className="settings-row">
                   <div>

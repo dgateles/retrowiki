@@ -6,13 +6,14 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db } from "@/db";
 import { articles, revisions, reviews, users, notifications, auditLog } from "@/db/schema";
-import { requireUser, requireRole, can } from "@/lib/auth-helpers";
+import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
 import { RichDocSchema, isRichDoc, richDocToText } from "@/lib/blocks/rich-schema";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
 import { runTrigger } from "@/lib/achievements";
+import { canPublishDirectly } from "@/lib/permissions";
 
 // Aceita o corpo no formato novo (editor rico, type: "doc") ou no antigo
 // (árvore de blocos). O corpo chega como string JSON, serializado no cliente
@@ -156,7 +157,7 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
   const [user] = await db.select().from(users).where(eq(users.id, Number(session.id))).limit(1);
 
   // autotrust: publica direto, mas registra Review automático (auditável)
-  if (can.publishDirectly(user ?? null)) {
+  if (await canPublishDirectly(user ?? null)) {
     await db.insert(reviews).values({
       revisionId: article.currentRevisionId,
       reviewerId: Number(session.id),

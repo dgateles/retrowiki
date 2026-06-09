@@ -12,6 +12,8 @@ export type Criteria = {
   badge: string; // slug exigida ("" = nenhuma)
   suspended: "any" | "yes" | "no";
   fromRoles: string[]; // papéis atuais aos quais a regra se aplica
+  joinedMinDays: number; // entrou há pelo menos N dias (0 = qualquer)
+  activeWithinDays: number; // ativo nos últimos N dias (0 = qualquer)
 };
 
 export type PromotionRule = {
@@ -30,6 +32,8 @@ export const DEFAULT_CRITERIA: Criteria = {
   badge: "",
   suspended: "any",
   fromRoles: ["member"],
+  joinedMinDays: 0,
+  activeWithinDays: 0,
 };
 
 export function sanitizeCriteria(raw: unknown): Criteria {
@@ -44,6 +48,8 @@ export function sanitizeCriteria(raw: unknown): Criteria {
     badge: typeof c.badge === "string" ? c.badge : "",
     suspended: susp,
     fromRoles,
+    joinedMinDays: num(c.joinedMinDays),
+    activeWithinDays: num(c.activeWithinDays),
   };
 }
 
@@ -73,7 +79,9 @@ export async function getRule(id: number): Promise<PromotionRule | null> {
   }
 }
 
-type MemberStats = { role: string; reputation: number; suspended: boolean; content: number; rankIndex: number; badges: Set<string> };
+type MemberStats = { role: string; reputation: number; suspended: boolean; content: number; rankIndex: number; badges: Set<string>; joinedDaysAgo: number; lastActiveDaysAgo: number | null };
+
+const DAY = 86400_000;
 
 function matches(stats: MemberStats, c: Criteria): boolean {
   if (c.fromRoles.length > 0 && !c.fromRoles.includes(stats.role)) return false;
@@ -83,12 +91,14 @@ function matches(stats: MemberStats, c: Criteria): boolean {
   if (c.badge && !stats.badges.has(c.badge)) return false;
   if (c.suspended === "yes" && !stats.suspended) return false;
   if (c.suspended === "no" && stats.suspended) return false;
+  if (c.joinedMinDays > 0 && stats.joinedDaysAgo < c.joinedMinDays) return false;
+  if (c.activeWithinDays > 0 && (stats.lastActiveDaysAgo === null || stats.lastActiveDaysAgo > c.activeWithinDays)) return false;
   return true;
 }
 
 async function statsFor(userId: number): Promise<MemberStats | null> {
   const [u] = await db
-    .select({ role: users.role, reputation: users.reputation, suspended: users.isSuspended })
+    .select({ role: users.role, reputation: users.reputation, suspended: users.isSuspended, createdAt: users.createdAt, lastSeenAt: users.lastSeenAt })
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
@@ -103,6 +113,8 @@ async function statsFor(userId: number): Promise<MemberStats | null> {
     content: (g?.n ?? 0) + (c?.n ?? 0),
     rankIndex: rankForReputation(u.reputation).index,
     badges: new Set(bs.map((b) => b.slug)),
+    joinedDaysAgo: u.createdAt ? Math.floor((Date.now() - new Date(u.createdAt).getTime()) / DAY) : 0,
+    lastActiveDaysAgo: u.lastSeenAt ? Math.floor((Date.now() - new Date(u.lastSeenAt).getTime()) / DAY) : null,
   };
 }
 

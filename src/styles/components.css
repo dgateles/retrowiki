@@ -247,6 +247,12 @@
   .iptable__head--member {
     @apply grid-cols-[1.4fr_1fr_auto_auto_auto];
   }
+  .iptable__head--geo {
+    @apply grid-cols-[1fr_1.2fr_1fr_auto_auto];
+  }
+  .iptable__row--geo {
+    @apply grid-cols-[1fr_1.2fr_1fr_auto_auto];
+  }
   .iptable__row {
     @apply grid grid-cols-[1fr_1fr_auto_auto] items-center gap-3 border-b border-border/50 px-3 py-2 last:border-0;
   }
@@ -322,6 +328,15 @@
   }
   .quest-card--done {
     @apply border-emerald-500/40;
+  }
+  .quest-card--out {
+    @apply opacity-60;
+  }
+  .quest-card__cover {
+    @apply mb-3 h-32 w-full rounded-md object-cover;
+  }
+  .quest-card__foot {
+    @apply mt-3 flex justify-end border-t border-border/60 pt-3;
   }
   .quest-card__head {
     @apply flex items-center justify-between gap-3;
@@ -438,6 +453,30 @@
   }
   .rank-icon-pick {
     @apply flex items-center gap-2;
+  }
+  .member-create {
+    @apply mt-3 space-y-3;
+  }
+  .image-upload {
+    @apply flex items-center gap-3;
+  }
+  .image-upload__preview {
+    @apply size-16 shrink-0 rounded-md border border-border object-cover;
+  }
+  .image-upload__preview--round {
+    @apply rounded-full;
+  }
+  .image-upload__placeholder {
+    @apply flex size-16 shrink-0 items-center justify-center rounded-md border border-dashed border-border text-muted-foreground;
+  }
+  .image-upload__placeholder--round {
+    @apply rounded-full;
+  }
+  .image-upload__actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+  .badge-rare {
+    @apply ml-2 inline-flex items-center rounded-full bg-fuchsia-500/15 px-2 py-0.5 text-xs font-medium text-fuchsia-600 dark:text-fuchsia-400;
   }
   .badge-chip {
     @apply flex size-9 shrink-0 items-center justify-center rounded-full text-white;

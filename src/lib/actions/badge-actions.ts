@@ -6,20 +6,23 @@ import { db } from "@/db";
 import { users, auditLog } from "@/db/schema";
 import { requireRole } from "@/lib/auth-helpers";
 import { awardBadgeBySlug, revokeBadgeBySlug, recalcAllBadges, createBadge, updateBadge, deleteBadge } from "@/lib/badges";
+import { isBunnyUrl } from "@/lib/bunny";
 
 type Result<T = unknown> = { ok: boolean; error?: string; message?: string; data?: T };
 
 const TIERS = ["bronze", "silver", "gold"] as const;
 
-function parseBadge(body: string): { name: string; description: string; icon: string; tier: (typeof TIERS)[number]; manuallyAwardable: boolean } | null {
+function parseBadge(body: string): { name: string; description: string; icon: string; image: string | null; tier: (typeof TIERS)[number]; manuallyAwardable: boolean } | null {
   try {
     const p = JSON.parse(body) as Record<string, unknown>;
     const name = String(p.name ?? "").trim();
     if (name.length < 2 || name.length > 120) return null;
     const description = String(p.description ?? "").trim().slice(0, 300);
     const icon = /^[A-Za-z0-9]{1,40}$/.test(String(p.icon)) ? String(p.icon) : "Award";
+    const img = String(p.image ?? "").trim();
+    const image = img && isBunnyUrl(img) ? img : null;
     const tier = (TIERS as readonly string[]).includes(String(p.tier)) ? (String(p.tier) as (typeof TIERS)[number]) : "bronze";
-    return { name, description, icon, tier, manuallyAwardable: Boolean(p.manuallyAwardable) };
+    return { name, description, icon, image, tier, manuallyAwardable: Boolean(p.manuallyAwardable) };
   } catch {
     return null;
   }

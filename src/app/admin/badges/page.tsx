@@ -27,7 +27,7 @@ export default async function BadgesPage() {
       <ul className="rank-list">
         {badges.map((b) => (
           <li key={b.id} className="rank-row">
-            <span className={`badge-chip badge-chip--${b.tier}`} aria-hidden="true"><BadgeIcon name={b.icon} className="size-5" /></span>
+            <span className={`badge-chip badge-chip--${b.tier}`} aria-hidden="true"><BadgeIcon name={b.icon} image={b.image} className="size-5" /></span>
             <div className="min-w-0">
               <p className="rank-row__name">{b.name}</p>
               <p className="rank-row__meta">

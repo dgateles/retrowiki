@@ -5,6 +5,7 @@ import { achievementRules, users, comments, articles, votes } from "@/db/schema"
 import { awardBadgeBySlug, evaluateBadges } from "@/lib/badges";
 import { getAchievementSettings } from "@/lib/settings";
 import { progressQuestsForRule } from "@/lib/admin/quests";
+import { runPromotionsForUser } from "@/lib/admin/promotions";
 
 export type Recipient = { key: "actor" | "target"; label: string };
 export type TriggerDef = { label: string; recipients: Recipient[] };
@@ -190,8 +191,11 @@ export async function runTrigger(
         affected.add(target);
       }
     }
-    // Reavalia as badges de catálogo (limiares de reputação) dos afetados.
-    for (const id of affected) await evaluateBadges(id);
+    // Reavalia as badges de catálogo e a auto-promoção dos afetados.
+    for (const id of affected) {
+      await evaluateBadges(id);
+      await runPromotionsForUser(id);
+    }
   } catch {
     // nunca bloquear o fluxo principal
   }

@@ -21,7 +21,7 @@ export default async function EditRankPage({ params }: { params: Promise<{ id: s
         <Link href="/admin/ranks"><ChevronLeft className="size-4" aria-hidden="true" /> Ranks</Link>
       </Button>
       <h1 className="page__title mt-3">{rank.title}</h1>
-      <RankForm mode="edit" rankId={rank.id} initial={{ title: rank.title, points: rank.points, icon: rank.icon }} />
+      <RankForm mode="edit" rankId={rank.id} initial={{ title: rank.title, points: rank.points, icon: rank.icon, image: rank.image ?? "" }} />
     </>
   );
 }

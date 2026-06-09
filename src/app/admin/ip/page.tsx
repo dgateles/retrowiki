@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { lookupIp, searchMembers } from "@/lib/ip";
+import { geoForIps } from "@/lib/geo";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export default async function IpToolsPage({ searchParams }: { searchParams: Prom
   const memberQuery = sp.member?.trim() ?? "";
   const ipResults = ipQuery ? await lookupIp(ipQuery) : [];
   const memberResults = memberQuery ? await searchMembers(memberQuery) : [];
+  const geo = ipResults.length ? await geoForIps(ipResults.map((r) => r.ip)) : new Map<string, string>();
 
   return (
     <>
@@ -32,14 +34,15 @@ export default async function IpToolsPage({ searchParams }: { searchParams: Prom
           ipResults.length === 0 ? (
             <p className="muted mt-3">Nenhum registro para esse IP.</p>
           ) : (
-            <div className="iptable mt-3">
-              <div className="iptable__head">
-                <span>IP</span><span>Membro</span><span>Usos</span><span>Último uso</span>
+            <div className="iptable iptable--geo mt-3">
+              <div className="iptable__head iptable__head--geo">
+                <span>IP</span><span>Membro</span><span>Local</span><span>Usos</span><span>Último uso</span>
               </div>
               {ipResults.map((r, i) => (
-                <div key={`${r.userId}-${r.ip}-${i}`} className="iptable__row">
+                <div key={`${r.userId}-${r.ip}-${i}`} className="iptable__row iptable__row--geo">
                   <span className="iptable__ip">{r.ip}</span>
                   <Link href={`/admin/membros/${r.userId}`} className="link-inline">{r.displayName} (@{r.handle})</Link>
+                  <span className="muted">{geo.get(r.ip) || "—"}</span>
                   <span>{r.uses}</span>
                   <span className="muted">{fmt(r.lastUsedAt)}</span>
                 </div>

@@ -10,8 +10,30 @@ import { hashPassword, verifyPassword } from "@/lib/password";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email/mailer";
 import { passwordChanged } from "@/lib/email/templates";
+import { isBunnyUrl } from "@/lib/bunny";
 
 type Result = { ok: boolean; error?: string; message?: string };
+
+/** Define (ou remove) o avatar do usuário. Só aceita URL do nosso CDN. */
+export async function setAvatarAction(url: string): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const clean = String(url ?? "").trim();
+  const value = clean && isBunnyUrl(clean) ? clean : clean === "" ? null : undefined;
+  if (value === undefined) return { ok: false, error: "Imagem inválida." };
+  try {
+    await db.update(users).set({ avatarUrl: value }).where(eq(users.id, Number(user.id)));
+    revalidatePath("/conta");
+    revalidatePath(`/u/${user.handle}`);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha ao salvar." };
+  }
+}
 
 const DisplayNameSchema = z.object({
   displayName: z.string().trim().min(2, "Use ao menos 2 caracteres.").max(120),

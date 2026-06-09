@@ -11,6 +11,7 @@ import {
   setUserSuspendedAction,
   setUserTrustedAction,
   setUserReputationAction,
+  forcePasswordResetAction,
 } from "@/lib/actions/member-actions";
 
 type Props = {
@@ -91,6 +92,16 @@ export function MemberManage({ userId, role, trusted, suspended, reputation, isS
         onClick={() => run(() => setUserSuspendedAction(userId, !suspended), suspended ? "Reativado." : "Suspenso.")}
       >
         {suspended ? "Reativar conta" : "Suspender conta"}
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        disabled={pending}
+        onClick={() => run(() => forcePasswordResetAction(userId), "E-mail de troca de senha enviado.")}
+      >
+        Forçar troca de senha
       </Button>
     </div>
   );

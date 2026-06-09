@@ -23,7 +23,7 @@ export default async function EditBadgePage({ params }: { params: Promise<{ id: 
       <BadgeForm
         mode="edit"
         badgeId={badge.id}
-        initial={{ name: badge.name, description: badge.description, icon: badge.icon, tier: badge.tier, manuallyAwardable: badge.manuallyAwardable }}
+        initial={{ name: badge.name, description: badge.description, icon: badge.icon, image: badge.image ?? "", tier: badge.tier, manuallyAwardable: badge.manuallyAwardable }}
       />
     </>
   );

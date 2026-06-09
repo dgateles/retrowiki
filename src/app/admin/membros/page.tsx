@@ -6,6 +6,7 @@ import { roleLabel, rankForTiers } from "@/lib/ranks";
 import { getRankTierList } from "@/lib/admin/ranks-db";
 import { Pager } from "@/components/ui/pager";
 import { MemberRowActions } from "@/components/admin/member-row-actions";
+import { MemberAdminTools } from "@/components/admin/member-admin-tools";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +29,13 @@ export default async function AdminMembersPage({
 
   return (
     <>
-      <h1 className="page__title">Membros</h1>
-      <p className="page__note">Gerencie papéis, confiança e suspensões.</p>
+      <div className="page__head">
+        <div>
+          <h1 className="page__title">Membros</h1>
+          <p className="page__note">Gerencie papéis, confiança e suspensões.</p>
+        </div>
+        <MemberAdminTools />
+      </div>
 
       <form method="get" role="search" className="search mt-6">
         <Search className="search__icon" aria-hidden="true" />

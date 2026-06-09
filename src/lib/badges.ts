@@ -109,6 +109,7 @@ export type BadgeWithCount = {
   name: string;
   description: string;
   icon: string;
+  image: string | null;
   tier: Tier;
   manuallyAwardable: boolean;
   count: number;
@@ -125,13 +126,14 @@ export async function listBadgesWithCounts(): Promise<BadgeWithCount[]> {
         name: badges.name,
         description: badges.description,
         icon: badges.icon,
+        image: badges.image,
         tier: badges.tier,
         manuallyAwardable: badges.manuallyAwardable,
         count: count(userBadges.id),
       })
       .from(badges)
       .leftJoin(userBadges, eq(userBadges.badgeId, badges.id))
-      .groupBy(badges.id, badges.slug, badges.name, badges.description, badges.icon, badges.tier, badges.manuallyAwardable, badges.sortOrder)
+      .groupBy(badges.id, badges.slug, badges.name, badges.description, badges.icon, badges.image, badges.tier, badges.manuallyAwardable, badges.sortOrder)
       .orderBy(badges.sortOrder);
     return rows.map((r) => ({ ...r, count: Number(r.count) }));
   } catch {
@@ -141,7 +143,7 @@ export async function listBadgesWithCounts(): Promise<BadgeWithCount[]> {
 
 // ── CRUD de badges (admin) ──────────────────────────────────────────────
 
-export type BadgeRow = { id: number; slug: string; name: string; description: string; icon: string; tier: Tier; manuallyAwardable: boolean; sortOrder: number };
+export type BadgeRow = { id: number; slug: string; name: string; description: string; icon: string; image: string | null; tier: Tier; manuallyAwardable: boolean; sortOrder: number };
 
 export async function getBadge(id: number): Promise<BadgeRow | null> {
   try {
@@ -163,7 +165,7 @@ async function uniqueSlug(base: string): Promise<string> {
   return `${root}-${root.length}`;
 }
 
-type BadgeInput = { name: string; description: string; icon: string; tier: Tier; manuallyAwardable: boolean };
+type BadgeInput = { name: string; description: string; icon: string; image: string | null; tier: Tier; manuallyAwardable: boolean };
 
 export async function createBadge(input: BadgeInput): Promise<number | null> {
   try {
@@ -171,7 +173,7 @@ export async function createBadge(input: BadgeInput): Promise<number | null> {
     const slug = await uniqueSlug(input.name);
     const [maxRow] = await db.select({ m: sql<number>`COALESCE(MAX(${badges.sortOrder}), 0)` }).from(badges);
     const sortOrder = Number(maxRow?.m ?? 0) + 1;
-    const [res] = await db.insert(badges).values({ slug, name: input.name, description: input.description, icon: input.icon, tier: input.tier, manuallyAwardable: input.manuallyAwardable, sortOrder });
+    const [res] = await db.insert(badges).values({ slug, name: input.name, description: input.description, icon: input.icon, image: input.image, tier: input.tier, manuallyAwardable: input.manuallyAwardable, sortOrder });
     return (res as unknown as { insertId: number }).insertId;
   } catch {
     return null;
@@ -180,7 +182,7 @@ export async function createBadge(input: BadgeInput): Promise<number | null> {
 
 export async function updateBadge(id: number, input: BadgeInput): Promise<boolean> {
   try {
-    await db.update(badges).set({ name: input.name, description: input.description, icon: input.icon, tier: input.tier, manuallyAwardable: input.manuallyAwardable }).where(eq(badges.id, id));
+    await db.update(badges).set({ name: input.name, description: input.description, icon: input.icon, image: input.image, tier: input.tier, manuallyAwardable: input.manuallyAwardable }).where(eq(badges.id, id));
     return true;
   } catch {
     return false;

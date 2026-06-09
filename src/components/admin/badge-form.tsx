@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createBadgeAction, updateBadgeAction } from "@/lib/actions/badge-actions";
 import { BadgeIcon, BADGE_ICON_NAMES } from "@/components/admin/badge-icon";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 type Tier = "bronze" | "silver" | "gold";
 
@@ -18,12 +19,13 @@ export function BadgeForm({
 }: {
   mode: "create" | "edit";
   badgeId?: number;
-  initial: { name: string; description: string; icon: string; tier: Tier; manuallyAwardable: boolean };
+  initial: { name: string; description: string; icon: string; image: string; tier: Tier; manuallyAwardable: boolean };
 }) {
   const router = useRouter();
   const [name, setName] = useState(initial.name);
   const [description, setDescription] = useState(initial.description);
   const [icon, setIcon] = useState(initial.icon);
+  const [image, setImage] = useState(initial.image);
   const [tier, setTier] = useState<Tier>(initial.tier);
   const [manual, setManual] = useState(initial.manuallyAwardable);
   const [pending, setPending] = useState(false);
@@ -34,7 +36,7 @@ export function BadgeForm({
       return;
     }
     setPending(true);
-    const body = JSON.stringify({ name, description, icon, tier, manuallyAwardable: manual });
+    const body = JSON.stringify({ name, description, icon, image, tier, manuallyAwardable: manual });
     const res = mode === "create" ? await createBadgeAction(body) : await updateBadgeAction(badgeId!, body);
     setPending(false);
     if (res.ok) {
@@ -49,7 +51,7 @@ export function BadgeForm({
   return (
     <div className="rule-form">
       <section className={`rule-form__section badge-preview badge-preview--${tier}`}>
-        <span className="badge-preview__icon" aria-hidden="true"><BadgeIcon name={icon} className="size-6" /></span>
+        <span className="badge-preview__icon" aria-hidden="true"><BadgeIcon name={icon} image={image} className="size-6" /></span>
         <div className="min-w-0">
           <p className="badge-preview__name">{name || "Nome da badge"}</p>
           <p className="badge-preview__desc">{description || "Descrição"}</p>
@@ -75,6 +77,10 @@ export function BadgeForm({
               ))}
             </select>
           </div>
+        </div>
+        <div className="field">
+          <Label>Imagem custom (opcional, substitui o ícone)</Label>
+          <ImageUpload value={image} onChange={setImage} folder="badges" />
         </div>
         <div className="field">
           <Label htmlFor="bd-tier">Nível</Label>

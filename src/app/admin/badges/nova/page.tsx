@@ -12,7 +12,7 @@ export default function NewBadgePage() {
         <Link href="/admin/badges"><ChevronLeft className="size-4" aria-hidden="true" /> Badges</Link>
       </Button>
       <h1 className="page__title mt-3">Nova badge</h1>
-      <BadgeForm mode="create" initial={{ name: "", description: "", icon: "Award", tier: "bronze", manuallyAwardable: true }} />
+      <BadgeForm mode="create" initial={{ name: "", description: "", icon: "Award", image: "", tier: "bronze", manuallyAwardable: true }} />
     </>
   );
 }

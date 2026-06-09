@@ -26,7 +26,7 @@ export default async function RanksPage() {
       <ul className="rank-list">
         {rows.map((r) => (
           <li key={r.id} className="rank-row">
-            <span className="rank-badge" aria-hidden="true"><RankIcon name={r.icon} className="size-5" /></span>
+            <span className="rank-badge" aria-hidden="true"><RankIcon name={r.icon} image={r.image} className="size-5" /></span>
             <div className="min-w-0">
               <p className="rank-row__name">{r.title}</p>
               <p className="rank-row__meta">{counts[r.id] ?? 0} membro(s) · {r.points} pontos</p>

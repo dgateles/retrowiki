@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createRankAction, updateRankAction } from "@/lib/actions/rank-actions";
 import { RankIcon, RANK_ICON_NAMES } from "@/components/admin/rank-icon";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 export function RankForm({
   mode,
@@ -16,12 +17,13 @@ export function RankForm({
 }: {
   mode: "create" | "edit";
   rankId?: number;
-  initial: { title: string; points: number; icon: string };
+  initial: { title: string; points: number; icon: string; image: string };
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(initial.title);
   const [points, setPoints] = useState(initial.points);
   const [icon, setIcon] = useState(initial.icon);
+  const [image, setImage] = useState(initial.image);
   const [pending, setPending] = useState(false);
 
   async function save() {
@@ -30,7 +32,7 @@ export function RankForm({
       return;
     }
     setPending(true);
-    const body = JSON.stringify({ title, points, icon });
+    const body = JSON.stringify({ title, points, icon, image });
     const res = mode === "create" ? await createRankAction(body) : await updateRankAction(rankId!, body);
     setPending(false);
     if (res.ok) {
@@ -56,13 +58,17 @@ export function RankForm({
         <div className="field">
           <Label htmlFor="rk-icon">Ícone</Label>
           <div className="rank-icon-pick">
-            <span className="rank-badge" aria-hidden="true"><RankIcon name={icon} className="size-5" /></span>
+            <span className="rank-badge" aria-hidden="true"><RankIcon name={icon} image={image} className="size-5" /></span>
             <select id="rk-icon" className="rte__select" value={icon} onChange={(e) => setIcon(e.target.value)}>
               {RANK_ICON_NAMES.map((n) => (
                 <option key={n} value={n}>{n}</option>
               ))}
             </select>
           </div>
+        </div>
+        <div className="field">
+          <Label>Imagem custom (opcional, substitui o ícone)</Label>
+          <ImageUpload value={image} onChange={setImage} folder="ranks" shape="round" />
         </div>
       </section>
 

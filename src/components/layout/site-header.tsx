@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
+import { getRankForReputation } from "@/lib/admin/ranks-db";
+import { getAchievementSettings } from "@/lib/settings";
 import { getUnreadCount, listNotifications } from "@/lib/notifications";
 import { describeNotification } from "@/lib/notification-text";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,8 @@ const fmtDate = (d: Date) =>
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
+  const gami = await getAchievementSettings();
+  const rank = user && gami.enabled ? await getRankForReputation(user.reputation) : null;
 
   let unread = 0;
   let notifItems: NotifItem[] = [];
@@ -68,7 +72,7 @@ export async function SiteHeader() {
               <NotificationsBell unread={unread} items={notifItems} />
               <UserMenu
                 handle={user.handle}
-                reputation={user.reputation}
+                rank={rank!}
                 isStaff={can.moderate(user)}
                 isAdmin={can.admin(user)}
               />

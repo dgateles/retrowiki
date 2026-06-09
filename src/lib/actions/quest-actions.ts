@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { auditLog } from "@/db/schema";
 import { requireRole } from "@/lib/auth-helpers";
-import { createQuest, updateQuest, deleteQuest, setQuestEnabled, createTask, updateTask, deleteTask } from "@/lib/admin/quests";
+import { createQuest, updateQuest, deleteQuest, setQuestEnabled, createTask, updateTask, deleteTask, setQuestOptOut, type QuestInput } from "@/lib/admin/quests";
+import { requireUser } from "@/lib/auth-helpers";
+import { ROLES } from "@/lib/admin/role-permissions";
+import { isBunnyUrl } from "@/lib/bunny";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
 
@@ -16,14 +19,33 @@ async function asAdmin(): Promise<{ id: string } | null> {
   }
 }
 
-function parseQuest(body: string): { title: string; description: string; rewardBadge: string | null } | null {
+function parseDate(v: unknown): Date | null {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function parseQuest(body: string): QuestInput | null {
   try {
     const p = JSON.parse(body) as Record<string, unknown>;
     const title = String(p.title ?? "").trim();
     if (title.length < 2 || title.length > 160) return null;
     const description = String(p.description ?? "").trim().slice(0, 2000);
     const rb = String(p.rewardBadge ?? "").trim();
-    return { title, description, rewardBadge: rb || null };
+    const cover = String(p.coverImage ?? "").trim();
+    const audienceRoles = Array.isArray(p.audienceRoles) ? p.audienceRoles.filter((r): r is string => ROLES.includes(r as never)) : [];
+    return {
+      title,
+      description,
+      rewardBadge: rb || null,
+      coverImage: cover && isBunnyUrl(cover) ? cover : null,
+      startsAt: parseDate(p.startsAt),
+      endsAt: parseDate(p.endsAt),
+      audienceRoles,
+      allowOptOut: Boolean(p.allowOptOut),
+      retroactive: Boolean(p.retroactive),
+    };
   } catch {
     return null;
   }
@@ -118,4 +140,21 @@ export async function deleteTaskAction(taskId: number, questId: number): Promise
   await db.insert(auditLog).values({ actorId: Number(actor.id), action: "quest_task_delete", target: `task:${taskId}` });
   revalidatePath(`/admin/quests/${questId}`);
   return { ok: true };
+}
+
+/** Usuário sai (ou volta) de uma missão (opt-out). */
+export async function setQuestOptOutAction(questId: number, out: boolean): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  try {
+    await setQuestOptOut(Number(user.id), questId, out);
+    revalidatePath("/missoes");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha." };
+  }
 }

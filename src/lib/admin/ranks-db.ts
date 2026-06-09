@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { ranks, users } from "@/db/schema";
 import { DEFAULT_TIERS, rankForTiers, type Rank, type Tier } from "@/lib/ranks";
 
-export type RankRow = { id: number; title: string; points: number; icon: string; sortOrder: number };
+export type RankRow = { id: number; title: string; points: number; icon: string; image: string | null; sortOrder: number };
 
 /** Semeia a tabela `ranks` com os tiers padrão se estiver vazia. */
 export async function ensureRankSeed(): Promise<void> {
@@ -22,7 +22,7 @@ export async function getRankRows(): Promise<RankRow[]> {
     await ensureRankSeed();
     return await db.select().from(ranks).orderBy(asc(ranks.points), asc(ranks.sortOrder));
   } catch {
-    return DEFAULT_TIERS.map((t, i) => ({ id: -(i + 1), title: t.label, points: t.at, icon: t.icon, sortOrder: i }));
+    return DEFAULT_TIERS.map((t, i) => ({ id: -(i + 1), title: t.label, points: t.at, icon: t.icon, image: null, sortOrder: i }));
   }
 }
 

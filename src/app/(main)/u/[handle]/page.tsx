@@ -6,6 +6,7 @@ import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
+import { getAchievementSettings } from "@/lib/settings";
 import { BadgeList } from "@/components/badges/badge-list";
 
 export async function generateMetadata({
@@ -33,9 +34,10 @@ export default async function ProfilePage({
   const profile = await getProfile(handle);
   if (!profile) notFound();
 
-  const rank = await getRankForReputation(profile.reputation);
-  await evaluateBadges(profile.id);
-  const userBadges = await getUserBadges(profile.id);
+  const gami = await getAchievementSettings();
+  const rank = gami.enabled ? await getRankForReputation(profile.reputation) : null;
+  if (gami.enabled) await evaluateBadges(profile.id);
+  const userBadges = gami.enabled ? await getUserBadges(profile.id) : [];
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
   );
@@ -57,23 +59,25 @@ export default async function ProfilePage({
 
       <div className="profile-grid">
         <aside className="profile-side">
-          <section aria-label="Rank" className="rank">
-            <div className="rank__head">
-              <span className="rank__label">{rank.label}</span>
-              <span className="rank__index">Rank {rank.index} de {rank.total}</span>
-            </div>
-            <progress
-              className="rank__progress"
-              value={Math.round(rank.progress * 100)}
-              max={100}
-              aria-label={`Progresso no rank ${rank.label}`}
-            />
-            <p className="rank__next">
-              {rank.next === null
-                ? "Rank máximo alcançado."
-                : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
-            </p>
-          </section>
+          {rank && (
+            <section aria-label="Rank" className="rank">
+              <div className="rank__head">
+                <span className="rank__label">{rank.label}</span>
+                <span className="rank__index">Rank {rank.index} de {rank.total}</span>
+              </div>
+              <progress
+                className="rank__progress"
+                value={Math.round(rank.progress * 100)}
+                max={100}
+                aria-label={`Progresso no rank ${rank.label}`}
+              />
+              <p className="rank__next">
+                {rank.next === null
+                  ? "Rank máximo alcançado."
+                  : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
+              </p>
+            </section>
+          )}
 
           <dl className="profile-stats">
             <div className="profile-stat">
@@ -90,12 +94,14 @@ export default async function ProfilePage({
             </div>
           </dl>
 
-          <section aria-labelledby="p-badges" className="panel-section">
-            <div className="panel-section__head">
-              <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
-            </div>
-            <BadgeList items={userBadges} />
-          </section>
+          {gami.enabled && (
+            <section aria-labelledby="p-badges" className="panel-section">
+              <div className="panel-section__head">
+                <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
+              </div>
+              <BadgeList items={userBadges} />
+            </section>
+          )}
         </aside>
 
         <section aria-labelledby="contrib">

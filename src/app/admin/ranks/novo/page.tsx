@@ -12,7 +12,7 @@ export default function NewRankPage() {
         <Link href="/admin/ranks"><ChevronLeft className="size-4" aria-hidden="true" /> Ranks</Link>
       </Button>
       <h1 className="page__title mt-3">Novo rank</h1>
-      <RankForm mode="create" initial={{ title: "", points: 0, icon: "Shield" }} />
+      <RankForm mode="create" initial={{ title: "", points: 0, icon: "Shield", image: "" }} />
     </>
   );
 }

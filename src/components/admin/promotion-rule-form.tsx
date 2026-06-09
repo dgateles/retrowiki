@@ -15,6 +15,8 @@ type Criteria = {
   badge: string;
   suspended: "any" | "yes" | "no";
   fromRoles: string[];
+  joinedMinDays: number;
+  activeWithinDays: number;
 };
 
 type Opt = { value: string; label: string };
@@ -119,6 +121,14 @@ export function PromotionRuleForm({
             <option value="no">Não suspenso</option>
             <option value="yes">Suspenso</option>
           </select>
+        </div>
+        <div className="field">
+          <Label htmlFor="rf-joined">Entrou há pelo menos (dias, 0 = qualquer)</Label>
+          <Input id="rf-joined" type="number" min={0} value={String(c.joinedMinDays)} onChange={(e) => setCrit("joinedMinDays", Math.max(0, Math.floor(Number(e.target.value) || 0)))} className="w-32" />
+        </div>
+        <div className="field">
+          <Label htmlFor="rf-active">Ativo nos últimos (dias, 0 = qualquer)</Label>
+          <Input id="rf-active" type="number" min={0} value={String(c.activeWithinDays)} onChange={(e) => setCrit("activeWithinDays", Math.max(0, Math.floor(Number(e.target.value) || 0)))} className="w-32" />
         </div>
         <div className="field">
           <Label>Aplica-se aos papéis atuais</Label>
