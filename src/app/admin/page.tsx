@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Gamepad2, BookOpen, Users, Trophy } from "lucide-react";
+import { Gamepad2, BookOpen, Users, Trophy, Shield } from "lucide-react";
 
 const CARDS = [
   { href: "/admin/consoles", icon: Gamepad2, title: "Consoles", desc: "Cadastrar e editar handhelds, specs, emulação e imagens." },
   { href: "/admin/membros", icon: Users, title: "Membros", desc: "Papéis, confiança e suspensões dos usuários." },
+  { href: "/admin/grupos", icon: Shield, title: "Grupos", desc: "Permissões de cada papel da comunidade." },
   { href: "/admin/gamificacao", icon: Trophy, title: "Gamificação", desc: "Ranks por reputação e conquistas (badges)." },
   { href: "/moderacao", icon: BookOpen, title: "Moderação", desc: "Fila de revisão de guias e tutoriais da comunidade." },
 ];

@@ -216,6 +216,59 @@
     @apply flex items-center justify-between gap-3 py-2 text-sm;
   }
 
+  /* Grupos e permissões (admin). */
+  .group-list {
+    @apply mt-6 overflow-hidden rounded-lg border border-border bg-card;
+  }
+  .group-row {
+    @apply flex items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0;
+  }
+  .group-row__dot {
+    @apply size-3 shrink-0 rounded-full;
+  }
+  .group-row__name {
+    @apply flex-1 font-medium;
+  }
+  .group-row__count {
+    @apply text-sm text-muted-foreground;
+  }
+  .group-row__edit {
+    @apply inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground;
+  }
+  .perm-form {
+    @apply mt-6 overflow-hidden rounded-lg border border-border bg-card;
+  }
+  .perm-form__tabs {
+    @apply flex gap-1 border-b border-border bg-muted/30 p-1.5;
+  }
+  .perm-form__tab {
+    @apply rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground;
+  }
+  .perm-form__tab--active {
+    @apply bg-background text-foreground;
+  }
+  .perm-form__panel {
+    @apply divide-y divide-border/60;
+  }
+  .perm-field {
+    @apply flex flex-wrap items-center justify-between gap-3 px-4 py-3;
+  }
+  .perm-field__label {
+    @apply min-w-0 flex-1;
+  }
+  .perm-field__help {
+    @apply mt-0.5 text-xs text-muted-foreground;
+  }
+  .perm-field__control {
+    @apply shrink-0;
+  }
+  .perm-field__color {
+    @apply h-9 w-12 cursor-pointer rounded border border-border bg-transparent;
+  }
+  .perm-form__foot {
+    @apply flex justify-end border-t border-border bg-muted/20 p-3;
+  }
+
   /* Gamificação (admin). */
   .gami-tools {
     @apply mt-6 space-y-4;

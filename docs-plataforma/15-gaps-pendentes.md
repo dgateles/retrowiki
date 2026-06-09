@@ -218,9 +218,33 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
   - **Atividade recente da conta** (dropdown: mudanças importantes, assinatura de
     lista, aceite de termos, toda a atividade): feed por usuário a partir do
     `audit_log` (ações sobre o usuário e dele) + eventos de conta.
-- **Papéis e permissões.** Promover/rebaixar (feito na lista), ver contagem por
-  papel, e editar o que cada papel pode fazer (sistema de permissões editável
-  ainda não existe; hoje os papéis são checados em código).
+- **Papéis e permissões (Grupos, detalhado a partir do AdminCP do IPB).** No IPB
+  são "Grupos" com permissões editáveis; aqui são os papéis (member, contributor,
+  moderator, admin). Hoje os papéis são checados em código; o alvo é um sistema
+  de permissões por papel, editável, com lista e formulário em abas. Adaptar (o
+  que não se aplica: Forums, Polls, Blogs/Downloads/Gallery, Messenger, Clubs,
+  Quests).
+  - **Lista de grupos/papéis.** Tabela com Nome do grupo e Nº de membros;
+    ordenar/buscar; ações por linha (Editar, Permissões, Copiar, Baixar lista de
+    membros) e "Criar novo grupo". Para nós, papéis são fixos no conjunto, mas a
+    tela de contagem por papel + capacidades é o equivalente útil.
+  - **Formulário em abas** (adaptado, sem Blog/Downloads/Gallery):
+    - **Configurações do grupo**: nome, ícone/cor (formatação), e o controle de
+      acesso: pode acessar o site, pode acessar quando offline, permitir trocar
+      nome de exibição, limite de busca (flood), privacidade (login anônimo,
+      aparecer em filtros, pode ser ignorado, postar anônimo) — manter só o que
+      faz sentido no nosso cenário.
+    - **Conteúdo**: anexos (liga ao Bunny); edição (editar próprio conteúdo +
+      janela de tempo, editar em silêncio); exclusão (ocultar/excluir próprio
+      conteúdo); limite de itens por dia (nosso rate limit); moderação (reportar
+      conteúdo, marcar como "Útil", **ignorar a fila de aprovação** = o nosso
+      `trusted`, **exigir aprovação antes de publicar** = a fila de revisão,
+      ignorar flood, ignorar filtros de palavra/link).
+    - **Social**: editar perfil; limites de foto de perfil e capa (liga ao
+      Bunny); ver histórico de nome; reações (máx. por dia, ver quem reagiu, ver
+      quem achou útil); follows (ver informações de seguidores).
+  - Permissões viram flags por papel, persistidas e checadas por um helper único
+    (substituindo os checks espalhados em código). Item grande.
 - **Ferramentas de IP e auditoria.** Consultar ações por usuário/IP usando o
   `audit_log`. Liga com Dispositivos e IPs acima.
 - **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão da
@@ -514,3 +538,36 @@ visual de verdade.
   catálogo de widgets + responsividade + render seguro). Dá para entregar em
   fases: começar com seções/colunas + um punhado de widgets essenciais (título,
   texto, imagem, botão, divisor) e ir ampliando.
+
+## [CRÍTICO] Overhaul de UX do painel de administração
+
+O dono do projeto avaliou que o AdminCP do IPB (das referências) é bem mais
+organizado e robusto do que o admin implementado hoje, e quer elevar o nosso a
+esse nível. Item CRÍTICO ao final da fila. As pendências de detalhamento das
+seções (membros, grupos/permissões, conquistas, moderação) devem ser sanadas
+junto com este overhaul.
+
+Direção (do AdminCP do IPB, adaptado ao nosso cenário):
+
+- **Navegação em dois níveis.** Barra de áreas à esquerda (ex.: System,
+  Community, Members, Pages, Statistics, Customization — adaptar) e, dentro de
+  cada área, um submenu agrupado por seções com títulos (ex.: em Members:
+  MEMBERS, ACHIEVEMENTS, MEMBER SETTINGS, CONTENT MODERATION, STAFF, BULK MAIL).
+  Hoje temos só uma barra simples (Visão geral, Consoles, Membros, Gamificação).
+- **Busca global do admin** ("Buscar configurações, membros, etc.") e atalhos no
+  topo (Visitar site, links rápidos, notificações, menu da conta).
+- **Padrões de tela consistentes.**
+  - Listas/tabelas com cabeçalho fixo, ordenar/filtrar/buscar, engrenagem de
+    colunas, paginação, e ações por linha ao passar o mouse (com tooltips).
+  - Formulários longos em **abas**, com seções tituladas, campos rotulados à
+    esquerda, toggles padronizados, e barra de ação fixa (Salvar) no rodapé.
+  - Telas de detalhe (ex.: Member View) em grade de cartões consistente.
+- **Robustez.** Estados vazios, loading e erro claros; confirmação em ações
+  destrutivas; feedback (toasts) padronizado; responsividade.
+- **Acessibilidade** mantida (foco, nomes acessíveis, navegação por teclado nas
+  tabelas e abas), e a regra de BEM/sem inline Tailwind preservada.
+- **Escopo.** Refatorar o shell do admin (layout, navegação, componentes de
+  lista/tabela/abas/cartão reutilizáveis) e migrar as telas existentes
+  (Consoles, Membros, Member View, Gamificação) para o novo padrão, deixando a
+  base pronta para as próximas seções (grupos/permissões, moderação, estatísticas
+  e bulk mail).

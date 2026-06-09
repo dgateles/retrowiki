@@ -377,6 +377,16 @@ export const userBadges = mysqlTable("user_badges", {
   index("user_badges_user_idx").on(t.userId),
 ]);
 
+// ── Permissões por papel (grupos) ────────────────────────────────────────
+// Guarda as flags de permissão de cada papel como JSON. Os padrões ficam em
+// código; o banco guarda as edições do admin.
+export const rolePermissions = mysqlTable("role_permissions", {
+  id: pk(),
+  role: varchar("role", { length: 20 }).notNull(),
+  permissions: json("permissions").notNull(),
+  updatedAt: updatedAt(),
+}, (t) => [uniqueIndex("role_permissions_role_idx").on(t.role)]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;
