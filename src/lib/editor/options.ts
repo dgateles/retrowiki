@@ -29,6 +29,23 @@ export type FontSize = (typeof FONT_SIZES)[number];
 export const ALIGNMENTS = ["left", "center", "right", "justify"] as const;
 export type Alignment = (typeof ALIGNMENTS)[number];
 
+// Linguagens do bloco de código (alinhadas ao Prism do renderizador).
+export const CODE_LANGS: { label: string; value: string }[] = [
+  { label: "Texto", value: "" },
+  { label: "Bash", value: "bash" },
+  { label: "JSON", value: "json" },
+  { label: "JavaScript", value: "javascript" },
+  { label: "TypeScript", value: "typescript" },
+  { label: "JSX", value: "jsx" },
+  { label: "TSX", value: "tsx" },
+  { label: "CSS", value: "css" },
+  { label: "HTML", value: "markup" },
+  { label: "SQL", value: "sql" },
+  { label: "YAML", value: "yaml" },
+  { label: "Python", value: "python" },
+  { label: "INI/Conf", value: "ini" },
+];
+
 export const HEX_COLOR = /^#[0-9a-fA-F]{3,8}$/;
 
 export const EMOJIS = [

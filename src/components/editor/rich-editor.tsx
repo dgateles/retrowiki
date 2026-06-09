@@ -20,6 +20,7 @@ import {
   Plus, List, ListOrdered, Code2, SquareStack, EyeOff, Quote, Minus, Table as TableIcon, ImageIcon,
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code, Subscript as SubIcon, Superscript as SupIcon,
   Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link as LinkIcon, Smile, RemoveFormatting,
+  Rows3, Columns3, Grid2x2, Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,21 +31,51 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Box, Spoiler } from "@/lib/editor/nodes";
-import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, EMOJIS } from "@/lib/editor/options";
+import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, EMOJIS, CODE_LANGS } from "@/lib/editor/options";
 
 function TBtn({ onClick, active, label, children }: { onClick: () => void; active?: boolean; label: string; children: React.ReactNode }) {
+  // onMouseDown preventDefault: não tira o foco/seleção do editor ao clicar.
   return (
-    <button type="button" onClick={onClick} aria-label={label} aria-pressed={active ? "true" : "false"} title={label} className={cn("rte__btn", active && "rte__btn--active")}>
+    <button
+      type="button"
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={active ? "true" : "false"}
+      title={label}
+      className={cn("rte__btn", active && "rte__btn--active")}
+    >
       {children}
     </button>
   );
 }
 
-function MenuTrigger({ label, children }: { label: string; children: React.ReactNode }) {
+// Menu não-modal: não prende o foco nem bloqueia o resto da página, e o
+// fechamento não rouba o foco do editor (o comando já reaplicou o foco).
+function Menu({
+  label,
+  trigger,
+  align = "start",
+  contentClassName,
+  children,
+}: {
+  label: string;
+  trigger: React.ReactNode;
+  align?: "start" | "end";
+  contentClassName?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <DropdownMenuTrigger asChild>
-      <button type="button" aria-label={label} title={label} className="rte__btn">{children}</button>
-    </DropdownMenuTrigger>
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <button type="button" aria-label={label} title={label} className="rte__btn" onMouseDown={(e) => e.preventDefault()}>
+          {trigger}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={align} className={contentClassName} onCloseAutoFocus={(e) => e.preventDefault()}>
+        {children}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -55,17 +86,22 @@ function Toolbar({ editor }: { editor: Editor }) {
   const [imgUrl, setImgUrl] = useState("");
   const [imgAlt, setImgAlt] = useState("");
 
+  const [tableDelOpen, setTableDelOpen] = useState(false);
+
   const s = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
       bold: e.isActive("bold"), italic: e.isActive("italic"), underline: e.isActive("underline"),
       strike: e.isActive("strike"), code: e.isActive("code"), sub: e.isActive("subscript"),
       sup: e.isActive("superscript"), link: e.isActive("link"),
+      inTable: e.isActive("table"), inCode: e.isActive("codeBlock"),
+      codeLang: (e.getAttributes("codeBlock").language as string) ?? "",
       block: e.isActive("heading", { level: 1 }) ? "h1" : e.isActive("heading", { level: 2 }) ? "h2"
         : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("heading", { level: 4 }) ? "h4" : "p",
     }),
   });
 
+  const run = (fn: () => void) => fn();
   const chain = () => editor.chain().focus();
 
   function setBlock(v: string) {
@@ -92,7 +128,8 @@ function Toolbar({ editor }: { editor: Editor }) {
   }
 
   return (
-    <div className="rte__toolbar">
+    <>
+      <div className="rte__toolbar">
       <label className="sr-only" htmlFor="rte-block">Tipo de bloco</label>
       <select id="rte-block" className="rte__select" value={s.block} onChange={(e) => setBlock(e.target.value)}>
         <option value="p">Parágrafo</option>
@@ -102,20 +139,17 @@ function Toolbar({ editor }: { editor: Editor }) {
         <option value="h4">Título 4</option>
       </select>
 
-      <DropdownMenu>
-        <MenuTrigger label="Inserir"><Plus className="size-4" /></MenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onSelect={() => chain().toggleBulletList().run()}><List aria-hidden="true" /> Lista com marcadores</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().toggleOrderedList().run()}><ListOrdered aria-hidden="true" /> Lista numerada</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().toggleCodeBlock().run()}><Code2 aria-hidden="true" /> Bloco de código</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().toggleWrap("box").run()}><SquareStack aria-hidden="true" /> Box</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().toggleWrap("spoiler").run()}><EyeOff aria-hidden="true" /> Spoiler</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().toggleBlockquote().run()}><Quote aria-hidden="true" /> Citação</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().setHorizontalRule().run()}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}><TableIcon aria-hidden="true" /> Tabela</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setImgOpen(true)}><ImageIcon aria-hidden="true" /> Imagem</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Inserir" trigger={<Plus className="size-4" />}>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleBulletList().run())}><List aria-hidden="true" /> Lista com marcadores</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleOrderedList().run())}><ListOrdered aria-hidden="true" /> Lista numerada</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleCodeBlock().run())}><Code2 aria-hidden="true" /> Bloco de código</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("box").run())}><SquareStack aria-hidden="true" /> Box</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("spoiler").run())}><EyeOff aria-hidden="true" /> Spoiler</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().toggleBlockquote().run())}><Quote aria-hidden="true" /> Citação</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().setHorizontalRule().run())}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())}><TableIcon aria-hidden="true" /> Tabela</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => setImgOpen(true)}><ImageIcon aria-hidden="true" /> Imagem</DropdownMenuItem>
+      </Menu>
 
       <span className="rte__sep" aria-hidden="true" />
       <TBtn label="Negrito" active={s.bold} onClick={() => chain().toggleBold().run()}><Bold className="size-4" /></TBtn>
@@ -125,62 +159,47 @@ function Toolbar({ editor }: { editor: Editor }) {
       <TBtn label="Código inline" active={s.code} onClick={() => chain().toggleCode().run()}><Code className="size-4" /></TBtn>
 
       <span className="rte__sep" aria-hidden="true" />
-      <DropdownMenu>
-        <MenuTrigger label="Tamanho da fonte"><Type className="size-4" /></MenuTrigger>
-        <DropdownMenuContent>
-          {FONT_SIZES.map((fs) => (
-            <DropdownMenuItem key={fs} onSelect={() => (fs === "100%" ? chain().unsetFontSize().run() : chain().setFontSize(fs).run())}>
-              {fs === "100%" ? "100% (padrão)" : fs}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Tamanho da fonte" trigger={<Type className="size-4" />}>
+        {FONT_SIZES.map((fs) => (
+          <DropdownMenuItem key={fs} onSelect={() => run(() => (fs === "100%" ? chain().unsetFontSize().run() : chain().setFontSize(fs).run()))}>
+            {fs === "100%" ? "100% (padrão)" : fs}
+          </DropdownMenuItem>
+        ))}
+      </Menu>
 
-      <DropdownMenu>
-        <MenuTrigger label="Cor do texto"><Palette className="size-4" /></MenuTrigger>
-        <DropdownMenuContent>
-          {TEXT_COLORS.map((c) => (
-            <DropdownMenuItem key={c.label} onSelect={() => (c.value ? chain().setColor(c.value).run() : chain().unsetColor().run())}>
-              <span className="rte-swatch" style={c.value ? { backgroundColor: c.value } : undefined} aria-hidden="true" /> {c.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Cor do texto" trigger={<Palette className="size-4" />}>
+        {TEXT_COLORS.map((c) => (
+          <DropdownMenuItem key={c.label} onSelect={() => run(() => (c.value ? chain().setColor(c.value).run() : chain().unsetColor().run()))}>
+            <span className="rte-swatch" style={c.value ? { backgroundColor: c.value } : undefined} aria-hidden="true" /> {c.label}
+          </DropdownMenuItem>
+        ))}
+      </Menu>
 
-      <DropdownMenu>
-        <MenuTrigger label="Cor de destaque"><Highlighter className="size-4" /></MenuTrigger>
-        <DropdownMenuContent>
-          {HIGHLIGHT_COLORS.map((c) => (
-            <DropdownMenuItem key={c.label} onSelect={() => (c.value ? chain().toggleHighlight({ color: c.value }).run() : chain().unsetHighlight().run())}>
-              <span className="rte-swatch" style={c.value ? { backgroundColor: c.value } : undefined} aria-hidden="true" /> {c.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Cor de destaque" trigger={<Highlighter className="size-4" />}>
+        {HIGHLIGHT_COLORS.map((c) => (
+          <DropdownMenuItem key={c.label} onSelect={() => run(() => (c.value ? chain().toggleHighlight({ color: c.value }).run() : chain().unsetHighlight().run()))}>
+            <span className="rte-swatch" style={c.value ? { backgroundColor: c.value } : undefined} aria-hidden="true" /> {c.label}
+          </DropdownMenuItem>
+        ))}
+      </Menu>
 
-      <DropdownMenu>
-        <MenuTrigger label="Alinhamento"><AlignLeft className="size-4" /></MenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onSelect={() => chain().setTextAlign("left").run()}><AlignLeft aria-hidden="true" /> Esquerda</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().setTextAlign("center").run()}><AlignCenter aria-hidden="true" /> Centro</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().setTextAlign("right").run()}><AlignRight aria-hidden="true" /> Direita</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chain().setTextAlign("justify").run()}><AlignJustify aria-hidden="true" /> Justificado</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Alinhamento" trigger={<AlignLeft className="size-4" />}>
+        <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("left").run())}><AlignLeft aria-hidden="true" /> Esquerda</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("center").run())}><AlignCenter aria-hidden="true" /> Centro</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("right").run())}><AlignRight aria-hidden="true" /> Direita</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => run(() => chain().setTextAlign("justify").run())}><AlignJustify aria-hidden="true" /> Justificado</DropdownMenuItem>
+      </Menu>
 
       <span className="rte__sep" aria-hidden="true" />
       <TBtn label="Subscrito" active={s.sub} onClick={() => chain().toggleSubscript().run()}><SubIcon className="size-4" /></TBtn>
       <TBtn label="Sobrescrito" active={s.sup} onClick={() => chain().toggleSuperscript().run()}><SupIcon className="size-4" /></TBtn>
       <TBtn label="Link" active={s.link} onClick={openLink}><LinkIcon className="size-4" /></TBtn>
 
-      <DropdownMenu>
-        <MenuTrigger label="Emoji"><Smile className="size-4" /></MenuTrigger>
-        <DropdownMenuContent className="rte-emojis">
-          {EMOJIS.map((e) => (
-            <DropdownMenuItem key={e} className="rte-emoji" onSelect={() => chain().insertContent(e).run()}>{e}</DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Menu label="Emoji" trigger={<Smile className="size-4" />} contentClassName="rte-emojis" align="end">
+        {EMOJIS.map((e) => (
+          <DropdownMenuItem key={e} className="rte-emoji" onSelect={() => run(() => chain().insertContent(e).run())}>{e}</DropdownMenuItem>
+        ))}
+      </Menu>
 
       <TBtn label="Limpar formatação" onClick={() => chain().unsetAllMarks().run()}><RemoveFormatting className="size-4" /></TBtn>
 
@@ -219,7 +238,53 @@ function Toolbar({ editor }: { editor: Editor }) {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+
+      {s.inTable && (
+        <div className="rte__toolbar rte__toolbar--ctx">
+          <Menu label="Linhas" trigger={<Rows3 className="size-4" />}>
+            <DropdownMenuItem onSelect={() => run(() => chain().addRowBefore().run())}>Inserir linha acima</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().addRowAfter().run())}>Inserir linha abaixo</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().deleteRow().run())}>Excluir linha</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().toggleHeaderRow().run())}>Alternar cabeçalho</DropdownMenuItem>
+          </Menu>
+          <Menu label="Colunas" trigger={<Columns3 className="size-4" />}>
+            <DropdownMenuItem onSelect={() => run(() => chain().addColumnBefore().run())}>Inserir coluna antes</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().addColumnAfter().run())}>Inserir coluna depois</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().deleteColumn().run())}>Excluir coluna</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().toggleHeaderColumn().run())}>Alternar cabeçalho</DropdownMenuItem>
+          </Menu>
+          <Menu label="Célula" trigger={<Grid2x2 className="size-4" />}>
+            <DropdownMenuItem onSelect={() => run(() => chain().mergeCells().run())}>Mesclar células</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().splitCell().run())}>Dividir célula</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => run(() => chain().toggleHeaderCell().run())}>Alternar célula de cabeçalho</DropdownMenuItem>
+          </Menu>
+          <TBtn label="Excluir tabela" onClick={() => setTableDelOpen(true)}><Trash2 className="size-4 text-destructive" /></TBtn>
+        </div>
+      )}
+
+      {s.inCode && (
+        <div className="rte__toolbar rte__toolbar--ctx">
+          <label className="sr-only" htmlFor="rte-codelang">Linguagem do código</label>
+          <select id="rte-codelang" className="rte__select" value={s.codeLang} onChange={(e) => chain().updateAttributes("codeBlock", { language: e.target.value }).run()}>
+            {CODE_LANGS.map((l) => (
+              <option key={l.value} value={l.value}>{l.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <Dialog open={tableDelOpen} onOpenChange={setTableDelOpen}>
+        <DialogContent aria-describedby={undefined}>
+          <DialogTitle>Excluir tabela</DialogTitle>
+          <p className="muted mt-1">A tabela e todo o seu conteúdo serão removidos.</p>
+          <div className="modal-actions">
+            <DialogClose asChild><Button type="button" variant="ghost" size="sm">Cancelar</Button></DialogClose>
+            <Button type="button" variant="destructive" size="sm" onClick={() => { chain().deleteTable().run(); setTableDelOpen(false); }}>Excluir</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

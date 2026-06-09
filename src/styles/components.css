@@ -1224,6 +1224,9 @@
   .rte__toolbar {
     @apply flex flex-wrap items-center gap-0.5 border-b border-border p-1.5;
   }
+  .rte__toolbar--ctx {
+    @apply gap-1 bg-muted/30;
+  }
   .rte__btn {
     @apply inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
   }
@@ -1337,43 +1340,43 @@
 }
 
 /* Conteúdo editável do TipTap (DOM gerado pela biblioteca, fora do BEM). */
-.rte__content .ProseMirror {
+.rte__content {
   outline: none;
   min-height: 14rem;
 }
-.rte__content .ProseMirror > * + * {
+.rte__content > * + * {
   margin-top: 0.6em;
 }
-.rte__content .ProseMirror h1 {
+.rte__content h1 {
   font-size: 1.6rem;
   font-weight: 700;
 }
-.rte__content .ProseMirror h2 {
+.rte__content h2 {
   font-size: 1.35rem;
   font-weight: 700;
 }
-.rte__content .ProseMirror h3 {
+.rte__content h3 {
   font-size: 1.15rem;
   font-weight: 600;
 }
-.rte__content .ProseMirror h4 {
+.rte__content h4 {
   font-size: 1.05rem;
   font-weight: 600;
 }
-.rte__content .ProseMirror ul {
+.rte__content ul {
   list-style: disc;
   padding-left: 1.5rem;
 }
-.rte__content .ProseMirror ol {
+.rte__content ol {
   list-style: decimal;
   padding-left: 1.5rem;
 }
-.rte__content .ProseMirror blockquote {
+.rte__content blockquote {
   border-left: 4px solid color-mix(in srgb, var(--primary) 40%, transparent);
   padding-left: 1rem;
   font-style: italic;
 }
-.rte__content .ProseMirror pre {
+.rte__content pre {
   background: var(--muted);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
@@ -1381,44 +1384,44 @@
   font-size: 0.875rem;
   overflow-x: auto;
 }
-.rte__content .ProseMirror code {
+.rte__content code {
   font-family: var(--font-mono, monospace);
 }
-.rte__content .ProseMirror :not(pre) > code {
+.rte__content :not(pre) > code {
   background: var(--muted);
   border-radius: 0.25rem;
   padding: 0.1em 0.35em;
   font-size: 0.85em;
 }
-.rte__content .ProseMirror a {
+.rte__content a {
   color: var(--primary);
   text-decoration: underline;
 }
-.rte__content .ProseMirror hr {
+.rte__content hr {
   border: none;
   border-top: 1px solid var(--border);
   margin: 1.25rem 0;
 }
-.rte__content .ProseMirror p.is-editor-empty:first-child::before {
+.rte__content p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   color: var(--muted-foreground);
   float: left;
   height: 0;
   pointer-events: none;
 }
-.rte__content .ProseMirror .rte-box {
+.rte__content .rte-box {
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--muted) 30%, transparent);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
 }
-.rte__content .ProseMirror .rte-spoiler {
+.rte__content .rte-spoiler {
   border: 1px dashed var(--border);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   position: relative;
 }
-.rte__content .ProseMirror .rte-spoiler::before {
+.rte__content .rte-spoiler::before {
   content: "Spoiler";
   display: block;
   font-size: 0.75rem;
@@ -1426,32 +1429,52 @@
   color: var(--muted-foreground);
   margin-bottom: 0.25rem;
 }
-.rte__content .ProseMirror img {
+.rte__content img {
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
 }
-.rte__content .ProseMirror table {
+.rte__content .tableWrapper {
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+.rte__content table {
   border-collapse: collapse;
+  table-layout: fixed;
   width: 100%;
-  margin: 0.5rem 0;
 }
-.rte__content .ProseMirror th,
-.rte__content .ProseMirror td {
+.rte__content th,
+.rte__content td {
   border: 1px solid var(--border);
-  padding: 0.4rem 0.6rem;
-  min-width: 4rem;
+  padding: 0.45rem 0.6rem;
+  min-width: 5rem;
+  vertical-align: top;
+  position: relative;
 }
-.rte__content .ProseMirror th {
-  background: color-mix(in srgb, var(--muted) 50%, transparent);
+.rte__content th > *,
+.rte__content td > * {
+  margin: 0;
+  min-height: 1.4em;
+}
+.rte__content th {
+  background: color-mix(in srgb, var(--muted) 60%, transparent);
   font-weight: 600;
+  text-align: left;
 }
-.rte__content .ProseMirror mark {
+.rte__content .selectedCell {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+}
+.rte__content .rte-box > *,
+.rte__content .rte-spoiler > * {
+  margin: 0;
+  min-height: 1.4em;
+}
+.rte__content mark {
   border-radius: 0.2rem;
   padding: 0 0.1em;
   color: #000;
 }
-.rte__content .ProseMirror .ProseMirror-selectednode {
+.rte__content .ProseMirror-selectednode {
   outline: 2px solid var(--ring);
 }
 
