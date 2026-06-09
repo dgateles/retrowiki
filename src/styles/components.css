@@ -130,6 +130,74 @@
     @apply flex flex-wrap items-center gap-3;
   }
 
+  /* Gamificação (admin). */
+  .gami-tools {
+    @apply mt-6 space-y-4;
+  }
+  .gami-tools__recalc {
+    @apply flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-card p-4;
+  }
+  .gami-tools__manual {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .gami-tools__title {
+    @apply font-semibold;
+  }
+  .gami-tools__row {
+    @apply mt-3 flex flex-wrap items-end gap-3;
+  }
+  .gami-tools__actions {
+    @apply flex items-center gap-2;
+  }
+  .gami-section {
+    @apply mt-8;
+  }
+  .gami-section__title {
+    @apply text-lg font-semibold;
+  }
+  .badge-grid {
+    @apply mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .badge-card {
+    @apply flex items-start gap-3 rounded-lg border border-border bg-card p-4;
+  }
+  .badge-card--bronze {
+    @apply border-l-4 border-l-amber-700;
+  }
+  .badge-card--silver {
+    @apply border-l-4 border-l-slate-400;
+  }
+  .badge-card--gold {
+    @apply border-l-4 border-l-yellow-500;
+  }
+  .badge-card__icon {
+    @apply size-7 shrink-0 text-primary;
+  }
+  .badge-card__name {
+    @apply font-semibold;
+  }
+  .badge-card__desc {
+    @apply text-sm text-muted-foreground;
+  }
+  .badge-card__meta {
+    @apply mt-1 text-xs text-muted-foreground;
+  }
+  .rank-list {
+    @apply mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card;
+  }
+  .rank-row {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm;
+  }
+  .rank-row__index {
+    @apply w-12 shrink-0 text-xs font-semibold text-muted-foreground tabular-nums;
+  }
+  .rank-row__label {
+    @apply flex-1 font-medium;
+  }
+  .rank-row__at {
+    @apply text-xs text-muted-foreground tabular-nums;
+  }
+
   /* Tabela de admin. */
   .admin-table {
     @apply w-full border-collapse text-sm;

@@ -97,3 +97,84 @@ export async function getUserBadges(userId: number): Promise<UserBadge[]> {
 export function badgeIcon(slug: string): string {
   return ICONS.get(slug) ?? "Award";
 }
+
+// ── Admin (gamificação) ──────────────────────────────────────────────────
+
+export type BadgeWithCount = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  tier: Tier;
+  count: number;
+};
+
+/** Catálogo de badges com quantos usuários já conquistaram cada uma. */
+export async function listBadgesWithCounts(): Promise<BadgeWithCount[]> {
+  try {
+    await ensureCatalog();
+    const rows = await db
+      .select({
+        id: badges.id,
+        slug: badges.slug,
+        name: badges.name,
+        description: badges.description,
+        icon: badges.icon,
+        tier: badges.tier,
+        count: count(userBadges.id),
+      })
+      .from(badges)
+      .leftJoin(userBadges, eq(userBadges.badgeId, badges.id))
+      .groupBy(badges.id, badges.slug, badges.name, badges.description, badges.icon, badges.tier, badges.sortOrder)
+      .orderBy(badges.sortOrder);
+    return rows.map((r) => ({ ...r, count: Number(r.count) }));
+  } catch {
+    return [];
+  }
+}
+
+/** Concede manualmente uma badge a um usuário. Idempotente. */
+export async function awardBadgeBySlug(userId: number, slug: string): Promise<boolean> {
+  try {
+    await ensureCatalog();
+    const [b] = await db.select({ id: badges.id }).from(badges).where(eq(badges.slug, slug)).limit(1);
+    if (!b) return false;
+    await db.insert(userBadges).values({ userId, badgeId: b.id }).onDuplicateKeyUpdate({ set: { badgeId: sql`badge_id` } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Remove uma badge de um usuário. */
+export async function revokeBadgeBySlug(userId: number, slug: string): Promise<boolean> {
+  try {
+    const [b] = await db.select({ id: badges.id }).from(badges).where(eq(badges.slug, slug)).limit(1);
+    if (!b) return false;
+    await db.delete(userBadges).where(and(eq(userBadges.userId, userId), eq(userBadges.badgeId, b.id)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Recalcula as conquistas automáticas de todos os usuários. Retorna quantos
+ * usuários receberam pelo menos uma badge nova. */
+export async function recalcAllBadges(): Promise<{ users: number; awarded: number }> {
+  let usersChanged = 0;
+  let awarded = 0;
+  try {
+    const all = await db.select({ id: users.id }).from(users);
+    for (const u of all) {
+      const got = await evaluateBadges(u.id);
+      if (got.length) {
+        usersChanged += 1;
+        awarded += got.length;
+      }
+    }
+  } catch {
+    // ignora falhas pontuais
+  }
+  return { users: usersChanged, awarded };
+}

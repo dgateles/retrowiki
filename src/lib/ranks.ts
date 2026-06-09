@@ -21,6 +21,11 @@ const RANKS: { label: string; at: number }[] = [
 
 export const RANK_TOTAL = RANKS.length;
 
+/** Lista os tiers de rank (para exibição no admin). */
+export function rankTiers(): { index: number; label: string; at: number }[] {
+  return RANKS.map((r, i) => ({ index: i + 1, label: r.label, at: r.at }));
+}
+
 export type Rank = {
   index: number; // 1..RANK_TOTAL
   total: number;

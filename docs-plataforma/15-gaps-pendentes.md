@@ -412,3 +412,68 @@ login com Google, e dá ao usuário controle sobre avatar e capa.
     domínio confiável para a CSP. Guardar a URL final do nosso CDN, não a do
     usuário.
   - Reforçar a CSP de `img-src` para o domínio do nosso CDN quando re-hospedar.
+
+## HTML e Markdown na autoria de guias
+
+Além do editor rico, permitir escrever guias e tutoriais em HTML e em Markdown.
+Os três modos produzem o mesmo conteúdo seguro no fim.
+
+- **Modos de autoria.** Seletor no editor: Editor rico (atual), Markdown, HTML.
+  Mantém o rascunho/revisão e o fluxo de moderação iguais.
+- **Pipeline único e seguro (reaproveitar o que existe).** HTML ou Markdown não
+  são renderizados como string. São convertidos para a **mesma árvore de blocos
+  do editor rico** (doc do TipTap/ProseMirror), passando pela allowlist do
+  `RichDocSchema` e pelo renderizador seguro (sem `dangerouslySetInnerHTML` de
+  conteúdo do usuário). Assim, qualquer modo herda a segurança já validada.
+  - Markdown: parser confiável (ex.: markdown-it/remark) → HTML → doc TipTap
+    (`generateJSON`) → validação pela allowlist.
+  - HTML: `generateJSON` do TipTap a partir do HTML, descartando tudo que não
+    estiver na allowlist (nós/marcas/atributos conhecidos).
+- **Sanitização do HTML (impedir scripts e exploits).** Remover `script`,
+  `style`, `iframe`, `object`, handlers `on*`, e URLs `javascript:`/`data:`.
+  Nada de CSS arbitrário; cores/tamanhos restritos ao conjunto fixo já definido.
+  A allowlist do schema é a fonte da verdade (o que não está nela é descartado).
+- **Imagens só do Bunny.** `img` só é aceita se a origem for o nosso Pull Zone
+  (BunnyCDN). Imagens de outros domínios são rejeitadas ou re-hospedadas no Bunny
+  (ver as seções de upload e de sanitização de links acima). Sem hotlink externo.
+- **Saída.** Continua sendo a árvore de blocos segura salva na revisão, idêntica
+  à do editor rico; a busca (`searchText`) e a renderização não mudam.
+
+## Construtor visual de páginas estilo Elementor (admin)
+
+Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
+landing pages) num **construtor visual de arrastar-e-soltar, no espírito do
+Elementor do WordPress**. Só o **conteúdo** é editado: header e footer do site
+continuam fixos, vindos do layout. Evolui a ideia de páginas HTML para edição
+visual de verdade.
+
+- **Só admin.** Criar, editar e despublicar páginas; ação protegida por papel
+  `admin`, com `audit_log`.
+- **Edição visual (Elementor-like).**
+  - Estrutura em **seções → colunas → widgets**, com arrastar-e-soltar para
+    reordenar e mover, e layout responsivo (controles por dispositivo:
+    desktop/tablet/mobile).
+  - **Widgets** de catálogo fechado: título, texto rico, imagem (Bunny),
+    botão/CTA, divisor, espaçador, colunas, lista de ícones, acordeão, citação,
+    cartão, embed de vídeo (allowlist de provedores), galeria, HTML/Markdown
+    (passando pela sanitização). Sem widget de código/script arbitrário.
+  - Edição inline com pré-visualização ao vivo e painel de propriedades por
+    widget (espaçamento, alinhamento, cor do conjunto fixo, etc.).
+  - **Templates/blocos reutilizáveis**: salvar uma seção como bloco e reusar em
+    outras páginas (liga ao "template blocks" da seção do painel admin).
+- **Modelo de dados.** A página é uma **árvore estruturada** (seções/colunas/
+  widgets) serializada em JSON, não HTML cru. Tabela de páginas: `slug`,
+  `título`, `layout` (a árvore), `status` (rascunho/publicada), `mostrar no
+  menu`, ordem, datas. Rota dentro do layout principal, ex.: `/p/{slug}`.
+- **Segurança (mesma allowlist).** Toda a árvore passa por validação de
+  allowlist no servidor antes de salvar e é renderizada via JSX, sem
+  `dangerouslySetInnerHTML` de conteúdo do usuário. Sem scripts, sem CSS
+  arbitrário (só os tokens/escalas fixos), URLs sanitizadas, e **imagens só do
+  Bunny**. O widget de HTML/Markdown reusa o pipeline do item anterior.
+- **Link no header (opcional).** Campo "mostrar no menu" + ordem para a página
+  aparecer na navegação do header. Sem marcar, existe só pela URL.
+- **SEO.** Título e meta description por página; opção de `noindex`.
+- **Nota de esforço.** É um item grande (editor de layout drag-and-drop +
+  catálogo de widgets + responsividade + render seguro). Dá para entregar em
+  fases: começar com seções/colunas + um punhado de widgets essenciais (título,
+  texto, imagem, botão, divisor) e ir ampliando.
