@@ -416,6 +416,14 @@ export const promotionRules = mysqlTable("promotion_rules", {
   createdAt: createdAt(),
 }, (t) => [index("promotion_rules_order_idx").on(t.sortOrder)]);
 
+// Configurações da plataforma (chave/valor JSON). Genérico e reusável.
+export const appSettings = mysqlTable("app_settings", {
+  id: pk(),
+  key: varchar("key", { length: 60 }).notNull(),
+  value: json("value").notNull(),
+  updatedAt: updatedAt(),
+}, (t) => [uniqueIndex("app_settings_key_idx").on(t.key)]);
+
 // Ranks (níveis por reputação), editáveis. Seed com os 13 padrões de ranks.ts.
 export const ranks = mysqlTable("ranks", {
   id: pk(),

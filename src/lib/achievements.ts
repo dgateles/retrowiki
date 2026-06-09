@@ -1,8 +1,9 @@
 import "server-only";
-import { and, asc, count, eq, sql } from "drizzle-orm";
+import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { achievementRules, users, comments, articles, votes } from "@/db/schema";
 import { awardBadgeBySlug, evaluateBadges } from "@/lib/badges";
+import { getAchievementSettings } from "@/lib/settings";
 
 export type Recipient = { key: "actor" | "target"; label: string };
 export type TriggerDef = { label: string; recipients: Recipient[] };
@@ -153,6 +154,9 @@ export async function runTrigger(
 ): Promise<void> {
   try {
     if (!isTrigger(trigger)) return;
+    const settings = await getAchievementSettings();
+    if (!settings.enabled) return;
+
     const rules = (await listRules()).filter((r) => r.enabled && r.trigger === trigger);
     if (rules.length === 0) return;
 
@@ -160,12 +164,26 @@ export async function runTrigger(
     const cnt = needsCount ? await actionCount(trigger, ctx.actorId) : 0;
     const target = ctx.targetId && ctx.targetId !== ctx.actorId ? ctx.targetId : null;
 
+    // Papéis excluídos não ganham pontos/badges.
+    let actorExcluded = false;
+    let targetExcluded = false;
+    if (settings.excludeRoles.length > 0) {
+      const ids = target ? [ctx.actorId, target] : [ctx.actorId];
+      const roleRows = await db.select({ id: users.id, role: users.role }).from(users).where(inArray(users.id, ids));
+      const roleById = new Map(roleRows.map((r) => [r.id, r.role]));
+      const excluded = new Set(settings.excludeRoles);
+      actorExcluded = excluded.has(roleById.get(ctx.actorId) ?? "");
+      targetExcluded = target ? excluded.has(roleById.get(target) ?? "") : false;
+    }
+
     const affected = new Set<number>();
     for (const rule of rules) {
       if (rule.milestone > 0 && cnt !== rule.milestone) continue;
-      await applyReward(ctx.actorId, rule.rewards.actor);
-      affected.add(ctx.actorId);
-      if (target && rule.rewards.target) {
+      if (!actorExcluded) {
+        await applyReward(ctx.actorId, rule.rewards.actor);
+        affected.add(ctx.actorId);
+      }
+      if (target && !targetExcluded && rule.rewards.target) {
         await applyReward(target, rule.rewards.target);
         affected.add(target);
       }

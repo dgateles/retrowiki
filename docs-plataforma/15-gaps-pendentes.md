@@ -349,9 +349,19 @@ Gamificação (conquistas):
   - Tornar o catálogo totalmente editável: `ensureCatalog` passa a semear só uma
     vez (tabela vazia), para que edições/exclusões do admin persistam. Badges
     novas aparecem automaticamente no seletor das Regras.
-- **Configurações.** Ativar/desativar a gamificação, marcar badge como "raro"
-  abaixo de X% dos membros, limpar o log de atividade após N dias, excluir
-  papéis, limitar pontos manuais por dia. Botão de recalcular conquistas.
+- **Configurações (detalhado do AdminCP).** Página de configurações da
+  gamificação, gravada numa tabela genérica `app_settings` (chave/valor JSON).
+  - **Ativado**: quando off, badges/ranks não são exibidos e as Regras não
+    processam. Aplica no `runTrigger` (não processa) e, idealmente, na exibição.
+  - **Badge "rara"**: marcar como rara se conquistada por menos de X% dos
+    membros (ou nunca). Display.
+  - **Excluir papéis**: membros nesses papéis não ganham pontos/badges/ranks.
+    Aplica no `runTrigger` (pula ator/alvo com papel excluído).
+  - **Reconstruir conquistas**: recalcula tudo (já temos `recalcAllBadges`).
+  - NÃO se aplica por ora: "limpar log de atividade após N dias" (não temos um
+    log de pontos por ação; os marcos são contados dos dados e as badges são
+    idempotentes) e "limitar pontos manuais por conteúdo reconhecido por dia"
+    (não há o recurso de pontuar conteúdo reconhecido). Anotar para o futuro.
 
 Configurações de membros:
 

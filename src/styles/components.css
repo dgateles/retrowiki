@@ -353,6 +353,9 @@
   .rule-form__foot {
     @apply flex justify-end;
   }
+  .rule-form__foot--split {
+    @apply justify-between;
+  }
   .rule-row__milestone {
     @apply text-sm font-normal text-muted-foreground;
   }
