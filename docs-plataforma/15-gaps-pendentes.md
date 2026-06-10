@@ -985,8 +985,13 @@ como **um único passo** (snapshot no início, mutação ao vivo durante). Verif
 2 widgets → desfazer → 1 → desfazer → 0 → refazer → 1, tanto por botão quanto por
 teclado.
 
-**Próximas fases (não entregues):** DnD de **colunas**; controles de tipografia/
-cor por widget; arrastar bloco salvo direto pro canvas.
+**Fase 12 entregue (DnD de colunas):** alça de arrastar na barra de cada coluna
+(quando há ≥2) reordena as colunas **dentro da seção** (HTML5 DnD nativo, separado
+do DnD de widgets via `colDragRef`); integra ao histórico (undo). Verificado:
+colunas "AAA"/"BBB" viraram "BBB"/"AAA" ao arrastar, e a página publicou.
+
+**Próximas fases (não entregues):** controles de tipografia/cor por widget;
+arrastar bloco salvo direto pro canvas; alinhamento vertical/ fundo por coluna.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

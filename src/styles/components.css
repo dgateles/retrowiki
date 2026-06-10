@@ -1043,6 +1043,9 @@
   .pb-colwrap__span {
     @apply rounded bg-popover px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground shadow-sm;
   }
+  .pb-colwrap__drag {
+    @apply inline-flex size-5 items-center justify-center rounded bg-popover text-muted-foreground shadow-sm;
+  }
   /* Divisória arrastável entre colunas (fica no gap da grade). */
   .pb-resize {
     @apply absolute -right-3 top-0 z-30 h-full w-6 cursor-col-resize;

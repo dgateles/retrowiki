@@ -108,6 +108,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
   const libDragRef = useRef<WidgetType | null>(null);
+  const colDragRef = useRef<{ si: number; ci: number } | null>(null);
 
   // Drop numa coluna: tile da biblioteca → novo widget; senão → reordena.
   function handleDrop(to: Sel) {
@@ -176,6 +177,17 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     mutate((ss) => {
       const sec = ss.splice(from, 1)[0];
       ss.splice(from < to ? to - 1 : to, 0, sec);
+    });
+  }
+
+  // Reordena colunas dentro da mesma seção.
+  function dropColumn(toSi: number, toCi: number) {
+    const from = colDragRef.current;
+    colDragRef.current = null;
+    if (!from || from.si !== toSi || from.ci === toCi) return;
+    mutate((ss) => {
+      const col = ss[toSi].columns.splice(from.ci, 1)[0];
+      ss[toSi].columns.splice(from.ci < toCi ? toCi - 1 : toCi, 0, col);
     });
   }
 
@@ -451,10 +463,11 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     <div
                       key={c.id}
                       className={cn("page-col pb-colwrap", COL_SPAN[c.span])}
-                      onDragOver={(e) => { if (dragRef.current || libDragRef.current) e.preventDefault(); }}
-                      onDrop={(e) => { e.preventDefault(); handleDrop({ si, ci, wi: c.widgets.length }); }}
+                      onDragOver={(e) => { if (dragRef.current || libDragRef.current || colDragRef.current) e.preventDefault(); }}
+                      onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, ci, wi: c.widgets.length }); } }}
                     >
                       <div className="pb-colwrap__bar">
+                        {s.columns.length > 1 && <span className="pb-handle pb-colwrap__drag" title="Arrastar coluna" draggable onDragStart={(e) => { colDragRef.current = { si, ci }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "c"); }} onDragEnd={() => { colDragRef.current = null; }}><GripVertical className="size-3" /></span>}
                         <span className="pb-colwrap__span" title="Largura na grade de 12">{c.span}/12</span>
                         {s.columns.length > 1 && <button type="button" className="pb-mini pb-mini--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Trash2 className="size-3" /></button>}
                       </div>
