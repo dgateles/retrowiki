@@ -50,7 +50,10 @@ const GROUPS: NavGroup[] = [
   },
   {
     title: "Equipe",
-    links: [{ href: "/admin/moderadores", label: "Moderadores" }],
+    links: [
+      { href: "/admin/moderadores", label: "Moderadores" },
+      { href: "/admin/diretorio", label: "Diretório da equipe" },
+    ],
   },
   {
     title: "Conteúdo",

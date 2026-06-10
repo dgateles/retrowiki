@@ -500,7 +500,15 @@ Equipe:
   verificado); **Logins recentes da equipe** = surface de `member_ips` (membro,
   papel, IP, último acesso) para mod/admin. N-A: log de login com sucesso/falha
   (só acessos bem-sucedidos por IP são registrados; tentativas falhas não).
-- **Diretório da equipe.** Página pública de quem modera a comunidade.
+- **Diretório da equipe.** STATUS: entregue. Admin em `/admin/diretorio`:
+  categorias (`staff_categories`, com título e **layout** grade/lista/duas-colunas)
+  contendo entradas (`staff_entries`) do tipo **membro** (handle + nome, título e
+  bio personalizados) ou **grupo** (papel inteiro, atualiza automaticamente).
+  Página pública `/equipe` renderiza as categorias em cards (avatar, nome, título,
+  bio) ligados ao perfil, respeitando o layout; dedup por handle na categoria
+  (membro custom tem precedência sobre o mesmo vindo do grupo — verificado).
+  Migração 0025. ADIADO: reordenação por drag, bio em rich text (hoje texto puro)
+  e link no menu/rodapé global para `/equipe`.
 
 Gerenciamento de páginas e conteúdo:
 

@@ -663,6 +663,49 @@
   .modlog__target {
     @apply font-mono text-xs text-muted-foreground;
   }
+  /* Diretório da equipe (página pública /equipe) */
+  .staff-dir {
+    @apply flex flex-col gap-10;
+  }
+  .staff-dir__title {
+    @apply mb-4 text-xl font-semibold;
+  }
+  .staff-dir__cards--grid {
+    @apply grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4;
+  }
+  .staff-dir__cards--list {
+    @apply flex flex-col gap-3;
+  }
+  .staff-dir__cards--twocol {
+    @apply grid gap-3 sm:grid-cols-2;
+  }
+  .staff-card {
+    @apply flex items-start gap-3 rounded-xl border border-border bg-card p-4;
+  }
+  .staff-card--link {
+    @apply transition-colors hover:border-primary/60 hover:bg-accent/40;
+  }
+  .staff-dir__cards--grid .staff-card {
+    @apply flex-col items-center text-center;
+  }
+  .staff-card__avatar {
+    @apply size-14 shrink-0 rounded-full object-cover;
+  }
+  .staff-card__avatar--fallback {
+    @apply flex items-center justify-center bg-muted text-base font-semibold text-muted-foreground;
+  }
+  .staff-card__body {
+    @apply flex min-w-0 flex-col gap-0.5;
+  }
+  .staff-card__name {
+    @apply font-semibold;
+  }
+  .staff-card__title {
+    @apply text-sm text-primary;
+  }
+  .staff-card__bio {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

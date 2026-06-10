@@ -526,6 +526,28 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Diretório da equipe (página pública): categorias e entradas.
+export const staffCategories = mysqlTable("staff_categories", {
+  id: pk(),
+  title: varchar("title", { length: 120 }).notNull(),
+  layout: mysqlEnum("layout", ["grid", "list", "twocol"]).notNull().default("grid"),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("staff_categories_order_idx").on(t.sortOrder)]);
+
+export const staffEntries = mysqlTable("staff_entries", {
+  id: pk(),
+  categoryId: bigint("category_id", { mode: "number" }).notNull(),
+  type: mysqlEnum("type", ["member", "group"]).notNull(),
+  memberId: bigint("member_id", { mode: "number" }), // type=member
+  groupRole: varchar("group_role", { length: 20 }), // type=group (papel)
+  customName: varchar("custom_name", { length: 120 }).notNull().default(""),
+  customTitle: varchar("custom_title", { length: 160 }).notNull().default(""),
+  bio: text("bio"),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("staff_entries_cat_idx").on(t.categoryId, t.sortOrder)]);
+
 // Equipes de moderação (grupos nomeados de membros) e atribuições de conteúdo.
 export const modTeams = mysqlTable("mod_teams", {
   id: pk(),
