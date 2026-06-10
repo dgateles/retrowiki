@@ -9,13 +9,11 @@ const ICONS: Record<IconKey, typeof Check> = {
   download: Download, settings: Settings, info: Info, trophy: Trophy, sparkles: Sparkles, rocket: Rocket,
 };
 
-const COL_SPAN: Record<string, string> = {
-  full: "page-col--full",
-  "1/2": "page-col--half",
-  "1/3": "page-col--third",
-  "2/3": "page-col--twothirds",
-  "1/4": "page-col--quarter",
-  "3/4": "page-col--threequarters",
+// Span (1-12) → classe de col-span estática (Tailwind precisa de nomes literais).
+const COL_SPAN: Record<number, string> = {
+  1: "sm:col-span-1", 2: "sm:col-span-2", 3: "sm:col-span-3", 4: "sm:col-span-4",
+  5: "sm:col-span-5", 6: "sm:col-span-6", 7: "sm:col-span-7", 8: "sm:col-span-8",
+  9: "sm:col-span-9", 10: "sm:col-span-10", 11: "sm:col-span-11", 12: "sm:col-span-12",
 };
 
 const ALIGN: Record<string, string> = { left: "text-left", center: "text-center", right: "text-right" };
@@ -168,7 +166,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
       {layout.sections.map((s) => (
         <section key={s.id} className="page-section">
           {s.columns.map((c) => (
-            <div key={c.id} className={`page-col ${COL_SPAN[c.width] ?? "page-col--full"}`}>
+            <div key={c.id} className={`page-col ${COL_SPAN[c.span] ?? "sm:col-span-12"}`}>
               {c.widgets.map((w, i) => (
                 <div key={i} className="page-w">
                   <WidgetView w={w} />

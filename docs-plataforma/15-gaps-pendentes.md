@@ -920,13 +920,21 @@ seção a levou para o topo.
 **Fase 5 entregue (UI estilo Elementor):** o editor foi reformulado para o modelo
 Elementor — **painel lateral esquerdo** com abas **"Elementos"** (biblioteca de
 widgets em grade de ícones, clique adiciona) e **"Página"** (configurações), e
-**canvas WYSIWYG** à direita que mostra a página real (mesma grade/widgets do
-render público). Clicar num widget no canvas o **seleciona** e abre suas
-propriedades no painel; editar reflete **ao vivo** no canvas. Toolbars flutuantes
-no hover (alça de arrastar + excluir) em seções e widgets; conteúdo do widget é
-neutralizado a cliques (`pointer-events-none`) para o clique selecionar.
-Verificado: 12 tiles na biblioteca; adicionar pela biblioteca, selecionar e
-editar título refletiu no canvas e no público; publicar OK.
+**canvas WYSIWYG** que mostra a página real. Clicar num widget o **seleciona** e
+abre suas propriedades no painel; editar reflete **ao vivo**. Toolbars flutuantes
+no hover (alça de arrastar + excluir).
+
+**Fase 6 entregue (tela cheia + grade redimensionável):** o construtor agora abre
+em **tela cheia, fora do admin** (rota dedicada `/construtor/[id]`, sem header do
+site nem nav do admin), com **painéis flutuantes** sobre o canvas (estilo
+Figma/Canva): painel de elementos à esquerda e barra de ações flutuante no topo
+(Sair/Excluir/Salvar/Publicar). A antiga rota `/admin/paginas/[id]` redireciona
+para lá. A **grade de colunas ficou visível** (colunas com contorno tracejado) e
+as colunas são **redimensionáveis arrastando a divisória** entre elas: a largura
+virou um **span numérico (1-12)** (com compat retroativa do enum antigo via
+`preprocess`); arrastar encaixa na grade de 12 e ajusta a coluna vizinha mantendo
+a soma. Verificado: editor full-screen sem chrome do site; 2 colunas nasceram 6/6,
+arrastar levou a 11/1 e depois 8/4; o público renderiza `col-span-8`/`col-span-4`.
 
 **Próximas fases (não entregues):** widget **HTML/Markdown** reusando o pipeline
 de autoria (editor + render de árvore de blocos); **blocos reutilizáveis**

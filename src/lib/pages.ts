@@ -54,11 +54,22 @@ const WidgetSchema = z.discriminatedUnion("type", [
 export type Widget = z.infer<typeof WidgetSchema>;
 export type WidgetType = Widget["type"];
 
-const ColumnSchema = z.object({
-  id: z.string().max(40),
-  width: z.enum(["full", "1/2", "1/3", "2/3", "1/4", "3/4"]).default("full"),
-  widgets: z.array(WidgetSchema).max(30),
-});
+// Largura da coluna numa grade de 12. Compat: aceita o antigo enum `width`.
+const WIDTH_TO_SPAN: Record<string, number> = { full: 12, "1/2": 6, "1/3": 4, "2/3": 8, "1/4": 3, "3/4": 9 };
+const ColumnSchema = z.preprocess(
+  (c) => {
+    if (c && typeof c === "object" && !("span" in c) && "width" in c) {
+      const w = (c as { width?: string }).width;
+      return { ...(c as object), span: (w && WIDTH_TO_SPAN[w]) || 12 };
+    }
+    return c;
+  },
+  z.object({
+    id: z.string().max(40),
+    span: z.number().int().min(1).max(12).catch(12).default(12),
+    widgets: z.array(WidgetSchema).max(30),
+  }),
+);
 export type Column = z.infer<typeof ColumnSchema>;
 
 const SectionSchema = z.object({

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X } from "lucide-react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,15 +32,6 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
 ];
 
-const WIDTHS = [
-  { v: "full", label: "100%" },
-  { v: "1/2", label: "1/2" },
-  { v: "1/3", label: "1/3" },
-  { v: "2/3", label: "2/3" },
-  { v: "1/4", label: "1/4" },
-  { v: "3/4", label: "3/4" },
-] as const;
-
 function newWidget(type: WidgetType): Widget {
   switch (type) {
     case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left" };
@@ -62,10 +54,18 @@ type PageInput = {
   status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; layout: Layout;
 };
 
-const COL_SPAN: Record<string, string> = {
-  full: "page-col--full", "1/2": "page-col--half", "1/3": "page-col--third",
-  "2/3": "page-col--twothirds", "1/4": "page-col--quarter", "3/4": "page-col--threequarters",
+const COL_SPAN: Record<number, string> = {
+  1: "sm:col-span-1", 2: "sm:col-span-2", 3: "sm:col-span-3", 4: "sm:col-span-4",
+  5: "sm:col-span-5", 6: "sm:col-span-6", 7: "sm:col-span-7", 8: "sm:col-span-8",
+  9: "sm:col-span-9", 10: "sm:col-span-10", 11: "sm:col-span-11", 12: "sm:col-span-12",
 };
+
+// Distribui 12 colunas igualmente entre N colunas (resto nas primeiras).
+function evenSpans(n: number): number[] {
+  const base = Math.floor(12 / n);
+  const rem = 12 - base * n;
+  return Array.from({ length: n }, (_, i) => base + (i < rem ? 1 : 0));
+}
 
 type Sel = { si: number; ci: number; wi: number };
 
@@ -81,6 +81,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [selected, setSelected] = useState<Sel | null>(null);
   const [leftTab, setLeftTab] = useState<"elements" | "page">("elements");
   const [pending, setPending] = useState(false);
+  const [resizing, setResizing] = useState(false);
   const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
 
@@ -116,6 +117,34 @@ export function PageBuilder({ page }: { page: PageInput }) {
     });
   }
 
+  // Redimensiona a divisória entre a coluna ci e ci+1 (mantém a soma do par),
+  // encaixando na grade de 12.
+  function startResize(si: number, ci: number, e: React.PointerEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const sectionEl = (e.currentTarget as HTMLElement).closest(".page-section") as HTMLElement | null;
+    if (!sectionEl) return;
+    const sectionW = sectionEl.getBoundingClientRect().width || 1;
+    const cols = sections[si].columns;
+    const total = cols[ci].span + cols[ci + 1].span;
+    const startX = e.clientX;
+    const startSpan = cols[ci].span;
+    const unit = sectionW / 12;
+    setResizing(true);
+    const move = (ev: PointerEvent) => {
+      const deltaUnits = Math.round((ev.clientX - startX) / unit);
+      const left = Math.max(1, Math.min(total - 1, startSpan + deltaUnits));
+      mutate((ss) => { ss[si].columns[ci].span = left; ss[si].columns[ci + 1].span = total - left; });
+    };
+    const up = () => {
+      setResizing(false);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
   async function save(publish?: boolean) {
     setPending(true);
     const payload = {
@@ -147,7 +176,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
     let target: Sel | null = null;
     setSections((prev) => {
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), columns: [{ id: uid(), width: "full", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), columns: [{ id: uid(), span: 12, widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -161,20 +190,9 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
 
   return (
-    <div className="pb-shell">
-      <div className="pb-topbar">
-        <span className="pb-topbar__title">{title || "Sem título"}</span>
-        <span className={`status-pill status-pill--${page.status === "published" ? "published" : "draft"}`}>{page.status === "published" ? "Publicada" : "Rascunho"}</span>
-        <span className="ml-auto flex items-center gap-2">
-          <Button type="button" variant="ghost" size="sm" onClick={remove}>Excluir</Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => save(false)} disabled={pending}>Salvar rascunho</Button>
-          <Button type="button" size="sm" onClick={() => save(true)} disabled={pending}>{pending ? "…" : "Publicar"}</Button>
-        </span>
-      </div>
-
-      <div className="pb-work">
-        {/* Painel esquerdo: biblioteca / edição do widget / configurações */}
-        <aside className="pb-panel">
+    <div className={cn("pb-fs", resizing && "pb-fs--resizing")}>
+      {/* Painel flutuante: biblioteca / edição do widget / configurações */}
+      <aside className="pb-fs__panel">
           {selWidget ? (
             <div className="pb-panel__edit">
               <div className="pb-panel__head">
@@ -219,9 +237,9 @@ export function PageBuilder({ page }: { page: PageInput }) {
           )}
         </aside>
 
-        {/* Canvas WYSIWYG */}
-        <div className="pb-stage" onClick={() => setSelected(null)}>
-          <div className="pb-stage__inner page" onClick={(e) => e.stopPropagation()}>
+        {/* Canvas (backdrop tela cheia) */}
+        <div className="pb-fs__stage" onClick={() => setSelected(null)}>
+          <div className="pb-fs__page page" onClick={(e) => e.stopPropagation()}>
             {sections.length === 0 && (
               <div className="pb-stage__empty">
                 <p>Comece adicionando um elemento pelo painel à esquerda.</p>
@@ -237,7 +255,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
               >
                 <div className="pb-sec__bar">
                   <span className="pb-sec__handle pb-handle" title="Arrastar seção" draggable onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}><GripVertical className="size-3.5" /></span>
-                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), width: "1/2", widgets: [] }); })}><Plus className="size-3.5" /></button>}
+                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
                   <button type="button" className="pb-mini" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-3.5" /></button>
                   <button type="button" className="pb-mini pb-mini--danger" title="Excluir seção" onClick={() => mutate((ss) => { ss.splice(si, 1); })}><Trash2 className="size-3.5" /></button>
@@ -247,15 +265,13 @@ export function PageBuilder({ page }: { page: PageInput }) {
                   {s.columns.map((c, ci) => (
                     <div
                       key={c.id}
-                      className={cn("page-col pb-colwrap", COL_SPAN[c.width])}
+                      className={cn("page-col pb-colwrap", COL_SPAN[c.span])}
                       onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
                       onDrop={(e) => { e.preventDefault(); dropWidget({ si, ci, wi: c.widgets.length }); }}
                     >
                       <div className="pb-colwrap__bar">
-                        <select aria-label="Largura da coluna" className="pb-select" value={c.width} onChange={(e) => mutate((ss) => { ss[si].columns[ci].width = e.target.value as Section["columns"][number]["width"]; })}>
-                          {WIDTHS.map((w) => <option key={w.v} value={w.v}>{w.label}</option>)}
-                        </select>
-                        {s.columns.length > 1 && <button type="button" className="pb-mini pb-mini--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); })}><Trash2 className="size-3" /></button>}
+                        <span className="pb-colwrap__span" title="Largura na grade de 12">{c.span}/12</span>
+                        {s.columns.length > 1 && <button type="button" className="pb-mini pb-mini--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Trash2 className="size-3" /></button>}
                       </div>
 
                       {c.widgets.map((w, wi) => {
@@ -278,19 +294,34 @@ export function PageBuilder({ page }: { page: PageInput }) {
                       })}
 
                       {c.widgets.length === 0 && <div className="pb-drop">Solte um elemento aqui</div>}
+
+                      {ci < s.columns.length - 1 && (
+                        <span className="pb-resize" title="Arraste para redimensionar" onPointerDown={(e) => startResize(si, ci, e)} onClick={(e) => e.stopPropagation()} />
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), columns: [{ id: uid(), width: "full", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), columns: [{ id: uid(), span: 12, widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
         </div>
+
+        {/* Barra flutuante superior */}
+        <div className="pb-fs__bar">
+          <Link href="/admin/paginas" className="pb-fs__exit" title="Sair do editor"><X className="size-4" aria-hidden="true" /></Link>
+          <span className="pb-fs__bartitle">{title || "Sem título"}</span>
+          <span className={`status-pill status-pill--${page.status === "published" ? "published" : "draft"}`}>{page.status === "published" ? "Publicada" : "Rascunho"}</span>
+          <span className="ml-1 flex items-center gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={remove}>Excluir</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => save(false)} disabled={pending}>Salvar</Button>
+            <Button type="button" size="sm" onClick={() => save(true)} disabled={pending}>{pending ? "…" : "Publicar"}</Button>
+          </span>
+        </div>
       </div>
-    </div>
   );
 }
 

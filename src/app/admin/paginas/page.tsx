@@ -23,7 +23,7 @@ export default async function PagesAdminPage() {
           {items.map((p) => (
             <li key={p.id} className="admin-list__row">
               <span className="min-w-0">
-                <Link href={`/admin/paginas/${p.id}`} className="admin-list__title">{p.title}</Link>
+                <Link href={`/construtor/${p.id}`} className="admin-list__title">{p.title}</Link>
                 <span className="admin-list__meta">/p/{p.slug}{p.showInMenu && " · no menu"}</span>
               </span>
               <span className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export default async function PagesAdminPage() {
                 {p.status === "published" && (
                   <Link href={`/p/${p.slug}`} className="link-inline text-sm" target="_blank">ver</Link>
                 )}
-                <Link href={`/admin/paginas/${p.id}`} className="link-inline text-sm">editar</Link>
+                <Link href={`/construtor/${p.id}`} className="link-inline text-sm">editar</Link>
               </span>
             </li>
           ))}

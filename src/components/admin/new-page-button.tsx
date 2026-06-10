@@ -19,7 +19,7 @@ export function NewPageButton() {
     const res = await createPageAction(title);
     setPending(false);
     if (res.ok && res.data) {
-      router.push(`/admin/paginas/${res.data.id}`);
+      router.push(`/construtor/${res.data.id}`);
     } else {
       toast.error(res.error ?? "Falha ao criar.");
     }

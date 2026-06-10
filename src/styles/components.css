@@ -867,6 +867,30 @@
   .page-w__iconlist-item { @apply flex items-start gap-3; }
   .page-w__iconlist-icon { @apply mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary; }
 
+  /* ── Construtor tela cheia (estilo Elementor/Figma) ─────────────────── */
+  .pb-fs {
+    @apply fixed inset-0 z-50 bg-muted/40;
+  }
+  .pb-fs__panel {
+    @apply absolute bottom-4 left-4 top-4 z-20 flex w-80 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl;
+  }
+  .pb-fs__stage {
+    @apply absolute inset-0 overflow-auto;
+    padding: 5.5rem 1.5rem 1.5rem 22.5rem;
+  }
+  .pb-fs__page {
+    @apply mx-auto max-w-3xl rounded-lg border border-border bg-background p-8 shadow-sm;
+  }
+  .pb-fs__bar {
+    @apply absolute right-4 top-4 z-30 flex items-center gap-2 rounded-xl border border-border bg-card/95 px-3 py-2 shadow-xl backdrop-blur;
+  }
+  .pb-fs__bartitle {
+    @apply max-w-40 truncate text-sm font-semibold;
+  }
+  .pb-fs__exit {
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+
   /* ── Construtor de páginas (admin, estilo Elementor) ────────────────── */
   .pb-shell {
     @apply flex flex-col;
@@ -933,13 +957,29 @@
     @apply flex;
   }
   .pb-colwrap {
-    @apply relative min-h-16 rounded p-1 transition-colors hover:outline hover:outline-1 hover:outline-dashed hover:outline-border;
+    @apply relative min-h-16 rounded p-1.5 outline-dashed outline-1 outline-border/60 transition-colors hover:outline-primary/50;
   }
   .pb-colwrap__bar {
     @apply absolute right-1 top-1 z-10 hidden items-center gap-1;
   }
   .pb-colwrap:hover > .pb-colwrap__bar {
     @apply flex;
+  }
+  .pb-colwrap__span {
+    @apply rounded bg-popover px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground shadow-sm;
+  }
+  /* Divisória arrastável entre colunas (fica no gap da grade). */
+  .pb-resize {
+    @apply absolute -right-3 top-0 z-30 h-full w-6 cursor-col-resize;
+  }
+  .pb-resize::before {
+    @apply absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border transition-colors content-[''];
+  }
+  .pb-resize:hover::before {
+    @apply bg-primary;
+  }
+  .pb-fs--resizing {
+    @apply cursor-col-resize select-none;
   }
   .pb-el {
     @apply relative cursor-pointer rounded p-1 transition-shadow hover:outline hover:outline-1 hover:outline-primary/50;
