@@ -225,6 +225,13 @@
       "when": 1781055148293,
       "tag": "0031_certain_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1781059505741,
+      "tag": "0032_opposite_fallen_one",
+      "breakpoints": true
     }
   ]
 }

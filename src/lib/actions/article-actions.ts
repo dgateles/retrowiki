@@ -169,8 +169,16 @@ export async function proposeEditAction(articleId: number, input: unknown): Prom
   const checked = validateBody(parsed.data.body);
   if (!checked.ok) return { ok: false, error: checked.error };
 
-  // Nova revisão (não vira a corrente) + review pendente para a fila.
-  const [rev] = await db.insert(revisions).values({ articleId, body: checked.body, editorId: Number(user.id) });
+  // Nova revisão (não vira a corrente) + review pendente. Os metadados (título,
+  // tipo, console) ficam versionados na revisão e só entram no ar ao aprovar.
+  const [rev] = await db.insert(revisions).values({
+    articleId,
+    body: checked.body,
+    title: parsed.data.title,
+    type: parsed.data.type,
+    deviceId: parsed.data.deviceId ?? null,
+    editorId: Number(user.id),
+  });
   const revisionId = (rev as unknown as { insertId: number }).insertId;
   await db.insert(reviews).values({ revisionId, decision: "pending" });
 
@@ -261,7 +269,18 @@ export async function moderateAction(input: unknown): Promise<Result> {
   const isProposalOnLive = article.status === "published" && article.currentRevisionId !== rev.id;
 
   if (decision === "approved") {
-    await db.update(articles).set({ status: "published", currentRevisionId: rev.id, publishedAt: article.publishedAt ?? new Date() }).where(eq(articles.id, article.id));
+    // Aplica os metadados versionados da revisão (título/tipo/console) e
+    // recomputa o texto de busca a partir do novo corpo.
+    const searchText = isRichDoc(rev.body) ? richDocToText(rev.body as Parameters<typeof richDocToText>[0]) : blockTreeToText(rev.body as Parameters<typeof blockTreeToText>[0]);
+    await db.update(articles).set({
+      status: "published",
+      currentRevisionId: rev.id,
+      publishedAt: article.publishedAt ?? new Date(),
+      searchText,
+      ...(rev.title ? { title: rev.title } : {}),
+      ...(rev.type ? { type: rev.type as "tutorial" | "buying_guide" | "troubleshooting" | "firmware" | "general" } : {}),
+      ...(rev.title ? { deviceId: rev.deviceId ?? null } : {}),
+    }).where(eq(articles.id, article.id));
   } else if (!isProposalOnLive) {
     const status = decision === "rejected" ? "rejected" : "changes_requested";
     await db.update(articles).set({ status }).where(eq(articles.id, article.id));

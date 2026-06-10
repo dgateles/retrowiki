@@ -231,6 +231,10 @@ export const revisions = mysqlTable("revisions", {
   id: pk(),
   articleId: bigint("article_id", { mode: "number" }).notNull(),
   body: json("body").notNull(), // árvore de blocos (BlockTree)
+  // Metadados versionados (proposta de edição num guia publicado).
+  title: varchar("title", { length: 200 }),
+  type: varchar("type", { length: 40 }),
+  deviceId: bigint("device_id", { mode: "number" }),
   editorId: bigint("editor_id", { mode: "number" }).notNull(),
   note: varchar("note", { length: 300 }),
   createdAt: createdAt(),
