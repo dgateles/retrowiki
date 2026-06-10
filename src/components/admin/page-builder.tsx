@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { WidgetView, SEC_BG, SEC_PADY } from "@/components/pages/page-renderer";
+import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
 
@@ -42,8 +42,8 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
 
 function newWidget(type: WidgetType): Widget {
   switch (type) {
-    case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left" };
-    case "text": return { type: "text", text: "Escreva aqui o texto…", align: "left" };
+    case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left", color: "default" };
+    case "text": return { type: "text", text: "Escreva aqui o texto…", align: "left", color: "default" };
     case "richtext": return { type: "richtext", doc: { type: "doc", content: [{ type: "paragraph" }] } };
     case "image": return { type: "image", url: "", alt: "", caption: "" };
     case "button": return { type: "button", label: "Saiba mais", href: "/", variant: "primary", align: "left" };
@@ -92,6 +92,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
   const [selected, setSelected] = useState<Sel | null>(null);
   const [selSection, setSelSection] = useState<number | null>(null);
+  const [selCol, setSelCol] = useState<{ si: number; ci: number } | null>(null);
   const [leftTab, setLeftTab] = useState<"elements" | "blocks" | "page">("elements");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [pending, setPending] = useState(false);
@@ -102,13 +103,15 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const sectionsRef = useRef(sections);
   sectionsRef.current = sections;
 
-  function selectWidget(s: Sel) { setSelected(s); setSelSection(null); }
-  function selectSection(si: number) { setSelSection(si); setSelected(null); }
-  function deselect() { setSelected(null); setSelSection(null); }
+  function selectWidget(s: Sel) { setSelected(s); setSelSection(null); setSelCol(null); }
+  function selectSection(si: number) { setSelSection(si); setSelected(null); setSelCol(null); }
+  function selectCol(si: number, ci: number) { setSelCol({ si, ci }); setSelected(null); setSelSection(null); }
+  function deselect() { setSelected(null); setSelSection(null); setSelCol(null); }
   const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
   const libDragRef = useRef<WidgetType | null>(null);
   const colDragRef = useRef<{ si: number; ci: number } | null>(null);
+  const blockDragRef = useRef<unknown | null>(null);
 
   // Drop numa coluna: tile da biblioteca → novo widget; senão → reordena.
   function handleDrop(to: Sel) {
@@ -291,7 +294,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -375,6 +378,36 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 </Button>
               </div>
             </div>
+          ) : selCol && sections[selCol.si]?.columns[selCol.ci] ? (
+            <div className="pb-panel__edit">
+              <div className="pb-panel__head">
+                <button type="button" className="pb-panel__back" onClick={deselect}>← Elementos</button>
+                <span className="pb-panel__title">Coluna ({sections[selCol.si].columns[selCol.ci].span}/12)</span>
+              </div>
+              <div className="pb-panel__scroll">
+                <div className="field">
+                  <Label>Alinhamento vertical</Label>
+                  <select className="pb-select" value={sections[selCol.si].columns[selCol.ci].valign} onChange={(e) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].valign = e.target.value as Section["columns"][number]["valign"]; })}>
+                    <option value="top">Topo</option>
+                    <option value="center">Centro</option>
+                    <option value="bottom">Base</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <Label>Fundo da coluna</Label>
+                  <select className="pb-select" value={sections[selCol.si].columns[selCol.ci].bg} onChange={(e) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].bg = e.target.value as Section["columns"][number]["bg"]; })}>
+                    <option value="none">Nenhum</option>
+                    <option value="muted">Cinza suave</option>
+                    <option value="card">Cartão</option>
+                  </select>
+                </div>
+                {sections[selCol.si].columns.length > 1 && (
+                  <Button type="button" variant="ghost" size="sm" className="mt-3 w-full text-destructive" onClick={() => { mutate((ss) => { ss[selCol.si].columns.splice(selCol.ci, 1); const sp = evenSpans(ss[selCol.si].columns.length); ss[selCol.si].columns.forEach((c, idx) => { c.span = sp[idx]; }); }); deselect(); }}>
+                    <Trash2 className="size-4" /> Excluir coluna
+                  </Button>
+                )}
+              </div>
+            </div>
           ) : (
             <>
               <div className="pb-panel__tabs">
@@ -390,7 +423,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     <div className="flex flex-col gap-2">
                       {blockList.map((b) => (
                         <div key={b.id} className="pb-block">
-                          <button type="button" className="pb-block__add" title="Inserir bloco" onClick={() => insertBlock(b.layout)}>
+                          <button type="button" className="pb-block__add" title="Clique ou arraste para inserir" draggable onDragStart={(e) => { blockDragRef.current = b.layout; e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", "block"); }} onDragEnd={() => { blockDragRef.current = null; }} onClick={() => insertBlock(b.layout)}>
                             <LayoutGrid className="size-4" aria-hidden="true" /> <span className="truncate">{b.name}</span>
                           </button>
                           <button type="button" className="pb-icon pb-icon--danger" title="Excluir bloco" onClick={() => removeBlock(b.id)}><Trash2 className="size-3.5" /></button>
@@ -433,7 +466,12 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
 
         {/* Canvas (backdrop tela cheia) */}
         <div className="pb-fs__stage" onClick={deselect}>
-          <div className={cn("pb-fs__page", `pb-dev--${device}`)} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={cn("pb-fs__page", `pb-dev--${device}`)}
+            onClick={(e) => e.stopPropagation()}
+            onDragOver={(e) => { if (blockDragRef.current) e.preventDefault(); }}
+            onDrop={(e) => { if (blockDragRef.current) { e.preventDefault(); insertBlock(blockDragRef.current); blockDragRef.current = null; } }}
+          >
             {sections.length === 0 && (
               <div className="pb-stage__empty">
                 <p>Comece adicionando um elemento pelo painel à esquerda.</p>
@@ -450,7 +488,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 <div className="pb-sec__bar">
                   <span className="pb-sec__handle pb-handle" title="Arrastar seção" draggable onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}><GripVertical className="size-3.5" /></span>
                   <button type="button" className="pb-mini" title="Configurar seção" onClick={(e) => { e.stopPropagation(); selectSection(si); }}><SlidersHorizontal className="size-3.5" /></button>
-                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
+                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, valign: "top", bg: "none", widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
                   <button type="button" className="pb-mini" title="Duplicar seção" onClick={() => dupSection(si)}><Copy className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-3.5" /></button>
@@ -462,13 +500,14 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                   {s.columns.map((c, ci) => (
                     <div
                       key={c.id}
-                      className={cn("page-col pb-colwrap", COL_SPAN[c.span])}
+                      className={cn("page-col pb-colwrap flex flex-col", COL_SPAN[c.span], COL_VALIGN[c.valign], COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected")}
                       onDragOver={(e) => { if (dragRef.current || libDragRef.current || colDragRef.current) e.preventDefault(); }}
                       onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, ci, wi: c.widgets.length }); } }}
                     >
                       <div className="pb-colwrap__bar">
                         {s.columns.length > 1 && <span className="pb-handle pb-colwrap__drag" title="Arrastar coluna" draggable onDragStart={(e) => { colDragRef.current = { si, ci }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "c"); }} onDragEnd={() => { colDragRef.current = null; }}><GripVertical className="size-3" /></span>}
                         <span className="pb-colwrap__span" title="Largura na grade de 12">{c.span}/12</span>
+                        <button type="button" className="pb-mini" title="Configurar coluna" onClick={(e) => { e.stopPropagation(); selectCol(si, ci); }}><SlidersHorizontal className="size-3" /></button>
                         {s.columns.length > 1 && <button type="button" className="pb-mini pb-mini--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Trash2 className="size-3" /></button>}
                       </div>
 
@@ -504,7 +543,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
@@ -545,6 +584,18 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       </select>
     </div>
   );
+  const color = (
+    <div className="field">
+      <Label>Cor</Label>
+      <select className="pb-select" value={(w as { color?: string }).color ?? "default"} onChange={(e) => onChange({ color: e.target.value } as Partial<Widget>)}>
+        <option value="default">Padrão</option>
+        <option value="muted">Suave</option>
+        <option value="primary">Primária</option>
+        <option value="success">Verde</option>
+        <option value="warn">Âmbar</option>
+      </select>
+    </div>
+  );
 
   return (
     <div className="pb-form">
@@ -557,12 +608,14 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             </select>
           </div>
           {align}
+          {color}
         </>
       )}
       {w.type === "text" && (
         <>
           <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={5000} rows={5} /></div>
           {align}
+          {color}
         </>
       )}
       {w.type === "richtext" && (

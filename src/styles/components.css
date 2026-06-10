@@ -1046,6 +1046,9 @@
   .pb-colwrap__drag {
     @apply inline-flex size-5 items-center justify-center rounded bg-popover text-muted-foreground shadow-sm;
   }
+  .pb-colwrap--selected {
+    @apply outline outline-2 outline-primary;
+  }
   /* Divisória arrastável entre colunas (fica no gap da grade). */
   .pb-resize {
     @apply absolute -right-3 top-0 z-30 h-full w-6 cursor-col-resize;

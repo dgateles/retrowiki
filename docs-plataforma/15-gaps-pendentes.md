@@ -990,8 +990,17 @@ teclado.
 do DnD de widgets via `colDragRef`); integra ao histórico (undo). Verificado:
 colunas "AAA"/"BBB" viraram "BBB"/"AAA" ao arrastar, e a página publicou.
 
-**Próximas fases (não entregues):** controles de tipografia/cor por widget;
-arrastar bloco salvo direto pro canvas; alinhamento vertical/ fundo por coluna.
+**Fase 13 entregue (refinamentos finais):**
+- **Cor por widget** (título/texto): paleta segura padrão/suave/primária/verde/âmbar.
+- **Configurações de coluna**: ao selecionar a coluna (ícone de ajustes), painel
+  com **alinhamento vertical** (topo/centro/base) e **fundo** (nenhum/cinza/cartão).
+- **Arrastar bloco salvo direto pro canvas** (além do clique): o item da aba Blocos
+  é `draggable`; soltar no canvas insere a seção.
+Verificado no público: heading `text-primary`, coluna `bg-muted` + `justify-center`,
+e o bloco arrastado virou uma 2ª seção.
+
+Com isso o construtor cobre o essencial do Elementor. Refinamentos futuros
+opcionais: arrastar coluna entre seções, presets de seção prontos, temas.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

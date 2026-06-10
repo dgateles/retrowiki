@@ -42,6 +42,12 @@ const COL_SPAN: Record<number, string> = {
 };
 
 const ALIGN: Record<string, string> = { left: "text-left", center: "text-center", right: "text-right" };
+const TEXT_COLOR: Record<string, string> = {
+  default: "", muted: "text-muted-foreground", primary: "text-primary",
+  success: "text-emerald-600", warn: "text-amber-600",
+};
+export const COL_VALIGN: Record<string, string> = { top: "justify-start", center: "justify-center", bottom: "justify-end" };
+export const COL_BG: Record<string, string> = { none: "", muted: "rounded-lg bg-muted/40 p-4", card: "rounded-lg border border-border bg-card p-4" };
 
 function safeHref(href: string): string | null {
   return /^(https?:\/\/|\/|#)/i.test(href) ? href : null;
@@ -50,14 +56,14 @@ function safeHref(href: string): string | null {
 export function WidgetView({ w }: { w: Widget }) {
   switch (w.type) {
     case "heading": {
-      const cls = `page-w__heading ${ALIGN[w.align] ?? ""}`;
+      const cls = `page-w__heading ${ALIGN[w.align] ?? ""} ${TEXT_COLOR[w.color] ?? ""}`;
       if (w.level === 3) return <h3 className={cls}>{w.text}</h3>;
       if (w.level === 4) return <h4 className={cls}>{w.text}</h4>;
       return <h2 className={cls}>{w.text}</h2>;
     }
     case "text":
       return (
-        <div className={`page-w__text ${ALIGN[w.align] ?? ""}`}>
+        <div className={`page-w__text ${ALIGN[w.align] ?? ""} ${TEXT_COLOR[w.color] ?? ""}`}>
           {w.text.split(/\n{2,}/).map((para, i) => (
             <p key={i}>
               {para.split("\n").map((line, j, arr) => (
@@ -311,7 +317,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
         <section key={s.id} className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}>
           <div className="page-section">
             {s.columns.map((c) => (
-              <div key={c.id} className={`page-col ${COL_SPAN[c.span] ?? "sm:col-span-12"}`}>
+              <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
                 {c.widgets.map((w, i) => (
                   <div key={i} className="page-w">
                     <WidgetView w={w} />
