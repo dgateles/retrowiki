@@ -911,9 +911,16 @@ acessível). URLs de imagem vazias agora são toleradas (render filtra) para nã
 travar páginas incompletas. Verificado: DnD reordenou (divisor → topo); galeria
 renderiza em grade; página com slot de imagem vazio publica.
 
-**Próximas fases (não entregues):** mais widgets (lista de ícones, cartão,
-HTML/Markdown reusando o pipeline de autoria); blocos reutilizáveis; controles
-responsivos por dispositivo; DnD de seções/colunas (hoje só widgets via DnD).
+**Fase 4 entregue:** widgets **cartão** (imagem opcional + título + texto +
+botão opcional) e **lista de ícones** (ícone de uma allowlist fixa + texto, em
+`@/lib/page-icons`), mais **DnD de seções** (alça na barra da seção; reordena
+seções inteiras). Verificado: cartão e lista renderizam no público; arrastar a 2ª
+seção a levou para o topo.
+
+**Próximas fases (não entregues):** widget **HTML/Markdown** reusando o pipeline
+de autoria (editor + render de árvore de blocos); **blocos reutilizáveis**
+(salvar seção e reusar); **controles responsivos por dispositivo**; DnD de
+**colunas**.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

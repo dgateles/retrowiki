@@ -4,6 +4,7 @@ import { and, asc, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { pages } from "@/db/schema";
 import { parseVideoEmbed } from "@/lib/video-embed";
+import { ICON_KEYS } from "@/lib/page-icons";
 
 // ── Allowlist do layout (seções → colunas → widgets) ────────────────────────
 // Fonte da verdade da segurança: o que não está aqui é descartado. Nada de
@@ -36,6 +37,18 @@ const WidgetSchema = z.discriminatedUnion("type", [
     type: z.literal("gallery"),
     columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(3),
     images: z.array(z.object({ url: imageUrl, alt: z.string().max(200).default("") })).min(1).max(24),
+  }),
+  z.object({
+    type: z.literal("card"),
+    image: imageUrl.optional().default(""),
+    title: z.string().trim().min(1).max(200),
+    text: z.string().max(2000).default(""),
+    href: url.optional().default(""),
+    buttonLabel: z.string().max(80).default(""),
+  }),
+  z.object({
+    type: z.literal("iconList"),
+    items: z.array(z.object({ icon: z.enum(ICON_KEYS), text: z.string().trim().min(1).max(300) })).min(1).max(15),
   }),
 ]);
 export type Widget = z.infer<typeof WidgetSchema>;

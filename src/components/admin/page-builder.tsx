@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks } from "lucide-react";
+import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,8 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "callout", label: "Destaque", icon: Megaphone },
   { type: "accordion", label: "Acordeão", icon: Rows3 },
   { type: "gallery", label: "Galeria", icon: Images },
+  { type: "card", label: "Cartão", icon: CreditCard },
+  { type: "iconList", label: "Lista de ícones", icon: ListChecks },
   { type: "divider", label: "Divisor", icon: Minus },
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
 ];
@@ -48,6 +51,8 @@ function newWidget(type: WidgetType): Widget {
     case "callout": return { type: "callout", tone: "info", text: "Texto em destaque." };
     case "accordion": return { type: "accordion", items: [{ title: "Pergunta", body: "Resposta." }] };
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
+    case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "" };
+    case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
   }
 }
 
@@ -68,6 +73,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const dragRef = useRef<{ si: number; ci: number; wi: number } | null>(null);
+  const secDragRef = useRef<number | null>(null);
 
   function mutate(fn: (s: Section[]) => void) {
     setSections((prev) => {
@@ -88,6 +94,16 @@ export function PageBuilder({ page }: { page: PageInput }) {
       let ti = to.wi;
       if (from.si === to.si && from.ci === to.ci && from.wi < to.wi) ti -= 1;
       ss[to.si].columns[to.ci].widgets.splice(ti, 0, w);
+    });
+  }
+
+  function dropSection(to: number) {
+    const from = secDragRef.current;
+    secDragRef.current = null;
+    if (from === null || from === to) return;
+    mutate((ss) => {
+      const sec = ss.splice(from, 1)[0];
+      ss.splice(from < to ? to - 1 : to, 0, sec);
     });
   }
 
@@ -157,9 +173,22 @@ export function PageBuilder({ page }: { page: PageInput }) {
           {sections.length === 0 && <p className="empty">Página vazia. Adicione a primeira seção.</p>}
 
           {sections.map((s, si) => (
-            <div key={s.id} className="pb-section">
+            <div
+              key={s.id}
+              className="pb-section"
+              onDragOver={(e) => { if (secDragRef.current !== null) e.preventDefault(); }}
+              onDrop={(e) => { if (secDragRef.current !== null) { e.preventDefault(); dropSection(si); } }}
+            >
               <div className="pb-section__bar">
-                <span className="pb-section__label">Seção {si + 1}</span>
+                <span className="flex items-center gap-2">
+                  <span
+                    className="pb-icon pb-handle"
+                    title="Arrastar seção"
+                    draggable
+                    onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}
+                  ><GripVertical className="size-4" /></span>
+                  <span className="pb-section__label">Seção {si + 1}</span>
+                </span>
                 <span className="pb-toolbar">
                   <button type="button" className="pb-icon" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-4" /></button>
                   <button type="button" className="pb-icon" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-4" /></button>
@@ -342,6 +371,34 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ images: [...w.images, { url: "", alt: "" }] })}><Plus className="size-3.5" /> Adicionar imagem</button>
           )}
         </>
+      )}
+      {w.type === "card" && (
+        <>
+          <div className="field"><Label>Imagem (opcional)</Label><ImageUpload value={w.image} onChange={(image) => onChange({ image })} folder="pages" /></div>
+          <div className="field"><Label>Título</Label><Input value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={200} /></div>
+          <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
+          <div className="field"><Label>Link do botão (opcional)</Label><Input value={w.href} onChange={(e) => onChange({ href: e.target.value })} placeholder="/guias" maxLength={500} /></div>
+          <div className="field"><Label>Texto do botão (opcional)</Label><Input value={w.buttonLabel} onChange={(e) => onChange({ buttonLabel: e.target.value })} maxLength={80} /></div>
+        </>
+      )}
+      {w.type === "iconList" && (
+        <div className="field">
+          <Label>Itens</Label>
+          {w.items.map((it, i) => (
+            <div key={i} className="pb-acc-item">
+              <div className="flex items-center gap-2">
+                <select className="pb-select" value={it.icon} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, icon: e.target.value as typeof ICON_KEYS[number] } : x) })}>
+                  {ICON_KEYS.map((k) => <option key={k} value={k}>{ICON_LABELS[k]}</option>)}
+                </select>
+                <Input value={it.text} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, text: e.target.value } : x) })} placeholder="Texto" maxLength={300} />
+                {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+            </div>
+          ))}
+          {w.items.length < 15 && (
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", text: "Novo item" }] })}><Plus className="size-3.5" /> Adicionar item</button>
+          )}
+        </div>
       )}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
     </div>

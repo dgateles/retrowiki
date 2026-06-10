@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { Check, Star, Zap, Shield, Heart, Gamepad2, Download, Settings, Info, Trophy, Sparkles, Rocket } from "lucide-react";
 import type { Layout, Widget } from "@/lib/pages";
+import type { IconKey } from "@/lib/page-icons";
 import { parseVideoEmbed } from "@/lib/video-embed";
+
+const ICONS: Record<IconKey, typeof Check> = {
+  check: Check, star: Star, zap: Zap, shield: Shield, heart: Heart, gamepad: Gamepad2,
+  download: Download, settings: Settings, info: Info, trophy: Trophy, sparkles: Sparkles, rocket: Rocket,
+};
 
 const COL_SPAN: Record<string, string> = {
   full: "page-col--full",
@@ -112,6 +119,40 @@ export function WidgetView({ w }: { w: Widget }) {
               <img src={im.url} alt={im.alt} className="page-w__gallery-img" loading="lazy" />
             </li>
           ))}
+        </ul>
+      );
+    case "card": {
+      const href = w.href ? safeHref(w.href) : null;
+      return (
+        <div className="page-w__card">
+          {w.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={w.image} alt="" className="page-w__card-img" loading="lazy" />
+          )}
+          <div className="page-w__card-body">
+            <h3 className="page-w__card-title">{w.title}</h3>
+            {w.text && <p className="page-w__card-text">{w.text}</p>}
+            {href && w.buttonLabel && (
+              href.startsWith("/")
+                ? <Link href={href} className="page-w__btn page-w__btn--primary mt-1">{w.buttonLabel}</Link>
+                : <a href={href} className="page-w__btn page-w__btn--primary mt-1" rel="nofollow noopener noreferrer" target="_blank">{w.buttonLabel}</a>
+            )}
+          </div>
+        </div>
+      );
+    }
+    case "iconList":
+      return (
+        <ul className="page-w__iconlist">
+          {w.items.map((it, i) => {
+            const Icon = ICONS[it.icon] ?? Check;
+            return (
+              <li key={i} className="page-w__iconlist-item">
+                <span className="page-w__iconlist-icon" aria-hidden="true"><Icon className="size-4" /></span>
+                <span>{it.text}</span>
+              </li>
+            );
+          })}
         </ul>
       );
     default:

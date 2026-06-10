@@ -858,6 +858,14 @@
   .page-w__gallery--c3 { @apply grid-cols-2 sm:grid-cols-3; }
   .page-w__gallery--c4 { @apply grid-cols-2 sm:grid-cols-4; }
   .page-w__gallery-img { @apply aspect-square w-full rounded-lg border border-border object-cover; }
+  .page-w__card { @apply overflow-hidden rounded-xl border border-border bg-card; }
+  .page-w__card-img { @apply aspect-video w-full object-cover; }
+  .page-w__card-body { @apply space-y-2 p-5; }
+  .page-w__card-title { @apply text-lg font-semibold; }
+  .page-w__card-text { @apply text-sm text-muted-foreground; }
+  .page-w__iconlist { @apply list-none space-y-3 p-0; }
+  .page-w__iconlist-item { @apply flex items-start gap-3; }
+  .page-w__iconlist-icon { @apply mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary; }
 
   /* ── Construtor de páginas (admin) ──────────────────────────────────── */
   .pb {
