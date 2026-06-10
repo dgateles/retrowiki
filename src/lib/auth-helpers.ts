@@ -10,6 +10,8 @@ export async function getSession() {
   return auth();
 }
 
+const SEEN_THROTTLE_MS = 5 * 60 * 1000;
+
 /** Usuário completo do banco a partir da sessão, ou null. */
 export async function getCurrentUser(): Promise<User | null> {
   const session = await auth();
@@ -19,7 +21,18 @@ export async function getCurrentUser(): Promise<User | null> {
     .from(users)
     .where(eq(users.id, Number(session.user.id)))
     .limit(1);
-  return user ?? null;
+  if (!user) return null;
+
+  // Presença: atualiza "visto por último" no máximo a cada 5 min.
+  const last = user.lastSeenAt ? new Date(user.lastSeenAt).getTime() : 0;
+  if (Date.now() - last > SEEN_THROTTLE_MS) {
+    try {
+      await db.update(users).set({ lastSeenAt: new Date() }).where(eq(users.id, user.id));
+    } catch {
+      /* não bloquear */
+    }
+  }
+  return user;
 }
 
 export type SessionUser = { id: string; role: UserRole; handle: string };

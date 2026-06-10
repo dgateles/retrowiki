@@ -742,6 +742,31 @@
   .privacy-tools {
     @apply flex flex-col gap-2;
   }
+  /* Anúncios (banner do topo) */
+  .announce {
+    @apply flex flex-col;
+  }
+  .announce__bar {
+    @apply flex items-center justify-between gap-3 border-b px-4 py-2.5 text-sm;
+  }
+  .announce__bar--info {
+    @apply border-primary/30 bg-primary/10 text-foreground;
+  }
+  .announce__bar--warning {
+    @apply border-amber-500/30 bg-amber-500/10 text-foreground;
+  }
+  .announce__bar--success {
+    @apply border-emerald-500/30 bg-emerald-500/10 text-foreground;
+  }
+  .announce__msg {
+    @apply min-w-0;
+  }
+  .announce__link {
+    @apply font-medium underline underline-offset-2;
+  }
+  .announce__close {
+    @apply inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/60 hover:text-foreground;
+  }
   /* Galeria de fotos do membro */
   .gallery-grid {
     @apply grid grid-cols-2 gap-3 sm:grid-cols-3;

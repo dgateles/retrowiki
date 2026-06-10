@@ -137,7 +137,8 @@ Implicações de arquitetura:
 ## Busca e descoberta
 - **Ranking de busca.** A busca usa `LIKE` simples. Migrar para FULLTEXT do MySQL
   ou um índice dedicado (Meilisearch/Typesense) quando o volume justificar.
-- **Autocomplete.** O combobox de sugestões no cabeçalho ainda não existe.
+- **Autocomplete.** ENTREGUE: o `search-box` do cabeçalho já busca `/api/search`
+  e exibe os resultados num `listbox` (com escopo). Item resolvido.
 
 ## Internacionalização
 - **i18n.** A plataforma é só pt-BR. O template (dtbvault) usa next-intl; adotar
@@ -581,11 +582,17 @@ Elementos adicionais da referência IPB, adaptados. Item ao final da fila.
 
 Cabeçalho:
 
+- **Reposicionar links da nav principal (UX).** O usuário sinalizou que
+  "Missões", "Leaderboard" e "Equipe" não precisam ficar na barra principal do
+  topo; no ajuste geral de UX, mover para um lugar melhor (ex.: menu "Comunidade"
+  agrupado, menu do usuário, ou rodapé). Não mexer agora — fica para o overhaul.
 - **Editar perfil (dropdown).** Para o dono do perfil: editar foto, enviar capa,
   editar perfil, configurações da conta. Depende do upload de mídia (avatar e
   capa), hoje só temos a capa em gradiente e o avatar com iniciais.
-- **Presença.** "Entrou em", "Visto por último" e "Agora" (o que está vendo),
-  com indicador de online. Precisa registrar `lastSeenAt` e a atividade atual.
+- **Presença.** PARCIAL/ENTREGUE: `lastSeenAt` agora é gravado no `getCurrentUser`
+  (throttle de 5 min) e exibido no perfil `/u/[handle]` como "Online agora" /
+  "Visto por último há X" (verificado). Falta só "Agora" (o que o usuário está
+  vendo em tempo real), que exigiria rastrear a atividade atual.
 - **Ver minha atividade.** Botão que abre o feed de atividade do usuário.
 
 Barra lateral:
@@ -664,7 +671,10 @@ Gerenciar membros:
 
 Ferramentas:
 
-- **Anúncios.** Avisos no topo do site para todos.
+- **Anúncios.** ENTREGUE (`/admin/anuncios`). Banner no topo do site para todos,
+  com estilo (info/aviso/sucesso), link opcional e ativar/desativar; cada um é
+  dispensável pelo leitor (localStorage). Tabela `announcements` (migração 0031).
+  Verificado: criar → banner na home (com link) → dispensar persiste.
 - (Live Topics e afins do IPB não se aplicam ao nosso cenário.)
 
 Acesso:

@@ -532,6 +532,18 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Anúncios do site (banner no topo, para todos).
+export const announcements = mysqlTable("announcements", {
+  id: pk(),
+  message: varchar("message", { length: 500 }).notNull(),
+  variant: mysqlEnum("variant", ["info", "warning", "success"]).notNull().default("info"),
+  linkUrl: varchar("link_url", { length: 300 }).notNull().default(""),
+  linkLabel: varchar("link_label", { length: 80 }).notNull().default(""),
+  active: boolean("active").notNull().default(true),
+  createdById: bigint("created_by_id", { mode: "number" }),
+  createdAt: createdAt(),
+}, (t) => [index("announcements_active_idx").on(t.active)]);
+
 // Galeria de fotos do membro (exibida no perfil público).
 export const memberPhotos = mysqlTable("member_photos", {
   id: pk(),

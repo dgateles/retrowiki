@@ -12,6 +12,7 @@ export type Profile = {
   coverUrl: string | null;
   reputation: number;
   createdAt: Date;
+  lastSeenAt: Date | null;
   articles: { id: number; slug: string; title: string; type: string }[];
 };
 
@@ -27,6 +28,7 @@ export async function getProfile(handle: string): Promise<Profile | null> {
         coverUrl: users.coverUrl,
         reputation: users.reputation,
         createdAt: users.createdAt,
+        lastSeenAt: users.lastSeenAt,
       })
       .from(users)
       .where(eq(users.handle, handle.toLowerCase()))

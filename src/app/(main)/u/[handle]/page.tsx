@@ -30,6 +30,19 @@ function initials(name: string) {
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? parts[0]?.[1] ?? "")).toUpperCase();
 }
 
+function lastSeenText(d: Date | null): string | null {
+  if (!d) return null;
+  const diff = Date.now() - new Date(d).getTime();
+  if (diff < 5 * 60 * 1000) return "Online agora";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `Visto por último há ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `Visto por último há ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `Visto por último há ${days} ${days === 1 ? "dia" : "dias"}`;
+  return `Visto por último em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(d))}`;
+}
+
 export default async function ProfilePage({
   params,
 }: {
@@ -54,6 +67,7 @@ export default async function ProfilePage({
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
   );
+  const lastSeen = lastSeenText(profile.lastSeenAt);
 
   return (
     <main id="main" className="page">
@@ -78,6 +92,7 @@ export default async function ProfilePage({
             <h1 className="profile-id__name">{profile.displayName}</h1>
             <p className="profile-id__role">@{profile.handle} · {roleLabel(profile.role)}</p>
             <p className="profile-id__meta">Na comunidade desde {joined}</p>
+            {lastSeen && <p className="profile-id__meta">{lastSeen}</p>}
           </div>
         </div>
       </header>

@@ -63,7 +63,10 @@ const GROUPS: NavGroup[] = [
   },
   {
     title: "Comunicação",
-    links: [{ href: "/admin/bulk-mail", label: "E-mail em massa" }],
+    links: [
+      { href: "/admin/anuncios", label: "Anúncios" },
+      { href: "/admin/bulk-mail", label: "E-mail em massa" },
+    ],
   },
 ];
 
