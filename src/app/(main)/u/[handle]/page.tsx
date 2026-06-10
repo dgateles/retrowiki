@@ -13,6 +13,7 @@ import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
 import { getAchievementSettings } from "@/lib/settings";
 import { BadgeList } from "@/components/badges/badge-list";
+import { BookOpen, MessageCircle, Award } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -28,6 +29,15 @@ export async function generateMetadata({
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? parts[0]?.[1] ?? "")).toUpperCase();
+}
+
+function relDate(d: Date): string {
+  const diff = Date.now() - new Date(d).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days < 1) return "hoje";
+  if (days === 1) return "ontem";
+  if (days < 30) return `há ${days} dias`;
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(d));
 }
 
 function lastSeenText(d: Date | null): string | null {
@@ -63,6 +73,8 @@ export default async function ProfilePage({
   const { listPhotos } = await import("@/lib/gallery");
   const gallerySettings = await getGallerySettings();
   const photos = gallerySettings.enabled ? await listPhotos(profile.id) : [];
+  const { getUserActivity } = await import("@/lib/activity");
+  const activity = await getUserActivity(profile.id, 15);
   const userBadges = gami.enabled ? await getUserBadges(profile.id) : [];
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
@@ -185,6 +197,29 @@ export default async function ProfilePage({
               ))}
             </ul>
           )}
+          </section>
+
+          <section aria-labelledby="atividade" id="atividade" className="mt-8">
+            <h2 id="atividade" className="comments__title">Atividade recente</h2>
+            {activity.length === 0 ? (
+              <p className="empty mt-4">Sem atividade recente.</p>
+            ) : (
+              <ul className="activity mt-4">
+                {activity.map((a, i) => (
+                  <li key={i} className="activity__item">
+                    <span className="activity__icon" aria-hidden="true">
+                      {a.kind === "guide" ? <BookOpen className="size-4" /> : a.kind === "comment" ? <MessageCircle className="size-4" /> : <Award className="size-4" />}
+                    </span>
+                    <span className="activity__text">
+                      {a.kind === "guide" && <>Publicou o guia <Link href={`/guias/${a.slug}`} className="link-inline">{a.title}</Link></>}
+                      {a.kind === "comment" && <>Comentou em <Link href={`/guias/${a.articleSlug}#comentario-${a.commentId}`} className="link-inline">{a.articleTitle}</Link></>}
+                      {a.kind === "badge" && <>Conquistou a badge <strong>{a.name}</strong></>}
+                    </span>
+                    <span className="activity__date muted">{relDate(a.date)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
       </div>

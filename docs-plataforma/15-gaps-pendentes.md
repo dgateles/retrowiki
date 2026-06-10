@@ -639,7 +639,11 @@ Cabeçalho:
   (throttle de 5 min) e exibido no perfil `/u/[handle]` como "Online agora" /
   "Visto por último há X" (verificado). Falta só "Agora" (o que o usuário está
   vendo em tempo real), que exigiria rastrear a atividade atual.
-- **Ver minha atividade.** Botão que abre o feed de atividade do usuário.
+- **Ver minha atividade.** ENTREGUE. `getUserActivity` mescla guias publicados,
+  comentários e badges conquistadas, ordenados por data, exibidos numa seção
+  **"Atividade recente"** no perfil `/u/[handle]#atividade` (ícone por tipo,
+  título/comentário linkado, data relativa). Link "Ver minha atividade" no
+  `/painel`. Verificado: feed do retrowiki mostra badges + 12 guias mesclados.
 
 Barra lateral:
 

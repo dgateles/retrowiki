@@ -59,7 +59,10 @@ export default async function PanelPage() {
   return (
     <main id="main" className="page">
       <h1 className="page__title">Olá, {user.displayName}</h1>
-      <p className="page__note">Seu resumo na comunidade.</p>
+      <p className="page__note">
+        Seu resumo na comunidade.{" "}
+        <Link href={`/u/${user.handle}#atividade`} className="link-inline">Ver minha atividade</Link>
+      </p>
 
       {!user.emailVerifiedAt && <VerifyEmailBanner />}
 

@@ -745,6 +745,22 @@
   .privacy-tools {
     @apply flex flex-col gap-2;
   }
+  /* Feed de atividade (perfil) */
+  .activity {
+    @apply flex flex-col;
+  }
+  .activity__item {
+    @apply flex items-center gap-3 border-b border-border/60 py-2.5 text-sm last:border-0;
+  }
+  .activity__icon {
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground;
+  }
+  .activity__text {
+    @apply min-w-0 flex-1;
+  }
+  .activity__date {
+    @apply shrink-0 text-xs;
+  }
   /* Dashboard do admin (métricas) */
   .admin-metrics {
     @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5;
