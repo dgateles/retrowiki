@@ -53,6 +53,40 @@ const WidgetSchema = z.discriminatedUnion("type", [
   }),
   // Texto rico: reaproveita o editor (Rico/Markdown/HTML) e a allowlist de blocos.
   z.object({ type: z.literal("richtext"), doc: RichDocSchema }),
+  // Lista de downloads (versão, tamanho, data, changelog, checksum SHA256).
+  z.object({
+    type: z.literal("download"),
+    items: z.array(z.object({
+      name: z.string().trim().min(1).max(120),
+      version: z.string().max(40).default(""),
+      url: url,
+      size: z.string().max(40).default(""),
+      date: z.string().max(40).default(""),
+      changelogUrl: url.optional().default(""),
+      checksum: z.string().max(200).default(""),
+    })).min(1).max(40),
+  }),
+  // Lista de firmwares (link para releases do GitHub ou site externo).
+  z.object({
+    type: z.literal("firmware"),
+    items: z.array(z.object({
+      name: z.string().trim().min(1).max(120),
+      description: z.string().max(300).default(""),
+      owner: z.string().max(80).default(""),
+      repo: z.string().max(120).default(""),
+      website: url.optional().default(""),
+      deprecated: z.boolean().default(false),
+    })).min(1).max(40),
+  }),
+  // Guia de compra: lojas (nível de confiança), acessórios e dicas.
+  z.object({
+    type: z.literal("buyingGuide"),
+    consoleName: z.string().trim().min(1).max(120),
+    priceRange: z.string().max(80).default(""),
+    stores: z.array(z.object({ name: z.string().trim().min(1).max(120), description: z.string().max(300).default(""), href: url, trustLevel: z.enum(["verified", "trusted", "caution", "choice"]).default("trusted"), badge: z.string().max(40).default("") })).max(20).default([]),
+    accessories: z.array(z.object({ name: z.string().trim().min(1).max(120), description: z.string().max(300).default(""), href: url, category: z.enum(["storage", "connectivity", "protection", "other"]).default("other"), badge: z.string().max(40).default("") })).max(20).default([]),
+    tips: z.array(z.object({ title: z.string().trim().min(1).max(120), description: z.string().max(400).default(""), type: z.enum(["tip", "warning"]).default("tip") })).max(15).default([]),
+  }),
 ]);
 export type Widget = z.infer<typeof WidgetSchema>;
 export type WidgetType = Widget["type"];

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,9 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "gallery", label: "Galeria", icon: Images },
   { type: "card", label: "Cartão", icon: CreditCard },
   { type: "iconList", label: "Lista de ícones", icon: ListChecks },
+  { type: "download", label: "Downloads", icon: Download },
+  { type: "firmware", label: "Firmwares", icon: HardDrive },
+  { type: "buyingGuide", label: "Guia de compra", icon: ShoppingCart },
   { type: "divider", label: "Divisor", icon: Minus },
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
 ];
@@ -50,6 +53,9 @@ function newWidget(type: WidgetType): Widget {
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
     case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
+    case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
+    case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
+    case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
   }
 }
 
@@ -562,6 +568,123 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", text: "Novo item" }] })}><Plus className="size-3.5" /> Adicionar item</button>
           )}
         </div>
+      )}
+      {w.type === "download" && (
+        <div className="field">
+          <Label>Downloads</Label>
+          {w.items.map((it, i) => {
+            const set = (patch: Partial<typeof it>) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, ...patch } : x) });
+            return (
+              <div key={i} className="pb-acc-item">
+                <div className="flex items-center gap-2">
+                  <Input value={it.name} onChange={(e) => set({ name: e.target.value })} placeholder="Nome" maxLength={120} />
+                  <Input value={it.version} onChange={(e) => set({ version: e.target.value })} placeholder="Versão" className="w-24" maxLength={40} />
+                  {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+                </div>
+                <Input className="mt-1" value={it.url} onChange={(e) => set({ url: e.target.value })} placeholder="URL do download" maxLength={500} />
+                <div className="mt-1 flex gap-2">
+                  <Input value={it.size} onChange={(e) => set({ size: e.target.value })} placeholder="Tamanho" maxLength={40} />
+                  <Input value={it.date} onChange={(e) => set({ date: e.target.value })} placeholder="Data" maxLength={40} />
+                </div>
+                <Input className="mt-1" value={it.changelogUrl} onChange={(e) => set({ changelogUrl: e.target.value })} placeholder="URL do changelog (opcional)" maxLength={500} />
+                <Input className="mt-1" value={it.checksum} onChange={(e) => set({ checksum: e.target.value })} placeholder="SHA256 (opcional)" maxLength={200} />
+              </div>
+            );
+          })}
+          {w.items.length < 40 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { name: "Novo", version: "", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] })}><Plus className="size-3.5" /> Adicionar download</button>}
+        </div>
+      )}
+      {w.type === "firmware" && (
+        <div className="field">
+          <Label>Firmwares</Label>
+          {w.items.map((it, i) => {
+            const set = (patch: Partial<typeof it>) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, ...patch } : x) });
+            return (
+              <div key={i} className="pb-acc-item">
+                <div className="flex items-center gap-2">
+                  <Input value={it.name} onChange={(e) => set({ name: e.target.value })} placeholder="Nome" maxLength={120} />
+                  {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+                </div>
+                <Input className="mt-1" value={it.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" maxLength={300} />
+                <div className="mt-1 flex gap-2">
+                  <Input value={it.owner} onChange={(e) => set({ owner: e.target.value })} placeholder="GitHub owner" maxLength={80} />
+                  <Input value={it.repo} onChange={(e) => set({ repo: e.target.value })} placeholder="repo" maxLength={120} />
+                </div>
+                <Input className="mt-1" value={it.website} onChange={(e) => set({ website: e.target.value })} placeholder="Site (se não for GitHub)" maxLength={500} />
+                <label className="pb-check mt-1"><input type="checkbox" checked={it.deprecated} onChange={(e) => set({ deprecated: e.target.checked })} /> Obsoleto</label>
+              </div>
+            );
+          })}
+          {w.items.length < 40 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { name: "Novo", description: "", owner: "", repo: "", website: "", deprecated: false }] })}><Plus className="size-3.5" /> Adicionar firmware</button>}
+        </div>
+      )}
+      {w.type === "buyingGuide" && (
+        <>
+          <div className="field"><Label>Console</Label><Input value={w.consoleName} onChange={(e) => onChange({ consoleName: e.target.value })} maxLength={120} /></div>
+          <div className="field"><Label>Faixa de preço</Label><Input value={w.priceRange} onChange={(e) => onChange({ priceRange: e.target.value })} placeholder="Ex.: R$ 600–800" maxLength={80} /></div>
+          <div className="field">
+            <Label>Lojas</Label>
+            {w.stores.map((s, i) => {
+              const set = (patch: Partial<typeof s>) => onChange({ stores: w.stores.map((x, j) => j === i ? { ...x, ...patch } : x) });
+              return (
+                <div key={i} className="pb-acc-item">
+                  <div className="flex items-center gap-2">
+                    <Input value={s.name} onChange={(e) => set({ name: e.target.value })} placeholder="Loja" maxLength={120} />
+                    <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ stores: w.stores.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>
+                  </div>
+                  <Input className="mt-1" value={s.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" maxLength={300} />
+                  <Input className="mt-1" value={s.href} onChange={(e) => set({ href: e.target.value })} placeholder="Link" maxLength={500} />
+                  <div className="mt-1 flex gap-2">
+                    <select className="pb-select" value={s.trustLevel} onChange={(e) => set({ trustLevel: e.target.value as typeof s.trustLevel })}>
+                      <option value="verified">Verificado</option><option value="trusted">Confiável</option><option value="caution">Cautela</option><option value="choice">Escolha</option>
+                    </select>
+                    <Input value={s.badge} onChange={(e) => set({ badge: e.target.value })} placeholder="Selo (opcional)" maxLength={40} />
+                  </div>
+                </div>
+              );
+            })}
+            {w.stores.length < 20 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ stores: [...w.stores, { name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }] })}><Plus className="size-3.5" /> Adicionar loja</button>}
+          </div>
+          <div className="field">
+            <Label>Acessórios</Label>
+            {w.accessories.map((a, i) => {
+              const set = (patch: Partial<typeof a>) => onChange({ accessories: w.accessories.map((x, j) => j === i ? { ...x, ...patch } : x) });
+              return (
+                <div key={i} className="pb-acc-item">
+                  <div className="flex items-center gap-2">
+                    <Input value={a.name} onChange={(e) => set({ name: e.target.value })} placeholder="Acessório" maxLength={120} />
+                    <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ accessories: w.accessories.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>
+                  </div>
+                  <Input className="mt-1" value={a.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" maxLength={300} />
+                  <Input className="mt-1" value={a.href} onChange={(e) => set({ href: e.target.value })} placeholder="Link" maxLength={500} />
+                  <select className="pb-select mt-1" value={a.category} onChange={(e) => set({ category: e.target.value as typeof a.category })}>
+                    <option value="storage">Armazenamento</option><option value="connectivity">Conectividade</option><option value="protection">Proteção</option><option value="other">Outros</option>
+                  </select>
+                </div>
+              );
+            })}
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ accessories: [...w.accessories, { name: "Acessório", description: "", href: "", category: "other", badge: "" }] })}><Plus className="size-3.5" /> Adicionar acessório</button>
+          </div>
+          <div className="field">
+            <Label>Dicas</Label>
+            {w.tips.map((tp, i) => {
+              const set = (patch: Partial<typeof tp>) => onChange({ tips: w.tips.map((x, j) => j === i ? { ...x, ...patch } : x) });
+              return (
+                <div key={i} className="pb-acc-item">
+                  <div className="flex items-center gap-2">
+                    <Input value={tp.title} onChange={(e) => set({ title: e.target.value })} placeholder="Título" maxLength={120} />
+                    <select className="pb-select" value={tp.type} onChange={(e) => set({ type: e.target.value as typeof tp.type })}>
+                      <option value="tip">Dica</option><option value="warning">Aviso</option>
+                    </select>
+                    <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ tips: w.tips.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>
+                  </div>
+                  <textarea className="pb-textarea mt-1" value={tp.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" rows={2} maxLength={400} />
+                </div>
+              );
+            })}
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ tips: [...w.tips, { title: "Dica", description: "", type: "tip" }] })}><Plus className="size-3.5" /> Adicionar dica</button>
+          </div>
+        </>
       )}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
     </div>

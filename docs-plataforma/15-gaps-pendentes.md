@@ -955,6 +955,20 @@ Ajuste de build: `prism.ts` deixou de ser `server-only` (é isomórfico) para o
 no widget virou `<h2>`/`<strong>`/`<ul>` no canvas e no público; arrastar o
 Divisor da biblioteca adicionou o widget na coluna.
 
+**Fase 9 entregue (widgets do RetroWiki antigo):** portados como widgets do
+construtor, com render seguro por allowlist (sem fetch dinâmico):
+- **Downloads** — itens com versão, tamanho, data, link de changelog e **SHA256**
+  colapsável + botão Baixar.
+- **Firmwares** — itens com nome/descrição e link para **releases do GitHub**
+  (montado de `owner/repo` sanitizados) ou site externo; marca **obsoleto**.
+- **Guia de compra** — console + faixa de preço; **lojas** com nível de confiança
+  (verificado/confiável/cautela/escolha) e selo; **acessórios** por categoria
+  (armazenamento/conectividade/proteção/outros); **dicas** (dica/aviso).
+Bug corrigido: o `cn()` (tailwind-merge) removia classes BEM com prefixo `bg-`
+(tratadas como utilitárias de background) — renomeadas para `buy-`/`dl-`/`fw-`.
+Verificado: página semeada com os três renderiza tudo (selo Verificado, GitHub
+releases, obsoleto, dica/aviso) no público.
+
 **Próximas fases (não entregues):** **blocos reutilizáveis** (salvar seção e
 reusar); DnD de **colunas**; controles de tipografia/cor por widget.
 

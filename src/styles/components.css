@@ -867,6 +867,53 @@
   .page-w__iconlist { @apply list-none space-y-3 p-0; }
   .page-w__iconlist-item { @apply flex items-start gap-3; }
   .page-w__iconlist-icon { @apply mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary; }
+  /* Downloads */
+  .dl-list { @apply space-y-3; }
+  .dl-item { @apply flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between; }
+  .dl-item__head { @apply flex items-center gap-2; }
+  .dl-item__name { @apply font-semibold; }
+  .dl-badge { @apply rounded bg-primary/15 px-2 py-0.5 text-xs font-semibold text-primary; }
+  .dl-item__meta { @apply mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground; }
+  .dl-item__link { @apply inline-flex items-center gap-1 text-primary hover:underline; }
+  .dl-item__sum { @apply mt-2 text-sm; }
+  .dl-item__sum summary { @apply inline-flex cursor-pointer list-none items-center gap-1 text-xs text-muted-foreground hover:text-foreground; }
+  .dl-item__code { @apply mt-1 block select-all break-all rounded-md bg-muted/50 p-2 font-mono text-xs text-muted-foreground; }
+  .dl-item__btn { @apply inline-flex shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90; }
+  /* Firmwares */
+  .fw-list { @apply space-y-2; }
+  .fw-item { @apply flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3; }
+  .fw-item--dep { @apply opacity-60; }
+  .fw-item__name { @apply flex items-center gap-2 font-semibold; }
+  .fw-item__dep { @apply rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-600; }
+  .fw-item__desc { @apply mt-0.5 text-sm text-muted-foreground; }
+  .fw-item__btn { @apply inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-accent; }
+  /* Guia de compra */
+  .buy-guide { @apply space-y-5 rounded-xl border border-border bg-card p-5; }
+  .buy-guide__head { @apply flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3; }
+  .buy-guide__title { @apply text-lg font-bold; }
+  .buy-guide__price { @apply rounded-full bg-primary/15 px-3 py-1 text-sm font-semibold text-primary; }
+  .buy-guide__sec { @apply space-y-2; }
+  .buy-guide__sub { @apply text-sm font-semibold uppercase tracking-wide text-muted-foreground; }
+  .buy-store { @apply flex items-center justify-between gap-3 rounded-lg border border-border p-3; }
+  .buy-store__head { @apply flex flex-wrap items-center gap-2; }
+  .buy-store__name { @apply font-medium; }
+  .buy-store__desc { @apply mt-0.5 text-sm text-muted-foreground; }
+  .buy-store__badge { @apply rounded bg-primary/15 px-1.5 py-0.5 text-xs font-semibold text-primary; }
+  .buy-store__btn { @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground; }
+  .buy-trust { @apply inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold; }
+  .buy-trust.trust--verified { @apply bg-emerald-500/10 text-emerald-600; }
+  .buy-trust.trust--trusted { @apply bg-sky-500/10 text-sky-600; }
+  .buy-trust.trust--caution { @apply bg-amber-500/10 text-amber-600; }
+  .buy-trust.trust--choice { @apply bg-violet-500/10 text-violet-600; }
+  .buy-acc__cat { @apply inline-flex size-6 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground; }
+  .buy-tip { @apply flex items-start gap-2 rounded-lg border-l-4 p-3 text-sm; }
+  .buy-tip--ok { @apply border-l-emerald-500 bg-emerald-500/5; }
+  .buy-tip--warn { @apply border-l-amber-500 bg-amber-500/5; }
+  .buy-tip__icon { @apply mt-0.5 shrink-0; }
+  .buy-tip--ok .buy-tip__icon { @apply text-emerald-600; }
+  .buy-tip--warn .buy-tip__icon { @apply text-amber-600; }
+  .buy-tip__title { @apply font-medium; }
+  .buy-tip__desc { @apply text-muted-foreground; }
 
   /* ── Construtor tela cheia (estilo Elementor/Figma) ─────────────────── */
   .pb-fs {
