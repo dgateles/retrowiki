@@ -936,10 +936,18 @@ virou um **span numérico (1-12)** (com compat retroativa do enum antigo via
 a soma. Verificado: editor full-screen sem chrome do site; 2 colunas nasceram 6/6,
 arrastar levou a 11/1 e depois 8/4; o público renderiza `col-span-8`/`col-span-4`.
 
+**Fase 7 entregue (enriquecimento):** **duplicar** widget e seção; **configurações
+de seção** (fundo: nenhum/cinza/cartão/primária/escuro + espaçamento vertical
+sm/md/lg) selecionando a seção pelo ícone de ajustes; e **pré-visualização
+responsiva** (desktop/tablet/celular) na barra flutuante — muda a largura do
+canvas (896/672/384px) e no celular as **colunas empilham** (CSS `!important`
+para vencer a layer utilities do Tailwind). Verificado: duplicar gerou 2 títulos;
+fundo `bg-muted/50` + `py-10` da seção renderizam no público; larguras por
+dispositivo e empilhamento mobile conferidos.
+
 **Próximas fases (não entregues):** widget **HTML/Markdown** reusando o pipeline
-de autoria (editor + render de árvore de blocos); **blocos reutilizáveis**
-(salvar seção e reusar); **controles responsivos por dispositivo**; DnD de
-**colunas**.
+de autoria; **blocos reutilizáveis** (salvar seção e reusar); arrastar tile da
+biblioteca direto pro canvas; DnD de **colunas**.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

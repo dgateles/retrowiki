@@ -839,6 +839,7 @@
   .page-w__btn { @apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium transition-colors; }
   .page-w__btn--primary { @apply bg-primary text-primary-foreground hover:bg-primary/90; }
   .page-w__btn--outline { @apply border border-border hover:bg-accent; }
+  .page-sec--bg { @apply rounded-xl px-6; }
   .page-w__divider { @apply border-t border-border; }
   .page-w__spacer--sm { @apply h-4; }
   .page-w__spacer--md { @apply h-8; }
@@ -879,7 +880,25 @@
     padding: 5.5rem 1.5rem 1.5rem 22.5rem;
   }
   .pb-fs__page {
-    @apply mx-auto max-w-3xl rounded-lg border border-border bg-background p-8 shadow-sm;
+    @apply mx-auto rounded-lg border border-border bg-background p-8 shadow-sm;
+    transition: max-width 0.2s ease;
+  }
+  .pb-dev--desktop { @apply max-w-4xl; }
+  .pb-dev--tablet { @apply max-w-2xl; }
+  .pb-dev--mobile { @apply max-w-sm; }
+  /* No preview mobile as colunas empilham (como num viewport estreito real).
+     CSS cru + !important para vencer a layer utilities do Tailwind (sm:grid-cols-12). */
+  .pb-dev--mobile .page-section {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .pb-dev--mobile .page-col {
+    grid-column: auto !important;
+  }
+  .pb-dev-toggle {
+    @apply flex items-center gap-0.5 rounded-md border border-border p-0.5;
+  }
+  .pb-mini--on {
+    @apply bg-primary/15 text-primary;
   }
   .pb-fs__bar {
     @apply absolute right-4 top-4 z-30 flex items-center gap-2 rounded-xl border border-border bg-card/95 px-3 py-2 shadow-xl backdrop-blur;
@@ -949,6 +968,9 @@
   }
   .pb-sec {
     @apply relative mb-3 rounded-md p-2 transition-colors hover:bg-accent/20 hover:outline hover:outline-1 hover:outline-primary/30;
+  }
+  .pb-sec--selected {
+    @apply outline outline-2 outline-primary;
   }
   .pb-sec__bar {
     @apply absolute -top-3 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-0.5 rounded-md border border-border bg-popover px-1 py-0.5 shadow-sm;

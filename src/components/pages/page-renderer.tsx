@@ -3,6 +3,15 @@ import { Check, Star, Zap, Shield, Heart, Gamepad2, Download, Settings, Info, Tr
 import type { Layout, Widget } from "@/lib/pages";
 import type { IconKey } from "@/lib/page-icons";
 import { parseVideoEmbed } from "@/lib/video-embed";
+import { cn } from "@/lib/utils";
+
+export const SEC_BG: Record<string, string> = {
+  none: "", muted: "page-sec--bg bg-muted/50", card: "page-sec--bg bg-card",
+  primary: "page-sec--bg bg-primary/10", dark: "page-sec--bg bg-foreground/90 text-background",
+};
+export const SEC_PADY: Record<string, string> = {
+  none: "", sm: "py-5", md: "py-10", lg: "py-16",
+};
 
 const ICONS: Record<IconKey, typeof Check> = {
   check: Check, star: Star, zap: Zap, shield: Shield, heart: Heart, gamepad: Gamepad2,
@@ -164,16 +173,18 @@ export function PageRenderer({ layout }: { layout: Layout }) {
   return (
     <div className="page-render">
       {layout.sections.map((s) => (
-        <section key={s.id} className="page-section">
-          {s.columns.map((c) => (
-            <div key={c.id} className={`page-col ${COL_SPAN[c.span] ?? "sm:col-span-12"}`}>
-              {c.widgets.map((w, i) => (
-                <div key={i} className="page-w">
-                  <WidgetView w={w} />
-                </div>
-              ))}
-            </div>
-          ))}
+        <section key={s.id} className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}>
+          <div className="page-section">
+            {s.columns.map((c) => (
+              <div key={c.id} className={`page-col ${COL_SPAN[c.span] ?? "sm:col-span-12"}`}>
+                {c.widgets.map((w, i) => (
+                  <div key={i} className="page-w">
+                    <WidgetView w={w} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </section>
       ))}
     </div>

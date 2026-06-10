@@ -4,14 +4,14 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone } from "lucide-react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/admin/image-upload";
-import { WidgetView } from "@/components/pages/page-renderer";
+import { WidgetView, SEC_BG, SEC_PADY } from "@/components/pages/page-renderer";
 import { savePageAction, deletePageAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
 
@@ -79,9 +79,15 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [noindex, setNoindex] = useState(page.noindex);
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
   const [selected, setSelected] = useState<Sel | null>(null);
+  const [selSection, setSelSection] = useState<number | null>(null);
   const [leftTab, setLeftTab] = useState<"elements" | "page">("elements");
+  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [pending, setPending] = useState(false);
   const [resizing, setResizing] = useState(false);
+
+  function selectWidget(s: Sel) { setSelected(s); setSelSection(null); }
+  function selectSection(si: number) { setSelSection(si); setSelected(null); }
+  function deselect() { setSelected(null); setSelSection(null); }
   const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
 
@@ -114,6 +120,22 @@ export function PageBuilder({ page }: { page: PageInput }) {
     mutate((ss) => {
       const sec = ss.splice(from, 1)[0];
       ss.splice(from < to ? to - 1 : to, 0, sec);
+    });
+  }
+
+  function dupWidget(si: number, ci: number, wi: number) {
+    mutate((ss) => {
+      const w = structuredClone(ss[si].columns[ci].widgets[wi]);
+      ss[si].columns[ci].widgets.splice(wi + 1, 0, w);
+    });
+  }
+
+  function dupSection(si: number) {
+    mutate((ss) => {
+      const clone = structuredClone(ss[si]) as Section;
+      clone.id = uid();
+      clone.columns.forEach((c) => { c.id = uid(); });
+      ss.splice(si + 1, 0, clone);
     });
   }
 
@@ -176,7 +198,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
     let target: Sel | null = null;
     setSections((prev) => {
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), columns: [{ id: uid(), span: 12, widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -184,7 +206,7 @@ export function PageBuilder({ page }: { page: PageInput }) {
       target = { si, ci, wi };
       return ss;
     });
-    if (target) setSelected(target);
+    if (target) selectWidget(target);
   }
 
   const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
@@ -196,13 +218,50 @@ export function PageBuilder({ page }: { page: PageInput }) {
           {selWidget ? (
             <div className="pb-panel__edit">
               <div className="pb-panel__head">
-                <button type="button" className="pb-panel__back" onClick={() => setSelected(null)}>← Elementos</button>
+                <button type="button" className="pb-panel__back" onClick={deselect}>← Elementos</button>
                 <span className="pb-panel__title">{WIDGETS.find((x) => x.type === selWidget.type)?.label}</span>
               </div>
               <div className="pb-panel__scroll">
                 <WidgetForm w={selWidget} onChange={(patch) => mutate((ss) => { Object.assign(ss[selected!.si].columns[selected!.ci].widgets[selected!.wi], patch); })} />
-                <Button type="button" variant="ghost" size="sm" className="mt-3 w-full text-destructive" onClick={() => { mutate((ss) => { ss[selected!.si].columns[selected!.ci].widgets.splice(selected!.wi, 1); }); setSelected(null); }}>
+                <Button type="button" variant="ghost" size="sm" className="mt-3 w-full" onClick={() => dupWidget(selected!.si, selected!.ci, selected!.wi)}>
+                  <Copy className="size-4" /> Duplicar
+                </Button>
+                <Button type="button" variant="ghost" size="sm" className="w-full text-destructive" onClick={() => { mutate((ss) => { ss[selected!.si].columns[selected!.ci].widgets.splice(selected!.wi, 1); }); deselect(); }}>
                   <Trash2 className="size-4" /> Excluir elemento
+                </Button>
+              </div>
+            </div>
+          ) : selSection !== null && sections[selSection] ? (
+            <div className="pb-panel__edit">
+              <div className="pb-panel__head">
+                <button type="button" className="pb-panel__back" onClick={deselect}>← Elementos</button>
+                <span className="pb-panel__title">Seção {selSection + 1}</span>
+              </div>
+              <div className="pb-panel__scroll">
+                <div className="field">
+                  <Label>Fundo</Label>
+                  <select className="pb-select" value={sections[selSection].bg} onChange={(e) => mutate((ss) => { ss[selSection].bg = e.target.value as Section["bg"]; })}>
+                    <option value="none">Nenhum</option>
+                    <option value="muted">Cinza suave</option>
+                    <option value="card">Cartão</option>
+                    <option value="primary">Destaque (cor primária)</option>
+                    <option value="dark">Escuro</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <Label>Espaçamento vertical</Label>
+                  <select className="pb-select" value={sections[selSection].padY} onChange={(e) => mutate((ss) => { ss[selSection].padY = e.target.value as Section["padY"]; })}>
+                    <option value="none">Nenhum</option>
+                    <option value="sm">Pequeno</option>
+                    <option value="md">Médio</option>
+                    <option value="lg">Grande</option>
+                  </select>
+                </div>
+                <Button type="button" variant="ghost" size="sm" className="mt-3 w-full" onClick={() => dupSection(selSection)}>
+                  <Copy className="size-4" /> Duplicar seção
+                </Button>
+                <Button type="button" variant="ghost" size="sm" className="w-full text-destructive" onClick={() => { mutate((ss) => { ss.splice(selSection, 1); }); deselect(); }}>
+                  <Trash2 className="size-4" /> Excluir seção
                 </Button>
               </div>
             </div>
@@ -238,8 +297,8 @@ export function PageBuilder({ page }: { page: PageInput }) {
         </aside>
 
         {/* Canvas (backdrop tela cheia) */}
-        <div className="pb-fs__stage" onClick={() => setSelected(null)}>
-          <div className="pb-fs__page page" onClick={(e) => e.stopPropagation()}>
+        <div className="pb-fs__stage" onClick={deselect}>
+          <div className={cn("pb-fs__page", `pb-dev--${device}`)} onClick={(e) => e.stopPropagation()}>
             {sections.length === 0 && (
               <div className="pb-stage__empty">
                 <p>Comece adicionando um elemento pelo painel à esquerda.</p>
@@ -249,18 +308,21 @@ export function PageBuilder({ page }: { page: PageInput }) {
             {sections.map((s, si) => (
               <div
                 key={s.id}
-                className="pb-sec"
+                className={cn("pb-sec", selSection === si && "pb-sec--selected")}
                 onDragOver={(e) => { if (secDragRef.current !== null) e.preventDefault(); }}
                 onDrop={(e) => { if (secDragRef.current !== null) { e.preventDefault(); dropSection(si); } }}
               >
                 <div className="pb-sec__bar">
                   <span className="pb-sec__handle pb-handle" title="Arrastar seção" draggable onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}><GripVertical className="size-3.5" /></span>
+                  <button type="button" className="pb-mini" title="Configurar seção" onClick={(e) => { e.stopPropagation(); selectSection(si); }}><SlidersHorizontal className="size-3.5" /></button>
                   {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
+                  <button type="button" className="pb-mini" title="Duplicar seção" onClick={() => dupSection(si)}><Copy className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-3.5" /></button>
                   <button type="button" className="pb-mini pb-mini--danger" title="Excluir seção" onClick={() => mutate((ss) => { ss.splice(si, 1); })}><Trash2 className="size-3.5" /></button>
                 </div>
 
+                <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])}>
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
                     <div
@@ -280,13 +342,14 @@ export function PageBuilder({ page }: { page: PageInput }) {
                           <div
                             key={wi}
                             className={cn("pb-el", isSel && "pb-el--selected")}
-                            onClick={(e) => { e.stopPropagation(); setSelected({ si, ci, wi }); }}
+                            onClick={(e) => { e.stopPropagation(); selectWidget({ si, ci, wi }); }}
                             onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
                             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dropWidget({ si, ci, wi }); }}
                           >
                             <span className="pb-el__bar">
                               <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
-                              <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) setSelected(null); }}><Trash2 className="size-3" /></button>
+                              <button type="button" className="pb-mini" title="Duplicar" onClick={(e) => { e.stopPropagation(); dupWidget(si, ci, wi); }}><Copy className="size-3" /></button>
+                              <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) deselect(); }}><Trash2 className="size-3" /></button>
                             </span>
                             <div className="pb-el__content"><WidgetView w={w} /></div>
                           </div>
@@ -301,10 +364,11 @@ export function PageBuilder({ page }: { page: PageInput }) {
                     </div>
                   ))}
                 </div>
+                </div>
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), columns: [{ id: uid(), span: 12, widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
@@ -314,6 +378,11 @@ export function PageBuilder({ page }: { page: PageInput }) {
         <div className="pb-fs__bar">
           <Link href="/admin/paginas" className="pb-fs__exit" title="Sair do editor"><X className="size-4" aria-hidden="true" /></Link>
           <span className="pb-fs__bartitle">{title || "Sem título"}</span>
+          <span className="pb-dev-toggle" role="group" aria-label="Pré-visualização responsiva">
+            <button type="button" className={cn("pb-mini", device === "desktop" && "pb-mini--on")} title="Desktop" onClick={() => setDevice("desktop")}><Monitor className="size-4" /></button>
+            <button type="button" className={cn("pb-mini", device === "tablet" && "pb-mini--on")} title="Tablet" onClick={() => setDevice("tablet")}><Tablet className="size-4" /></button>
+            <button type="button" className={cn("pb-mini", device === "mobile" && "pb-mini--on")} title="Celular" onClick={() => setDevice("mobile")}><Smartphone className="size-4" /></button>
+          </span>
           <span className={`status-pill status-pill--${page.status === "published" ? "published" : "draft"}`}>{page.status === "published" ? "Publicada" : "Rascunho"}</span>
           <span className="ml-1 flex items-center gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={remove}>Excluir</Button>
