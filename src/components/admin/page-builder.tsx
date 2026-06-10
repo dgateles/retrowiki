@@ -4,13 +4,15 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText } from "lucide-react";
+import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY } from "@/components/pages/page-renderer";
 import { savePageAction, deletePageAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
@@ -20,6 +22,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "heading", label: "Título", icon: Heading },
   { type: "text", label: "Texto", icon: Type },
+  { type: "richtext", label: "Texto rico", icon: FileText },
   { type: "image", label: "Imagem", icon: ImageIcon },
   { type: "button", label: "Botão", icon: MousePointerClick },
   { type: "video", label: "Vídeo", icon: Video },
@@ -36,6 +39,7 @@ function newWidget(type: WidgetType): Widget {
   switch (type) {
     case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left" };
     case "text": return { type: "text", text: "Escreva aqui o texto…", align: "left" };
+    case "richtext": return { type: "richtext", doc: { type: "doc", content: [{ type: "paragraph" }] } };
     case "image": return { type: "image", url: "", alt: "", caption: "" };
     case "button": return { type: "button", label: "Saiba mais", href: "/", variant: "primary", align: "left" };
     case "divider": return { type: "divider" };
@@ -90,6 +94,19 @@ export function PageBuilder({ page }: { page: PageInput }) {
   function deselect() { setSelected(null); setSelSection(null); }
   const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
+  const libDragRef = useRef<WidgetType | null>(null);
+
+  // Drop numa coluna: tile da biblioteca → novo widget; senão → reordena.
+  function handleDrop(to: Sel) {
+    if (libDragRef.current) {
+      const type = libDragRef.current;
+      libDragRef.current = null;
+      mutate((ss) => { ss[to.si].columns[to.ci].widgets.splice(to.wi, 0, newWidget(type)); });
+      selectWidget(to);
+      return;
+    }
+    dropWidget(to);
+  }
 
   function mutate(fn: (s: Section[]) => void) {
     setSections((prev) => {
@@ -275,7 +292,16 @@ export function PageBuilder({ page }: { page: PageInput }) {
                 {leftTab === "elements" ? (
                   <div className="pb-lib">
                     {WIDGETS.map((wt) => (
-                      <button key={wt.type} type="button" className="pb-lib__tile" title={`Adicionar ${wt.label}`} onClick={() => addWidget(wt.type)}>
+                      <button
+                        key={wt.type}
+                        type="button"
+                        className="pb-lib__tile"
+                        title={`Clique ou arraste para adicionar ${wt.label}`}
+                        draggable
+                        onDragStart={(e) => { libDragRef.current = wt.type; e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", wt.type); }}
+                        onDragEnd={() => { libDragRef.current = null; }}
+                        onClick={() => addWidget(wt.type)}
+                      >
                         <wt.icon className="size-5" aria-hidden="true" />
                         <span>{wt.label}</span>
                       </button>
@@ -328,8 +354,8 @@ export function PageBuilder({ page }: { page: PageInput }) {
                     <div
                       key={c.id}
                       className={cn("page-col pb-colwrap", COL_SPAN[c.span])}
-                      onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
-                      onDrop={(e) => { e.preventDefault(); dropWidget({ si, ci, wi: c.widgets.length }); }}
+                      onDragOver={(e) => { if (dragRef.current || libDragRef.current) e.preventDefault(); }}
+                      onDrop={(e) => { e.preventDefault(); handleDrop({ si, ci, wi: c.widgets.length }); }}
                     >
                       <div className="pb-colwrap__bar">
                         <span className="pb-colwrap__span" title="Largura na grade de 12">{c.span}/12</span>
@@ -343,8 +369,8 @@ export function PageBuilder({ page }: { page: PageInput }) {
                             key={wi}
                             className={cn("pb-el", isSel && "pb-el--selected")}
                             onClick={(e) => { e.stopPropagation(); selectWidget({ si, ci, wi }); }}
-                            onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
-                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dropWidget({ si, ci, wi }); }}
+                            onDragOver={(e) => { if (dragRef.current || libDragRef.current) e.preventDefault(); }}
+                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop({ si, ci, wi }); }}
                           >
                             <span className="pb-el__bar">
                               <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
@@ -424,6 +450,12 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={5000} rows={5} /></div>
           {align}
         </>
+      )}
+      {w.type === "richtext" && (
+        <div className="field">
+          <Label>Conteúdo</Label>
+          <RichEditor value={w.doc as JSONContent} onChange={(doc) => onChange({ doc } as Partial<Widget>)} />
+        </div>
       )}
       {w.type === "image" && (
         <>

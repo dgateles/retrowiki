@@ -945,9 +945,18 @@ para vencer a layer utilities do Tailwind). Verificado: duplicar gerou 2 título
 fundo `bg-muted/50` + `py-10` da seção renderizam no público; larguras por
 dispositivo e empilhamento mobile conferidos.
 
-**Próximas fases (não entregues):** widget **HTML/Markdown** reusando o pipeline
-de autoria; **blocos reutilizáveis** (salvar seção e reusar); arrastar tile da
-biblioteca direto pro canvas; DnD de **colunas**.
+**Fase 8 entregue:** widget **Texto rico** (HTML/Markdown) que **reaproveita o
+pipeline de autoria** — o mesmo `RichEditor` (abas Rico/Markdown/HTML) no painel e
+o `RichContent` (render seguro de árvore de blocos pela allowlist `RichDocSchema`)
+no canvas e no público; e **arrastar tile da biblioteca direto pro canvas**
+(drag-from-library: o tile é `draggable`, soltar numa coluna insere o widget ali).
+Ajuste de build: `prism.ts` deixou de ser `server-only` (é isomórfico) para o
+`RichContent` poder rodar no preview client do construtor. Verificado: Markdown
+no widget virou `<h2>`/`<strong>`/`<ul>` no canvas e no público; arrastar o
+Divisor da biblioteca adicionou o widget na coluna.
+
+**Próximas fases (não entregues):** **blocos reutilizáveis** (salvar seção e
+reusar); DnD de **colunas**; controles de tipografia/cor por widget.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { pages } from "@/db/schema";
 import { parseVideoEmbed } from "@/lib/video-embed";
 import { ICON_KEYS } from "@/lib/page-icons";
+import { RichDocSchema } from "@/lib/blocks/rich-schema";
 
 // ── Allowlist do layout (seções → colunas → widgets) ────────────────────────
 // Fonte da verdade da segurança: o que não está aqui é descartado. Nada de
@@ -50,6 +51,8 @@ const WidgetSchema = z.discriminatedUnion("type", [
     type: z.literal("iconList"),
     items: z.array(z.object({ icon: z.enum(ICON_KEYS), text: z.string().trim().min(1).max(300) })).min(1).max(15),
   }),
+  // Texto rico: reaproveita o editor (Rico/Markdown/HTML) e a allowlist de blocos.
+  z.object({ type: z.literal("richtext"), doc: RichDocSchema }),
 ]);
 export type Widget = z.infer<typeof WidgetSchema>;
 export type WidgetType = Widget["type"];

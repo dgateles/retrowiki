@@ -4,6 +4,8 @@ import type { Layout, Widget } from "@/lib/pages";
 import type { IconKey } from "@/lib/page-icons";
 import { parseVideoEmbed } from "@/lib/video-embed";
 import { cn } from "@/lib/utils";
+import { RichContent } from "@/components/blocks/rich-content";
+import type { RichDoc } from "@/lib/blocks/rich-schema";
 
 export const SEC_BG: Record<string, string> = {
   none: "", muted: "page-sec--bg bg-muted/50", card: "page-sec--bg bg-card",
@@ -148,6 +150,8 @@ export function WidgetView({ w }: { w: Widget }) {
         </div>
       );
     }
+    case "richtext":
+      return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
     case "iconList":
       return (
         <ul className="page-w__iconlist">

@@ -1,4 +1,5 @@
-import "server-only";
+// Highlight isomórfico (server + client). Usado pelo render de conteúdo rico,
+// inclusive no preview do construtor de páginas (client).
 import Prism from "prismjs";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-json";
