@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Gamepad2, BookOpen, Users, Trophy, Shield, TrendingUp, Globe, Sparkles, Medal, Award, Target } from "lucide-react";
-import { getAdminOverview, getRecentAudit, auditLabel } from "@/lib/panel";
+import { getAdminOverview, getRecentAudit, auditLabel, getGrowthSeries } from "@/lib/panel";
+import { GrowthChart } from "@/components/admin/growth-chart";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ const CARDS = [
 ];
 
 export default async function AdminHome() {
-  const [m, audit] = await Promise.all([getAdminOverview(), getRecentAudit(6)]);
+  const [m, audit, growth] = await Promise.all([getAdminOverview(), getRecentAudit(6), getGrowthSeries(14)]);
   const metrics = [
     { label: "Membros", value: m.members, href: "/admin/membros" },
     { label: "Guias publicados", value: m.published, href: "/admin/artigos?status=published" },
@@ -43,6 +44,8 @@ export default async function AdminHome() {
           </Link>
         ))}
       </div>
+
+      <GrowthChart data={growth} />
 
       {audit.length > 0 && (
         <section className="member-panel mt-6" aria-labelledby="adm-recent">

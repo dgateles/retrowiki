@@ -774,6 +774,44 @@
   .activity__date {
     @apply shrink-0 text-xs;
   }
+  /* Gráfico de crescimento (dashboard) */
+  .growth {
+    @apply flex h-40 items-end gap-1.5;
+  }
+  .growth__col {
+    @apply flex flex-1 flex-col items-center gap-1;
+  }
+  .growth__bars {
+    @apply flex h-32 w-full items-end justify-center gap-0.5;
+  }
+  .growth__bar {
+    @apply w-1/2 max-w-3 rounded-t-sm transition-all;
+    min-height: 2px;
+  }
+  .growth__bar--members {
+    @apply bg-primary;
+  }
+  .growth__bar--guides {
+    @apply bg-amber-500;
+  }
+  .growth__label {
+    @apply text-[10px] tabular-nums text-muted-foreground;
+  }
+  .growth__legend {
+    @apply flex items-center gap-3 text-xs;
+  }
+  .growth__key {
+    @apply inline-flex items-center gap-1.5;
+  }
+  .growth__key::before {
+    @apply size-2.5 rounded-sm content-[''];
+  }
+  .growth__key--members::before {
+    @apply bg-primary;
+  }
+  .growth__key--guides::before {
+    @apply bg-amber-500;
+  }
   /* Dashboard do admin (métricas) */
   .admin-metrics {
     @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5;

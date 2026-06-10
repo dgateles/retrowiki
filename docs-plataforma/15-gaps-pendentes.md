@@ -158,8 +158,9 @@ Implicações de arquitetura:
   e exibe os resultados num `listbox` (com escopo). Item resolvido.
 
 ## Internacionalização
-- **i18n.** A plataforma é só pt-BR. O template (dtbvault) usa next-intl; adotar
-  o mesmo padrão quando for internacionalizar.
+- **i18n.** ADIADO (decisão do produto): a plataforma fica **só em pt-BR** por
+  ora; sem necessidade de internacionalizar nesta versão. Fica para uma versão
+  futura (padrão next-intl do template, quando for o caso).
 
 ## SEO e social
 - **Imagens OpenGraph dinâmicas.** PARCIAL/ENTREGUE: `opengraph-image.tsx` por
@@ -614,12 +615,13 @@ E-mail em massa:
 
 Estatísticas:
 
-- **Painel de métricas.** PARCIAL/ENTREGUE: o dashboard do admin (`/admin`) agora
-  abre com uma linha de **métricas** (membros, guias publicados, em revisão,
-  denúncias abertas, atribuições abertas — cada uma com link para a tela
-  relevante) via `getAdminOverview`, e um bloco de **atividade recente** (últimas
-  ações do `audit_log`). Falta um painel histórico/gráficos de crescimento ao
-  longo do tempo (séries temporais).
+- **Painel de métricas.** ENTREGUE. O dashboard do admin (`/admin`) abre com uma
+  linha de **métricas** (membros, guias publicados, em revisão, denúncias e
+  atribuições abertas — cada uma linkada) via `getAdminOverview`, um **gráfico de
+  crescimento** de 14 dias (`getGrowthSeries` + `GrowthChart`: barras CSS de novos
+  membros e guias por dia, com legenda/totais) e um bloco de **atividade recente**
+  (`audit_log`). Verificado: buckets por dia corretos (datas espalhadas no teste
+  apareceram nos dias certos).
 
 ## Perfil de usuário (detalhamento)
 

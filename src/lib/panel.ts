@@ -142,6 +142,36 @@ export async function getAdminOverview(): Promise<{ members: number; published: 
   }
 }
 
+export type GrowthSeries = { label: string; members: number; guides: number }[];
+
+/** Série de crescimento dos últimos N dias: novos membros e novos guias por dia. */
+export async function getGrowthSeries(days = 14): Promise<GrowthSeries> {
+  try {
+    const { users: u, articles: a } = await import("@/db/schema");
+    const { sql, gte, and: andOp } = await import("drizzle-orm");
+    const cutoff = new Date(Date.now() - (days - 1) * 86400_000);
+    cutoff.setHours(0, 0, 0, 0);
+
+    const [memRows, guideRows] = await Promise.all([
+      db.select({ d: sql<string>`DATE(${u.createdAt})`, n: count() }).from(u).where(gte(u.createdAt, cutoff)).groupBy(sql`DATE(${u.createdAt})`),
+      db.select({ d: sql<string>`DATE(${a.publishedAt})`, n: count() }).from(a).where(andOp(eq(a.status, "published"), gte(a.publishedAt, cutoff))).groupBy(sql`DATE(${a.publishedAt})`),
+    ]);
+
+    const memMap = new Map(memRows.map((r) => [String(r.d), Number(r.n)]));
+    const guideMap = new Map(guideRows.map((r) => [String(r.d), Number(r.n)]));
+
+    const out: GrowthSeries = [];
+    for (let i = 0; i < days; i++) {
+      const dt = new Date(cutoff.getTime() + i * 86400_000);
+      const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+      out.push({ label: `${String(dt.getDate()).padStart(2, "0")}/${String(dt.getMonth() + 1).padStart(2, "0")}`, members: memMap.get(key) ?? 0, guides: guideMap.get(key) ?? 0 });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 /** Contagem de membros por papel de staff. */
 export async function getStaffCounts(): Promise<{ moderators: number; admins: number }> {
   try {
