@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
-import { getCurrentUser } from "@/lib/auth-helpers";
+import { getCurrentUser, can } from "@/lib/auth-helpers";
+import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
+import { Button } from "@/components/ui/button";
+import { FileText, Mail } from "lucide-react";
 import { getVisibleFields } from "@/lib/profile-fields";
 import { getReputationSettings } from "@/lib/settings";
 import { levelForReputation } from "@/lib/reputation-levels";
@@ -11,7 +14,8 @@ import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
-import { getAchievementSettings } from "@/lib/settings";
+import { getAchievementSettings, getWarningSettings } from "@/lib/settings";
+import { activePoints, isPostingRestricted } from "@/lib/warnings";
 import { BadgeList } from "@/components/badges/badge-list";
 import { BookOpen, MessageCircle, Award } from "lucide-react";
 
@@ -81,12 +85,37 @@ export default async function ProfilePage({
   );
   const lastSeen = lastSeenText(profile.lastSeenAt);
 
+  // Relação do visitante: dono do perfil ou membro da equipe.
+  const isOwner = Boolean(viewer && Number(viewer.id) === profile.id);
+  const isStaff = can.moderate(viewer);
+  const canSeePrivate = isOwner || isStaff;
+
+  // Advertências (privadas): só o dono ou a equipe veem.
+  const warnSettings = await getWarningSettings();
+  const warnPoints = canSeePrivate && warnSettings.enabled ? await activePoints(profile.id) : 0;
+  const restricted = canSeePrivate && warnSettings.enabled ? await isPostingRestricted(profile.id) : false;
+
+  // E-mail: visível só para a equipe (e para o dono).
+  let profileEmail: string | null = null;
+  if (canSeePrivate) {
+    const { db } = await import("@/db");
+    const { users } = await import("@/db/schema");
+    const { eq } = await import("drizzle-orm");
+    const [row] = await db.select({ email: users.email }).from(users).where(eq(users.id, profile.id)).limit(1);
+    profileEmail = row?.email ?? null;
+  }
+
   return (
     <main id="main" className="page">
-      <div className="profile-cover" aria-hidden="true">
+      <div className="profile-cover">
         {profile.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.coverUrl} alt="" className="profile-cover__img" />
+          <img src={profile.coverUrl} alt="" className="profile-cover__img" aria-hidden="true" />
+        )}
+        {isOwner && (
+          <div className="profile-cover__edit">
+            <ProfileEditMenu />
+          </div>
         )}
       </div>
 
@@ -106,11 +135,23 @@ export default async function ProfilePage({
             <p className="profile-id__meta">Na comunidade desde {joined}</p>
             {lastSeen && <p className="profile-id__meta">{lastSeen}</p>}
           </div>
+          {isOwner && (
+            <Button asChild size="sm" className="profile-id__activity">
+              <Link href="#atividade"><FileText className="size-4" aria-hidden="true" /> Ver minha atividade</Link>
+            </Button>
+          )}
         </div>
       </header>
 
       <div className="profile-grid">
         <aside className="profile-side">
+          {canSeePrivate && warnSettings.enabled && (
+            <section aria-label="Advertências" className="profile-card">
+              <p className="profile-card__big">{warnPoints} {warnPoints === 1 ? "ponto" : "pontos"} de advertência</p>
+              <p className="muted text-sm">{restricted ? "Postagem restrita por advertências." : "Nenhuma restrição aplicada."}</p>
+            </section>
+          )}
+
           {rank && (
             <section aria-label="Rank" className="rank">
               <div className="rank__head">
@@ -157,6 +198,14 @@ export default async function ProfilePage({
                 <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
               </div>
               <BadgeList items={userBadges} />
+            </section>
+          )}
+
+          {profileEmail && (
+            <section aria-label="E-mail" className="profile-card">
+              <p className="profile-card__label"><Mail className="size-4" aria-hidden="true" /> E-mail</p>
+              <p className="profile-card__value">{profileEmail}</p>
+              <p className="muted text-xs">Só a equipe vê os endereços de e-mail.</p>
             </section>
           )}
         </aside>

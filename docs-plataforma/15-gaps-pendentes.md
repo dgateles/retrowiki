@@ -634,9 +634,11 @@ Cabeçalho:
   "Missões", "Leaderboard" e "Equipe" não precisam ficar na barra principal do
   topo; no ajuste geral de UX, mover para um lugar melhor (ex.: menu "Comunidade"
   agrupado, menu do usuário, ou rodapé). Não mexer agora — fica para o overhaul.
-- **Editar perfil (dropdown).** Para o dono do perfil: editar foto, enviar capa,
-  editar perfil, configurações da conta. Depende do upload de mídia (avatar e
-  capa), hoje só temos a capa em gradiente e o avatar com iniciais.
+- **Editar perfil (dropdown).** ENTREGUE (perfil `/u/[handle]` aproximado ao IPB).
+  Para o **dono**: dropdown "Editar perfil" no canto da capa com Foto e capa
+  (`/conta?secao=geral`), Galeria de fotos, Editar perfil (`?secao=perfil`) e
+  Configurações da conta; botão **"Ver minha atividade"** no header. Verificado:
+  dropdown abre com os 4 itens; aparece só para o dono.
 - **Presença.** PARCIAL/ENTREGUE: `lastSeenAt` agora é gravado no `getCurrentUser`
   (throttle de 5 min) e exibido no perfil `/u/[handle]` como "Online agora" /
   "Visto por último há X" (verificado). Falta só "Agora" (o que o usuário está
@@ -649,16 +651,20 @@ Cabeçalho:
 
 Barra lateral:
 
-- **Pontos de advertência.** Cartão com o total de warnings e restrições ativas
-  (depende do sistema de avisos do painel de admin).
-- **Rank.** Já existe.
-- **E-mail.** Visível só para a equipe ("Only staff can see email addresses").
-- **Posts.** Contagem de publicações, com link para a atividade.
-- **Reputação.** Total com rótulo (Neutra, Boa, etc.).
-- **Seguidores.** Contagem e ações de seguir/deixar de seguir. Precisa de tabela
-  de follows entre usuários.
-- **Visitantes recentes do perfil.** Quem visitou o perfil (opcional, com
-  opt-out). Precisa registrar visitas.
+- **Pontos de advertência.** ENTREGUE. Card no perfil com os pontos ativos +
+  status de restrição — **privado** (só o dono ou a equipe veem). Verificado:
+  aparece logado como dono; some para anônimo.
+- **Rank.** Já existe (card com barra de progresso).
+- **E-mail.** ENTREGUE. Card "E-mail" no perfil, **visível só para o dono e a
+  equipe** ("Só a equipe vê os endereços de e-mail"). Verificado: e-mail NÃO
+  aparece para anônimo (sem vazamento).
+- **Posts e Reputação.** Já no card de estatísticas do perfil (Publicações,
+  Reputação com rótulo, Papel).
+- **Seguidores.** N-A no RetroWiki: não há follow **entre usuários** (só follow
+  de tópico/guia). Precisaria de uma tabela de follows entre membros — fica para
+  uma feature futura se a comunidade pedir.
+- **Visitantes recentes do perfil.** N-A: não rastreamos visitas a perfil
+  (privacidade). Ficaria para uma feature futura com opt-out.
 
 Coluna principal:
 

@@ -1943,11 +1943,30 @@
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
+  .profile-cover__edit {
+    @apply absolute right-3 top-3 z-10;
+  }
+  .profile-id__activity {
+    @apply shrink-0;
+  }
   .profile-grid {
     @apply mt-8 grid gap-6 md:grid-cols-[260px_1fr];
   }
   .profile-side {
     @apply space-y-4;
+  }
+  /* Cards laterais do perfil (estilo IPB: advertências, e-mail) */
+  .profile-card {
+    @apply rounded-lg border border-border bg-card p-4;
+  }
+  .profile-card__big {
+    @apply text-lg font-semibold;
+  }
+  .profile-card__label {
+    @apply flex items-center gap-2 text-sm font-medium text-muted-foreground;
+  }
+  .profile-card__value {
+    @apply mt-1 truncate font-medium;
   }
   .profile-stats {
     @apply divide-y divide-border rounded-lg border border-border bg-card;
