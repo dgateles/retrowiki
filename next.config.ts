@@ -38,6 +38,27 @@ const nextConfig: NextConfig = {
   },
   // Baseline security headers. HSTS is applied by the reverse proxy in prod.
   async headers() {
+    // CSP estática (compatível com páginas estáticas do Next). 'unsafe-inline'
+    // nos scripts é exigido pelos scripts de bootstrap/hidratação do Next em
+    // páginas pré-renderizadas — o nonce só funcionaria forçando tudo dinâmico.
+    // As demais diretivas seguem restritas (sem scripts externos, sem eval em
+    // prod, img/connect/frame/object travados). Aplicada só em produção para
+    // não quebrar o HMR (websocket/eval) do `next dev`.
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self'",
+      "connect-src 'self'",
+      "worker-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     return [
       {
         source: "/:path*",
@@ -53,6 +74,9 @@ const nextConfig: NextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
+          ...(process.env.NODE_ENV === "production"
+            ? [{ key: "Content-Security-Policy", value: csp }]
+            : []),
         ],
       },
     ];

@@ -180,16 +180,21 @@ notificação ao citado atendem.
   agendamento** no Coolify (ou disparador externo) para chamá-los periodicamente
   (ex.: maintenance 1x/dia, digest a cada 15 min). Verificados manualmente (200
   com token, 401 sem).
-- **CSP completa.** ENTREGUE. `src/middleware.ts` aplica uma CSP **baseada em
-  nonce** por requisição: `script-src 'self' 'nonce-…' 'strict-dynamic'` (Next
-  injeta o nonce nos próprios scripts), `style-src 'self' 'unsafe-inline'` (estilos
-  inline do React), `img-src 'self' data: blob: https:` (BunnyCDN/avatares),
-  `font-src/connect-src/worker-src/form-action 'self'`, `object-src 'none'`,
-  `base-uri 'self'`, `frame-ancestors 'none'`, `upgrade-insecure-requests`.
-  `'unsafe-eval'` só em dev (React Refresh). Verificado no navegador: header com
-  nonce presente, hydration/tema OK, **worker do RetroGuard** carrega, login e
-  server actions (POST same-origin) funcionam, **zero violações** no console na
-  home, cadastro e admin. Os demais headers seguem no `next.config.ts`.
+- **CSP completa.** ENTREGUE (CSP estática no `next.config.ts`, só em produção).
+  NOTA: a primeira tentativa usou CSP **baseada em nonce** via middleware, mas
+  isso **quebra páginas estáticas** do Next (o nonce muda por requisição e o HTML
+  pré-renderizado fica com scripts sem nonce → bloqueados → login não hidratava).
+  Nonce só funciona forçando tudo dinâmico. Solução final: CSP estática —
+  `default-src 'self'`; `script-src 'self' 'unsafe-inline'` (exigido pelos scripts
+  de bootstrap/hidratação do Next em SSG); `style-src 'self' 'unsafe-inline'`;
+  `img-src 'self' data: blob: https:` (BunnyCDN/avatares);
+  `font-src/connect-src/worker-src/form-action 'self'`; `object-src 'none'`;
+  `base-uri 'self'`; `frame-ancestors 'none'`; `upgrade-insecure-requests`.
+  Aplicada só em produção (não quebra o HMR do `next dev`). Verificado: header
+  presente nas páginas estáticas, **login/hydration funcionam**, zero violações.
+  Trade-off: `'unsafe-inline'` em scripts é a limitação conhecida do Next com SSG;
+  mesmo assim bloqueia scripts externos, eval em prod, e trava img/connect/frame/
+  object. Endurecer mais exigiria renderização dinâmica global (nonce) ou hashes.
 
 ## Painel de administração completo (referência IPB)
 
