@@ -1497,10 +1497,10 @@
 
   /* Cabeçalho do post de blog (capa larga + título + autoria). */
   .blog-head {
-    @apply mt-2;
+    @apply block;
   }
   .blog-head__cover {
-    @apply aspect-[1200/420] w-full rounded-xl border border-border object-cover;
+    @apply h-44 w-full rounded-xl border border-border object-cover sm:h-56 lg:h-64;
   }
   .blog-head__bar {
     @apply mt-5 flex items-start justify-between gap-4;
@@ -2174,7 +2174,8 @@
 
   /* Trilha de navegação. */
   .crumbs {
-    @apply flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground;
+    /* 20px acima (compensa o py-10 da .page) e 20px abaixo, padronizado. */
+    @apply -mt-5 mb-5 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground;
   }
   .crumbs__link {
     @apply hover:text-foreground;
@@ -2188,7 +2189,7 @@
 
   /* Cabeçalho do tópico. */
   .thread-head {
-    @apply mt-4 flex flex-wrap items-start justify-between gap-3;
+    @apply flex flex-wrap items-start justify-between gap-3;
   }
   .thread-head__title {
     @apply text-2xl font-bold tracking-tight md:text-3xl;
@@ -2200,6 +2201,16 @@
   /* Post estilo fórum. */
   .post {
     @apply mt-5 overflow-hidden rounded-xl border border-primary/30 bg-card;
+  }
+  /* Blog: corpo flui direto sob o byline, sem caixa separada (estilo IPB). */
+  .post--flush {
+    @apply mt-0 overflow-visible rounded-none border-0 bg-transparent;
+  }
+  .post--flush .post__body {
+    @apply px-0 pt-6;
+  }
+  .post--flush .post__footer {
+    @apply mt-4 px-0;
   }
   .post__header {
     @apply flex items-start justify-between gap-3 border-b border-border p-4;

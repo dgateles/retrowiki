@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,25 @@ export function ReactionBar({
   const [mine, setMine] = useState<number | null>(initialReaction);
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  // Fecha ao clicar fora ou apertar Esc (o mouseleave fechava cedo demais ao
+  // cruzar o vão entre o botão e as opções).
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (triggerRef.current && !triggerRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   function react(id: number) {
     const prevCounts = counts;
@@ -94,7 +113,7 @@ export function ReactionBar({
         {total > 0 && <span className="react-bar__count tabular-nums">{total}</span>}
       </div>
 
-      <div className="react-trigger" onMouseLeave={() => setOpen(false)}>
+      <div className="react-trigger" ref={triggerRef}>
         <div className={cn("react-trigger__menu", open && "react-trigger__menu--open")} role="menu">
           {reactions.map((r) => (
             <button
@@ -115,12 +134,12 @@ export function ReactionBar({
         <button
           type="button"
           className={cn("react-trigger__btn", mine != null && "react-trigger__btn--on")}
-          onClick={() => (mine != null ? react(mine) : setOpen((o) => !o))}
+          onClick={() => setOpen(true)}
           onMouseEnter={() => setOpen(true)}
           disabled={pending}
           aria-haspopup="menu"
           aria-expanded={open}
-          aria-label={mine != null ? `Você reagiu: ${myReaction?.name}. Remover` : "Reagir"}
+          aria-label={mine != null ? `Você reagiu: ${myReaction?.name}. Trocar ou remover` : "Reagir"}
         >
           {myReaction ? <span aria-hidden="true">{myReaction.emoji}</span> : <Heart className="size-5" aria-hidden="true" />}
         </button>

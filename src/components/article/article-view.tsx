@@ -138,7 +138,7 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
         </div>
       )}
 
-      <article className="post">
+      <article className={isBlog ? "post post--flush" : "post"}>
         {!isBlog && (
           <header className="post__header">
             <div className="post__author">
