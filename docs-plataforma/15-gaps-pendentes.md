@@ -145,8 +145,15 @@ Implicações de arquitetura:
   armazenamento, conforme o doc de segurança.
 
 ## Busca e descoberta
-- **Ranking de busca.** A busca usa `LIKE` simples. Migrar para FULLTEXT do MySQL
-  ou um índice dedicado (Meilisearch/Typesense) quando o volume justificar.
+- **Ranking de busca.** ENTREGUE (FULLTEXT do MySQL). Migração 0033 cria índices
+  `FULLTEXT` em `articles(title, summary, search_text)` e `devices(name,
+  manufacturer)`. `searchAll` usa `MATCH ... AGAINST(... IN BOOLEAN MODE)` com
+  cada token como `+token*` (exige + prefixo) e ordena por **relevância**
+  (`ORDER BY score DESC`); fallback automático para `LIKE` quando o FULLTEXT não
+  retorna (consultas < 3 letras, stopwords) ou em erro. Verificado: "retroid" e
+  "mapeamento controles" rankeiam por relevância; "sd" cai no LIKE; escopo
+  respeitado. Um índice dedicado (Meilisearch/Typesense) fica para quando o
+  volume justificar.
 - **Autocomplete.** ENTREGUE: o `search-box` do cabeçalho já busca `/api/search`
   e exibe os resultados num `listbox` (com escopo). Item resolvido.
 
