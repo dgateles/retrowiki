@@ -418,13 +418,19 @@ Configurações de membros:
   O **"mostrar no cadastro"** está ligado: os campos marcados aparecem no
   formulário de cadastro (`/auth/cadastrar`), são validados antes de criar a
   conta e salvos no novo usuário.
-  **Conclusão de perfil** (RESOLVIDO, versão leve): nudge no `/painel`
-  (`getProfileCompletion`) quando falta avatar ou há campos de perfil editáveis
-  vazios, com CTA para `/conta?secao=perfil` (verificado). FALTA: **Galeria de
-  fotos** — feature grande e independente (uploads, álbuns, moderação,
-  armazenamento), merece build dedicado. N/A no RetroWiki (sem a feature-base):
-  assinaturas, aniversários, prune de conversas, ignorar membros, formatação de
-  grupo.
+  **Conclusão de perfil** (RESOLVIDO): nudge no `/painel` (`getProfileCompletion`)
+  + **aba admin** em `/admin/perfis` (`profile_completion`: ativar, exigir avatar,
+  exigir campos) — verificado. **Galeria de fotos** (RESOLVIDO): tabela
+  `member_photos`, membro gerencia em `/conta?secao=galeria` (upload via
+  `ImageUpload` folder `gallery` + legenda + excluir, respeitando o limite),
+  exibida no perfil público `/u/[handle]`; aba admin de configuração (ativar +
+  máx. por membro). Migração 0030. Verificado: fotos exibem na conta e no perfil,
+  contador/limite e exclusão. N/A no RetroWiki (sem a feature-base): assinaturas,
+  aniversários, prune de conversas, ignorar membros, formatação de grupo.
+- **Troca de e-mail com confirmação.** RESOLVIDO. `/conta?secao=email`: membro
+  informa o novo e-mail → token `email_change` (1h) enviado ao NOVO endereço →
+  `/auth/confirmar-email` consome e atualiza `users.email` (+ marca verificado).
+  Anti-duplicidade no pedido e na confirmação. Verificado de ponta a ponta.
 - **Reputação e reações.** STATUS: entregue (`/admin/reputacao`, 4 abas).
   **Configurações**: ativa, papéis excluídos, reagir ao próprio conteúdo, mostrar
   reputação no perfil (gate verificado), limiar de destaque, modo de exibição.

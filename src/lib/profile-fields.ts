@@ -14,13 +14,17 @@ async function valuesFor(userId: number): Promise<Map<number, string>> {
   return new Map(rows.map((r) => [r.fieldId, r.value ?? ""]));
 }
 
-/** Avalia a conclusão de perfil: avatar + campos editáveis preenchidos. */
+/** Avalia a conclusão de perfil conforme a configuração do admin. */
 export async function getProfileCompletion(userId: number, hasAvatar: boolean): Promise<{ complete: boolean; missingFields: number; needsAvatar: boolean }> {
   try {
+    const { getProfileCompletionSettings } = await import("@/lib/settings");
+    const settings = await getProfileCompletionSettings();
+    if (!settings.enabled) return { complete: true, missingFields: 0, needsAvatar: false };
+
     const groups = await getEditableFields(userId);
     const editable = groups.flatMap((g) => g.fields);
-    const missingFields = editable.filter((f) => !f.value || f.value.trim() === "").length;
-    const needsAvatar = !hasAvatar;
+    const missingFields = settings.requireFields ? editable.filter((f) => !f.value || f.value.trim() === "").length : 0;
+    const needsAvatar = settings.requireAvatar && !hasAvatar;
     return { complete: missingFields === 0 && !needsAvatar, missingFields, needsAvatar };
   } catch {
     return { complete: true, missingFields: 0, needsAvatar: false };

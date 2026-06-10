@@ -46,6 +46,10 @@ export default async function ProfilePage({
   const gami = await getAchievementSettings();
   const rank = gami.enabled ? await getRankForReputation(profile.reputation) : null;
   if (gami.enabled) await evaluateBadges(profile.id);
+  const { getGallerySettings } = await import("@/lib/settings");
+  const { listPhotos } = await import("@/lib/gallery");
+  const gallerySettings = await getGallerySettings();
+  const photos = gallerySettings.enabled ? await listPhotos(profile.id) : [];
   const userBadges = gami.enabled ? await getUserBadges(profile.id) : [];
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
@@ -132,6 +136,21 @@ export default async function ProfilePage({
 
         <div className="profile-main">
           <ProfileFieldsDisplay groups={profileFields} />
+
+          {photos.length > 0 && (
+            <section aria-labelledby="p-gallery">
+              <h2 id="p-gallery" className="comments__title">Galeria</h2>
+              <ul className="gallery-grid gallery-grid--view mt-4">
+                {photos.map((p) => (
+                  <li key={p.id} className="gallery-grid__item">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.url} alt={p.caption} className="gallery-grid__img" loading="lazy" />
+                    {p.caption && <span className="gallery-grid__cap">{p.caption}</span>}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section aria-labelledby="contrib">
           <h2 id="contrib" className="comments__title">

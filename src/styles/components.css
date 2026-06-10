@@ -742,6 +742,25 @@
   .privacy-tools {
     @apply flex flex-col gap-2;
   }
+  /* Galeria de fotos do membro */
+  .gallery-grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3;
+  }
+  .gallery-grid__item {
+    @apply relative overflow-hidden rounded-lg border border-border bg-card;
+  }
+  .gallery-grid__img {
+    @apply aspect-square w-full object-cover;
+  }
+  .gallery-grid__cap {
+    @apply block truncate px-2 py-1 text-xs text-muted-foreground;
+  }
+  .gallery-grid__del {
+    @apply absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded-full bg-background/80 text-destructive opacity-0 transition-opacity hover:bg-background focus-visible:opacity-100;
+  }
+  .gallery-grid__item:hover .gallery-grid__del {
+    @apply opacity-100;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

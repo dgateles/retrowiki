@@ -238,3 +238,40 @@ export async function getStaffSettings(): Promise<StaffSettings> {
   const raw = await getSetting<Partial<StaffSettings>>("staff", STAFF_DEFAULTS);
   return sanitizeStaffSettings({ ...STAFF_DEFAULTS, ...raw });
 }
+
+// ── Galeria de fotos ──────────────────────────────────────────────────────
+
+export type GallerySettings = { enabled: boolean; maxPhotos: number };
+const GALLERY_DEFAULTS: GallerySettings = { enabled: true, maxPhotos: 12 };
+
+export function sanitizeGallerySettings(raw: unknown): GallerySettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    enabled: r.enabled === undefined ? GALLERY_DEFAULTS.enabled : Boolean(r.enabled),
+    maxPhotos: Math.max(1, Math.min(100, Math.floor(Number(r.maxPhotos) || GALLERY_DEFAULTS.maxPhotos))),
+  };
+}
+
+export async function getGallerySettings(): Promise<GallerySettings> {
+  const raw = await getSetting<Partial<GallerySettings>>("gallery", GALLERY_DEFAULTS);
+  return sanitizeGallerySettings({ ...GALLERY_DEFAULTS, ...raw });
+}
+
+// ── Conclusão de perfil (nudge pós-cadastro) ──────────────────────────────
+
+export type ProfileCompletionSettings = { enabled: boolean; requireAvatar: boolean; requireFields: boolean };
+const COMPLETION_DEFAULTS: ProfileCompletionSettings = { enabled: true, requireAvatar: true, requireFields: true };
+
+export function sanitizeProfileCompletionSettings(raw: unknown): ProfileCompletionSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  return {
+    enabled: r.enabled === undefined ? COMPLETION_DEFAULTS.enabled : Boolean(r.enabled),
+    requireAvatar: r.requireAvatar === undefined ? COMPLETION_DEFAULTS.requireAvatar : Boolean(r.requireAvatar),
+    requireFields: r.requireFields === undefined ? COMPLETION_DEFAULTS.requireFields : Boolean(r.requireFields),
+  };
+}
+
+export async function getProfileCompletionSettings(): Promise<ProfileCompletionSettings> {
+  const raw = await getSetting<Partial<ProfileCompletionSettings>>("profile_completion", COMPLETION_DEFAULTS);
+  return sanitizeProfileCompletionSettings({ ...COMPLETION_DEFAULTS, ...raw });
+}

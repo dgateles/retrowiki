@@ -17,6 +17,10 @@ import { getWarningSettings } from "@/lib/settings";
 import { PrivacyTools } from "@/components/account/privacy-tools";
 import { hasOpenDeletionRequest } from "@/lib/privacy";
 import { BulkMailOptOut } from "@/components/account/bulk-mail-optout";
+import { ChangeEmailForm } from "@/components/account/change-email-form";
+import { GalleryManager } from "@/components/account/gallery-manager";
+import { listPhotos } from "@/lib/gallery";
+import { getGallerySettings } from "@/lib/settings";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -51,6 +55,8 @@ export default async function AccountPage({
   const warnPoints = active === "avisos" && warnSettings?.membersCanSee ? await activePoints(Number(user.id)) : 0;
   const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
   const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
+  const gallerySettings = active === "galeria" ? await getGallerySettings() : null;
+  const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotos(Number(user.id)) : [];
   const fmtWarn = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
   return (
@@ -145,6 +151,20 @@ export default async function AccountPage({
             </section>
           )}
 
+          {active === "galeria" && (
+            <section aria-labelledby="s-gal" className="settings-section">
+              <h2 id="s-gal" className="settings-section__title">Galeria de fotos</h2>
+              {!gallerySettings?.enabled ? (
+                <p className="empty mt-4">A galeria de fotos está desativada.</p>
+              ) : (
+                <>
+                  <p className="settings-section__desc">Fotos exibidas no seu perfil público.</p>
+                  <div className="mt-4"><GalleryManager photos={photos} max={gallerySettings.maxPhotos} /></div>
+                </>
+              )}
+            </section>
+          )}
+
           {active === "avisos" && (
             <section aria-labelledby="s-avisos" className="settings-section">
               <h2 id="s-avisos" className="settings-section__title">Advertências</h2>
@@ -199,8 +219,10 @@ export default async function AccountPage({
           {active === "email" && (
             <section aria-labelledby="s-email" className="settings-section">
               <h2 id="s-email" className="settings-section__title">E-mail</h2>
-              <p className="settings-section__desc">Seu e-mail atual é {user.email}.</p>
-              <p className="empty mt-4">A troca de e-mail com confirmação está em desenvolvimento.</p>
+              <p className="settings-section__desc">Altere o e-mail da conta com confirmação no novo endereço.</p>
+              <div className="mt-4">
+                <ChangeEmailForm current={user.email} />
+              </div>
             </section>
           )}
 

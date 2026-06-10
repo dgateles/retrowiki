@@ -14,7 +14,7 @@ export function ImageUpload({
 }: {
   value: string;
   onChange: (url: string) => void;
-  folder: "badges" | "ranks" | "quests" | "avatars" | "covers";
+  folder: "badges" | "ranks" | "quests" | "avatars" | "covers" | "gallery";
   shape?: "rect" | "round";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);

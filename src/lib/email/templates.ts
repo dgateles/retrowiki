@@ -43,6 +43,18 @@ export function resetPassword(raw: string) {
   };
 }
 
+export function emailChange(raw: string) {
+  const url = `${env.APP_URL}/auth/confirmar-email?token=${raw}`;
+  return {
+    subject: "Confirme seu novo e-mail — RetroWiki",
+    html: shell(
+      "Confirmar novo e-mail",
+      `<p>Recebemos um pedido para alterar o e-mail da sua conta para este endereço.</p>${button(url, "Confirmar novo e-mail")}<p style="font-size:12px;color:#8b98a5">O link expira em 1 hora. Se não foi você, ignore.</p>`,
+    ),
+    text: `Confirme seu novo e-mail: ${url} (expira em 1h). Se não foi você, ignore.`,
+  };
+}
+
 export function passwordChanged() {
   return {
     subject: "Sua senha foi alterada — RetroWiki",

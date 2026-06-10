@@ -10,7 +10,8 @@ import { createToken, consumeToken } from "@/lib/tokens";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyCaptcha, type Solution } from "@/lib/captcha";
 import { sendEmail } from "@/lib/email/mailer";
-import { verifyEmail, resetPassword as resetTpl, passwordChanged } from "@/lib/email/templates";
+import { verifyEmail, resetPassword as resetTpl, passwordChanged, emailChange as emailChangeTpl } from "@/lib/email/templates";
+import { requireUser } from "@/lib/auth-helpers";
 import { slugify } from "@/lib/utils";
 import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profile-fields";
 import { isBanned } from "@/lib/admin/ban-filters";
@@ -117,6 +118,47 @@ export async function verifyEmailAction(token: string): Promise<ActionResult> {
 }
 
 const EmailSchema = z.object({ email: z.email() });
+
+/** Solicita troca de e-mail: envia confirmação para o NOVO endereço. */
+export async function requestEmailChangeAction(input: { email: string }): Promise<ActionResult> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const rl = await checkRateLimit(`emailchange:${user.id}`, 5, 10 * 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas tentativas. Tente mais tarde." };
+
+  const parsed = EmailSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "E-mail inválido." };
+  const newEmail = parsed.data.email.toLowerCase();
+
+  const [me] = await db.select({ email: users.email }).from(users).where(eq(users.id, Number(user.id))).limit(1);
+  if (me?.email === newEmail) return { ok: false, error: "Esse já é o seu e-mail atual." };
+
+  const [taken] = await db.select({ id: users.id }).from(users).where(eq(users.email, newEmail)).limit(1);
+  if (taken) return { ok: false, error: "Esse e-mail já está em uso." };
+
+  const raw = await createToken("email_change", newEmail, Number(user.id));
+  try {
+    await sendEmail({ to: newEmail, ...emailChangeTpl(raw) });
+  } catch {
+    /* silencioso */
+  }
+  return { ok: true, message: "Enviamos um link de confirmação para o novo e-mail." };
+}
+
+/** Confirma a troca de e-mail a partir do token enviado ao novo endereço. */
+export async function confirmEmailChangeAction(token: string): Promise<ActionResult> {
+  const row = await consumeToken(token, "email_change");
+  if (!row || !row.userId) return { ok: false, error: "Link inválido ou expirado." };
+  // o novo e-mail pode ter sido tomado nesse meio-tempo
+  const [taken] = await db.select({ id: users.id }).from(users).where(eq(users.email, row.email)).limit(1);
+  if (taken && taken.id !== row.userId) return { ok: false, error: "Esse e-mail já está em uso." };
+  await db.update(users).set({ email: row.email, emailVerifiedAt: new Date() }).where(eq(users.id, row.userId));
+  return { ok: true, message: "E-mail atualizado com sucesso." };
+}
 
 export async function requestPasswordResetAction(input: { email: string }): Promise<ActionResult> {
   const rl = await checkRateLimit(`reset:${await ip()}`, 5, 10 * 60_000);

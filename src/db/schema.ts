@@ -532,6 +532,16 @@ export const questCompletions = mysqlTable("quest_completions", {
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
 
+// Galeria de fotos do membro (exibida no perfil público).
+export const memberPhotos = mysqlTable("member_photos", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  url: varchar("url", { length: 500 }).notNull(),
+  caption: varchar("caption", { length: 200 }).notNull().default(""),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("member_photos_user_idx").on(t.userId, t.sortOrder)]);
+
 // Pedidos de privacidade (LGPD): exclusão de conta solicitada pelo membro.
 export const privacyRequests = mysqlTable("privacy_requests", {
   id: pk(),

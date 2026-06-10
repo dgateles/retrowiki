@@ -13,6 +13,7 @@ const FOLDERS: Record<string, "admin" | "user"> = {
   quests: "admin",
   avatars: "user",
   covers: "user",
+  gallery: "user",
 };
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB

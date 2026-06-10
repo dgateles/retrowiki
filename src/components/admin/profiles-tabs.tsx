@@ -4,7 +4,9 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ProfileFieldsManager } from "@/components/admin/profile-fields-manager";
 import { ProfileSettingsForm } from "@/components/admin/profile-settings-form";
+import { GallerySettingsForm, ProfileCompletionSettingsForm } from "@/components/admin/profile-extra-settings";
 import type { GroupWithFields } from "@/lib/admin/profile-fields";
+import type { GallerySettings, ProfileCompletionSettings } from "@/lib/settings";
 
 type Tab = "campos" | "config" | "completar" | "galeria";
 
@@ -18,9 +20,13 @@ const TABS: { key: Tab; label: string }[] = [
 export function ProfilesTabs({
   groups,
   settings,
+  gallery,
+  completion,
 }: {
   groups: GroupWithFields[];
   settings: { nameMin: number; nameMax: number };
+  gallery: GallerySettings;
+  completion: ProfileCompletionSettings;
 }) {
   const [tab, setTab] = useState<Tab>("campos");
   return (
@@ -42,12 +48,8 @@ export function ProfilesTabs({
       <div className="mt-5">
         {tab === "campos" && <ProfileFieldsManager groups={groups} />}
         {tab === "config" && <ProfileSettingsForm initial={settings} />}
-        {tab === "completar" && (
-          <p className="muted">Etapas de conclusão de perfil pós-cadastro. Em breve.</p>
-        )}
-        {tab === "galeria" && (
-          <p className="muted">Galeria de fotos dos membros. Em breve.</p>
-        )}
+        {tab === "completar" && <ProfileCompletionSettingsForm initial={completion} />}
+        {tab === "galeria" && <GallerySettingsForm initial={gallery} />}
       </div>
     </div>
   );
