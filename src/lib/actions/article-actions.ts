@@ -42,7 +42,7 @@ function validateBody(
 }
 import { slugify } from "@/lib/utils";
 
-type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
+type Result<T = unknown> = { ok: boolean; error?: string; message?: string; data?: T };
 
 const CreateSchema = z.object({
   title: z.string().min(8, "Título muito curto (mínimo 8 caracteres).").max(140),
@@ -143,6 +143,40 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
   return { ok: true, data: { id: articleId } };
 }
 
+/** Edição de um artigo JÁ PUBLICADO: cria uma nova revisão pendente sem derrubar
+ * a versão no ar. A troca só ocorre quando um moderador aprova. */
+export async function proposeEditAction(articleId: number, input: unknown): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const rl = await checkRateLimit(`propose:${user.id}`, 10, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas ações. Aguarde um momento." };
+
+  const gate = await postingGate(Number(user.id));
+  if (!gate.ok) return { ok: false, error: gate.error };
+
+  const parsed = CreateSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+
+  const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+  if (!article) return { ok: false, error: "Conteúdo não encontrado." };
+  if (article.authorId !== Number(user.id)) return { ok: false, error: "Sem permissão." };
+  if (article.status !== "published") return { ok: false, error: "Use o fluxo de rascunho para conteúdo não publicado." };
+
+  const checked = validateBody(parsed.data.body);
+  if (!checked.ok) return { ok: false, error: checked.error };
+
+  // Nova revisão (não vira a corrente) + review pendente para a fila.
+  const [rev] = await db.insert(revisions).values({ articleId, body: checked.body, editorId: Number(user.id) });
+  const revisionId = (rev as unknown as { insertId: number }).insertId;
+  await db.insert(reviews).values({ revisionId, decision: "pending" });
+
+  return { ok: true, message: "Alteração enviada para revisão. A versão atual continua no ar até a aprovação." };
+}
+
 export async function submitForReviewAction(articleId: number): Promise<Result> {
   let session;
   try {
@@ -222,17 +256,17 @@ export async function moderateAction(input: unknown): Promise<Result> {
     .set({ decision, reviewerId: Number(mod.id), reason: reason ?? null })
     .where(eq(reviews.id, reviewId));
 
-  const status =
-    decision === "approved" ? "published" : decision === "rejected" ? "rejected" : "changes_requested";
-  await db
-    .update(articles)
-    .set({
-      status,
-      ...(decision === "approved"
-        ? { currentRevisionId: rev.id, publishedAt: new Date() }
-        : {}),
-    })
-    .where(eq(articles.id, article.id));
+  // Edição proposta sobre um artigo já publicado: a versão no ar permanece;
+  // recusar/pedir ajustes NÃO derruba o conteúdo, só descarta a proposta.
+  const isProposalOnLive = article.status === "published" && article.currentRevisionId !== rev.id;
+
+  if (decision === "approved") {
+    await db.update(articles).set({ status: "published", currentRevisionId: rev.id, publishedAt: article.publishedAt ?? new Date() }).where(eq(articles.id, article.id));
+  } else if (!isProposalOnLive) {
+    const status = decision === "rejected" ? "rejected" : "changes_requested";
+    await db.update(articles).set({ status }).where(eq(articles.id, article.id));
+  }
+  // se isProposalOnLive e não aprovado: nada muda no artigo (segue publicado).
 
   await db.insert(auditLog).values({
     actorId: Number(mod.id),

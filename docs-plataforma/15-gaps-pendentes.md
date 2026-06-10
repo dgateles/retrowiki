@@ -110,9 +110,16 @@ Implicações de arquitetura:
   para gerenciá-las. Os guias de compra antigos foram deixados de fora da
   migração porque dependem de links de afiliado reais. Falta: uma tela de admin
   de lojas, o seed de lojas, e a migração ou reescrita dos guias de compra.
-- **Edição de artigos já publicados.** Hoje só rascunhos são editáveis. O fluxo
-  descrito nos docs (editar publicado gera uma nova revisão pendente sem derrubar
-  a versão no ar) ainda não foi implementado.
+- **Edição de artigos já publicados.** ENTREGUE. O autor edita o guia publicado
+  (botão "Editar guia" no guia → `/estudio/[id]`); `proposeEditAction` cria uma
+  **nova revisão + review pendente** sem tocar no artigo (status/`currentRevisionId`
+  intactos). `moderateAction` ganhou o guard `isProposalOnLive`: aprovar troca a
+  `currentRevisionId` (conteúdo novo entra no ar, segue `published`); rejeitar/pedir
+  ajustes NÃO derruba o no ar. Vale para os dois editores (rico e blocos).
+  Verificado: propor → no ar intacto (rev antiga) → aprovar troca a revisão;
+  propor → rejeitar mantém publicado. LIMITAÇÃO: só o **corpo** é versionado;
+  título/tipo/console não entram na revisão (mudança de título num guia publicado
+  não é diferida — exigiria versionar esses campos).
 
 ## Notificações
 - **Preferências por canal e tipo.** A tabela `notification_prefs` existe, mas não

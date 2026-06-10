@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Pencil } from "lucide-react";
 import { getPublishedArticle, typeLabel } from "@/lib/articles";
 import { recordView } from "@/lib/article-views";
 import { listComments, isFollowing, commentDocFromBody } from "@/lib/comments";
@@ -177,6 +177,9 @@ export default async function ArticlePage({
               </>
             )}
           </span>
+          {userId === a.authorId && (
+            <Link href={`/estudio/${a.id}`} className="report-trigger"><Pencil className="size-4" aria-hidden="true" /><span>Editar guia</span></Link>
+          )}
           {userId && userId !== a.authorId && reportTypeOpts.length > 0 && (
             <ReportButton targetType="article" targetId={a.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} />
           )}

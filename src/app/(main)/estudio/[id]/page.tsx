@@ -21,20 +21,22 @@ export default async function EditDraftPage({
   const article = await getArticleForEdit(Number(id));
   if (!article) notFound();
   if (article.authorId !== Number(session.user.id)) notFound();
-  if (article.status === "published") redirect(`/guias`);
 
+  const published = article.status === "published";
   const body: unknown = article.body;
 
   return (
     <main id="main" className="page">
       <h1 className="page__title">Editar conteúdo</h1>
       <p className="page__note">
-        Ao enviar, o conteúdo volta para a fila de moderação.
+        {published
+          ? "Este guia está no ar. Sua alteração vai para revisão e só substitui a versão atual quando aprovada."
+          : "Ao enviar, o conteúdo volta para a fila de moderação."}
       </p>
       <div className="mt-6">
         {isRichDoc(body) ? (
           <RichArticleEditor
-            initial={{ articleId: article.id, title: article.title, type: article.type, doc: body as JSONContent }}
+            initial={{ articleId: article.id, title: article.title, type: article.type, doc: body as JSONContent, published }}
           />
         ) : (
           <BlockEditor
@@ -43,6 +45,7 @@ export default async function EditDraftPage({
               title: article.title,
               type: article.type,
               blocks: article.body.blocks,
+              published,
             }}
           />
         )}

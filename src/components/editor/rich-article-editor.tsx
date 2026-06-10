@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { createDraftAction, updateDraftAction, submitForReviewAction } from "@/lib/actions/article-actions";
+import { createDraftAction, updateDraftAction, submitForReviewAction, proposeEditAction } from "@/lib/actions/article-actions";
 
 const TYPES = [
   { type: "tutorial", label: "Tutorial" },
@@ -18,7 +18,7 @@ const TYPES = [
   { type: "general", label: "Geral" },
 ] as const;
 
-type Initial = { articleId: number; title: string; type: string; doc: JSONContent };
+type Initial = { articleId: number; title: string; type: string; doc: JSONContent; published?: boolean };
 
 export function RichArticleEditor({ initial }: { initial?: Initial }) {
   const router = useRouter();
@@ -66,6 +66,21 @@ export function RichArticleEditor({ initial }: { initial?: Initial }) {
     }
   }
 
+  // Edição de um guia publicado: cria revisão pendente sem derrubar o no ar.
+  async function onProposeEdit() {
+    if (!initial?.articleId) return;
+    setPending(true);
+    const payload = { title, type: type as (typeof TYPES)[number]["type"], deviceId: null, body: JSON.stringify(doc ?? { type: "doc", content: [{ type: "paragraph" }] }) };
+    const res = await proposeEditAction(initial.articleId, payload);
+    setPending(false);
+    if (res.ok) {
+      toast.success(res.message ?? "Alteração enviada para revisão.");
+      router.push(`/guias`);
+    } else {
+      toast.error(res.error ?? "Falha ao enviar.");
+    }
+  }
+
   return (
     <form onSubmit={(e) => e.preventDefault()} className="editor">
       <div className="field">
@@ -87,12 +102,20 @@ export function RichArticleEditor({ initial }: { initial?: Initial }) {
       </div>
 
       <div className="btn-row">
-        <Button type="button" variant="outline" onClick={onSaveDraft} disabled={pending || title.length < 8}>
-          {pending ? "Salvando…" : "Salvar rascunho"}
-        </Button>
-        <Button type="button" onClick={onSubmitReview} disabled={pending || title.length < 8}>
-          Enviar para revisão
-        </Button>
+        {initial?.published ? (
+          <Button type="button" onClick={onProposeEdit} disabled={pending || title.length < 8}>
+            {pending ? "Enviando…" : "Enviar alteração para revisão"}
+          </Button>
+        ) : (
+          <>
+            <Button type="button" variant="outline" onClick={onSaveDraft} disabled={pending || title.length < 8}>
+              {pending ? "Salvando…" : "Salvar rascunho"}
+            </Button>
+            <Button type="button" onClick={onSubmitReview} disabled={pending || title.length < 8}>
+              Enviar para revisão
+            </Button>
+          </>
+        )}
       </div>
     </form>
   );
