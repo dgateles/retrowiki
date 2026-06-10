@@ -97,6 +97,14 @@ function matches(stats: MemberStats, c: Criteria): boolean {
   return true;
 }
 
+/** Um membro satisfaz um conjunto de critérios? Reusado pela auto-moderação de
+ * denúncias (para diferenciar autores de confiança). */
+export async function memberMatchesCriteria(userId: number, criteria: Criteria): Promise<boolean> {
+  const stats = await statsFor(userId);
+  if (!stats) return false;
+  return matches(stats, criteria);
+}
+
 async function statsFor(userId: number): Promise<MemberStats | null> {
   const [u] = await db
     .select({ role: users.role, reputation: users.reputation, suspended: users.isSuspended, createdAt: users.createdAt, lastSeenAt: users.lastSeenAt })

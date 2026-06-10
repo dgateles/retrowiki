@@ -131,7 +131,18 @@ export async function createReport(reporterId: number, targetType: TargetType, t
         .select({ n: count() })
         .from(contentReports)
         .where(and(eq(contentReports.targetType, targetType), eq(contentReports.targetId, targetId), eq(contentReports.status, "open")));
-      if (Number(c?.n ?? 0) >= settings.autoModThreshold) {
+      const unique = Number(c?.n ?? 0);
+
+      // Limiar efetivo: autores que NÃO satisfazem o critério de confiança usam
+      // o limiar (menor) de "não confiável".
+      let threshold = settings.autoModThreshold;
+      if (settings.trustedAutoMod) {
+        const { sanitizeCriteria, memberMatchesCriteria } = await import("@/lib/admin/promotions");
+        const trusted = await memberMatchesCriteria(author, sanitizeCriteria(settings.trustedCriteria));
+        if (!trusted) threshold = settings.untrustedThreshold;
+      }
+
+      if (unique >= threshold) {
         await hideContent(targetType, targetId);
       }
     }

@@ -130,9 +130,21 @@ export type ReportingSettings = {
   messageMandatory: boolean;
   autoModEnabled: boolean;
   autoModThreshold: number; // nº de denunciantes únicos para ocultar
+  // Auto-moderação por critério de autor: autores que NÃO satisfazem o critério
+  // de confiança são ocultados com um limiar menor.
+  trustedAutoMod: boolean;
+  untrustedThreshold: number;
+  trustedCriteria: Record<string, unknown>; // forma de Criteria (sanitizada no uso)
 };
 
-const REPORTING_DEFAULTS: ReportingSettings = { messageMandatory: false, autoModEnabled: false, autoModThreshold: 5 };
+const REPORTING_DEFAULTS: ReportingSettings = {
+  messageMandatory: false,
+  autoModEnabled: false,
+  autoModThreshold: 5,
+  trustedAutoMod: false,
+  untrustedThreshold: 1,
+  trustedCriteria: {},
+};
 
 export function sanitizeReportingSettings(raw: unknown): ReportingSettings {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
@@ -140,6 +152,9 @@ export function sanitizeReportingSettings(raw: unknown): ReportingSettings {
     messageMandatory: Boolean(r.messageMandatory),
     autoModEnabled: Boolean(r.autoModEnabled),
     autoModThreshold: Math.max(1, Math.min(1000, Math.floor(Number(r.autoModThreshold) || REPORTING_DEFAULTS.autoModThreshold))),
+    trustedAutoMod: Boolean(r.trustedAutoMod),
+    untrustedThreshold: Math.max(1, Math.min(1000, Math.floor(Number(r.untrustedThreshold) || REPORTING_DEFAULTS.untrustedThreshold))),
+    trustedCriteria: r.trustedCriteria && typeof r.trustedCriteria === "object" ? (r.trustedCriteria as Record<string, unknown>) : {},
   };
 }
 

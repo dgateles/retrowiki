@@ -502,10 +502,14 @@ Moderação de conteúdo:
   recebe notificação no sino ao resolver. Tabelas `report_types` /
   `content_reports`. Verificado: denunciar → auto-ocultar (limiar) → fila →
   resolver → autor notificado.
-  ADIADO/N-A: regras de auto-moderação por **critério de autor** (lista estilo
-  Promoções, reaproveita o motor de critérios) — sub-feature substancial; o
-  limiar global de auto-moderação já cobre o núcleo, então fica para um build
-  dedicado. Denúncia por convidado: N-A (RetroWiki exige login).
+  **Auto-moderação por critério de autor** (RESOLVIDO): reaproveita o motor de
+  critérios das Promoções (`memberMatchesCriteria` + `sanitizeCriteria`). Em
+  `/admin/denuncias › Configurações`, além do limiar global, há "ser mais rígido
+  com autores de baixa confiança": define um patamar de confiança (reputação,
+  conteúdo, idade da conta) e um **limiar menor** para quem NÃO o atinge. No
+  `createReport`, autores não confiáveis usam o limiar menor. Verificado: guia de
+  autor 0-rep ocultou com 1 denúncia; guia de autor 200-rep (confiável) seguiu no
+  ar com a mesma denúncia (limiar global 5). Denúncia por convidado: N-A (login).
 - **Prevenção de spam.** STATUS: entregue (`/admin/spam`, 3 abas adaptadas).
   **RetroGuard:** dificuldade do proof-of-work configurável (ligada ao
   `/api/captcha`, verificado ao vivo) + ações ao marcar spammer. **Pergunta &

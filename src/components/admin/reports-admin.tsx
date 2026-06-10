@@ -55,6 +55,9 @@ export function ReportsAdmin({
     setSavingS(false);
     if (res.ok) toast.success("Configurações salvas."); else toast.error(res.error ?? "Falha.");
   }
+  function setCrit(key: string, value: number) {
+    setS((prev) => ({ ...prev, trustedCriteria: { ...prev.trustedCriteria, [key]: value } }));
+  }
 
   const TABS: { key: Tab; label: string }[] = [
     { key: "fila", label: `Fila${queue.length ? ` (${queue.length})` : ""}` },
@@ -130,6 +133,36 @@ export function ReportsAdmin({
                 <Label htmlFor="rs-th">Ocultar conteúdo após (denunciantes únicos)</Label>
                 <Input id="rs-th" type="number" min={1} className="w-32" value={String(s.autoModThreshold)} onChange={(e) => setS({ ...s, autoModThreshold: Math.max(1, Math.floor(Number(e.target.value) || 1)) })} />
               </div>
+
+              {s.autoModEnabled && (
+                <div className="mt-4 border-t border-border/60 pt-4">
+                  <label className="rule-form__check">
+                    <input type="checkbox" checked={s.trustedAutoMod} onChange={(e) => setS({ ...s, trustedAutoMod: e.target.checked })} /> Ser mais rígido com autores de baixa confiança
+                  </label>
+                  {s.trustedAutoMod && (
+                    <>
+                      <p className="muted mt-2 text-xs">Autores que NÃO atingem o patamar abaixo têm o conteúdo ocultado com um limiar menor de denúncias.</p>
+                      <div className="field">
+                        <Label htmlFor="rs-uth">Limiar para autores de baixa confiança</Label>
+                        <Input id="rs-uth" type="number" min={1} className="w-32" value={String(s.untrustedThreshold)} onChange={(e) => setS({ ...s, untrustedThreshold: Math.max(1, Math.floor(Number(e.target.value) || 1)) })} />
+                      </div>
+                      <p className="rule-form__title mt-2">Patamar de confiança do autor</p>
+                      <div className="field">
+                        <Label htmlFor="rs-rep">Reputação mínima</Label>
+                        <Input id="rs-rep" type="number" min={0} className="w-32" value={String(Number(s.trustedCriteria.minReputation ?? 0))} onChange={(e) => setCrit("minReputation", Math.max(0, Math.floor(Number(e.target.value) || 0)))} />
+                      </div>
+                      <div className="field">
+                        <Label htmlFor="rs-cont">Conteúdo mínimo (guias + comentários)</Label>
+                        <Input id="rs-cont" type="number" min={0} className="w-32" value={String(Number(s.trustedCriteria.minContent ?? 0))} onChange={(e) => setCrit("minContent", Math.max(0, Math.floor(Number(e.target.value) || 0)))} />
+                      </div>
+                      <div className="field">
+                        <Label htmlFor="rs-days">Conta com pelo menos (dias)</Label>
+                        <Input id="rs-days" type="number" min={0} className="w-32" value={String(Number(s.trustedCriteria.joinedMinDays ?? 0))} onChange={(e) => setCrit("joinedMinDays", Math.max(0, Math.floor(Number(e.target.value) || 0)))} />
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </section>
             <div className="rule-form__foot">
               <Button type="button" size="sm" onClick={saveSettings} disabled={savingS}>{savingS ? "Salvando…" : "Salvar"}</Button>
