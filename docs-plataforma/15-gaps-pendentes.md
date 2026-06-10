@@ -897,10 +897,16 @@ Verificado no navegador: criar página → adicionar seção + título/texto/bot
 publicar → render público correto + item no menu; um botão com
 `javascript:alert(...)` foi **rejeitado** ("Layout inválido").
 
+**Fase 2 entregue:** widgets **vídeo** (embed YouTube/Vimeo por allowlist —
+`parseVideoEmbed` extrai o ID e monta o iframe `youtube-nocookie`/`player.vimeo`;
+a CSP ganhou `frame-src` para esses dois domínios), **destaque/callout** (tons
+info/atenção/sucesso) e **acordeão** (itens título+corpo, render `<details>`).
+Verificado: os três renderizam na página pública sem erro de CSP; um vídeo com
+URL fora da allowlist foi **rejeitado** na validação.
+
 **Próximas fases (não entregues):** drag-and-drop de verdade; mais widgets
-(acordeão, galeria, embed de vídeo com allowlist, lista de ícones, cartão,
-HTML/Markdown reusando o pipeline de autoria); blocos reutilizáveis; controles
-responsivos por dispositivo.
+(galeria, lista de ícones, cartão, HTML/Markdown reusando o pipeline de autoria);
+blocos reutilizáveis; controles responsivos por dispositivo.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

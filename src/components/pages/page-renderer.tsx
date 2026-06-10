@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Layout, Widget } from "@/lib/pages";
+import { parseVideoEmbed } from "@/lib/video-embed";
 
 const COL_SPAN: Record<string, string> = {
   full: "page-col--full",
@@ -67,6 +68,40 @@ export function WidgetView({ w }: { w: Widget }) {
       return <hr className="page-w__divider" />;
     case "spacer":
       return <div className={`page-w__spacer page-w__spacer--${w.size}`} aria-hidden="true" />;
+    case "video": {
+      const v = parseVideoEmbed(w.url);
+      if (!v) return null;
+      return (
+        <div className="page-w__video">
+          <iframe
+            src={v.src}
+            title="Vídeo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      );
+    }
+    case "callout":
+      return (
+        <div className={`page-w__callout page-w__callout--${w.tone}`}>
+          {w.text.split(/\n+/).map((line, i) => <p key={i}>{line}</p>)}
+        </div>
+      );
+    case "accordion":
+      return (
+        <div className="page-w__accordion">
+          {w.items.map((it, i) => (
+            <details key={i} className="page-w__acc-item">
+              <summary className="page-w__acc-title">{it.title}</summary>
+              <div className="page-w__acc-body">
+                {it.body.split(/\n+/).map((line, j) => <p key={j}>{line}</p>)}
+              </div>
+            </details>
+          ))}
+        </div>
+      );
     default:
       return null;
   }

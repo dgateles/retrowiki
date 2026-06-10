@@ -843,6 +843,16 @@
   .page-w__spacer--sm { @apply h-4; }
   .page-w__spacer--md { @apply h-8; }
   .page-w__spacer--lg { @apply h-16; }
+  .page-w__video { @apply relative aspect-video overflow-hidden rounded-lg border border-border; }
+  .page-w__video iframe { @apply absolute inset-0 size-full; }
+  .page-w__callout { @apply space-y-1 rounded-lg border-l-4 p-4 text-sm; }
+  .page-w__callout--info { @apply border-l-primary bg-primary/5; }
+  .page-w__callout--warn { @apply border-l-amber-500 bg-amber-500/5; }
+  .page-w__callout--success { @apply border-l-emerald-500 bg-emerald-500/5; }
+  .page-w__accordion { @apply divide-y divide-border overflow-hidden rounded-lg border border-border; }
+  .page-w__acc-title { @apply cursor-pointer list-none px-4 py-3 font-medium marker:hidden hover:bg-accent/40; }
+  .page-w__acc-body { @apply space-y-2 px-4 pb-4 text-sm text-muted-foreground; }
+  .pb-acc-item { @apply mb-2 rounded-md border border-border p-2; }
 
   /* ── Construtor de páginas (admin) ──────────────────────────────────── */
   .pb {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,9 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "text", label: "Texto", icon: Type },
   { type: "image", label: "Imagem", icon: ImageIcon },
   { type: "button", label: "Botão", icon: MousePointerClick },
+  { type: "video", label: "Vídeo", icon: Video },
+  { type: "callout", label: "Destaque", icon: Megaphone },
+  { type: "accordion", label: "Acordeão", icon: Rows3 },
   { type: "divider", label: "Divisor", icon: Minus },
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
 ];
@@ -40,6 +43,9 @@ function newWidget(type: WidgetType): Widget {
     case "button": return { type: "button", label: "Saiba mais", href: "/", variant: "primary", align: "left" };
     case "divider": return { type: "divider" };
     case "spacer": return { type: "spacer", size: "md" };
+    case "video": return { type: "video", url: "" };
+    case "callout": return { type: "callout", tone: "info", text: "Texto em destaque." };
+    case "accordion": return { type: "accordion", items: [{ title: "Pergunta", body: "Resposta." }] };
   }
 }
 
@@ -250,6 +256,36 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <select className="pb-select" value={w.size} onChange={(e) => onChange({ size: e.target.value as "sm" | "md" | "lg" })}>
             <option value="sm">Pequeno</option><option value="md">Médio</option><option value="lg">Grande</option>
           </select>
+        </div>
+      )}
+      {w.type === "video" && (
+        <div className="field"><Label>URL do YouTube ou Vimeo</Label><Input value={w.url} onChange={(e) => onChange({ url: e.target.value })} placeholder="https://youtu.be/…" maxLength={500} /></div>
+      )}
+      {w.type === "callout" && (
+        <>
+          <div className="field"><Label>Tom</Label>
+            <select className="pb-select" value={w.tone} onChange={(e) => onChange({ tone: e.target.value as "info" | "warn" | "success" })}>
+              <option value="info">Informação</option><option value="warn">Atenção</option><option value="success">Sucesso</option>
+            </select>
+          </div>
+          <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
+        </>
+      )}
+      {w.type === "accordion" && (
+        <div className="field">
+          <Label>Itens</Label>
+          {w.items.map((it, i) => (
+            <div key={i} className="pb-acc-item">
+              <div className="flex items-center gap-2">
+                <Input value={it.title} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, title: e.target.value } : x) })} placeholder="Título" maxLength={200} />
+                {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover item" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+              <textarea className="pb-textarea mt-1" value={it.body} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, body: e.target.value } : x) })} placeholder="Conteúdo" maxLength={3000} rows={2} />
+            </div>
+          ))}
+          {w.items.length < 15 && (
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { title: "Novo item", body: "Conteúdo." }] })}><Plus className="size-3.5" /> Adicionar item</button>
+          )}
         </div>
       )}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
