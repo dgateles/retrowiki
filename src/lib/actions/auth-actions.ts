@@ -16,6 +16,7 @@ import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profil
 import { isBanned } from "@/lib/admin/ban-filters";
 import { hasQuestions, checkAnswer, geoActionForCountry } from "@/lib/spam";
 import { countryCodeForIp } from "@/lib/geo";
+import { recordReferral } from "@/lib/referrals";
 
 type ActionResult = { ok: boolean; message?: string; error?: string };
 
@@ -35,7 +36,7 @@ const RegisterSchema = z.object({
 });
 
 export async function registerAction(
-  input: { email: string; handle: string; password: string; profileFields?: Record<string, string>; qaQuestionId?: number; qaAnswer?: string },
+  input: { email: string; handle: string; password: string; profileFields?: Record<string, string>; qaQuestionId?: number; qaAnswer?: string; ref?: string },
   captcha: Solution | undefined,
 ): Promise<ActionResult> {
   const clientIp = await ip();
@@ -95,6 +96,7 @@ export async function registerAction(
     });
     const userId = (res as unknown as { insertId: number }).insertId;
     await saveRegistrationValues(userId, profileFields);
+    if (input.ref) await recordReferral(input.ref, userId);
     const raw = await createToken("email_verify", email, userId);
     const tpl = verifyEmail(finalHandle, raw);
     try {

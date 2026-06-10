@@ -291,9 +291,25 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
     (PII). Considerar guardar IP truncado/anonimizado fora do necessário para
     moderação. Liga com Dispositivos & IPs do Member View e com as solicitações
     de exclusão (LGPD).
-- **Solicitações de exclusão (LGPD/PII).** Fluxo para o usuário pedir exclusão da
-  conta e dos dados, e o admin processar; e o "baixar dados pessoais" do Account
-  Actions.
+- **Solicitações de exclusão (LGPD/PII).** STATUS: entregue. Membro em
+  `/conta?secao=seguranca`: **baixar meus dados** (export JSON self-service via
+  `exportUserData` — conta, campos de perfil, guias, comentários, IPs,
+  advertências) e **solicitar exclusão** (`privacy_requests`). Admin em
+  `/admin/privacidade` resolve: **anonimizar** (`anonymizeUser` — nome→"Usuário
+  removido", handle/e-mail neutralizados, avatar/capa/IPs apagados, `deleted_at`,
+  suspenso; conteúdo público preservado e reatribuído) ou recusar. Migração 0029.
+  Verificado: export baixa o JSON; pedido → anonimização (dados apagados, conteúdo
+  mantido, pedido `completed`).
+- **Indicações (Referrals).** STATUS: entregue. Link `/auth/cadastrar?ref=<handle>`
+  capturado no cadastro (`recordReferral` grava `referrals` + `users.referred_by_id`);
+  card "Indique a RetroWiki" no `/painel` (link + contagem, com copiar); admin em
+  `/admin/indicacoes` (ranking de quem mais indicou + total). Verificado: cadastro
+  com `?ref=retrowiki` gravou a indicação e apareceu no admin (Total 1).
+- **E-mail em massa (Bulk Mail).** STATUS: entregue (`/admin/bulk-mail`). Compõe
+  assunto + corpo (HTML simples) + audiência (todos ou por papel) e envia via
+  Resend, excluindo opt-out (`users.bulk_mail_opt_out`) e contas anonimizadas;
+  log dos envios (`bulk_mails`). Opt-out do membro em `/conta?secao=notificacoes`.
+  Verificado: envio para "admins" → 2 e-mails (console dev) + log registrado.
 
 Gamificação (conquistas):
 
@@ -543,8 +559,9 @@ Gerenciamento de páginas e conteúdo:
 
 E-mail em massa:
 
-- **Bulk mail.** Envio segmentado para grupos de membros via Resend, respeitando
-  as supressões (`email_suppressions`) e o opt-out.
+- **Bulk mail.** ENTREGUE (ver "E-mail em massa" acima): `/admin/bulk-mail`,
+  segmentado por papel via Resend, respeitando o opt-out (`bulk_mail_opt_out`).
+  Falta só a tabela de supressões por bounce (`email_suppressions`).
 
 Estatísticas:
 
@@ -600,9 +617,8 @@ Item ao final da fila.
   - **Status online.** Alternar entre visível e oculto. Quando visível, outros
     veem que o usuário está online e o que está vendo. Depende do registro de
     presença (`lastSeenAt`) e de uma flag de privacidade.
-  - **Solicitar dados (PII).** Botão para o usuário pedir uma cópia de todos os
-    dados pessoais armazenados (export LGPD). Conecta com as solicitações de
-    PII do painel de admin.
+  - **Solicitar dados (PII).** ENTREGUE: export self-service em
+    `/conta?secao=seguranca` (baixa JSON) + pedido de exclusão → `/admin/privacidade`.
 - **Dispositivos recentes.** Lista de dispositivos/sessões usados para entrar
   nos últimos 90 dias, com navegador, localização aproximada por IP e "último
   acesso", e ação de desabilitar login automático/encerrar sessão. Precisa

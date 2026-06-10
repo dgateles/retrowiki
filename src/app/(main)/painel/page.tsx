@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReferralCard } from "@/components/account/referral-card";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PenLine, UserRound } from "lucide-react";
@@ -41,6 +42,10 @@ export default async function PanelPage() {
 
   const { getProfileCompletion } = await import("@/lib/profile-fields");
   const completion = await getProfileCompletion(user.id, Boolean(user.avatarUrl));
+  const { getReferralCount } = await import("@/lib/referrals");
+  const { env } = await import("@/lib/env");
+  const referralCount = await getReferralCount(user.id);
+  const referralLink = `${env.APP_URL}/auth/cadastrar?ref=${user.handle}`;
 
   const published = articles.filter((a) => a.status === "published").length;
   const drafts = articles.filter((a) =>
@@ -69,6 +74,8 @@ export default async function PanelPage() {
           <Link href="/conta?secao=perfil" className="profile-nudge__cta">Completar agora</Link>
         </aside>
       )}
+
+      <ReferralCard link={referralLink} count={referralCount} />
 
       <section aria-label="Rank" className="rank mt-6">
         <div className="rank__head">

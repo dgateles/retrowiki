@@ -40,6 +40,9 @@ export const users = mysqlTable(
     coverUrl: varchar("cover_url", { length: 500 }), // capa do perfil (BunnyCDN)
     postingRestrictedUntil: datetime("posting_restricted_until"), // advertências
     contentModeratedUntil: datetime("content_moderated_until"), // advertências: conteúdo novo vai à revisão
+    referredById: bigint("referred_by_id", { mode: "number" }), // quem indicou no cadastro
+    bulkMailOptOut: boolean("bulk_mail_opt_out").notNull().default(false), // e-mail em massa
+    deletedAt: datetime("deleted_at"), // conta anonimizada (LGPD)
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
@@ -528,6 +531,39 @@ export const questCompletions = mysqlTable("quest_completions", {
   userId: bigint("user_id", { mode: "number" }).notNull(),
   completedAt: createdAt(),
 }, (t) => [uniqueIndex("quest_completion_idx").on(t.questId, t.userId)]);
+
+// Pedidos de privacidade (LGPD): exclusão de conta solicitada pelo membro.
+export const privacyRequests = mysqlTable("privacy_requests", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  type: mysqlEnum("type", ["deletion"]).notNull().default("deletion"),
+  reason: varchar("reason", { length: 500 }).notNull().default(""),
+  status: mysqlEnum("status", ["open", "completed", "rejected"]).notNull().default("open"),
+  resolvedById: bigint("resolved_by_id", { mode: "number" }),
+  resolvedAt: datetime("resolved_at"),
+  createdAt: createdAt(),
+}, (t) => [index("privacy_requests_status_idx").on(t.status)]);
+
+// Indicações (referrals): quem indicou quem no cadastro.
+export const referrals = mysqlTable("referrals", {
+  id: pk(),
+  referrerId: bigint("referrer_id", { mode: "number" }).notNull(),
+  referredId: bigint("referred_id", { mode: "number" }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("referrals_referred_idx").on(t.referredId),
+  index("referrals_referrer_idx").on(t.referrerId),
+]);
+
+// Log de e-mails em massa (bulk mail).
+export const bulkMails = mysqlTable("bulk_mails", {
+  id: pk(),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  audience: varchar("audience", { length: 30 }).notNull(), // all | member | contributor | moderator | admin
+  sentCount: int("sent_count").notNull().default(0),
+  sentById: bigint("sent_by_id", { mode: "number" }),
+  createdAt: createdAt(),
+});
 
 // Diretório da equipe (página pública): categorias e entradas.
 export const staffCategories = mysqlTable("staff_categories", {

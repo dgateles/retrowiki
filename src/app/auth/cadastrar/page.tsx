@@ -8,8 +8,8 @@ import { randomQuestion } from "@/lib/spam";
 export const metadata: Metadata = { title: "Criar conta" };
 export const dynamic = "force-dynamic";
 
-export default async function RegisterPage() {
-  const [profileFields, qaChallenge] = await Promise.all([getRegisterFields(), randomQuestion()]);
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+  const [{ ref }, profileFields, qaChallenge] = await Promise.all([searchParams, getRegisterFields(), randomQuestion()]);
   return (
     <AuthShell
       title="Criar conta"
@@ -23,7 +23,7 @@ export default async function RegisterPage() {
         </>
       }
     >
-      <RegisterForm profileFields={profileFields} qaChallenge={qaChallenge} />
+      <RegisterForm profileFields={profileFields} qaChallenge={qaChallenge} referredBy={ref ?? ""} />
     </AuthShell>
   );
 }

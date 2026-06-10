@@ -723,6 +723,25 @@
   .profile-nudge__cta {
     @apply inline-flex shrink-0 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90;
   }
+  /* Indicações (referral) */
+  .referral {
+    @apply flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between;
+  }
+  .referral__title {
+    @apply font-semibold;
+  }
+  .referral__text {
+    @apply text-sm text-muted-foreground;
+  }
+  .referral__link {
+    @apply mt-2 block truncate rounded-md bg-muted px-2 py-1 font-mono text-xs;
+  }
+  .referral__copy {
+    @apply inline-flex shrink-0 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent;
+  }
+  .privacy-tools {
+    @apply flex flex-col gap-2;
+  }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {
     @apply flex flex-col gap-8;

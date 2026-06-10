@@ -14,6 +14,9 @@ import { getMemberPrefs } from "@/lib/notifications-prefs";
 import { AcknowledgeWarnings } from "@/components/account/acknowledge-warnings";
 import { listUserWarnings, activePoints, hasUnacknowledgedWarnings } from "@/lib/warnings";
 import { getWarningSettings } from "@/lib/settings";
+import { PrivacyTools } from "@/components/account/privacy-tools";
+import { hasOpenDeletionRequest } from "@/lib/privacy";
+import { BulkMailOptOut } from "@/components/account/bulk-mail-optout";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -47,6 +50,7 @@ export default async function AccountPage({
   const warnings = active === "avisos" && warnSettings?.membersCanSee ? await listUserWarnings(Number(user.id)) : [];
   const warnPoints = active === "avisos" && warnSettings?.membersCanSee ? await activePoints(Number(user.id)) : 0;
   const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
+  const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
   const fmtWarn = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
   return (
@@ -135,6 +139,9 @@ export default async function AccountPage({
               <div className="mt-4">
                 <NotificationPrefsForm prefs={notifPrefs} />
               </div>
+              <div className="mt-4 border-t border-border/60 pt-4">
+                <BulkMailOptOut initial={Boolean((user as { bulkMailOptOut?: boolean }).bulkMailOptOut)} />
+              </div>
             </section>
           )}
 
@@ -200,7 +207,10 @@ export default async function AccountPage({
           {active === "seguranca" && (
             <section aria-labelledby="s-seg" className="settings-section">
               <h2 id="s-seg" className="settings-section__title">Segurança e privacidade</h2>
-              <p className="empty mt-4">Dispositivos e sessões aparecerão aqui em breve.</p>
+              <p className="settings-section__desc">Seus dados e o controle sobre eles.</p>
+              <div className="mt-4">
+                <PrivacyTools hasOpenRequest={openDeletion} />
+              </div>
             </section>
           )}
         </div>

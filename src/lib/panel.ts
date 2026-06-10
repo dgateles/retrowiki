@@ -95,6 +95,9 @@ const ACTION_LABEL: Record<string, string> = {
   user_set_role: "alterou o papel de um membro",
   user_set_reputation: "ajustou a reputação de um membro",
   auto_promotion: "promoveu um membro (automático)",
+  deletion_completed: "anonimizou uma conta (LGPD)",
+  deletion_rejected: "recusou um pedido de exclusão",
+  bulk_mail_sent: "enviou e-mail em massa",
 };
 
 export function auditLabel(action: string): string {

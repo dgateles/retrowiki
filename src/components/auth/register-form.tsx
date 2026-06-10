@@ -19,7 +19,7 @@ function parseSet(v: string): string[] {
   }
 }
 
-export function RegisterForm({ profileFields = [], qaChallenge = null }: { profileFields?: GroupWithValues[]; qaChallenge?: { id: number; question: string } | null }) {
+export function RegisterForm({ profileFields = [], qaChallenge = null, referredBy = "" }: { profileFields?: GroupWithValues[]; qaChallenge?: { id: number; question: string } | null; referredBy?: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [captcha, setCaptcha] = useState<CaptchaSolution | null>(null);
@@ -47,6 +47,7 @@ export function RegisterForm({ profileFields = [], qaChallenge = null }: { profi
         profileFields: pf,
         qaQuestionId: qaChallenge?.id,
         qaAnswer,
+        ref: referredBy,
       },
       captcha ?? undefined,
     );

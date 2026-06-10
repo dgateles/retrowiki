@@ -17,6 +17,7 @@ const GROUPS: NavGroup[] = [
       { href: "/admin/grupos", label: "Grupos" },
       { href: "/admin/promocoes", label: "Promoções" },
       { href: "/admin/ip", label: "Ferramentas de IP" },
+      { href: "/admin/privacidade", label: "Privacidade (LGPD)" },
     ],
   },
   {
@@ -37,6 +38,7 @@ const GROUPS: NavGroup[] = [
       { href: "/admin/reputacao", label: "Reputação & Reações" },
       { href: "/admin/notificacoes", label: "Notificações" },
       { href: "/admin/banimentos", label: "Banimentos" },
+      { href: "/admin/indicacoes", label: "Indicações" },
     ],
   },
   {
@@ -58,6 +60,10 @@ const GROUPS: NavGroup[] = [
   {
     title: "Conteúdo",
     links: [{ href: "/admin/consoles", label: "Consoles" }],
+  },
+  {
+    title: "Comunicação",
+    links: [{ href: "/admin/bulk-mail", label: "E-mail em massa" }],
   },
 ];
 
