@@ -3,8 +3,9 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks } from "lucide-react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,6 +62,13 @@ type PageInput = {
   status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; layout: Layout;
 };
 
+const COL_SPAN: Record<string, string> = {
+  full: "page-col--full", "1/2": "page-col--half", "1/3": "page-col--third",
+  "2/3": "page-col--twothirds", "1/4": "page-col--quarter", "3/4": "page-col--threequarters",
+};
+
+type Sel = { si: number; ci: number; wi: number };
+
 export function PageBuilder({ page }: { page: PageInput }) {
   const router = useRouter();
   const [title, setTitle] = useState(page.title);
@@ -70,9 +78,10 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [menuOrder, setMenuOrder] = useState(page.menuOrder);
   const [noindex, setNoindex] = useState(page.noindex);
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
-  const [editing, setEditing] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Sel | null>(null);
+  const [leftTab, setLeftTab] = useState<"elements" | "page">("elements");
   const [pending, setPending] = useState(false);
-  const dragRef = useRef<{ si: number; ci: number; wi: number } | null>(null);
+  const dragRef = useRef<Sel | null>(null);
   const secDragRef = useRef<number | null>(null);
 
   function mutate(fn: (s: Section[]) => void) {
@@ -132,134 +141,156 @@ export function PageBuilder({ page }: { page: PageInput }) {
     else toast.error(res.error ?? "Falha.");
   }
 
+  // Adiciona um widget na coluna ativa (a do widget selecionado, ou a última) e
+  // já o seleciona para edição no painel.
+  function addWidget(type: WidgetType) {
+    let target: Sel | null = null;
+    setSections((prev) => {
+      const ss = structuredClone(prev) as Section[];
+      if (ss.length === 0) ss.push({ id: uid(), columns: [{ id: uid(), width: "full", widgets: [] }] });
+      const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
+      const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
+      const wi = ss[si].columns[ci].widgets.length;
+      ss[si].columns[ci].widgets.push(newWidget(type));
+      target = { si, ci, wi };
+      return ss;
+    });
+    if (target) setSelected(target);
+  }
+
+  const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
+
   return (
-    <>
-      <div className="page__head">
-        <h1 className="page__title">Construtor de página</h1>
-        <div className="flex items-center gap-2">
+    <div className="pb-shell">
+      <div className="pb-topbar">
+        <span className="pb-topbar__title">{title || "Sem título"}</span>
+        <span className={`status-pill status-pill--${page.status === "published" ? "published" : "draft"}`}>{page.status === "published" ? "Publicada" : "Rascunho"}</span>
+        <span className="ml-auto flex items-center gap-2">
           <Button type="button" variant="ghost" size="sm" onClick={remove}>Excluir</Button>
           <Button type="button" variant="outline" size="sm" onClick={() => save(false)} disabled={pending}>Salvar rascunho</Button>
-          <Button type="button" size="sm" onClick={() => save(true)} disabled={pending}>Publicar</Button>
+          <Button type="button" size="sm" onClick={() => save(true)} disabled={pending}>{pending ? "…" : "Publicar"}</Button>
+        </span>
+      </div>
+
+      <div className="pb-work">
+        {/* Painel esquerdo: biblioteca / edição do widget / configurações */}
+        <aside className="pb-panel">
+          {selWidget ? (
+            <div className="pb-panel__edit">
+              <div className="pb-panel__head">
+                <button type="button" className="pb-panel__back" onClick={() => setSelected(null)}>← Elementos</button>
+                <span className="pb-panel__title">{WIDGETS.find((x) => x.type === selWidget.type)?.label}</span>
+              </div>
+              <div className="pb-panel__scroll">
+                <WidgetForm w={selWidget} onChange={(patch) => mutate((ss) => { Object.assign(ss[selected!.si].columns[selected!.ci].widgets[selected!.wi], patch); })} />
+                <Button type="button" variant="ghost" size="sm" className="mt-3 w-full text-destructive" onClick={() => { mutate((ss) => { ss[selected!.si].columns[selected!.ci].widgets.splice(selected!.wi, 1); }); setSelected(null); }}>
+                  <Trash2 className="size-4" /> Excluir elemento
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="pb-panel__tabs">
+                <button type="button" className={cn("pb-panel__tab", leftTab === "elements" && "pb-panel__tab--active")} onClick={() => setLeftTab("elements")}>Elementos</button>
+                <button type="button" className={cn("pb-panel__tab", leftTab === "page" && "pb-panel__tab--active")} onClick={() => setLeftTab("page")}>Página</button>
+              </div>
+              <div className="pb-panel__scroll">
+                {leftTab === "elements" ? (
+                  <div className="pb-lib">
+                    {WIDGETS.map((wt) => (
+                      <button key={wt.type} type="button" className="pb-lib__tile" title={`Adicionar ${wt.label}`} onClick={() => addWidget(wt.type)}>
+                        <wt.icon className="size-5" aria-hidden="true" />
+                        <span>{wt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <div className="field"><Label htmlFor="pg-title">Título</Label><Input id="pg-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} /></div>
+                    <div className="field"><Label htmlFor="pg-slug">Slug (/p/…)</Label><Input id="pg-slug" value={slug} onChange={(e) => setSlug(e.target.value)} maxLength={120} /></div>
+                    <div className="field"><Label htmlFor="pg-meta">Meta description</Label><Input id="pg-meta" value={metaDescription} onChange={(e) => setMeta(e.target.value)} maxLength={320} /></div>
+                    <label className="pb-check"><input type="checkbox" checked={showInMenu} onChange={(e) => setShowInMenu(e.target.checked)} /> Mostrar no menu</label>
+                    {showInMenu && <div className="field"><Label htmlFor="pg-order">Ordem no menu</Label><Input id="pg-order" type="number" value={menuOrder} onChange={(e) => setMenuOrder(Number(e.target.value) || 0)} className="w-24" /></div>}
+                    <label className="pb-check"><input type="checkbox" checked={noindex} onChange={(e) => setNoindex(e.target.checked)} /> Não indexar (noindex)</label>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </aside>
+
+        {/* Canvas WYSIWYG */}
+        <div className="pb-stage" onClick={() => setSelected(null)}>
+          <div className="pb-stage__inner page" onClick={(e) => e.stopPropagation()}>
+            {sections.length === 0 && (
+              <div className="pb-stage__empty">
+                <p>Comece adicionando um elemento pelo painel à esquerda.</p>
+              </div>
+            )}
+
+            {sections.map((s, si) => (
+              <div
+                key={s.id}
+                className="pb-sec"
+                onDragOver={(e) => { if (secDragRef.current !== null) e.preventDefault(); }}
+                onDrop={(e) => { if (secDragRef.current !== null) { e.preventDefault(); dropSection(si); } }}
+              >
+                <div className="pb-sec__bar">
+                  <span className="pb-sec__handle pb-handle" title="Arrastar seção" draggable onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}><GripVertical className="size-3.5" /></span>
+                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), width: "1/2", widgets: [] }); })}><Plus className="size-3.5" /></button>}
+                  <button type="button" className="pb-mini" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-3.5" /></button>
+                  <button type="button" className="pb-mini" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-3.5" /></button>
+                  <button type="button" className="pb-mini pb-mini--danger" title="Excluir seção" onClick={() => mutate((ss) => { ss.splice(si, 1); })}><Trash2 className="size-3.5" /></button>
+                </div>
+
+                <div className="page-section">
+                  {s.columns.map((c, ci) => (
+                    <div
+                      key={c.id}
+                      className={cn("page-col pb-colwrap", COL_SPAN[c.width])}
+                      onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
+                      onDrop={(e) => { e.preventDefault(); dropWidget({ si, ci, wi: c.widgets.length }); }}
+                    >
+                      <div className="pb-colwrap__bar">
+                        <select aria-label="Largura da coluna" className="pb-select" value={c.width} onChange={(e) => mutate((ss) => { ss[si].columns[ci].width = e.target.value as Section["columns"][number]["width"]; })}>
+                          {WIDTHS.map((w) => <option key={w.v} value={w.v}>{w.label}</option>)}
+                        </select>
+                        {s.columns.length > 1 && <button type="button" className="pb-mini pb-mini--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); })}><Trash2 className="size-3" /></button>}
+                      </div>
+
+                      {c.widgets.map((w, wi) => {
+                        const isSel = selected?.si === si && selected?.ci === ci && selected?.wi === wi;
+                        return (
+                          <div
+                            key={wi}
+                            className={cn("pb-el", isSel && "pb-el--selected")}
+                            onClick={(e) => { e.stopPropagation(); setSelected({ si, ci, wi }); }}
+                            onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
+                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dropWidget({ si, ci, wi }); }}
+                          >
+                            <span className="pb-el__bar">
+                              <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
+                              <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) setSelected(null); }}><Trash2 className="size-3" /></button>
+                            </span>
+                            <div className="pb-el__content"><WidgetView w={w} /></div>
+                          </div>
+                        );
+                      })}
+
+                      {c.widgets.length === 0 && <div className="pb-drop">Solte um elemento aqui</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), columns: [{ id: uid(), width: "full", widgets: [] }] }); })}>
+              <Plus className="size-4" aria-hidden="true" /> Adicionar seção
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="pb">
-        {/* Configurações da página */}
-        <section className="pb-settings">
-          <div className="field">
-            <Label htmlFor="pg-title">Título</Label>
-            <Input id="pg-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
-          </div>
-          <div className="field">
-            <Label htmlFor="pg-slug">Slug (URL: /p/…)</Label>
-            <Input id="pg-slug" value={slug} onChange={(e) => setSlug(e.target.value)} maxLength={120} />
-          </div>
-          <div className="field">
-            <Label htmlFor="pg-meta">Meta description (SEO)</Label>
-            <Input id="pg-meta" value={metaDescription} onChange={(e) => setMeta(e.target.value)} maxLength={320} />
-          </div>
-          <label className="pb-check"><input type="checkbox" checked={showInMenu} onChange={(e) => setShowInMenu(e.target.checked)} /> Mostrar no menu do header</label>
-          {showInMenu && (
-            <div className="field">
-              <Label htmlFor="pg-order">Ordem no menu</Label>
-              <Input id="pg-order" type="number" value={menuOrder} onChange={(e) => setMenuOrder(Number(e.target.value) || 0)} className="w-28" />
-            </div>
-          )}
-          <label className="pb-check"><input type="checkbox" checked={noindex} onChange={(e) => setNoindex(e.target.checked)} /> Não indexar (noindex)</label>
-        </section>
-
-        {/* Canvas */}
-        <section className="pb-canvas">
-          {sections.length === 0 && <p className="empty">Página vazia. Adicione a primeira seção.</p>}
-
-          {sections.map((s, si) => (
-            <div
-              key={s.id}
-              className="pb-section"
-              onDragOver={(e) => { if (secDragRef.current !== null) e.preventDefault(); }}
-              onDrop={(e) => { if (secDragRef.current !== null) { e.preventDefault(); dropSection(si); } }}
-            >
-              <div className="pb-section__bar">
-                <span className="flex items-center gap-2">
-                  <span
-                    className="pb-icon pb-handle"
-                    title="Arrastar seção"
-                    draggable
-                    onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}
-                  ><GripVertical className="size-4" /></span>
-                  <span className="pb-section__label">Seção {si + 1}</span>
-                </span>
-                <span className="pb-toolbar">
-                  <button type="button" className="pb-icon" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-4" /></button>
-                  <button type="button" className="pb-icon" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-4" /></button>
-                  {s.columns.length < 4 && <button type="button" className="pb-icon" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), width: "1/2", widgets: [] }); })}><Plus className="size-4" /></button>}
-                  <button type="button" className="pb-icon pb-icon--danger" title="Excluir seção" onClick={() => mutate((ss) => { ss.splice(si, 1); })}><Trash2 className="size-4" /></button>
-                </span>
-              </div>
-
-              <div className="pb-cols">
-                {s.columns.map((c, ci) => (
-                  <div
-                    key={c.id}
-                    className="pb-col"
-                    onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
-                    onDrop={(e) => { e.preventDefault(); dropWidget({ si, ci, wi: c.widgets.length }); }}
-                  >
-                    <div className="pb-col__bar">
-                      <select aria-label="Largura da coluna" className="pb-select" value={c.width} onChange={(e) => mutate((ss) => { ss[si].columns[ci].width = e.target.value as Section["columns"][number]["width"]; })}>
-                        {WIDTHS.map((w) => <option key={w.v} value={w.v}>{w.label}</option>)}
-                      </select>
-                      {s.columns.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Excluir coluna" onClick={() => mutate((ss) => { ss[si].columns.splice(ci, 1); })}><Trash2 className="size-3.5" /></button>}
-                    </div>
-
-                    {c.widgets.map((w, wi) => {
-                      const key = `${si}.${ci}.${wi}`;
-                      return (
-                        <div
-                          key={wi}
-                          className="pb-widget group"
-                          onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
-                          onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dropWidget({ si, ci, wi }); }}
-                        >
-                          <div className="pb-widget__tools">
-                            <span
-                              className="pb-icon pb-handle"
-                              title="Arrastar para mover"
-                              draggable
-                              onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}
-                            ><GripVertical className="size-3.5" /></span>
-                            <button type="button" className="pb-icon" title="Mover acima" disabled={wi === 0} onClick={() => mutate((ss) => { const ws = ss[si].columns[ci].widgets; [ws[wi - 1], ws[wi]] = [ws[wi], ws[wi - 1]]; })}><ArrowUp className="size-3.5" /></button>
-                            <button type="button" className="pb-icon" title="Mover abaixo" disabled={wi === c.widgets.length - 1} onClick={() => mutate((ss) => { const ws = ss[si].columns[ci].widgets; [ws[wi + 1], ws[wi]] = [ws[wi], ws[wi + 1]]; })}><ArrowDown className="size-3.5" /></button>
-                            <button type="button" className="pb-icon" title={editing === key ? "Fechar" : "Editar"} onClick={() => setEditing(editing === key ? null : key)}>{editing === key ? <Check className="size-3.5" /> : <Pencil className="size-3.5" />}</button>
-                            <button type="button" className="pb-icon pb-icon--danger" title="Excluir" onClick={() => mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); })}><Trash2 className="size-3.5" /></button>
-                          </div>
-                          <div className="pb-widget__preview"><WidgetView w={w} /></div>
-                          {editing === key && (
-                            <WidgetForm w={w} onChange={(patch) => mutate((ss) => { Object.assign(ss[si].columns[ci].widgets[wi], patch); })} />
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    <div className="pb-addwidget">
-                      {WIDGETS.map((wt) => (
-                        <button key={wt.type} type="button" className="pb-addwidget__btn" onClick={() => mutate((ss) => { ss[si].columns[ci].widgets.push(newWidget(wt.type)); })}>
-                          <wt.icon className="size-3.5" aria-hidden="true" /> {wt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => mutate((ss) => { ss.push({ id: uid(), columns: [{ id: uid(), width: "full", widgets: [] }] }); })}>
-            <Plus className="size-4" aria-hidden="true" /> Adicionar seção
-          </Button>
-        </section>
-      </div>
-    </>
+    </div>
   );
 }
 

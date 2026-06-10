@@ -867,7 +867,110 @@
   .page-w__iconlist-item { @apply flex items-start gap-3; }
   .page-w__iconlist-icon { @apply mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary; }
 
-  /* ── Construtor de páginas (admin) ──────────────────────────────────── */
+  /* ── Construtor de páginas (admin, estilo Elementor) ────────────────── */
+  .pb-shell {
+    @apply flex flex-col;
+  }
+  .pb-topbar {
+    @apply mb-4 flex items-center gap-3 border-b border-border pb-3;
+  }
+  .pb-topbar__title {
+    @apply truncate text-lg font-semibold;
+  }
+  .pb-work {
+    @apply grid overflow-hidden rounded-xl border border-border lg:grid-cols-[300px_1fr];
+    min-height: 70vh;
+  }
+  .pb-panel {
+    @apply flex max-h-[78vh] flex-col border-b border-border bg-card lg:border-b-0 lg:border-r;
+  }
+  .pb-panel__tabs {
+    @apply flex border-b border-border;
+  }
+  .pb-panel__tab {
+    @apply flex-1 border-b-2 border-transparent py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground;
+  }
+  .pb-panel__tab--active {
+    @apply border-primary text-primary;
+  }
+  .pb-panel__scroll {
+    @apply flex-1 overflow-y-auto p-3;
+  }
+  .pb-lib {
+    @apply grid grid-cols-2 gap-2;
+  }
+  .pb-lib__tile {
+    @apply flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border border-border bg-background p-3 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
+  }
+  .pb-panel__edit {
+    @apply flex max-h-[78vh] flex-col;
+  }
+  .pb-panel__head {
+    @apply flex items-center gap-2 border-b border-border p-3;
+  }
+  .pb-panel__back {
+    @apply text-sm text-muted-foreground hover:text-foreground;
+  }
+  .pb-panel__title {
+    @apply text-sm font-semibold;
+  }
+  .pb-stage {
+    @apply max-h-[78vh] overflow-y-auto bg-muted/30 p-4 sm:p-6;
+  }
+  .pb-stage__inner {
+    @apply mx-auto min-h-full max-w-4xl rounded-lg border border-border bg-background p-6 shadow-sm;
+  }
+  .pb-stage__empty {
+    @apply flex min-h-48 items-center justify-center text-center text-sm text-muted-foreground;
+  }
+  .pb-sec {
+    @apply relative mb-3 rounded-md p-2 transition-colors hover:bg-accent/20 hover:outline hover:outline-1 hover:outline-primary/30;
+  }
+  .pb-sec__bar {
+    @apply absolute -top-3 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-0.5 rounded-md border border-border bg-popover px-1 py-0.5 shadow-sm;
+  }
+  .pb-sec:hover > .pb-sec__bar {
+    @apply flex;
+  }
+  .pb-colwrap {
+    @apply relative min-h-16 rounded p-1 transition-colors hover:outline hover:outline-1 hover:outline-dashed hover:outline-border;
+  }
+  .pb-colwrap__bar {
+    @apply absolute right-1 top-1 z-10 hidden items-center gap-1;
+  }
+  .pb-colwrap:hover > .pb-colwrap__bar {
+    @apply flex;
+  }
+  .pb-el {
+    @apply relative cursor-pointer rounded p-1 transition-shadow hover:outline hover:outline-1 hover:outline-primary/50;
+  }
+  .pb-el--selected {
+    @apply outline outline-2 outline-primary hover:outline-2;
+  }
+  .pb-el__content {
+    @apply pointer-events-none;
+  }
+  .pb-el__bar {
+    @apply absolute -top-2.5 right-1 z-20 hidden items-center gap-0.5 rounded border border-border bg-popover px-1 py-0.5 shadow-sm;
+  }
+  .pb-el:hover > .pb-el__bar,
+  .pb-el--selected > .pb-el__bar {
+    @apply flex;
+  }
+  .pb-mini {
+    @apply inline-flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-30;
+  }
+  .pb-mini--danger {
+    @apply hover:bg-destructive/10 hover:text-destructive;
+  }
+  .pb-drop {
+    @apply rounded border border-dashed border-border p-5 text-center text-xs text-muted-foreground;
+  }
+  .pb-addsec {
+    @apply mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border py-3 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
+  }
+
+  /* (legado) Construtor antigo */
   .pb {
     @apply mt-6 grid gap-6 lg:grid-cols-[280px_1fr];
   }

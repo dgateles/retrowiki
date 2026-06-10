@@ -917,6 +917,17 @@ botão opcional) e **lista de ícones** (ícone de uma allowlist fixa + texto, e
 seções inteiras). Verificado: cartão e lista renderizam no público; arrastar a 2ª
 seção a levou para o topo.
 
+**Fase 5 entregue (UI estilo Elementor):** o editor foi reformulado para o modelo
+Elementor — **painel lateral esquerdo** com abas **"Elementos"** (biblioteca de
+widgets em grade de ícones, clique adiciona) e **"Página"** (configurações), e
+**canvas WYSIWYG** à direita que mostra a página real (mesma grade/widgets do
+render público). Clicar num widget no canvas o **seleciona** e abre suas
+propriedades no painel; editar reflete **ao vivo** no canvas. Toolbars flutuantes
+no hover (alça de arrastar + excluir) em seções e widgets; conteúdo do widget é
+neutralizado a cliques (`pointer-events-none`) para o clique selecionar.
+Verificado: 12 tiles na biblioteca; adicionar pela biblioteca, selecionar e
+editar título refletiu no canvas e no público; publicar OK.
+
 **Próximas fases (não entregues):** widget **HTML/Markdown** reusando o pipeline
 de autoria (editor + render de árvore de blocos); **blocos reutilizáveis**
 (salvar seção e reusar); **controles responsivos por dispositivo**; DnD de
