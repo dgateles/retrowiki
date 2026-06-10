@@ -745,6 +745,19 @@
   .privacy-tools {
     @apply flex flex-col gap-2;
   }
+  /* Login social */
+  .oauth {
+    @apply mt-4 flex flex-col gap-3;
+  }
+  .oauth__divider {
+    @apply relative text-center text-xs uppercase tracking-wide text-muted-foreground;
+  }
+  .oauth__divider::before {
+    @apply absolute left-0 top-1/2 h-px w-full bg-border content-[''];
+  }
+  .oauth__divider span {
+    @apply relative bg-background px-2;
+  }
   /* Feed de atividade (perfil) */
   .activity {
     @apply flex flex-col;

@@ -764,15 +764,21 @@ manual. Cobre: avatar e capa do perfil, imagens de device, imagens de artigo
 Reverte a decisão anterior de "só e-mail/senha": passa a permitir cadastro e
 login com Google, e dá ao usuário controle sobre avatar e capa.
 
-- **Login/cadastro com Google.** Adicionar o provider Google ao Auth.js
-  (NextAuth). `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` em variável de
-  ambiente. Criar a conta no primeiro login (handle gerado, papel `member`),
-  preservando o fluxo de e-mail/senha existente.
-- **Vinculação de contas (cuidado de segurança).** Se o e-mail do Google já
-  existe como conta de e-mail/senha, não vincular automaticamente sem prova de
-  posse. Como o Google entrega o e-mail verificado, vincular só quando o e-mail
-  vier verificado pelo Google; caso contrário, pedir confirmação. Evitar
-  account takeover por e-mail não verificado.
+- **Login/cadastro com Google.** ENTREGUE. Provider Google no NextAuth, **ativado
+  só quando `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` estão no ambiente** (sem
+  eles, o botão nem aparece — degradação graciosa). `getOrCreateOAuthUser` cria a
+  conta no primeiro login (handle único gerado, papel `member`, `emailVerifiedAt`
+  setado, avatar do Google adotado se vazio) e o fluxo de e-mail/senha segue
+  intacto. Botão "Entrar/Cadastrar com Google" nas páginas de auth (com divisor).
+  Verificado: provider registrado em `/api/auth/providers`; botão aparece com creds
+  e some sem; clicar redireciona ao consent real do Google (`accounts.google.com`
+  com o nosso `client_id`); a CSP não bloqueia o redirect. **Falta operacional:**
+  criar as credenciais no Google Cloud Console e cadastrar o redirect URI
+  `${APP_URL}/api/auth/callback/google`.
+- **Vinculação de contas.** Implementado o caminho seguro: liga **pelo e-mail**,
+  e como o Google entrega o e-mail **verificado**, usamos
+  `allowDangerousEmailAccountLinking: true` (seguro só porque a verificação é do
+  Google). signIn bloqueia banidos/suspensos antes de criar/vincular.
 - **Avatar.**
   - Logado com Google: oferecer usar a foto do Google (a `picture` do perfil).
   - Permitir trocar por **link** (URL de imagem) ou por **upload** (BunnyCDN, ver

@@ -4,6 +4,8 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
 import { getRegisterFields } from "@/lib/profile-fields";
 import { randomQuestion } from "@/lib/spam";
+import { GoogleButton } from "@/components/auth/google-button";
+import { env } from "@/lib/env";
 
 export const metadata: Metadata = { title: "Criar conta" };
 export const dynamic = "force-dynamic";
@@ -24,6 +26,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       }
     >
       <RegisterForm profileFields={profileFields} qaChallenge={qaChallenge} referredBy={ref ?? ""} />
+      {Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) && <GoogleButton label="Cadastrar com Google" />}
     </AuthShell>
   );
 }
