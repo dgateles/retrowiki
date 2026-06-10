@@ -904,9 +904,16 @@ info/atenção/sucesso) e **acordeão** (itens título+corpo, render `<details>`
 Verificado: os três renderizam na página pública sem erro de CSP; um vídeo com
 URL fora da allowlist foi **rejeitado** na validação.
 
-**Próximas fases (não entregues):** drag-and-drop de verdade; mais widgets
-(galeria, lista de ícones, cartão, HTML/Markdown reusando o pipeline de autoria);
-blocos reutilizáveis; controles responsivos por dispositivo.
+**Fase 3 entregue:** widget **galeria** (grade de imagens Bunny, 2/3/4 colunas,
+repeater no editor) e **arrastar-e-soltar** de widgets (alça `GripVertical`,
+HTML5 DnD nativo, move **entre colunas e seções**; ↑/↓ seguem como fallback
+acessível). URLs de imagem vazias agora são toleradas (render filtra) para não
+travar páginas incompletas. Verificado: DnD reordenou (divisor → topo); galeria
+renderiza em grade; página com slot de imagem vazio publica.
+
+**Próximas fases (não entregues):** mais widgets (lista de ícones, cartão,
+HTML/Markdown reusando o pipeline de autoria); blocos reutilizáveis; controles
+responsivos por dispositivo; DnD de seções/colunas (hoje só widgets via DnD).
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

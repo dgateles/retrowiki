@@ -853,6 +853,11 @@
   .page-w__acc-title { @apply cursor-pointer list-none px-4 py-3 font-medium marker:hidden hover:bg-accent/40; }
   .page-w__acc-body { @apply space-y-2 px-4 pb-4 text-sm text-muted-foreground; }
   .pb-acc-item { @apply mb-2 rounded-md border border-border p-2; }
+  .page-w__gallery { @apply grid list-none gap-3 p-0; }
+  .page-w__gallery--c2 { @apply grid-cols-2; }
+  .page-w__gallery--c3 { @apply grid-cols-2 sm:grid-cols-3; }
+  .page-w__gallery--c4 { @apply grid-cols-2 sm:grid-cols-4; }
+  .page-w__gallery-img { @apply aspect-square w-full rounded-lg border border-border object-cover; }
 
   /* ── Construtor de páginas (admin) ──────────────────────────────────── */
   .pb {
@@ -905,6 +910,9 @@
   }
   .pb-widget__preview {
     @apply pointer-events-none;
+  }
+  .pb-handle {
+    @apply cursor-grab active:cursor-grabbing;
   }
   .pb-form {
     @apply mt-3 flex flex-col gap-2 border-t border-border pt-3;

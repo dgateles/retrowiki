@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3 } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Pencil, Check, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "video", label: "Vídeo", icon: Video },
   { type: "callout", label: "Destaque", icon: Megaphone },
   { type: "accordion", label: "Acordeão", icon: Rows3 },
+  { type: "gallery", label: "Galeria", icon: Images },
   { type: "divider", label: "Divisor", icon: Minus },
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
 ];
@@ -46,6 +47,7 @@ function newWidget(type: WidgetType): Widget {
     case "video": return { type: "video", url: "" };
     case "callout": return { type: "callout", tone: "info", text: "Texto em destaque." };
     case "accordion": return { type: "accordion", items: [{ title: "Pergunta", body: "Resposta." }] };
+    case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
   }
 }
 
@@ -65,12 +67,27 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
   const [editing, setEditing] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const dragRef = useRef<{ si: number; ci: number; wi: number } | null>(null);
 
   function mutate(fn: (s: Section[]) => void) {
     setSections((prev) => {
       const next = structuredClone(prev) as Section[];
       fn(next);
       return next;
+    });
+  }
+
+  // Arrastar-e-soltar de widgets (entre colunas e seções).
+  function dropWidget(to: { si: number; ci: number; wi: number }) {
+    const from = dragRef.current;
+    dragRef.current = null;
+    if (!from) return;
+    if (from.si === to.si && from.ci === to.ci && from.wi === to.wi) return;
+    mutate((ss) => {
+      const w = ss[from.si].columns[from.ci].widgets.splice(from.wi, 1)[0];
+      let ti = to.wi;
+      if (from.si === to.si && from.ci === to.ci && from.wi < to.wi) ti -= 1;
+      ss[to.si].columns[to.ci].widgets.splice(ti, 0, w);
     });
   }
 
@@ -153,7 +170,12 @@ export function PageBuilder({ page }: { page: PageInput }) {
 
               <div className="pb-cols">
                 {s.columns.map((c, ci) => (
-                  <div key={c.id} className="pb-col">
+                  <div
+                    key={c.id}
+                    className="pb-col"
+                    onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
+                    onDrop={(e) => { e.preventDefault(); dropWidget({ si, ci, wi: c.widgets.length }); }}
+                  >
                     <div className="pb-col__bar">
                       <select aria-label="Largura da coluna" className="pb-select" value={c.width} onChange={(e) => mutate((ss) => { ss[si].columns[ci].width = e.target.value as Section["columns"][number]["width"]; })}>
                         {WIDTHS.map((w) => <option key={w.v} value={w.v}>{w.label}</option>)}
@@ -164,8 +186,19 @@ export function PageBuilder({ page }: { page: PageInput }) {
                     {c.widgets.map((w, wi) => {
                       const key = `${si}.${ci}.${wi}`;
                       return (
-                        <div key={wi} className="pb-widget group">
+                        <div
+                          key={wi}
+                          className="pb-widget group"
+                          onDragOver={(e) => { if (dragRef.current) e.preventDefault(); }}
+                          onDrop={(e) => { e.preventDefault(); e.stopPropagation(); dropWidget({ si, ci, wi }); }}
+                        >
                           <div className="pb-widget__tools">
+                            <span
+                              className="pb-icon pb-handle"
+                              title="Arrastar para mover"
+                              draggable
+                              onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}
+                            ><GripVertical className="size-3.5" /></span>
                             <button type="button" className="pb-icon" title="Mover acima" disabled={wi === 0} onClick={() => mutate((ss) => { const ws = ss[si].columns[ci].widgets; [ws[wi - 1], ws[wi]] = [ws[wi], ws[wi - 1]]; })}><ArrowUp className="size-3.5" /></button>
                             <button type="button" className="pb-icon" title="Mover abaixo" disabled={wi === c.widgets.length - 1} onClick={() => mutate((ss) => { const ws = ss[si].columns[ci].widgets; [ws[wi + 1], ws[wi]] = [ws[wi], ws[wi + 1]]; })}><ArrowDown className="size-3.5" /></button>
                             <button type="button" className="pb-icon" title={editing === key ? "Fechar" : "Editar"} onClick={() => setEditing(editing === key ? null : key)}>{editing === key ? <Check className="size-3.5" /> : <Pencil className="size-3.5" />}</button>
@@ -287,6 +320,28 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { title: "Novo item", body: "Conteúdo." }] })}><Plus className="size-3.5" /> Adicionar item</button>
           )}
         </div>
+      )}
+      {w.type === "gallery" && (
+        <>
+          <div className="field"><Label>Colunas</Label>
+            <select className="pb-select" value={w.columns} onChange={(e) => onChange({ columns: Number(e.target.value) as 2 | 3 | 4 })}>
+              <option value={2}>2</option><option value={3}>3</option><option value={4}>4</option>
+            </select>
+          </div>
+          {w.images.map((im, i) => (
+            <div key={i} className="pb-acc-item">
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-xs">Imagem {i + 1}</Label>
+                {w.images.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ images: w.images.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+              <ImageUpload value={im.url} onChange={(url) => onChange({ images: w.images.map((x, j) => j === i ? { ...x, url } : x) })} folder="pages" />
+              <Input className="mt-1" value={im.alt} onChange={(e) => onChange({ images: w.images.map((x, j) => j === i ? { ...x, alt: e.target.value } : x) })} placeholder="Texto alternativo" maxLength={200} />
+            </div>
+          ))}
+          {w.images.length < 24 && (
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ images: [...w.images, { url: "", alt: "" }] })}><Plus className="size-3.5" /> Adicionar imagem</button>
+          )}
+        </>
       )}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
     </div>

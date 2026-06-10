@@ -14,7 +14,7 @@ const url = z.string().trim().max(500).refine(
   "URL inválida.",
 );
 const imageUrl = z.string().trim().max(500).refine(
-  (u) => /^(https:\/\/|\/)/i.test(u),
+  (u) => u === "" || /^(https:\/\/|\/)/i.test(u),
   "Imagem deve vir de uma URL https.",
 );
 const ALIGN = z.enum(["left", "center", "right"]).default("left");
@@ -31,6 +31,11 @@ const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("accordion"),
     items: z.array(z.object({ title: z.string().trim().min(1).max(200), body: z.string().max(3000) })).min(1).max(15),
+  }),
+  z.object({
+    type: z.literal("gallery"),
+    columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(3),
+    images: z.array(z.object({ url: imageUrl, alt: z.string().max(200).default("") })).min(1).max(24),
   }),
 ]);
 export type Widget = z.infer<typeof WidgetSchema>;

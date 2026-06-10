@@ -41,6 +41,7 @@ export function WidgetView({ w }: { w: Widget }) {
         </div>
       );
     case "image":
+      if (!w.url) return null;
       return (
         <figure className="page-w__figure">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -101,6 +102,17 @@ export function WidgetView({ w }: { w: Widget }) {
             </details>
           ))}
         </div>
+      );
+    case "gallery":
+      return (
+        <ul className={`page-w__gallery page-w__gallery--c${w.columns}`}>
+          {w.images.filter((im) => im.url).map((im, i) => (
+            <li key={i} className="page-w__gallery-item">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={im.url} alt={im.alt} className="page-w__gallery-img" loading="lazy" />
+            </li>
+          ))}
+        </ul>
       );
     default:
       return null;
