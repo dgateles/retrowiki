@@ -190,6 +190,8 @@ export const articles = mysqlTable(
   {
     id: pk(),
     slug: varchar("slug", { length: 160 }).notNull(),
+    // Seção do conteúdo: guia/tutorial (padrão) ou post de blog.
+    kind: mysqlEnum("kind", ["guide", "blog"]).notNull().default("guide"),
     type: mysqlEnum("type", [
       "tutorial",
       "buying_guide",
@@ -199,6 +201,8 @@ export const articles = mysqlTable(
     ]).notNull(),
     title: varchar("title", { length: 200 }).notNull(),
     summary: varchar("summary", { length: 320 }),
+    // Imagem de capa (usada nos cards, principalmente no blog).
+    coverImage: varchar("cover_image", { length: 500 }),
     deviceId: bigint("device_id", { mode: "number" }),
     authorId: bigint("author_id", { mode: "number" }).notNull(),
     status: mysqlEnum("status", [

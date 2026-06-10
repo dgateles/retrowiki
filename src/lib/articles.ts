@@ -23,19 +23,22 @@ type ArticleListItem = {
   title: string;
   summary: string | null;
   type: string;
+  coverImage: string | null;
   publishedAt: Date | null;
   authorHandle: string;
+  authorName: string;
+  authorAvatar: string | null;
   viewsCount: number;
   commentCount: number;
 };
 
 export async function listPublishedArticles(
-  opts: { page?: number; deviceSlug?: string; type?: string } = {},
+  opts: { page?: number; deviceSlug?: string; type?: string; kind?: "guide" | "blog" } = {},
 ): Promise<{ items: ArticleListItem[]; hasMore: boolean }> {
   const page = Math.max(1, opts.page ?? 1);
   const offset = (page - 1) * ARTICLES_PAGE_SIZE;
   try {
-    const where = [eq(articles.status, "published")];
+    const where = [eq(articles.status, "published"), eq(articles.kind, opts.kind ?? "guide")];
     if (opts.type) where.push(eq(articles.type, opts.type as "tutorial"));
     if (opts.deviceSlug) where.push(eq(devices.slug, opts.deviceSlug));
 
@@ -46,8 +49,11 @@ export async function listPublishedArticles(
         title: articles.title,
         summary: articles.summary,
         type: articles.type,
+        coverImage: articles.coverImage,
         publishedAt: articles.publishedAt,
         authorHandle: users.handle,
+        authorName: users.displayName,
+        authorAvatar: users.avatarUrl,
         viewsCount: articles.viewsCount,
         commentCount: sql<number>`(select count(*) from ${comments} where ${comments.articleId} = ${articles.id} and ${comments.status} = 'visible')`,
       })
@@ -71,10 +77,13 @@ export type PublishedArticle = {
   title: string;
   summary: string | null;
   type: string;
+  kind: "guide" | "blog";
+  coverImage: string | null;
   publishedAt: Date | null;
   authorId: number;
   authorHandle: string;
   authorName: string;
+  authorAvatar: string | null;
   authorRole: "member" | "contributor" | "moderator" | "admin";
   authorReputation: number;
   deviceSlug: string | null;
@@ -90,11 +99,14 @@ export async function getPublishedArticle(slug: string): Promise<PublishedArticl
         title: articles.title,
         summary: articles.summary,
         type: articles.type,
+        kind: articles.kind,
+        coverImage: articles.coverImage,
         publishedAt: articles.publishedAt,
         currentRevisionId: articles.currentRevisionId,
         authorId: articles.authorId,
         authorHandle: users.handle,
         authorName: users.displayName,
+        authorAvatar: users.avatarUrl,
         authorRole: users.role,
         authorReputation: users.reputation,
         deviceSlug: devices.slug,
@@ -187,6 +199,8 @@ export async function getArticleForEdit(id: number) {
         id: articles.id,
         title: articles.title,
         type: articles.type,
+        kind: articles.kind,
+        coverImage: articles.coverImage,
         deviceId: articles.deviceId,
         authorId: articles.authorId,
         status: articles.status,

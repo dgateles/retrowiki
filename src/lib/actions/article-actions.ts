@@ -47,6 +47,8 @@ type Result<T = unknown> = { ok: boolean; error?: string; message?: string; data
 const CreateSchema = z.object({
   title: z.string().min(8, "Título muito curto (mínimo 8 caracteres).").max(140),
   type: z.enum(["tutorial", "buying_guide", "troubleshooting", "firmware", "general"]),
+  kind: z.enum(["guide", "blog"]).optional().default("guide"),
+  coverImage: z.string().max(500).nullable().optional(),
   deviceId: z.number().int().positive().nullable().optional(),
   body: z.unknown(),
 });
@@ -65,7 +67,7 @@ export async function createDraftAction(input: unknown): Promise<Result<{ id: nu
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
-  const { title, type, deviceId } = parsed.data;
+  const { title, type, deviceId, kind, coverImage } = parsed.data;
   const checked = validateBody(parsed.data.body);
   if (!checked.ok) return { ok: false, error: checked.error };
   const { body, searchText } = checked;
@@ -74,6 +76,8 @@ export async function createDraftAction(input: unknown): Promise<Result<{ id: nu
   const [res] = await db.insert(articles).values({
     slug,
     type,
+    kind: kind ?? "guide",
+    coverImage: coverImage || null,
     title,
     deviceId: deviceId ?? null,
     authorId: Number(user.id),
@@ -117,7 +121,7 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
     return { ok: false, error: "Conteúdo publicado não pode ser editado por aqui." };
   }
 
-  const { title, type, deviceId } = parsed.data;
+  const { title, type, deviceId, coverImage } = parsed.data;
   const checked = validateBody(parsed.data.body);
   if (!checked.ok) return { ok: false, error: checked.error };
   const { body, searchText } = checked;
@@ -133,6 +137,7 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
     .set({
       title,
       type,
+      coverImage: coverImage || null,
       deviceId: deviceId ?? null,
       currentRevisionId: revisionId,
       searchText,

@@ -59,6 +59,9 @@ export async function SiteHeader() {
             <Link href="/guias">Guias</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
+            <Link href="/blog">Blog</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
             <Link href="/missoes">Missões</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">

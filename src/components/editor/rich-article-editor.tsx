@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichEditor } from "@/components/editor/rich-editor";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { createDraftAction, updateDraftAction, submitForReviewAction, proposeEditAction } from "@/lib/actions/article-actions";
 
 const TYPES = [
@@ -18,20 +19,27 @@ const TYPES = [
   { type: "general", label: "Geral" },
 ] as const;
 
-type Initial = { articleId: number; title: string; type: string; doc: JSONContent; published?: boolean };
+type Initial = { articleId: number; title: string; type: string; doc: JSONContent; published?: boolean; kind?: "guide" | "blog"; coverImage?: string | null };
 
-export function RichArticleEditor({ initial }: { initial?: Initial }) {
+export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initial; kind?: "guide" | "blog" }) {
   const router = useRouter();
+  const kind: "guide" | "blog" = initial?.kind ?? kindProp ?? "guide";
+  const isBlog = kind === "blog";
   const [title, setTitle] = useState(initial?.title ?? "");
-  const [type, setType] = useState(String(initial?.type ?? "tutorial"));
+  const [type, setType] = useState(String(initial?.type ?? (isBlog ? "general" : "tutorial")));
+  const [coverImage, setCoverImage] = useState<string>(initial?.coverImage ?? "");
   const [doc, setDoc] = useState<JSONContent | null>(initial?.doc ?? null);
   const [pending, setPending] = useState(false);
+  const backTo = isBlog ? "/blog" : "/guias";
+
+  function payload() {
+    return { title, type: type as (typeof TYPES)[number]["type"], kind, coverImage: coverImage || null, deviceId: null, body: JSON.stringify(doc ?? { type: "doc", content: [{ type: "paragraph" }] }) };
+  }
 
   async function ensureSaved(): Promise<number | null> {
-    const payload = { title, type: type as (typeof TYPES)[number]["type"], deviceId: null, body: JSON.stringify(doc ?? { type: "doc", content: [{ type: "paragraph" }] }) };
     const res = initial?.articleId
-      ? await updateDraftAction(initial.articleId, payload)
-      : await createDraftAction(payload);
+      ? await updateDraftAction(initial.articleId, payload())
+      : await createDraftAction(payload());
     if (!res.ok || !res.data) {
       toast.error(res.error ?? "Falha ao salvar.");
       return null;
@@ -60,22 +68,21 @@ export function RichArticleEditor({ initial }: { initial?: Initial }) {
     setPending(false);
     if (sub.ok) {
       toast.success("Enviado para revisão.");
-      router.push("/guias");
+      router.push(backTo);
     } else {
       toast.error(sub.error ?? "Falha ao enviar.");
     }
   }
 
-  // Edição de um guia publicado: cria revisão pendente sem derrubar o no ar.
+  // Edição de um conteúdo publicado: cria revisão pendente sem derrubar o no ar.
   async function onProposeEdit() {
     if (!initial?.articleId) return;
     setPending(true);
-    const payload = { title, type: type as (typeof TYPES)[number]["type"], deviceId: null, body: JSON.stringify(doc ?? { type: "doc", content: [{ type: "paragraph" }] }) };
-    const res = await proposeEditAction(initial.articleId, payload);
+    const res = await proposeEditAction(initial.articleId, payload());
     setPending(false);
     if (res.ok) {
       toast.success(res.message ?? "Alteração enviada para revisão.");
-      router.push(`/guias`);
+      router.push(backTo);
     } else {
       toast.error(res.error ?? "Falha ao enviar.");
     }
@@ -87,13 +94,19 @@ export function RichArticleEditor({ initial }: { initial?: Initial }) {
         <Label htmlFor="title">Título</Label>
         <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required minLength={8} maxLength={140} />
       </div>
+      {!isBlog && (
+        <div className="field">
+          <Label htmlFor="type">Tipo</Label>
+          <select id="type" aria-label="Tipo do conteúdo" value={type} onChange={(e) => setType(e.target.value)} className="editor__select editor__select--full">
+            {TYPES.map((t) => (
+              <option key={t.type} value={t.type}>{t.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="field">
-        <Label htmlFor="type">Tipo</Label>
-        <select id="type" aria-label="Tipo do conteúdo" value={type} onChange={(e) => setType(e.target.value)} className="editor__select editor__select--full">
-          {TYPES.map((t) => (
-            <option key={t.type} value={t.type}>{t.label}</option>
-          ))}
-        </select>
+        <Label htmlFor="cover">Imagem de capa {isBlog ? "" : "(opcional)"}</Label>
+        <ImageUpload value={coverImage} onChange={setCoverImage} folder="covers" />
       </div>
 
       <div className="field">

@@ -1,0 +1,1 @@
+ALTER TABLE `articles` ADD `kind` enum('guide','blog') DEFAULT 'guide' NOT NULL;

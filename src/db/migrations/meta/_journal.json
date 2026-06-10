@@ -239,6 +239,20 @@
       "when": 1781063798461,
       "tag": "0033_fulltext_search",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "5",
+      "when": 1781070223579,
+      "tag": "0034_harsh_stingray",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "5",
+      "when": 1781070300442,
+      "tag": "0035_red_silver_surfer",
+      "breakpoints": true
     }
   ]
 }

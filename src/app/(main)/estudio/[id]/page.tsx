@@ -36,7 +36,7 @@ export default async function EditDraftPage({
       <div className="mt-6">
         {isRichDoc(body) ? (
           <RichArticleEditor
-            initial={{ articleId: article.id, title: article.title, type: article.type, doc: body as JSONContent, published }}
+            initial={{ articleId: article.id, title: article.title, type: article.type, kind: article.kind, coverImage: article.coverImage, doc: body as JSONContent, published }}
           />
         ) : (
           <BlockEditor

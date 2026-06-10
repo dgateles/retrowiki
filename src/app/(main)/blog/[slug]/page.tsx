@@ -14,13 +14,13 @@ export async function generateMetadata({
   return { title: a.title, description: a.summary ?? undefined };
 }
 
-export default async function GuidePage({
+export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const a = await getPublishedArticle(slug);
-  if (!a || a.kind !== "guide") notFound();
+  if (!a || a.kind !== "blog") notFound();
   return <ArticleView a={a} />;
 }

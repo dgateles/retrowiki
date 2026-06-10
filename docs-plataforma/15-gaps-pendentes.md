@@ -183,6 +183,38 @@ moderador), responder com citação (insere o comentário citado num blockquote
 foram dispensados pelo dono do projeto: a resposta linear com citação e a
 notificação ao citado atendem.
 
+## Blog
+
+STATUS: implementado (referência IPB). O **Blog** é uma seção dedicada além de
+Guias e Tutoriais, reaproveitando toda a infraestrutura de artigos via uma nova
+coluna `articles.kind` (`guide` | `blog`, migração 0034) e `articles.cover_image`
+(migração 0035).
+
+Entregue:
+- **Listagem `/blog`**: grade de cards com **capa**, título, resumo, autor
+  (avatar + nome), data e views (estilo IPB). Item "Blog" na navegação principal.
+- **Post `/blog/[slug]`**: cabeçalho com **capa larga**, título, autoria
+  ("Por X · data") e trilha "Blog"; corpo, comentários, denúncia e reações iguais
+  aos guias. Render compartilhado pelo componente `ArticleView` (extraído da
+  página de guia, parametrizado por `kind`), então guias e blog não divergem.
+- **Criação**: o editor aceita `kind` (sem seletor de tipo no blog, com campo de
+  **capa** via BunnyCDN). Posts de blog são **restritos à equipe**
+  (`/estudio/novo?kind=blog`); guias seguem abertos à comunidade. Edição/proposta
+  e versionamento reaproveitam o fluxo de revisão existente.
+- **Separação por `kind` na query**: `/guias` lista só `guide`, `/blog` só `blog`
+  (sem vazamento). Verificado: 59 guias / 4 posts; cards, capa, post, criação e
+  navegação conferidos no navegador.
+
+## Reações (estilo IPB)
+
+STATUS: redesenhado. A exibição antiga (fileira de emojis) foi substituída pela
+**barra de reações estilo IPB** (`ReactionBar`): à direita, um botão único que
+**revela as opções no hover/clique** (popover com 👍🙏🔥😄😮); à esquerda, o
+resumo de quem reagiu ("Fulano, Sicrano e mais N") com os **selos** das reações
+usadas e a contagem total. `getRecentReactors` traz os nomes. Aplica-se a guias e
+blog. Verificado: resumo, selos, contagem e reagir (persistência no banco)
+conferidos.
+
 ## Operação
 - **Agendar o cron.** Endpoints protegidos por `CRON_SECRET` (Authorization:
   Bearer): `/api/cron/sync-github` (releases), `/api/cron/maintenance` (purge de

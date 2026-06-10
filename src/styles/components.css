@@ -1445,6 +1445,76 @@
   }
 
   /* Card de guia. */
+  /* Blog: grade de cards com capa (estilo IPB). */
+  .blog-grid {
+    @apply mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  .blog-card {
+    @apply flex flex-col gap-3;
+  }
+  .blog-card__cover {
+    @apply block aspect-video overflow-hidden rounded-lg border border-border bg-muted;
+  }
+  .blog-card__img {
+    @apply size-full object-cover transition-transform duration-300;
+  }
+  .blog-card:hover .blog-card__img {
+    @apply scale-105;
+  }
+  .blog-card__cover-fallback {
+    @apply flex size-full items-center justify-center text-muted-foreground;
+  }
+  .blog-card__title {
+    @apply font-semibold leading-snug;
+  }
+  .blog-card:hover .blog-card__title {
+    @apply text-primary;
+  }
+  .blog-card__summary {
+    @apply line-clamp-2 text-sm text-muted-foreground;
+  }
+  .blog-card__foot {
+    @apply mt-auto flex items-center justify-between gap-2 pt-1 text-xs text-muted-foreground;
+  }
+  .blog-card__author {
+    @apply flex min-w-0 items-center gap-2;
+  }
+  .blog-card__avatar {
+    @apply flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-[10px] font-bold text-primary;
+  }
+  .blog-card__avatar-img {
+    @apply size-full object-cover;
+  }
+  .blog-card__author-name {
+    @apply truncate font-medium text-foreground;
+  }
+  .blog-card__date {
+    @apply shrink-0;
+  }
+  .blog-card__views {
+    @apply flex shrink-0 items-center gap-1;
+  }
+
+  /* Cabeçalho do post de blog (capa larga + título + autoria). */
+  .blog-head {
+    @apply mt-2;
+  }
+  .blog-head__cover {
+    @apply aspect-[1200/420] w-full rounded-xl border border-border object-cover;
+  }
+  .blog-head__bar {
+    @apply mt-5 flex items-start justify-between gap-4;
+  }
+  .blog-head__title {
+    @apply text-3xl font-bold leading-tight tracking-tight;
+  }
+  .blog-head__byline {
+    @apply mt-3 flex items-center gap-2 border-b border-border pb-4 text-sm text-muted-foreground;
+  }
+  .blog-head__author {
+    @apply font-medium text-foreground hover:text-primary;
+  }
+
   .guide-list {
     @apply mt-6 space-y-3;
   }
@@ -2153,10 +2223,54 @@
     @apply p-5 text-[15px];
   }
   .post__footer {
-    @apply flex flex-wrap items-center justify-between gap-3 border-t border-border p-4;
+    @apply flex flex-wrap items-center gap-3 border-t border-border p-4;
   }
   .post__reactors {
     @apply text-sm text-muted-foreground;
+  }
+  .post__avatar-img {
+    @apply size-full rounded-full object-cover;
+  }
+
+  /* Barra de reações estilo IPB: resumo + botão que expande no hover. */
+  .react-bar {
+    @apply ml-auto flex items-center gap-3;
+  }
+  .react-bar__summary {
+    @apply flex items-center gap-2 text-sm text-muted-foreground;
+  }
+  .react-bar__badges {
+    @apply flex items-center;
+  }
+  .react-bar__badge {
+    @apply -ml-1.5 flex size-6 items-center justify-center rounded-full border border-background bg-muted text-xs first:ml-0;
+  }
+  .react-bar__names {
+    @apply hidden truncate sm:inline;
+  }
+  .react-bar__count {
+    @apply inline-flex min-w-6 items-center justify-center rounded-full bg-primary/15 px-2 py-0.5 text-xs font-semibold text-primary;
+  }
+  .react-trigger {
+    @apply relative flex items-center;
+  }
+  .react-trigger__menu {
+    @apply pointer-events-none absolute bottom-full right-0 mb-2 flex items-center gap-1 rounded-full border border-border bg-popover p-1 opacity-0 shadow-lg transition-opacity;
+  }
+  .react-trigger__menu--open {
+    @apply pointer-events-auto opacity-100;
+  }
+  .react-trigger__opt {
+    @apply flex size-9 items-center justify-center rounded-full text-lg transition-transform hover:scale-125 focus-visible:scale-125 focus-visible:outline-2;
+  }
+  .react-trigger__opt--on {
+    @apply bg-primary/15;
+  }
+  .react-trigger__btn {
+    @apply flex size-10 items-center justify-center rounded-full border border-border bg-muted text-lg text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground focus-visible:outline-2;
+  }
+  .react-trigger__btn--on {
+    @apply border-primary/60 bg-primary/15 text-foreground;
   }
 
   /* Compartilhar (popover). */

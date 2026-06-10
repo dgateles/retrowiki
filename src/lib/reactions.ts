@@ -76,6 +76,26 @@ export async function getReactionCounts(articleId: number, fallbackId: number | 
   return out;
 }
 
+/** Nomes dos membros que reagiram (mais recentes primeiro), para o resumo
+ * "Fulano, Sicrano e mais N". */
+export async function getRecentReactors(articleId: number, limit = 3): Promise<{ names: string[]; total: number }> {
+  try {
+    const { users } = await import("@/db/schema");
+    const { desc } = await import("drizzle-orm");
+    const rows = await db
+      .select({ name: users.displayName })
+      .from(votes)
+      .innerJoin(users, eq(users.id, votes.userId))
+      .where(eq(votes.articleId, articleId))
+      .orderBy(desc(votes.id))
+      .limit(limit);
+    const [c] = await db.select({ n: count() }).from(votes).where(eq(votes.articleId, articleId));
+    return { names: rows.map((r) => r.name), total: Number(c?.n ?? 0) };
+  } catch {
+    return { names: [], total: 0 };
+  }
+}
+
 export async function getUserReaction(userId: number, articleId: number, fallbackId: number | null): Promise<number | null> {
   try {
     const [row] = await db
