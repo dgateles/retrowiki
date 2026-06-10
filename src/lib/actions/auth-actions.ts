@@ -110,6 +110,30 @@ export async function registerAction(
   return { ok: true, message: "Enviamos um e-mail de confirmação. Verifique sua caixa de entrada." };
 }
 
+/** Reenvia o e-mail de confirmação para o usuário logado (se ainda não verificado). */
+export async function resendVerificationAction(): Promise<ActionResult> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  const rl = await checkRateLimit(`resendverify:${user.id}`, 3, 10 * 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas tentativas. Tente mais tarde." };
+
+  const [u] = await db.select({ email: users.email, handle: users.handle, verified: users.emailVerifiedAt }).from(users).where(eq(users.id, Number(user.id))).limit(1);
+  if (!u) return { ok: false, error: "Usuário não encontrado." };
+  if (u.verified) return { ok: true, message: "Seu e-mail já está confirmado." };
+
+  const raw = await createToken("email_verify", u.email, Number(user.id));
+  try {
+    await sendEmail({ to: u.email, ...verifyEmail(u.handle, raw) });
+  } catch {
+    /* silencioso */
+  }
+  return { ok: true, message: "Enviamos um novo e-mail de confirmação." };
+}
+
 export async function verifyEmailAction(token: string): Promise<ActionResult> {
   const row = await consumeToken(token, "email_verify");
   if (!row) return { ok: false, error: "Link inválido ou expirado." };

@@ -123,6 +123,25 @@ export async function getModeratorLog(page = 1, pageSize = 30): Promise<{ items:
   }
 }
 
+/** Métricas para o dashboard do admin (contadores principais). */
+export async function getAdminOverview(): Promise<{ members: number; published: number; pendingReviews: number; openReports: number; openAssignments: number }> {
+  try {
+    const { users: u, articles: a } = await import("@/db/schema");
+    const { getOpenReportCount } = await import("@/lib/reports");
+    const { getOpenAssignmentCount } = await import("@/lib/assignments");
+    const [[m], [pub], pending, reports, assignments] = await Promise.all([
+      db.select({ n: count() }).from(u),
+      db.select({ n: count() }).from(a).where(eq(a.status, "published")),
+      getPendingReviewCount(),
+      getOpenReportCount(),
+      getOpenAssignmentCount(),
+    ]);
+    return { members: Number(m?.n ?? 0), published: Number(pub?.n ?? 0), pendingReviews: pending, openReports: reports, openAssignments: assignments };
+  } catch {
+    return { members: 0, published: 0, pendingReviews: 0, openReports: 0, openAssignments: 0 };
+  }
+}
+
 /** Contagem de membros por papel de staff. */
 export async function getStaffCounts(): Promise<{ moderators: number; admins: number }> {
   try {

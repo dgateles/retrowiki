@@ -130,9 +130,12 @@ Implicações de arquitetura:
 ## Conta e autenticação
 - **Troca de e-mail.** Os tokens de `email_change` existem em `tokens.ts`, mas não
   há tela nem action para iniciar a troca e confirmar o novo e-mail.
-- **Verificação de e-mail obrigatória.** Hoje o login e a submissão não exigem
-  e-mail confirmado. Definir onde passar a exigir (provavelmente na submissão de
-  conteúdo).
+- **Verificação de e-mail obrigatória.** ENTREGUE. Decisão: **não bloqueia
+  login/navegação**, mas **exige e-mail confirmado para publicar** (comentar e
+  submeter guia) — checado no `postingGate`. Usuário não verificado vê um **banner
+  no `/painel`** ("Confirme seu e-mail") com **reenviar** (`resendVerificationAction`,
+  rate-limited). Verificado: não-verificado loga e navega, mas comentar é bloqueado
+  ("Confirme seu e-mail antes de publicar") e o reenvio dispara novo e-mail.
 - **Perfil editável e avatar.** O perfil é só leitura. Falta editar nome de
   exibição e enviar avatar.
 
@@ -604,8 +607,12 @@ E-mail em massa:
 
 Estatísticas:
 
-- **Painel de métricas.** Crescimento de membros, conteúdo publicado, reações e
-  atividade, alimentando as decisões de moderação e curadoria.
+- **Painel de métricas.** PARCIAL/ENTREGUE: o dashboard do admin (`/admin`) agora
+  abre com uma linha de **métricas** (membros, guias publicados, em revisão,
+  denúncias abertas, atribuições abertas — cada uma com link para a tela
+  relevante) via `getAdminOverview`, e um bloco de **atividade recente** (últimas
+  ações do `audit_log`). Falta um painel histórico/gráficos de crescimento ao
+  longo do tempo (séries temporais).
 
 ## Perfil de usuário (detalhamento)
 

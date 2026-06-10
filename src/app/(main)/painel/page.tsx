@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReferralCard } from "@/components/account/referral-card";
+import { VerifyEmailBanner } from "@/components/account/verify-email-banner";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PenLine, UserRound } from "lucide-react";
@@ -59,6 +60,8 @@ export default async function PanelPage() {
     <main id="main" className="page">
       <h1 className="page__title">Olá, {user.displayName}</h1>
       <p className="page__note">Seu resumo na comunidade.</p>
+
+      {!user.emailVerifiedAt && <VerifyEmailBanner />}
 
       {!completion.complete && (
         <aside className="profile-nudge mt-6" aria-label="Conclua seu perfil">

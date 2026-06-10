@@ -244,8 +244,13 @@ export async function isContentModerated(userId: number): Promise<boolean> {
   }
 }
 
-/** Gate de postagem: restrição + confirmação obrigatória. */
+/** Gate de postagem: e-mail verificado + restrição + confirmação obrigatória. */
 export async function postingGate(userId: number): Promise<{ ok: boolean; error?: string }> {
+  // E-mail verificado é exigido para publicar (criar conteúdo).
+  const [u] = await db.select({ verified: users.emailVerifiedAt }).from(users).where(eq(users.id, userId)).limit(1);
+  if (u && !u.verified) {
+    return { ok: false, error: "Confirme seu e-mail antes de publicar. Reenvie a confirmação no seu painel." };
+  }
   if (await isPostingRestricted(userId)) {
     return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
   }
