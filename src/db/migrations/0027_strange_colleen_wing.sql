@@ -1,0 +1,1 @@
+ALTER TABLE `notifications` ADD `emailed_at` datetime;

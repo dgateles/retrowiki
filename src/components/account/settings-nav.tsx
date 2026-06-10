@@ -5,6 +5,7 @@ export const SETTINGS_SECTIONS = [
   { key: "geral", label: "Visão geral" },
   { key: "perfil", label: "Perfil" },
   { key: "notificacoes", label: "Notificações" },
+  { key: "avisos", label: "Advertências" },
   { key: "nome", label: "Nome de exibição" },
   { key: "senha", label: "Senha" },
   { key: "email", label: "E-mail" },

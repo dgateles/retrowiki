@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { modTeams, modTeamMembers, assignments, articles, users } from "@/db/schema";
 
@@ -159,6 +159,19 @@ export async function assignmentsForContent(targetId: number): Promise<{ assigne
 export async function getOpenAssignmentCount(): Promise<number> {
   try {
     const [c] = await db.select({ n: sql<number>`COUNT(*)` }).from(assignments).where(eq(assignments.status, "open"));
+    return Number(c?.n ?? 0);
+  } catch {
+    return 0;
+  }
+}
+
+/** Fecha atribuições abertas mais antigas que N dias (auto-close por inatividade). */
+export async function autoCloseIdleAssignments(days: number): Promise<number> {
+  if (!days || days <= 0) return 0;
+  try {
+    const cutoff = new Date(Date.now() - days * 86400_000);
+    await db.update(assignments).set({ status: "closed", closedAt: new Date() }).where(and(eq(assignments.status, "open"), lt(assignments.createdAt, cutoff)));
+    const [c] = await db.select({ n: sql<number>`COUNT(*)` }).from(assignments).where(eq(assignments.status, "closed"));
     return Number(c?.n ?? 0);
   } catch {
     return 0;

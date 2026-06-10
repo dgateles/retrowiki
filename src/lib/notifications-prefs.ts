@@ -47,6 +47,25 @@ export async function isInAppAllowed(userId: number, type: string): Promise<bool
   }
 }
 
+export async function isEmailAllowed(userId: number, type: string): Promise<boolean> {
+  const cat = categoryForType(type);
+  if (!cat) return false; // tipos fora de categoria não vão por e-mail
+  try {
+    const config = await getNotificationsConfig();
+    const c = config[cat.key];
+    if (!c || c.email === "disabled") return false;
+    const [pref] = await db
+      .select({ enabled: notificationPrefs.enabled })
+      .from(notificationPrefs)
+      .where(and(eq(notificationPrefs.userId, userId), eq(notificationPrefs.type, cat.key), eq(notificationPrefs.channel, "email")))
+      .limit(1);
+    if (pref) return pref.enabled;
+    return defaultEnabled(c.email);
+  } catch {
+    return false;
+  }
+}
+
 // ── Preferências do membro (página /conta) ────────────────────────────────
 
 export type MemberCategoryPref = {

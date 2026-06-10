@@ -1,13 +1,25 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/db";
-import { auditLog } from "@/db/schema";
-import { requireRole, getCurrentUser, can } from "@/lib/auth-helpers";
+import { requireRole, requireUser, getCurrentUser, can } from "@/lib/auth-helpers";
 import { setSetting, sanitizeWarningSettings, getWarningSettings } from "@/lib/settings";
-import { createReason, updateReason, deleteReason, createAction, deleteAction, issueWarning, getReason } from "@/lib/warnings";
+import { createReason, updateReason, deleteReason, createAction, deleteAction, issueWarning, getReason, acknowledgeAllWarnings } from "@/lib/warnings";
+import { logModAction } from "@/lib/panel";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
+
+/** Membro confirma (acknowledge) as próprias advertências. */
+export async function acknowledgeWarningsAction(): Promise<Result> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login." };
+  }
+  await acknowledgeAllWarnings(Number(user.id));
+  revalidatePath("/conta");
+  return { ok: true };
+}
 
 async function asAdmin(): Promise<{ id: string } | null> {
   try {
@@ -138,7 +150,7 @@ export async function warnMemberAction(userId: number, reasonId: number, points:
 
   const res = await issueWarning(userId, reasonId, pts, String(note ?? ""), Number(user!.id));
   if (res.ok) {
-    await db.insert(auditLog).values({ actorId: Number(user!.id), action: "warn_member", target: `user:${userId}`, meta: { reason: reason.name, points: pts } });
+    await logModAction(Number(user!.id), "warn_member", `user:${userId}`, { reason: reason.name, points: pts });
     revalidatePath(`/admin/membros/${userId}`);
   }
   return res;

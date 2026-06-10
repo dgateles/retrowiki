@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `content_moderated_until` datetime;

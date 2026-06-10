@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Plus, Pencil, X, UserPlus } from "lucide-react";
+import { Plus, Pencil, X, UserPlus, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +12,11 @@ import {
   createCategoryAction,
   updateCategoryAction,
   deleteCategoryAction,
+  moveCategoryAction,
   addEntryAction,
   updateEntryAction,
   deleteEntryAction,
+  moveEntryAction,
 } from "@/lib/actions/staff-directory-actions";
 import type { CategoryRow, EntryRow, Layout } from "@/lib/staff-directory";
 
@@ -47,6 +49,14 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
     const res = await deleteEntryAction(id);
     if (res.ok) { toast.success("Entrada removida."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
+  async function moveCat(id: number, dir: number) {
+    const res = await moveCategoryAction(id, dir);
+    if (res.ok) router.refresh(); else toast.error(res.error ?? "Falha.");
+  }
+  async function moveEnt(id: number, dir: number) {
+    const res = await moveEntryAction(id, dir);
+    if (res.ok) router.refresh(); else toast.error(res.error ?? "Falha.");
+  }
 
   return (
     <div className="mt-6">
@@ -58,11 +68,13 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
         <p className="muted mt-4">Nenhuma categoria. Crie uma e adicione membros ou grupos.</p>
       ) : (
         <ul className="pf-groups mt-4">
-          {categories.map((c) => (
+          {categories.map((c, ci) => (
             <li key={c.id} className="pf-group">
               <div className="pf-group__head">
                 <span className="min-w-0"><span className="pf-group__name">{c.title}</span><span className="pf-field__meta block">{LAYOUTS.find((l) => l.value === c.layout)?.label} · {c.entries.length} entrada(s)</span></span>
                 <div className="pf-group__actions">
+                  <button type="button" className="pf-icon" title="Subir" disabled={ci === 0} onClick={() => moveCat(c.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></button>
+                  <button type="button" className="pf-icon" title="Descer" disabled={ci === categories.length - 1} onClick={() => moveCat(c.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></button>
                   <button type="button" className="pf-icon" title="Adicionar membro ou grupo" onClick={() => setEntryDialog({ categoryId: c.id, entry: null })}><UserPlus className="size-4" aria-hidden="true" /></button>
                   <button type="button" className="pf-icon" title="Editar categoria" onClick={() => setCatDialog({ c })}><Pencil className="size-4" aria-hidden="true" /></button>
                   <button type="button" className="pf-icon pf-icon--danger" title="Excluir categoria" onClick={() => removeCat(c.id, c.title)}><X className="size-4" aria-hidden="true" /></button>
@@ -70,13 +82,15 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
               </div>
               {c.entries.length > 0 && (
                 <ul className="pf-fields">
-                  {c.entries.map((e) => (
+                  {c.entries.map((e, ei) => (
                     <li key={e.id} className="pf-field">
                       <span className="min-w-0">
                         <span className="pf-field__label">{e.type === "group" ? `Grupo: ${ROLES.find((r) => r.value === e.groupRole)?.label ?? e.groupRole}` : (e.customName || e.memberName || "Membro")}</span>
                         <span className="pf-field__meta">{e.type === "member" ? (e.customTitle || "membro") : "atualiza automaticamente"}</span>
                       </span>
                       <span className="pf-field__actions">
+                        <button type="button" className="pf-icon" title="Subir" disabled={ei === 0} onClick={() => moveEnt(e.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></button>
+                        <button type="button" className="pf-icon" title="Descer" disabled={ei === c.entries.length - 1} onClick={() => moveEnt(e.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></button>
                         <button type="button" className="pf-icon" title="Editar" onClick={() => setEntryDialog({ categoryId: c.id, entry: e })}><Pencil className="size-4" aria-hidden="true" /></button>
                         <button type="button" className="pf-icon pf-icon--danger" title="Remover" onClick={() => removeEntry(e.id)}><X className="size-4" aria-hidden="true" /></button>
                       </span>

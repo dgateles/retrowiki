@@ -13,7 +13,7 @@ import { canEditOwn, canDeleteOwn, maxReactionsPerDay } from "@/lib/permissions"
 import { getReaction } from "@/lib/reactions";
 import { getReputationSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
-import { isPostingRestricted } from "@/lib/warnings";
+import { postingGate, isContentModerated } from "@/lib/warnings";
 import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -55,9 +55,8 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   const rl = await checkRateLimit(`comment:${user.id}`, 10, 60_000);
   if (!rl.ok) return { ok: false, error: "Muitos comentários. Aguarde um momento." };
 
-  if (await isPostingRestricted(Number(user.id))) {
-    return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
-  }
+  const gate = await postingGate(Number(user.id));
+  if (!gate.ok) return { ok: false, error: gate.error };
 
   const parsed = AddSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Dados inválidos." };
@@ -74,8 +73,14 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     .limit(1);
   if (!article || article.status !== "published") return { ok: false, error: "Artigo indisponível." };
 
-  const [ins] = await db.insert(comments).values({ articleId, authorId: userId, body: valid.json });
+  // Advertência "moderar conteúdo": comentário entra oculto (flagged) p/ revisão.
+  const moderated = await isContentModerated(userId);
+  const [ins] = await db.insert(comments).values({ articleId, authorId: userId, body: valid.json, ...(moderated ? { status: "flagged" as const } : {}) });
   const commentId = (ins as unknown as { insertId: number }).insertId;
+  if (moderated) {
+    // Comentário entra oculto para revisão; não notifica nem revalida.
+    return { ok: true };
+  }
   await evaluateBadges(userId);
   await runTrigger("comment.posted", { actorId: userId, targetId: article.authorId });
 

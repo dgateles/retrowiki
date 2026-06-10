@@ -163,9 +163,13 @@ foram dispensados pelo dono do projeto: a resposta linear com citação e a
 notificação ao citado atendem.
 
 ## Operação
-- **Agendar o cron.** O endpoint `/api/cron/sync-github` existe e é protegido por
-  `CRON_SECRET`. Falta configurar o agendamento no Coolify (ou um disparador
-  externo) para chamá-lo periodicamente.
+- **Agendar o cron.** Endpoints protegidos por `CRON_SECRET` (Authorization:
+  Bearer): `/api/cron/sync-github` (releases), `/api/cron/maintenance` (purge de
+  IP/LGPD, prune do log de moderação, auto-fechar atribuições) e
+  `/api/cron/notification-digest` (digest de e-mail). Falta apenas **configurar o
+  agendamento** no Coolify (ou disparador externo) para chamá-los periodicamente
+  (ex.: maintenance 1x/dia, digest a cada 15 min). Verificados manualmente (200
+  com token, 401 sem).
 - **CSP completa.** Os headers de segurança estão no `next.config.ts`, mas a
   Content-Security-Policy detalhada do doc 09 ainda não foi aplicada.
 
@@ -398,9 +402,13 @@ Configurações de membros:
   O **"mostrar no cadastro"** está ligado: os campos marcados aparecem no
   formulário de cadastro (`/auth/cadastrar`), são validados antes de criar a
   conta e salvos no novo usuário.
-  FALTA (adiado): aba **Conclusão de perfil** (etapas pós-cadastro) e aba
-  **Galeria de fotos**. N/A no RetroWiki (sem a feature-base): assinaturas,
-  aniversários, prune de conversas, ignorar membros, formatação de grupo.
+  **Conclusão de perfil** (RESOLVIDO, versão leve): nudge no `/painel`
+  (`getProfileCompletion`) quando falta avatar ou há campos de perfil editáveis
+  vazios, com CTA para `/conta?secao=perfil` (verificado). FALTA: **Galeria de
+  fotos** — feature grande e independente (uploads, álbuns, moderação,
+  armazenamento), merece build dedicado. N/A no RetroWiki (sem a feature-base):
+  assinaturas, aniversários, prune de conversas, ignorar membros, formatação de
+  grupo.
 - **Reputação e reações.** STATUS: entregue (`/admin/reputacao`, 4 abas).
   **Configurações**: ativa, papéis excluídos, reagir ao próprio conteúdo, mostrar
   reputação no perfil (gate verificado), limiar de destaque, modo de exibição.
@@ -425,8 +433,10 @@ Configurações de membros:
   Página do membro em `/conta?secao=notificacoes`. Verificado: badge concedida
   com a categoria desabilitada não notifica; reabilitada, notifica; preferência
   do membro suprime para ele. **Push N/A** (sem app). **E-mail** é só
-  configuração: o envio de e-mail de notificação/digest segue adiado (cron já
-  preparado em outro item).
+  configuração: o **digest de e-mail** foi RESOLVIDO via
+  `/api/cron/notification-digest` (Resend; respeita o canal de e-mail por
+  categoria + preferência do membro via `isEmailAllowed`; marca `emailedAt` para
+  não reenviar; verificado retornando `{sent,recipients}`).
 - **Banimentos.** STATUS: entregue (`/admin/banimentos`). Filtros por **e-mail,
   IP ou nome de usuário**, com conteúdo aceitando curinga `*` e motivo (tabela
   `ban_filters`). Admin adiciona/remove pelo dialog. Enforcement no **cadastro**
@@ -447,9 +457,10 @@ Moderação de conteúdo:
   recebe notificação no sino ao resolver. Tabelas `report_types` /
   `content_reports`. Verificado: denunciar → auto-ocultar (limiar) → fila →
   resolver → autor notificado.
-  ADIADO/N-A: regras de auto-moderação por critério de autor (lista estilo
-  Promoções, reaproveita o motor de critérios), e denúncia por convidado
-  (RetroWiki exige login).
+  ADIADO/N-A: regras de auto-moderação por **critério de autor** (lista estilo
+  Promoções, reaproveita o motor de critérios) — sub-feature substancial; o
+  limiar global de auto-moderação já cobre o núcleo, então fica para um build
+  dedicado. Denúncia por convidado: N-A (RetroWiki exige login).
 - **Prevenção de spam.** STATUS: entregue (`/admin/spam`, 3 abas adaptadas).
   **RetroGuard:** dificuldade do proof-of-work configurável (ligada ao
   `/api/captcha`, verificado ao vivo) + ações ao marcar spammer. **Pergunta &
@@ -471,9 +482,13 @@ Moderação de conteúdo:
   View (registra `user_warnings`, deduz reputação, aplica a ação). Enforcement:
   `users.posting_restricted_until` bloqueia comentar e submeter guia; ban →
   `is_suspended`. Verificado: advertência de 3 pts disparou a ação (restrição
-  indefinida) e o membro restrito foi bloqueado ao comentar. ADIADO: "moderate
-  content" (forçar revisão), confirmação obrigatória (must-acknowledge) e a
-  página do membro ver os próprios avisos (hoje só no Member View do admin).
+  indefinida) e o membro restrito foi bloqueado ao comentar. RESOLVIDO os
+  adiados: **moderate content** (`users.content_moderated_until`; guia novo vai à
+  revisão e comentário entra `flagged` — via `applyActions`); **must-acknowledge**
+  (`postingGate` bloqueia comentar/submeter até confirmar; verificado:
+  bloqueado → confirmar em `/conta?secao=avisos` → publicado); **página do
+  membro** vê os próprios avisos em `/conta?secao=avisos` (respeita "membros
+  veem os próprios"), com botão de confirmar.
 - **Atribuições.** STATUS: entregue (`/admin/atribuicoes`, 3 abas). **Equipes**
   de moderação (`mod_teams`/`mod_team_members`) com CRUD (nome + moderadores).
   **Atribuir** um guia a um moderador ou equipe pelo botão na página do guia
@@ -493,7 +508,12 @@ Equipe:
   do log. **Log de moderação**: surface paginado do `audit_log` (autor, ação
   legível via `auditLabel`, alvo, data). "Add Moderator" = definir o papel do
   membro em Membros (já existe); permissões restritas/irrestritas por papel já
-  ficam em Grupos. ADIADO: log com IP por ação e o expurgo automático (cron).
+  ficam em Grupos. RESOLVIDO os adiados: **IP por ação** (coluna `audit_log.ip` +
+  helper `logModAction` que captura `getClientIp`; retrofit em warn/flag-spammer/
+  report/assign; o log de moderação mostra a coluna IP — verificado `::1`);
+  **expurgo automático** via `/api/cron/maintenance` (prune do log conforme
+  `logPruneDays`, purge de IP LGPD em 365d, auto-fechar atribuições conforme
+  `autoCloseDays`; verificado retornando os contadores).
   **Administradores** (mesma tela, adaptada — IPB separa, RetroWiki unifica):
   **Mostrar administradores/moderadores** = links para `/admin/membros?role=...`
   (filtro de papel adicionado a `listMembers`, com indicador e "limpar filtro" —
@@ -507,8 +527,10 @@ Equipe:
   Página pública `/equipe` renderiza as categorias em cards (avatar, nome, título,
   bio) ligados ao perfil, respeitando o layout; dedup por handle na categoria
   (membro custom tem precedência sobre o mesmo vindo do grupo — verificado).
-  Migração 0025. ADIADO: reordenação por drag, bio em rich text (hoje texto puro)
-  e link no menu/rodapé global para `/equipe`.
+  Migração 0025. RESOLVIDO os adiados: **reordenação** (botões subir/descer em
+  categorias e entradas, via `moveCategory`/`moveEntry`) e **link no menu** global
+  para `/equipe` (header). Mantido como está: **bio em texto puro** (renderiza bem;
+  rich text seria polish de baixo valor).
 
 Gerenciamento de páginas e conteúdo:
 

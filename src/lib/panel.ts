@@ -1,7 +1,27 @@
 import "server-only";
-import { eq, and, desc, count } from "drizzle-orm";
+import { eq, and, desc, count, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { comments, reviews, auditLog, users } from "@/db/schema";
+
+/** Registra uma ação no log de moderação capturando o IP do autor. */
+export async function logModAction(actorId: number, action: string, target: string, meta?: unknown): Promise<void> {
+  try {
+    const { getClientIp } = await import("@/lib/ip");
+    await db.insert(auditLog).values({ actorId, action, target, ip: await getClientIp(), meta: meta ?? null });
+  } catch {
+    // best-effort
+  }
+}
+
+/** Remove entradas do log de moderação mais antigas que N dias (0 = nunca). */
+export async function pruneAuditLog(days: number): Promise<void> {
+  if (!days || days <= 0) return;
+  try {
+    await db.delete(auditLog).where(lt(auditLog.createdAt, new Date(Date.now() - days * 86400_000)));
+  } catch {
+    // best-effort
+  }
+}
 
 /** Quantos comentários visíveis o usuário publicou. */
 export async function getCommentCount(userId: number): Promise<number> {
@@ -81,14 +101,14 @@ export function auditLabel(action: string): string {
   return ACTION_LABEL[action] ?? action.replace(/_/g, " ");
 }
 
-export type ModLogEntry = { id: number; action: string; target: string; createdAt: Date; actorName: string | null; actorHandle: string | null };
+export type ModLogEntry = { id: number; action: string; target: string; ip: string | null; createdAt: Date; actorName: string | null; actorHandle: string | null };
 
 /** Log de moderação paginado (audit_log com o nome do autor). */
 export async function getModeratorLog(page = 1, pageSize = 30): Promise<{ items: ModLogEntry[]; hasMore: boolean }> {
   try {
     const offset = Math.max(0, (page - 1) * pageSize);
     const rows = await db
-      .select({ id: auditLog.id, action: auditLog.action, target: auditLog.target, createdAt: auditLog.createdAt, actorName: users.displayName, actorHandle: users.handle })
+      .select({ id: auditLog.id, action: auditLog.action, target: auditLog.target, ip: auditLog.ip, createdAt: auditLog.createdAt, actorName: users.displayName, actorHandle: users.handle })
       .from(auditLog)
       .leftJoin(users, eq(users.id, auditLog.actorId))
       .orderBy(desc(auditLog.createdAt))

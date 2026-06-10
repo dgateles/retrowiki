@@ -183,6 +183,27 @@
       "when": 1781049394432,
       "tag": "0025_black_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1781050247182,
+      "tag": "0026_hot_marauders",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1781050447263,
+      "tag": "0027_strange_colleen_wing",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1781050567447,
+      "tag": "0028_futuristic_famine",
+      "breakpoints": true
     }
   ]
 }

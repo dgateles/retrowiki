@@ -7,7 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { articles, revisions, reviews, users, auditLog } from "@/db/schema";
 import { createNotification } from "@/lib/notifications";
-import { isPostingRestricted } from "@/lib/warnings";
+import { postingGate, isContentModerated } from "@/lib/warnings";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { BlockTreeSchema } from "@/lib/blocks/schema";
 import { blockTreeToText } from "@/lib/blocks/schema";
@@ -151,9 +151,8 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
     return { ok: false, error: "Faça login." };
   }
 
-  if (await isPostingRestricted(Number(session.id))) {
-    return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
-  }
+  const gate = await postingGate(Number(session.id));
+  if (!gate.ok) return { ok: false, error: gate.error };
 
   const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
   if (!article) return { ok: false, error: "Artigo não encontrado." };
@@ -162,8 +161,11 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
 
   const [user] = await db.select().from(users).where(eq(users.id, Number(session.id))).limit(1);
 
+  // Advertência "moderar conteúdo": força revisão mesmo p/ quem publica direto.
+  const moderated = await isContentModerated(Number(session.id));
+
   // autotrust: publica direto, mas registra Review automático (auditável)
-  if (await canPublishDirectly(user ?? null)) {
+  if (!moderated && (await canPublishDirectly(user ?? null))) {
     await db.insert(reviews).values({
       revisionId: article.currentRevisionId,
       reviewerId: Number(session.id),

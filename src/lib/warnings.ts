@@ -2,6 +2,7 @@ import "server-only";
 import { and, asc, desc, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { warningReasons, warningActions, userWarnings, users } from "@/db/schema";
+import { getWarningSettings } from "@/lib/settings";
 
 // ── Motivos ────────────────────────────────────────────────────────────────
 
@@ -161,9 +162,12 @@ export async function applyActions(userId: number): Promise<void> {
     }
     if (!chosen) return;
 
-    const patch: { postingRestrictedUntil?: Date; isSuspended?: boolean } = {};
+    const patch: { postingRestrictedUntil?: Date; contentModeratedUntil?: Date; isSuspended?: boolean } = {};
     if (chosen.restrictHours !== 0) {
       patch.postingRestrictedUntil = chosen.restrictHours < 0 ? FAR_FUTURE : new Date(Date.now() + chosen.restrictHours * 3600_000);
+    }
+    if (chosen.moderateHours !== 0) {
+      patch.contentModeratedUntil = chosen.moderateHours < 0 ? FAR_FUTURE : new Date(Date.now() + chosen.moderateHours * 3600_000);
     }
     if (chosen.banHours !== 0) {
       patch.isSuspended = true;
@@ -201,6 +205,25 @@ export async function issueWarning(userId: number, reasonId: number, points: num
   }
 }
 
+/** Há advertências não confirmadas pelo membro? */
+export async function hasUnacknowledgedWarnings(userId: number): Promise<boolean> {
+  try {
+    const [row] = await db.select({ id: userWarnings.id }).from(userWarnings).where(and(eq(userWarnings.userId, userId), eq(userWarnings.acknowledged, false))).limit(1);
+    return Boolean(row);
+  } catch {
+    return false;
+  }
+}
+
+/** Marca todas as advertências do membro como confirmadas. */
+export async function acknowledgeAllWarnings(userId: number): Promise<void> {
+  try {
+    await db.update(userWarnings).set({ acknowledged: true }).where(and(eq(userWarnings.userId, userId), eq(userWarnings.acknowledged, false)));
+  } catch {
+    // best-effort
+  }
+}
+
 /** O membro está com a postagem restrita? */
 export async function isPostingRestricted(userId: number): Promise<boolean> {
   try {
@@ -209,4 +232,26 @@ export async function isPostingRestricted(userId: number): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/** O conteúdo novo do membro deve ir à revisão (advertência "moderar conteúdo")? */
+export async function isContentModerated(userId: number): Promise<boolean> {
+  try {
+    const [u] = await db.select({ until: users.contentModeratedUntil }).from(users).where(eq(users.id, userId)).limit(1);
+    return Boolean(u?.until && new Date(u.until) > new Date());
+  } catch {
+    return false;
+  }
+}
+
+/** Gate de postagem: restrição + confirmação obrigatória. */
+export async function postingGate(userId: number): Promise<{ ok: boolean; error?: string }> {
+  if (await isPostingRestricted(userId)) {
+    return { ok: false, error: "Sua conta está com a postagem restrita por advertências." };
+  }
+  const settings = await getWarningSettings();
+  if (settings.mustAcknowledge && (await hasUnacknowledgedWarnings(userId))) {
+    return { ok: false, error: "Confirme suas advertências em Configurações › Advertências antes de publicar." };
+  }
+  return { ok: true };
 }

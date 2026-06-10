@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/db";
-import { auditLog } from "@/db/schema";
+import { logModAction } from "@/lib/panel";
 import { requireRole, getCurrentUser, can } from "@/lib/auth-helpers";
 import { setSetting, sanitizeAssignmentSettings } from "@/lib/settings";
 import { createTeam, updateTeam, deleteTeam, createAssignment, closeAssignment } from "@/lib/assignments";
@@ -80,7 +79,7 @@ export async function assignContentAction(targetId: number, assigneeType: "user"
   if (assigneeType !== "user" && assigneeType !== "team") return { ok: false, error: "Destino inválido." };
   const res = await createAssignment(Math.floor(Number(targetId) || 0), assigneeType, Math.floor(Number(assigneeId) || 0), String(note ?? ""), Number(user!.id));
   if (res.ok) {
-    await db.insert(auditLog).values({ actorId: Number(user!.id), action: "assign_content", target: `article:${targetId}` });
+    await logModAction(Number(user!.id), "assign_content", `article:${targetId}`);
     revalidatePath("/admin/atribuicoes");
   }
   return res;

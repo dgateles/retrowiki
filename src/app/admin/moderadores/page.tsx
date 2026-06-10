@@ -71,15 +71,16 @@ export default async function ModeratorsPage({ searchParams }: { searchParams: P
         {log.items.length === 0 ? (
           <p className="muted mt-3">Nenhuma ação registrada.</p>
         ) : (
-          <div className="modlog mt-3">
+          <div className="modlog modlog--5 mt-3">
             <div className="modlog__head">
-              <span>Membro</span><span>Ação</span><span>Alvo</span><span>Data</span>
+              <span>Membro</span><span>Ação</span><span>Alvo</span><span>IP</span><span>Data</span>
             </div>
             {log.items.map((e) => (
               <div key={e.id} className="modlog__row">
                 <span className="truncate">{e.actorName ? <Link href={`/u/${e.actorHandle}`} className="link-inline">{e.actorName}</Link> : "—"}</span>
                 <span className="truncate">{auditLabel(e.action)}</span>
                 <span className="modlog__target truncate">{e.target}</span>
+                <span className="modlog__target truncate">{e.ip ?? "—"}</span>
                 <span className="muted">{fmt(e.createdAt)}</span>
               </div>
             ))}

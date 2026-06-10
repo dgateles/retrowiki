@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/db";
-import { auditLog } from "@/db/schema";
+import { logModAction } from "@/lib/panel";
 import { requireUser, requireRole, getCurrentUser, can } from "@/lib/auth-helpers";
 import { setSetting, sanitizeReportingSettings } from "@/lib/settings";
 import { createReport, resolveReports, createReportType, updateReportType, deleteReportType, type TargetType } from "@/lib/reports";
@@ -39,7 +38,7 @@ export async function resolveReportAction(targetType: TargetType, targetId: numb
   if (decision !== "completed" && decision !== "rejected") return { ok: false, error: "Decisão inválida." };
   const res = await resolveReports(targetType, targetId, decision, Number(user!.id));
   if (res.ok) {
-    await db.insert(auditLog).values({ actorId: Number(user!.id), action: `report_${decision}`, target: `${targetType}:${targetId}` });
+    await logModAction(Number(user!.id), `report_${decision}`, `${targetType}:${targetId}`);
     revalidatePath("/admin/denuncias");
   }
   return res;

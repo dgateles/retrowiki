@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { users, auditLog } from "@/db/schema";
+import { users } from "@/db/schema";
+import { logModAction } from "@/lib/panel";
 import { requireRole } from "@/lib/auth-helpers";
 import { hashPassword } from "@/lib/password";
 import { slugify } from "@/lib/utils";
@@ -23,7 +24,7 @@ async function asAdmin(): Promise<{ id: string } | null> {
 }
 
 async function audit(actorId: number, action: string, userId: number, meta?: unknown) {
-  await db.insert(auditLog).values({ actorId, action, target: `user:${userId}`, meta: meta ?? null });
+  await logModAction(actorId, action, `user:${userId}`, meta);
 }
 
 const RoleSchema = z.enum(["member", "contributor", "moderator", "admin"]);

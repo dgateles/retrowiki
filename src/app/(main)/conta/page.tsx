@@ -11,6 +11,9 @@ import { ProfileFieldsForm } from "@/components/account/profile-fields-form";
 import { getEditableFields } from "@/lib/profile-fields";
 import { NotificationPrefsForm } from "@/components/account/notification-prefs-form";
 import { getMemberPrefs } from "@/lib/notifications-prefs";
+import { AcknowledgeWarnings } from "@/components/account/acknowledge-warnings";
+import { listUserWarnings, activePoints, hasUnacknowledgedWarnings } from "@/lib/warnings";
+import { getWarningSettings } from "@/lib/settings";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -39,6 +42,12 @@ export default async function AccountPage({
   );
   const profileFieldGroups = active === "perfil" ? await getEditableFields(Number(user.id)) : [];
   const notifPrefs = active === "notificacoes" ? await getMemberPrefs(Number(user.id)) : [];
+
+  const warnSettings = active === "avisos" ? await getWarningSettings() : null;
+  const warnings = active === "avisos" && warnSettings?.membersCanSee ? await listUserWarnings(Number(user.id)) : [];
+  const warnPoints = active === "avisos" && warnSettings?.membersCanSee ? await activePoints(Number(user.id)) : 0;
+  const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
+  const fmtWarn = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
   return (
     <main id="main" className="page">
@@ -126,6 +135,37 @@ export default async function AccountPage({
               <div className="mt-4">
                 <NotificationPrefsForm prefs={notifPrefs} />
               </div>
+            </section>
+          )}
+
+          {active === "avisos" && (
+            <section aria-labelledby="s-avisos" className="settings-section">
+              <h2 id="s-avisos" className="settings-section__title">Advertências</h2>
+              {!warnSettings?.membersCanSee ? (
+                <p className="empty mt-4">As advertências não são visíveis para os membros nesta comunidade.</p>
+              ) : (
+                <>
+                  <p className="settings-section__desc">
+                    {warnPoints > 0 ? `Você tem ${warnPoints} ponto(s) de advertência ativo(s).` : "Você não tem advertências ativas."}
+                  </p>
+                  {needsAck && (
+                    <div className="mt-4"><AcknowledgeWarnings /></div>
+                  )}
+                  {warnings.length > 0 && (
+                    <ul className="warn-list mt-4">
+                      {warnings.map((w) => (
+                        <li key={w.id} className="warn-list__item">
+                          <div className="min-w-0">
+                            <span className="warn-list__reason">{w.reasonName} · {w.points} pt</span>
+                            {w.note && <span className="warn-list__note">{w.note}</span>}
+                          </div>
+                          <span className="muted shrink-0 text-xs">{fmtWarn(w.createdAt)}{w.acknowledged ? "" : " · não confirmada"}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
             </section>
           )}
 

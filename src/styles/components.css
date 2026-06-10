@@ -654,6 +654,10 @@
   .modlog__row {
     @apply grid grid-cols-[1fr_1.4fr_1.2fr_auto] items-center gap-3 px-3 py-2;
   }
+  .modlog--5 .modlog__head,
+  .modlog--5 .modlog__row {
+    @apply grid-cols-[1fr_1.3fr_1fr_1fr_auto];
+  }
   .modlog__head {
     @apply border-b border-border bg-muted/40 text-xs font-medium uppercase tracking-wide text-muted-foreground;
   }
@@ -705,6 +709,19 @@
   }
   .staff-card__bio {
     @apply mt-1 text-sm text-muted-foreground;
+  }
+  /* Nudge de conclusão de perfil (painel) */
+  .profile-nudge {
+    @apply flex flex-col gap-3 rounded-xl border border-primary/40 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between;
+  }
+  .profile-nudge__title {
+    @apply font-semibold;
+  }
+  .profile-nudge__text {
+    @apply text-sm text-muted-foreground;
+  }
+  .profile-nudge__cta {
+    @apply inline-flex shrink-0 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90;
   }
   /* Exibição dos campos de perfil no perfil público */
   .profile-main {

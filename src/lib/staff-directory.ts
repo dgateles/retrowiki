@@ -59,6 +59,38 @@ export async function deleteCategory(id: number): Promise<boolean> {
   }
 }
 
+/** Troca a ordem de uma categoria com a vizinha (dir: -1 sobe, 1 desce). */
+export async function moveCategory(id: number, dir: -1 | 1): Promise<boolean> {
+  try {
+    const cats = await db.select().from(staffCategories).orderBy(asc(staffCategories.sortOrder), asc(staffCategories.id));
+    const i = cats.findIndex((c) => c.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= cats.length) return false;
+    await db.update(staffCategories).set({ sortOrder: cats[j].sortOrder }).where(eq(staffCategories.id, cats[i].id));
+    await db.update(staffCategories).set({ sortOrder: cats[i].sortOrder }).where(eq(staffCategories.id, cats[j].id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Troca a ordem de uma entrada com a vizinha na mesma categoria. */
+export async function moveEntry(id: number, dir: -1 | 1): Promise<boolean> {
+  try {
+    const [entry] = await db.select().from(staffEntries).where(eq(staffEntries.id, id)).limit(1);
+    if (!entry) return false;
+    const siblings = await db.select().from(staffEntries).where(eq(staffEntries.categoryId, entry.categoryId)).orderBy(asc(staffEntries.sortOrder), asc(staffEntries.id));
+    const i = siblings.findIndex((e) => e.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= siblings.length) return false;
+    await db.update(staffEntries).set({ sortOrder: siblings[j].sortOrder }).where(eq(staffEntries.id, siblings[i].id));
+    await db.update(staffEntries).set({ sortOrder: siblings[i].sortOrder }).where(eq(staffEntries.id, siblings[j].id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ── Admin: entradas ────────────────────────────────────────────────────────
 
 export type EntryRow = {

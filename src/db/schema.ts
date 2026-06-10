@@ -39,6 +39,7 @@ export const users = mysqlTable(
     avatarUrl: varchar("avatar_url", { length: 500 }),
     coverUrl: varchar("cover_url", { length: 500 }), // capa do perfil (BunnyCDN)
     postingRestrictedUntil: datetime("posting_restricted_until"), // advertências
+    contentModeratedUntil: datetime("content_moderated_until"), // advertências: conteúdo novo vai à revisão
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
@@ -354,6 +355,7 @@ export const notifications = mysqlTable("notifications", {
   type: varchar("type", { length: 80 }).notNull(),
   payload: json("payload"),
   readAt: datetime("read_at"),
+  emailedAt: datetime("emailed_at"), // digest de e-mail já enviado
   createdAt: createdAt(),
 }, (t) => [index("notifications_recipient_idx").on(t.recipientId, t.readAt)]);
 
@@ -388,6 +390,7 @@ export const auditLog = mysqlTable("audit_log", {
   actorId: bigint("actor_id", { mode: "number" }),
   action: varchar("action", { length: 80 }).notNull(),
   target: varchar("target", { length: 120 }).notNull(),
+  ip: varchar("ip", { length: 64 }),
   meta: json("meta"),
   createdAt: createdAt(),
 }, (t) => [

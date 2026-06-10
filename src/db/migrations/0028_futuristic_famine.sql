@@ -1,0 +1,1 @@
+ALTER TABLE `audit_log` ADD `ip` varchar(64);

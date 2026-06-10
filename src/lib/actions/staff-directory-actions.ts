@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requireRole } from "@/lib/auth-helpers";
-import { createCategory, updateCategory, deleteCategory, addEntry, updateEntry, deleteEntry, type Layout, type EntryInput } from "@/lib/staff-directory";
+import { createCategory, updateCategory, deleteCategory, moveCategory, addEntry, updateEntry, deleteEntry, moveEntry, type Layout, type EntryInput } from "@/lib/staff-directory";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
 
@@ -62,6 +62,20 @@ export async function updateCategoryAction(id: number, body: string): Promise<Re
 export async function deleteCategoryAction(id: number): Promise<Result> {
   if (!(await asAdmin())) return { ok: false, error: "Acesso restrito." };
   if (!(await deleteCategory(id))) return { ok: false, error: "Falha." };
+  revalidate();
+  return { ok: true };
+}
+
+export async function moveCategoryAction(id: number, dir: number): Promise<Result> {
+  if (!(await asAdmin())) return { ok: false, error: "Acesso restrito." };
+  await moveCategory(id, dir < 0 ? -1 : 1);
+  revalidate();
+  return { ok: true };
+}
+
+export async function moveEntryAction(id: number, dir: number): Promise<Result> {
+  if (!(await asAdmin())) return { ok: false, error: "Acesso restrito." };
+  await moveEntry(id, dir < 0 ? -1 : 1);
   revalidate();
   return { ok: true };
 }

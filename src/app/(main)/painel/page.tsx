@@ -39,6 +39,9 @@ export default async function PanelPage() {
     getUserBadges(user.id),
   ]);
 
+  const { getProfileCompletion } = await import("@/lib/profile-fields");
+  const completion = await getProfileCompletion(user.id, Boolean(user.avatarUrl));
+
   const published = articles.filter((a) => a.status === "published").length;
   const drafts = articles.filter((a) =>
     ["draft", "pending", "changes_requested"].includes(a.status),
@@ -51,6 +54,21 @@ export default async function PanelPage() {
     <main id="main" className="page">
       <h1 className="page__title">Olá, {user.displayName}</h1>
       <p className="page__note">Seu resumo na comunidade.</p>
+
+      {!completion.complete && (
+        <aside className="profile-nudge mt-6" aria-label="Conclua seu perfil">
+          <div className="min-w-0">
+            <p className="profile-nudge__title">Conclua seu perfil</p>
+            <p className="profile-nudge__text">
+              {completion.needsAvatar && "Adicione um avatar"}
+              {completion.needsAvatar && completion.missingFields > 0 && " e "}
+              {completion.missingFields > 0 && `preencha ${completion.missingFields} campo(s) de perfil`}
+              {" "}para a comunidade conhecer você.
+            </p>
+          </div>
+          <Link href="/conta?secao=perfil" className="profile-nudge__cta">Completar agora</Link>
+        </aside>
+      )}
 
       <section aria-label="Rank" className="rank mt-6">
         <div className="rank__head">

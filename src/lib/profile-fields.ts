@@ -14,6 +14,19 @@ async function valuesFor(userId: number): Promise<Map<number, string>> {
   return new Map(rows.map((r) => [r.fieldId, r.value ?? ""]));
 }
 
+/** Avalia a conclusão de perfil: avatar + campos editáveis preenchidos. */
+export async function getProfileCompletion(userId: number, hasAvatar: boolean): Promise<{ complete: boolean; missingFields: number; needsAvatar: boolean }> {
+  try {
+    const groups = await getEditableFields(userId);
+    const editable = groups.flatMap((g) => g.fields);
+    const missingFields = editable.filter((f) => !f.value || f.value.trim() === "").length;
+    const needsAvatar = !hasAvatar;
+    return { complete: missingFields === 0 && !needsAvatar, missingFields, needsAvatar };
+  } catch {
+    return { complete: true, missingFields: 0, needsAvatar: false };
+  }
+}
+
 /** Campos que o membro pode editar, com os valores atuais. */
 export async function getEditableFields(userId: number): Promise<GroupWithValues[]> {
   try {
