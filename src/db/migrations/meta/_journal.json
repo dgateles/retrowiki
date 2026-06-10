@@ -253,6 +253,13 @@
       "when": 1781070300442,
       "tag": "0035_red_silver_surfer",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1781107951640,
+      "tag": "0036_tiresome_devos",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,7 @@ const FOLDERS: Record<string, "admin" | "user"> = {
   badges: "admin",
   ranks: "admin",
   quests: "admin",
+  pages: "admin",
   avatars: "user",
   covers: "user",
   gallery: "user",

@@ -774,6 +774,23 @@ export const achievementRules = mysqlTable("achievement_rules", {
   createdAt: createdAt(),
 }, (t) => [index("achievement_rules_trigger_idx").on(t.trigger)]);
 
+// Páginas montadas no construtor visual (admin). O layout é uma árvore segura
+// (seções → colunas → widgets) serializada em JSON, validada por allowlist.
+export const pages = mysqlTable("pages", {
+  id: pk(),
+  slug: varchar("slug", { length: 160 }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  metaDescription: varchar("meta_description", { length: 320 }),
+  layout: json("layout").notNull(), // { sections: [...] }
+  status: mysqlEnum("status", ["draft", "published"]).notNull().default("draft"),
+  showInMenu: boolean("show_in_menu").notNull().default(false),
+  menuOrder: int("menu_order").notNull().default(0),
+  noindex: boolean("noindex").notNull().default(false),
+  createdById: bigint("created_by_id", { mode: "number" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (t) => [uniqueIndex("pages_slug_idx").on(t.slug), index("pages_menu_idx").on(t.showInMenu, t.menuOrder)]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;

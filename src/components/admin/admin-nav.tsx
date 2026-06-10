@@ -62,6 +62,7 @@ const GROUPS: NavGroup[] = [
     links: [
       { href: "/admin/artigos", label: "Artigos" },
       { href: "/admin/consoles", label: "Consoles" },
+      { href: "/admin/paginas", label: "Páginas" },
     ],
   },
   {

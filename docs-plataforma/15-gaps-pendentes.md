@@ -879,6 +879,29 @@ Os três modos produzem o mesmo conteúdo seguro no fim.
 
 ## Construtor visual de páginas estilo Elementor (admin)
 
+STATUS: **fase 1 entregue**. O admin monta páginas próprias em
+`/admin/paginas` (lista + "Nova página") e no construtor `/admin/paginas/[id]`.
+Modelo de dados: tabela `pages` (`slug`, `title`, `layout` JSON, `status`,
+`show_in_menu`, `menu_order`, `noindex`; migração 0036). A árvore é
+**seções → colunas (largura: full/1-2/1-3/2-3/1-4/3-4) → widgets**, validada por
+**allowlist Zod** (`validateLayout`) no servidor e renderizada **via JSX**
+(`PageRenderer`, sem `dangerouslySetInnerHTML`). Widgets da fase 1: **título,
+texto, imagem (Bunny via ImageUpload), botão, divisor, espaçador**. Editor com
+**preview ao vivo**, reordenar seções/colunas/widgets (↑/↓), painel de
+propriedades por widget, rascunho/publicar, "mostrar no menu" (entra na nav do
+header via `getMenuPages`) e SEO (meta description + noindex). Rota pública
+`/p/[slug]`. URLs sanitizadas (botão/imagem só `https://`/`/`/`#`; `javascript:`
+e `data:` barrados na validação **e** no render).
+
+Verificado no navegador: criar página → adicionar seção + título/texto/botão →
+publicar → render público correto + item no menu; um botão com
+`javascript:alert(...)` foi **rejeitado** ("Layout inválido").
+
+**Próximas fases (não entregues):** drag-and-drop de verdade; mais widgets
+(acordeão, galeria, embed de vídeo com allowlist, lista de ícones, cartão,
+HTML/Markdown reusando o pipeline de autoria); blocos reutilizáveis; controles
+responsivos por dispositivo.
+
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do
 Elementor do WordPress**. Só o **conteúdo** é editado: header e footer do site

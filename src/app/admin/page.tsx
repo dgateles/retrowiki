@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gamepad2, BookOpen, Users, Trophy, Shield, TrendingUp, Globe, Sparkles, Medal, Award, Target } from "lucide-react";
+import { Gamepad2, BookOpen, Users, Trophy, Shield, TrendingUp, Globe, Sparkles, Medal, Award, Target, LayoutTemplate } from "lucide-react";
 import { getAdminOverview, getRecentAudit, auditLabel, getGrowthSeries } from "@/lib/panel";
 import { GrowthChart } from "@/components/admin/growth-chart";
 
@@ -18,6 +18,7 @@ const CARDS = [
   { href: "/admin/badges", icon: Award, title: "Badges", desc: "Catálogo de conquistas (CRUD)." },
   { href: "/admin/quests", icon: Target, title: "Missões", desc: "Tarefas ligadas a regras com recompensa." },
   { href: "/admin/gamificacao", icon: Trophy, title: "Gamificação", desc: "Conceder badges e visão geral." },
+  { href: "/admin/paginas", icon: LayoutTemplate, title: "Páginas", desc: "Construtor visual de páginas próprias (Sobre, Regras…)." },
   { href: "/moderacao", icon: BookOpen, title: "Moderação", desc: "Fila de revisão de guias e tutoriais da comunidade." },
 ];
 

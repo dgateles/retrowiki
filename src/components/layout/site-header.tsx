@@ -18,6 +18,8 @@ export async function SiteHeader() {
   const user = await getCurrentUser();
   const gami = await getAchievementSettings();
   const rank = user && gami.enabled ? await getRankForReputation(user.reputation) : null;
+  const { getMenuPages } = await import("@/lib/pages");
+  const menuPages = await getMenuPages();
 
   let unread = 0;
   let notifItems: NotifItem[] = [];
@@ -70,6 +72,11 @@ export async function SiteHeader() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/equipe">Equipe</Link>
           </Button>
+          {menuPages.map((p) => (
+            <Button key={p.slug} asChild variant="ghost" size="sm">
+              <Link href={`/p/${p.slug}`}>{p.title}</Link>
+            </Button>
+          ))}
         </nav>
 
         <SearchBox className="site-header__search" />
