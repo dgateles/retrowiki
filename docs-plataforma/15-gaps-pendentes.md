@@ -180,8 +180,16 @@ notificação ao citado atendem.
   agendamento** no Coolify (ou disparador externo) para chamá-los periodicamente
   (ex.: maintenance 1x/dia, digest a cada 15 min). Verificados manualmente (200
   com token, 401 sem).
-- **CSP completa.** Os headers de segurança estão no `next.config.ts`, mas a
-  Content-Security-Policy detalhada do doc 09 ainda não foi aplicada.
+- **CSP completa.** ENTREGUE. `src/middleware.ts` aplica uma CSP **baseada em
+  nonce** por requisição: `script-src 'self' 'nonce-…' 'strict-dynamic'` (Next
+  injeta o nonce nos próprios scripts), `style-src 'self' 'unsafe-inline'` (estilos
+  inline do React), `img-src 'self' data: blob: https:` (BunnyCDN/avatares),
+  `font-src/connect-src/worker-src/form-action 'self'`, `object-src 'none'`,
+  `base-uri 'self'`, `frame-ancestors 'none'`, `upgrade-insecure-requests`.
+  `'unsafe-eval'` só em dev (React Refresh). Verificado no navegador: header com
+  nonce presente, hydration/tema OK, **worker do RetroGuard** carrega, login e
+  server actions (POST same-origin) funcionam, **zero violações** no console na
+  home, cadastro e admin. Os demais headers seguem no `next.config.ts`.
 
 ## Painel de administração completo (referência IPB)
 
