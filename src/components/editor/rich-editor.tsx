@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { marked } from "marked";
+import TurndownService from "turndown";
 import { useEditor, EditorContent, useEditorState, type Editor, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
@@ -369,6 +371,15 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
   );
 }
 
+const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced", bulletListMarker: "-" });
+
+type AuthorMode = "rich" | "markdown" | "html";
+const MODES: { v: AuthorMode; label: string }[] = [
+  { v: "rich", label: "Rico" },
+  { v: "markdown", label: "Markdown" },
+  { v: "html", label: "HTML" },
+];
+
 export function RichEditor({ value, onChange, variant = "full", placeholder = "Escreva o conteúdo do guia…" }: { value?: JSONContent; onChange: (doc: JSONContent) => void; variant?: "full" | "comment"; placeholder?: string }) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -397,12 +408,74 @@ export function RichEditor({ value, onChange, variant = "full", placeholder = "E
     editorProps: { attributes: { class: "rte__content", role: "textbox", "aria-multiline": "true", "aria-label": "Editor de conteúdo" } },
   });
 
+  const [mode, setMode] = useState<AuthorMode>("rich");
+  const [raw, setRaw] = useState("");
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   if (!editor) return <div className="rte"><div className="rte__content" /></div>;
+
+  // Importa HTML/Markdown para o doc do editor: o setContent passa pelo schema do
+  // TipTap, que descarta tudo fora da allowlist (script, iframe, on*, etc.). O
+  // servidor revalida pelo RichDocSchema antes de salvar.
+  function applyRaw(text: string, m: AuthorMode) {
+    if (!editor) return;
+    const html = m === "markdown" ? (marked.parse(text, { async: false }) as string) : text;
+    editor.commands.setContent(html, { emitUpdate: true });
+  }
+
+  function onRawChange(text: string) {
+    setRaw(text);
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => applyRaw(text, mode), 300);
+  }
+
+  function switchMode(next: AuthorMode) {
+    if (next === mode) return;
+    if (next === "rich") {
+      // Garante que a última edição em texto cru esteja no doc.
+      if (mode !== "rich") applyRaw(raw, mode);
+    } else {
+      // Semeia o textarea a partir do conteúdo atual (HTML ou Markdown).
+      const html = editor!.getHTML();
+      setRaw(next === "markdown" ? turndown.turndown(html) : html);
+    }
+    setMode(next);
+  }
+
+  const showModes = variant === "full";
 
   return (
     <div className="rte">
-      <Toolbar editor={editor} variant={variant} />
-      <EditorContent editor={editor} />
+      {showModes && (
+        <div className="rte-modes" role="tablist" aria-label="Modo de autoria">
+          {MODES.map((m) => (
+            <button
+              key={m.v}
+              type="button"
+              role="tab"
+              aria-selected={mode === m.v}
+              className={cn("rte-modes__tab", mode === m.v && "rte-modes__tab--active")}
+              onClick={() => switchMode(m.v)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <div hidden={mode !== "rich"}>
+        <Toolbar editor={editor} variant={variant} />
+        <EditorContent editor={editor} />
+      </div>
+      {mode !== "rich" && (
+        <textarea
+          className="rte-raw"
+          value={raw}
+          onChange={(e) => onRawChange(e.target.value)}
+          spellCheck={false}
+          aria-label={mode === "markdown" ? "Conteúdo em Markdown" : "Conteúdo em HTML"}
+          placeholder={mode === "markdown" ? "# Título\n\nEscreva em Markdown…" : "<h2>Título</h2>\n<p>Escreva em HTML…</p>"}
+        />
+      )}
     </div>
   );
 }

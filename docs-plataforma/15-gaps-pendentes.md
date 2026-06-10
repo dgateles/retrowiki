@@ -842,7 +842,18 @@ login com Google, e dá ao usuário controle sobre avatar e capa.
 
 ## HTML e Markdown na autoria de guias
 
-Além do editor rico, permitir escrever guias e tutoriais em HTML e em Markdown.
+STATUS: implementado. O editor tem um seletor **Rico / Markdown / HTML** (só no
+modo "full"; comentários seguem só-rico). Markdown usa `marked` (md → HTML) e o
+round-trip rico → markdown usa `turndown`. Em qualquer modo, o texto cru é
+importado via `editor.commands.setContent(html)`: o **schema do TipTap descarta
+tudo fora da allowlist** (script, iframe, `on*`, `javascript:`), e o servidor
+**revalida pelo `RichDocSchema`** antes de salvar. Saída idêntica à do editor
+rico (mesma árvore de blocos, mesmo `searchText`, mesmo fluxo de moderação).
+Verificado: Markdown vira h2/negrito/itálico/listas; um HTML com
+`<script>`/`<iframe>`/`onerror`/link `javascript:` teve **tudo perigoso
+descartado** (só texto, h3 e img sem handler sobraram); rascunho escrito em
+Markdown salvou como árvore de blocos válida.
+
 Os três modos produzem o mesmo conteúdo seguro no fim.
 
 - **Modos de autoria.** Seletor no editor: Editor rico (atual), Markdown, HTML.

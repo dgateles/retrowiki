@@ -2445,6 +2445,19 @@
   .rte {
     @apply rounded-lg border border-input bg-background focus-within:border-ring;
   }
+  /* Seletor de modo de autoria (Rico / Markdown / HTML) */
+  .rte-modes {
+    @apply flex items-center gap-1 border-b border-border p-1.5;
+  }
+  .rte-modes__tab {
+    @apply rounded-md px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .rte-modes__tab--active {
+    @apply bg-primary/15 text-primary;
+  }
+  .rte-raw {
+    @apply block min-h-72 w-full resize-y bg-transparent p-4 font-mono text-sm leading-relaxed outline-none;
+  }
   .rte__toolbar {
     @apply flex flex-wrap items-center gap-0.5 border-b border-border p-1.5;
   }
