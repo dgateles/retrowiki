@@ -145,8 +145,10 @@ Implicações de arquitetura:
   o mesmo padrão quando for internacionalizar.
 
 ## SEO e social
-- **Imagens OpenGraph dinâmicas.** Falta gerar a imagem OG por device e por
-  artigo.
+- **Imagens OpenGraph dinâmicas.** PARCIAL/ENTREGUE: `opengraph-image.tsx` por
+  **guia** (`next/og` ImageResponse 1200×630 com marca + título + subtítulo,
+  verificado renderizando). Falta replicar para **device** (`/consoles/[slug]`),
+  análogo.
 
 ## Comentários
 
@@ -557,8 +559,14 @@ Equipe:
 
 Gerenciamento de páginas e conteúdo:
 
-- **Guias/artigos.** Gerenciar todos os artigos (qualquer status), com workflows
-  de revisão, categorias e campos. Complementa a fila de moderação atual.
+- **Guias/artigos.** ENTREGUE (`/admin/artigos`). Lista todos os guias em
+  qualquer status (abas com contagem por status + busca por título), com pílula
+  de status; ações de admin: **arquivar** (tira do ar), **publicar** (coloca no
+  ar) e **excluir** (remove o artigo + revisões/reviews/comentários/follows/
+  reações). Verificado: arquivar move o guia para 404 público; contagem por status
+  atualiza. Complementa a fila de moderação de `/moderacao`. Falta ainda: a
+  **edição de artigo já publicado** gerar nova revisão pendente sem derrubar o no
+  ar (item separado abaixo).
 - **Páginas estáticas, blocos e templates.** Construtor de páginas com blocos
   reutilizáveis (template blocks) e templates, como no Page Builder do IPB.
 - **Mídia.** Biblioteca de imagens (depende do upload de mídia, já no backlog).

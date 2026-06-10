@@ -742,6 +742,26 @@
   .privacy-tools {
     @apply flex flex-col gap-2;
   }
+  /* Pílula de status (admin de artigos) */
+  .status-pill {
+    @apply ml-2 inline-block rounded-full px-2 py-0.5 align-middle text-xs font-medium;
+  }
+  .status-pill--published {
+    @apply bg-emerald-500/15 text-emerald-600 dark:text-emerald-400;
+  }
+  .status-pill--archived {
+    @apply bg-muted text-muted-foreground;
+  }
+  .status-pill--pending,
+  .status-pill--changes_requested {
+    @apply bg-amber-500/15 text-amber-600 dark:text-amber-400;
+  }
+  .status-pill--rejected {
+    @apply bg-destructive/15 text-destructive;
+  }
+  .status-pill--draft {
+    @apply bg-primary/10 text-primary;
+  }
   /* Anúncios (banner do topo) */
   .announce {
     @apply flex flex-col;

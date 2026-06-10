@@ -256,3 +256,50 @@ export async function moderateAction(input: unknown): Promise<Result> {
   }
   return { ok: true };
 }
+
+// ── Gestão de artigos (admin): mudar status / excluir ──────────────────────
+
+const ADMIN_STATUSES = ["published", "archived", "rejected", "draft"];
+
+export async function setArticleStatusAction(articleId: number, status: string): Promise<Result> {
+  let actor;
+  try {
+    actor = await requireRole("admin");
+  } catch {
+    return { ok: false, error: "Acesso restrito." };
+  }
+  if (!ADMIN_STATUSES.includes(status)) return { ok: false, error: "Status inválido." };
+  const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
+  if (!article) return { ok: false, error: "Artigo não encontrado." };
+  if (status === "published" && !article.currentRevisionId) return { ok: false, error: "Sem revisão para publicar." };
+
+  await db.update(articles).set({
+    status: status as "published" | "archived" | "rejected" | "draft",
+    ...(status === "published" && !article.publishedAt ? { publishedAt: new Date() } : {}),
+  }).where(eq(articles.id, articleId));
+
+  const { logModAction } = await import("@/lib/panel");
+  await logModAction(Number(actor.id), `article_set_${status}`, `article:${articleId}`);
+  revalidatePath("/admin/artigos");
+  revalidatePath("/guias");
+  revalidatePath(`/guias/${article.slug}`);
+  return { ok: true };
+}
+
+export async function deleteArticleAction(articleId: number): Promise<Result> {
+  let actor;
+  try {
+    actor = await requireRole("admin");
+  } catch {
+    return { ok: false, error: "Acesso restrito." };
+  }
+  const [article] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, articleId)).limit(1);
+  if (!article) return { ok: false, error: "Artigo não encontrado." };
+  const { deleteArticleCompletely } = await import("@/lib/admin/articles");
+  if (!(await deleteArticleCompletely(articleId))) return { ok: false, error: "Falha ao excluir." };
+  const { logModAction } = await import("@/lib/panel");
+  await logModAction(Number(actor.id), "article_delete", `article:${articleId}`);
+  revalidatePath("/admin/artigos");
+  revalidatePath("/guias");
+  return { ok: true };
+}
