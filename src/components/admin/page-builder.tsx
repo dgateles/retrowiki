@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -14,8 +14,10 @@ import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY } from "@/components/pages/page-renderer";
-import { savePageAction, deletePageAction } from "@/lib/actions/page-actions";
+import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
+
+type SavedBlock = { id: number; name: string; layout: unknown };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -79,7 +81,7 @@ function evenSpans(n: number): number[] {
 
 type Sel = { si: number; ci: number; wi: number };
 
-export function PageBuilder({ page }: { page: PageInput }) {
+export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: SavedBlock[] }) {
   const router = useRouter();
   const [title, setTitle] = useState(page.title);
   const [slug, setSlug] = useState(page.slug);
@@ -90,10 +92,11 @@ export function PageBuilder({ page }: { page: PageInput }) {
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
   const [selected, setSelected] = useState<Sel | null>(null);
   const [selSection, setSelSection] = useState<number | null>(null);
-  const [leftTab, setLeftTab] = useState<"elements" | "page">("elements");
+  const [leftTab, setLeftTab] = useState<"elements" | "blocks" | "page">("elements");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [pending, setPending] = useState(false);
   const [resizing, setResizing] = useState(false);
+  const [blockList, setBlockList] = useState<SavedBlock[]>(blocks);
 
   function selectWidget(s: Sel) { setSelected(s); setSelSection(null); }
   function selectSection(si: number) { setSelSection(si); setSelected(null); }
@@ -160,6 +163,28 @@ export function PageBuilder({ page }: { page: PageInput }) {
       clone.columns.forEach((c) => { c.id = uid(); });
       ss.splice(si + 1, 0, clone);
     });
+  }
+
+  async function saveBlock(si: number) {
+    const name = window.prompt("Nome do bloco:");
+    if (!name || name.trim().length < 2) return;
+    const layout = structuredClone(sections[si]);
+    const res = await saveBlockAction(name.trim(), JSON.stringify(layout));
+    if (res.ok && res.data) { toast.success("Bloco salvo."); setBlockList((prev) => [{ id: res.data!.id, name: name.trim(), layout }, ...prev]); }
+    else toast.error(res.error ?? "Falha.");
+  }
+
+  function insertBlock(layout: unknown) {
+    const sec = structuredClone(layout) as Section;
+    sec.id = uid();
+    sec.columns?.forEach((c) => { c.id = uid(); });
+    mutate((ss) => { ss.push(sec); });
+  }
+
+  async function removeBlock(id: number) {
+    const res = await deleteBlockAction(id);
+    if (res.ok) { toast.success("Bloco excluído."); setBlockList((prev) => prev.filter((b) => b.id !== id)); }
+    else toast.error(res.error ?? "Falha.");
   }
 
   // Redimensiona a divisória entre a coluna ci e ci+1 (mantém a soma do par),
@@ -283,6 +308,9 @@ export function PageBuilder({ page }: { page: PageInput }) {
                 <Button type="button" variant="ghost" size="sm" className="mt-3 w-full" onClick={() => dupSection(selSection)}>
                   <Copy className="size-4" /> Duplicar seção
                 </Button>
+                <Button type="button" variant="ghost" size="sm" className="w-full" onClick={() => saveBlock(selSection)}>
+                  <Save className="size-4" /> Salvar como bloco
+                </Button>
                 <Button type="button" variant="ghost" size="sm" className="w-full text-destructive" onClick={() => { mutate((ss) => { ss.splice(selSection, 1); }); deselect(); }}>
                   <Trash2 className="size-4" /> Excluir seção
                 </Button>
@@ -292,10 +320,26 @@ export function PageBuilder({ page }: { page: PageInput }) {
             <>
               <div className="pb-panel__tabs">
                 <button type="button" className={cn("pb-panel__tab", leftTab === "elements" && "pb-panel__tab--active")} onClick={() => setLeftTab("elements")}>Elementos</button>
+                <button type="button" className={cn("pb-panel__tab", leftTab === "blocks" && "pb-panel__tab--active")} onClick={() => setLeftTab("blocks")}>Blocos</button>
                 <button type="button" className={cn("pb-panel__tab", leftTab === "page" && "pb-panel__tab--active")} onClick={() => setLeftTab("page")}>Página</button>
               </div>
               <div className="pb-panel__scroll">
-                {leftTab === "elements" ? (
+                {leftTab === "blocks" ? (
+                  blockList.length === 0 ? (
+                    <p className="muted text-sm">Nenhum bloco salvo. Selecione uma seção e use &quot;Salvar como bloco&quot;.</p>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {blockList.map((b) => (
+                        <div key={b.id} className="pb-block">
+                          <button type="button" className="pb-block__add" title="Inserir bloco" onClick={() => insertBlock(b.layout)}>
+                            <LayoutGrid className="size-4" aria-hidden="true" /> <span className="truncate">{b.name}</span>
+                          </button>
+                          <button type="button" className="pb-icon pb-icon--danger" title="Excluir bloco" onClick={() => removeBlock(b.id)}><Trash2 className="size-3.5" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                ) : leftTab === "elements" ? (
                   <div className="pb-lib">
                     {WIDGETS.map((wt) => (
                       <button

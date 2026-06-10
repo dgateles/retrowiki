@@ -989,6 +989,12 @@
   .pb-lib {
     @apply grid grid-cols-2 gap-2;
   }
+  .pb-block {
+    @apply flex items-center gap-1;
+  }
+  .pb-block__add {
+    @apply flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
+  }
   .pb-lib__tile {
     @apply flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border border-border bg-background p-3 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
   }

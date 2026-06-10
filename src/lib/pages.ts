@@ -128,6 +128,12 @@ export function validateLayout(raw: unknown): Layout | null {
   return p.success ? p.data : null;
 }
 
+/** Valida uma única seção (para blocos reutilizáveis). */
+export function validateSection(raw: unknown): Section | null {
+  const p = SectionSchema.safeParse(raw);
+  return p.success ? p.data : null;
+}
+
 // ── CRUD ────────────────────────────────────────────────────────────────────
 
 export type PageRow = typeof pages.$inferSelect;
@@ -202,6 +208,39 @@ export async function updatePage(
 export async function deletePage(id: number): Promise<boolean> {
   try {
     await db.delete(pages).where(eq(pages.id, id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── Blocos reutilizáveis ────────────────────────────────────────────────────
+
+export type PageBlockRow = { id: number; name: string; layout: unknown };
+
+export async function listBlocks(): Promise<PageBlockRow[]> {
+  try {
+    const { pageBlocks } = await import("@/db/schema");
+    return await db.select({ id: pageBlocks.id, name: pageBlocks.name, layout: pageBlocks.layout }).from(pageBlocks).orderBy(desc(pageBlocks.createdAt)).limit(60);
+  } catch {
+    return [];
+  }
+}
+
+export async function createBlock(name: string, section: Section, createdById: number): Promise<number | null> {
+  try {
+    const { pageBlocks } = await import("@/db/schema");
+    const [res] = await db.insert(pageBlocks).values({ name, layout: section, createdById });
+    return (res as unknown as { insertId: number }).insertId;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteBlock(id: number): Promise<boolean> {
+  try {
+    const { pageBlocks } = await import("@/db/schema");
+    await db.delete(pageBlocks).where(eq(pageBlocks.id, id));
     return true;
   } catch {
     return false;

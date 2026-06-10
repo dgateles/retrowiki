@@ -969,8 +969,16 @@ Bug corrigido: o `cn()` (tailwind-merge) removia classes BEM com prefixo `bg-`
 Verificado: página semeada com os três renderiza tudo (selo Verificado, GitHub
 releases, obsoleto, dica/aviso) no público.
 
-**Próximas fases (não entregues):** **blocos reutilizáveis** (salvar seção e
-reusar); DnD de **colunas**; controles de tipografia/cor por widget.
+**Fase 10 entregue (blocos reutilizáveis):** tabela `page_blocks` (migração 0037)
+guarda uma **seção** salva. No painel da seção, "Salvar como bloco" (nomeia e
+valida pela allowlist `validateSection`); a aba **"Blocos"** lista os salvos e
+inseri-los **clona a seção** (novos IDs) como nova seção na página; excluir bloco
+disponível. A lista é gerida em estado local (não reseta a página). Verificado:
+salvar gerou o bloco no banco, a aba mostrou "Meu Hero", inserir trouxe a seção
+com o título, e a página publicou com a seção inserida.
+
+**Próximas fases (não entregues):** DnD de **colunas**; controles de tipografia/
+cor por widget; arrastar bloco salvo direto pro canvas.
 
 Permitir ao admin montar páginas próprias (ex.: "Sobre", "Regras", "Contato",
 landing pages) num **construtor visual de arrastar-e-soltar, no espírito do

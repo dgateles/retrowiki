@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth-helpers";
 import { logModAction } from "@/lib/panel";
-import { createPage, deletePage, getPageById, updatePage, uniquePageSlug, validateLayout } from "@/lib/pages";
+import { createPage, deletePage, getPageById, updatePage, uniquePageSlug, validateLayout, validateSection, createBlock, deleteBlock } from "@/lib/pages";
 import { slugify } from "@/lib/utils";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -73,6 +73,36 @@ export async function savePageAction(id: number, payload: string): Promise<Resul
   revalidatePath("/admin/paginas");
   revalidatePath(`/p/${slug}`);
   revalidatePath("/", "layout"); // menu pode ter mudado
+  return { ok: true };
+}
+
+/** Salva uma seção como bloco reutilizável. `section` é JSON serializado. */
+export async function saveBlockAction(name: string, section: string): Promise<Result<{ id: number }>> {
+  const actor = await admin();
+  if (!actor) return { ok: false, error: "Acesso restrito." };
+  const nm = String(name ?? "").trim();
+  if (nm.length < 2) return { ok: false, error: "Dê um nome ao bloco." };
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(section);
+  } catch {
+    return { ok: false, error: "Dados inválidos." };
+  }
+  const sec = validateSection(parsed);
+  if (!sec) return { ok: false, error: "Seção inválida." };
+  const id = await createBlock(nm, sec, Number(actor.id));
+  if (!id) return { ok: false, error: "Falha ao salvar o bloco." };
+  await logModAction(Number(actor.id), "page_block_create", `block:${id}`);
+  revalidatePath("/construtor", "layout");
+  return { ok: true, data: { id } };
+}
+
+export async function deleteBlockAction(id: number): Promise<Result> {
+  const actor = await admin();
+  if (!actor) return { ok: false, error: "Acesso restrito." };
+  const ok = await deleteBlock(id);
+  if (!ok) return { ok: false, error: "Falha ao excluir." };
+  revalidatePath("/construtor", "layout");
   return { ok: true };
 }
 

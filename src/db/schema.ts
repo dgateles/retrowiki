@@ -791,6 +791,16 @@ export const pages = mysqlTable("pages", {
   updatedAt: updatedAt(),
 }, (t) => [uniqueIndex("pages_slug_idx").on(t.slug), index("pages_menu_idx").on(t.showInMenu, t.menuOrder)]);
 
+// Blocos reutilizáveis do construtor: uma seção salva (árvore segura) para
+// reaproveitar em outras páginas.
+export const pageBlocks = mysqlTable("page_blocks", {
+  id: pk(),
+  name: varchar("name", { length: 120 }).notNull(),
+  layout: json("layout").notNull(), // uma Section serializada
+  createdById: bigint("created_by_id", { mode: "number" }),
+  createdAt: createdAt(),
+}, (t) => [index("page_blocks_name_idx").on(t.name)]);
+
 // Tipos exportados --------------------------------------------------------
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;
