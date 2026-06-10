@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -97,6 +97,10 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [pending, setPending] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [blockList, setBlockList] = useState<SavedBlock[]>(blocks);
+  const [past, setPast] = useState<Section[][]>([]);
+  const [future, setFuture] = useState<Section[][]>([]);
+  const sectionsRef = useRef(sections);
+  sectionsRef.current = sections;
 
   function selectWidget(s: Sel) { setSelected(s); setSelSection(null); }
   function selectSection(si: number) { setSelSection(si); setSelected(null); }
@@ -117,12 +121,38 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     dropWidget(to);
   }
 
+  // Mutação com histórico (para desfazer/refazer).
   function mutate(fn: (s: Section[]) => void) {
     setSections((prev) => {
+      setPast((p) => [...p, prev].slice(-100));
+      setFuture([]);
       const next = structuredClone(prev) as Section[];
       fn(next);
       return next;
     });
+  }
+
+  // Mutação "ao vivo" sem registrar histórico (usada no arrasto de resize).
+  function setLive(fn: (s: Section[]) => void) {
+    setSections((prev) => { const next = structuredClone(prev) as Section[]; fn(next); return next; });
+  }
+  function pushHistory() { setPast((p) => [...p, sectionsRef.current].slice(-100)); setFuture([]); }
+
+  function undo() {
+    if (past.length === 0) return;
+    const prev = past[past.length - 1];
+    setFuture((f) => [sectionsRef.current, ...f].slice(0, 100));
+    setPast((p) => p.slice(0, -1));
+    setSections(prev);
+    deselect();
+  }
+  function redo() {
+    if (future.length === 0) return;
+    const next = future[0];
+    setPast((p) => [...p, sectionsRef.current].slice(-100));
+    setFuture((f) => f.slice(1));
+    setSections(next);
+    deselect();
   }
 
   // Arrastar-e-soltar de widgets (entre colunas e seções).
@@ -201,10 +231,11 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     const startSpan = cols[ci].span;
     const unit = sectionW / 12;
     setResizing(true);
+    pushHistory(); // um único passo de undo para todo o arrasto
     const move = (ev: PointerEvent) => {
       const deltaUnits = Math.round((ev.clientX - startX) / unit);
       const left = Math.max(1, Math.min(total - 1, startSpan + deltaUnits));
-      mutate((ss) => { ss[si].columns[ci].span = left; ss[si].columns[ci + 1].span = total - left; });
+      setLive((ss) => { ss[si].columns[ci].span = left; ss[si].columns[ci + 1].span = total - left; });
     };
     const up = () => {
       setResizing(false);
@@ -245,6 +276,8 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   function addWidget(type: WidgetType) {
     let target: Sel | null = null;
     setSections((prev) => {
+      setPast((p) => [...p, prev].slice(-100));
+      setFuture([]);
       const ss = structuredClone(prev) as Section[];
       if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
@@ -256,6 +289,20 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     });
     if (target) selectWidget(target);
   }
+
+  // Atalhos: Ctrl/Cmd+Z desfaz, Ctrl/Cmd+Shift+Z (ou Ctrl+Y) refaz.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      else if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [past, future]);
 
   const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
 
@@ -453,6 +500,10 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
         {/* Barra flutuante superior */}
         <div className="pb-fs__bar">
           <Link href="/admin/paginas" className="pb-fs__exit" title="Sair do editor"><X className="size-4" aria-hidden="true" /></Link>
+          <span className="pb-dev-toggle" role="group" aria-label="Histórico">
+            <button type="button" className="pb-mini" title="Desfazer (Ctrl+Z)" disabled={past.length === 0} onClick={undo}><Undo2 className="size-4" /></button>
+            <button type="button" className="pb-mini" title="Refazer (Ctrl+Shift+Z)" disabled={future.length === 0} onClick={redo}><Redo2 className="size-4" /></button>
+          </span>
           <span className="pb-fs__bartitle">{title || "Sem título"}</span>
           <span className="pb-dev-toggle" role="group" aria-label="Pré-visualização responsiva">
             <button type="button" className={cn("pb-mini", device === "desktop" && "pb-mini--on")} title="Desktop" onClick={() => setDevice("desktop")}><Monitor className="size-4" /></button>

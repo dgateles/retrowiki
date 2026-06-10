@@ -977,6 +977,14 @@ disponível. A lista é gerida em estado local (não reseta a página). Verifica
 salvar gerou o bloco no banco, a aba mostrou "Meu Hero", inserir trouxe a seção
 com o título, e a página publicou com a seção inserida.
 
+**Fase 11 entregue (desfazer/refazer):** histórico de estados das seções com
+**undo/redo** — botões na barra flutuante (desabilitam quando vazio) e atalhos
+**Ctrl/Cmd+Z** (desfazer) e **Ctrl/Cmd+Shift+Z** / **Ctrl+Y** (refazer). Toda
+mutação registra o estado anterior (pilha de até 100); o arrasto de resize conta
+como **um único passo** (snapshot no início, mutação ao vivo durante). Verificado:
+2 widgets → desfazer → 1 → desfazer → 0 → refazer → 1, tanto por botão quanto por
+teclado.
+
 **Próximas fases (não entregues):** DnD de **colunas**; controles de tipografia/
 cor por widget; arrastar bloco salvo direto pro canvas.
 
