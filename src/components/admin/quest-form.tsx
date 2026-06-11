@@ -112,7 +112,7 @@ export function QuestForm({
         </div>
         <div className="field">
           <div className="flex items-center gap-1.5">
-            <Label htmlFor="q-roles">Público-alvo (papéis; nenhum marcado = todos)</Label>
+            <span className="text-sm font-medium leading-none">Público-alvo (papéis; nenhum marcado = todos)</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Ajuda sobre público-alvo">
@@ -123,15 +123,15 @@ export function QuestForm({
             </Tooltip>
           </div>
           <ToggleGroup
-            id="q-roles"
             type="multiple"
             variant="outline"
+            spacing={2}
             value={v.audienceRoles}
             onValueChange={(vals) => set("audienceRoles", vals)}
-            className="mt-1 flex-wrap justify-start gap-2"
+            className="mt-1 w-full flex-wrap justify-start"
           >
             {roles.map((r) => (
-              <ToggleGroupItem key={r.value} value={r.value} className="rounded-md border data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">
+              <ToggleGroupItem key={r.value} value={r.value} className="px-4 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">
                 {r.label}
               </ToggleGroupItem>
             ))}
