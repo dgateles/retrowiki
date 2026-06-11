@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ListEditor, EmulationEditor, type EmuRow } from "@/components/admin/field-editors";
 import { createDeviceAction, updateDeviceAction } from "@/lib/actions/admin-actions";
 import type { DeviceFormValues } from "@/lib/admin/device-schema";
@@ -162,20 +164,26 @@ export function DeviceForm({ initial }: Props) {
           </div>
           <div className="field">
             <Label htmlFor="form">Formato</Label>
-            <select id="form" aria-label="Formato" className="editor__select editor__select--full" value={core.formFactor} onChange={(e) => setCore({ ...core, formFactor: e.target.value })}>
-              <option value="vertical">Vertical</option>
-              <option value="horizontal">Horizontal</option>
-              <option value="clamshell">Clamshell</option>
-              <option value="other">Outro</option>
-            </select>
+            <Select value={core.formFactor} onValueChange={(v) => setCore({ ...core, formFactor: v })}>
+              <SelectTrigger id="form" aria-label="Formato" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="vertical">Vertical</SelectItem>
+                <SelectItem value="horizontal">Horizontal</SelectItem>
+                <SelectItem value="clamshell">Clamshell</SelectItem>
+                <SelectItem value="other">Outro</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="field">
             <Label htmlFor="status">Status</Label>
-            <select id="status" aria-label="Status" className="editor__select editor__select--full" value={core.status} onChange={(e) => setCore({ ...core, status: e.target.value })}>
-              <option value="published">Publicado</option>
-              <option value="draft">Rascunho</option>
-              <option value="archived">Arquivado</option>
-            </select>
+            <Select value={core.status} onValueChange={(v) => setCore({ ...core, status: v })}>
+              <SelectTrigger id="status" aria-label="Status" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="published">Publicado</SelectItem>
+                <SelectItem value="draft">Rascunho</SelectItem>
+                <SelectItem value="archived">Arquivado</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="field">
             <Label htmlFor="priceRange">Faixa de preço (texto)</Label>
@@ -184,7 +192,7 @@ export function DeviceForm({ initial }: Props) {
         </div>
         <div className="field mt-3">
           <Label htmlFor="desc">Descrição</Label>
-          <textarea id="desc" rows={3} aria-label="Descrição" className="editor__control" value={core.description} onChange={(e) => setCore({ ...core, description: e.target.value })} />
+          <Textarea id="desc" rows={3} aria-label="Descrição" value={core.description} onChange={(e) => setCore({ ...core, description: e.target.value })} />
         </div>
       </fieldset>
 
