@@ -8,11 +8,13 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import { addPhotoAction, deletePhotoAction } from "@/lib/actions/gallery-actions";
 import type { MemberPhoto } from "@/lib/gallery";
 
 export function GalleryManager({ photos, max }: { photos: MemberPhoto[]; max: number }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
   const [pending, setPending] = useState(false);
@@ -27,7 +29,7 @@ export function GalleryManager({ photos, max }: { photos: MemberPhoto[]; max: nu
     if (res.ok) { toast.success("Foto adicionada."); setUrl(""); setCaption(""); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function remove(id: number) {
-    if (!window.confirm("Remover esta foto?")) return;
+    if (!(await confirm({ description: "Remover esta foto?", confirmLabel: "Remover", destructive: true }))) return;
     const res = await deletePhotoAction(id);
     if (res.ok) { toast.success("Foto removida."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { saveMyNotificationPrefsAction } from "@/lib/actions/notification-config-actions";
 import type { MemberCategoryPref } from "@/lib/notifications-prefs";
 
@@ -28,25 +29,25 @@ export function NotificationPrefsForm({ prefs: initial }: { prefs: MemberCategor
 
   return (
     <div className="rule-form">
-      <section className="rule-form__section">
+      <section className="flex flex-col gap-3">
         {prefs.map((p) => (
-          <div key={p.key} className="notif-pref">
-            <div>
-              <p className="notif-pref__label">{p.label}</p>
-              <p className="pf-field__meta">{p.description}</p>
+          <div key={p.key} className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border bg-card p-4">
+            <div className="min-w-0">
+              <p className="font-semibold">{p.label}</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">{p.description}</p>
             </div>
-            <div className="notif-pref__channels">
-              <label className="rule-form__check">
-                <input type="checkbox" checked={p.inApp} disabled={!p.editable || p.inAppLocked} onChange={(e) => set(p.key, "inApp", e.target.checked)} /> Sino
+            <div className="flex shrink-0 gap-x-6">
+              <label className="flex items-center gap-2 text-sm">
+                <Switch checked={p.inApp} disabled={!p.editable || p.inAppLocked} onCheckedChange={(c) => set(p.key, "inApp", c)} /> Sino
               </label>
-              <label className="rule-form__check">
-                <input type="checkbox" checked={p.email} disabled={!p.editable || p.emailLocked} onChange={(e) => set(p.key, "email", e.target.checked)} /> E-mail
+              <label className="flex items-center gap-2 text-sm">
+                <Switch checked={p.email} disabled={!p.editable || p.emailLocked} onCheckedChange={(c) => set(p.key, "email", c)} /> E-mail
               </label>
             </div>
           </div>
         ))}
       </section>
-      <div className="rule-form__foot">
+      <div className="rule-form__foot mt-4">
         <Button type="button" size="sm" onClick={save} disabled={pending}>{pending ? "Salvando…" : "Salvar preferências"}</Button>
       </div>
     </div>

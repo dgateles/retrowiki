@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { setBulkMailOptOutAction } from "@/lib/actions/bulk-mail-actions";
 
 export function BulkMailOptOut({ initial }: { initial: boolean }) {
@@ -17,8 +18,8 @@ export function BulkMailOptOut({ initial }: { initial: boolean }) {
   }
 
   return (
-    <label className="rule-form__check">
-      <input type="checkbox" checked={!optOut} disabled={pending} onChange={(e) => toggle(!e.target.checked)} />{" "}
+    <label className="flex items-center gap-2 text-sm">
+      <Switch checked={!optOut} disabled={pending} onCheckedChange={(c) => toggle(!c)} />
       Receber comunicados e novidades por e-mail
     </label>
   );

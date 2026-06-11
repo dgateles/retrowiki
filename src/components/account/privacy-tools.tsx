@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { exportMyDataAction, requestDeletionAction } from "@/lib/actions/privacy-actions";
 
@@ -72,7 +73,7 @@ export function PrivacyTools({ hasOpenRequest }: { hasOpenRequest: boolean }) {
           <div className="member-create">
             <div className="field">
               <Label htmlFor="del-reason">Motivo (opcional)</Label>
-              <textarea id="del-reason" className="q-textarea" rows={3} value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />
+              <Textarea id="del-reason" rows={3} value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />
             </div>
           </div>
           <div className="modal-actions">
