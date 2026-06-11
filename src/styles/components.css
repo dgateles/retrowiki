@@ -558,7 +558,7 @@
     @apply flex items-center gap-3 rounded-md px-2 py-1.5;
   }
   .lb-row__rank {
-    @apply w-5 shrink-0 text-center text-sm font-semibold text-muted-foreground;
+    @apply w-6 shrink-0 text-center font-mono text-sm font-semibold tabular-nums text-primary;
   }
   .lb-row__avatar {
     @apply flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-xs font-bold text-primary;
@@ -570,7 +570,7 @@
     @apply min-w-0 flex-1 truncate text-sm font-medium;
   }
   .lb-row__metric {
-    @apply shrink-0 text-xs font-medium text-muted-foreground;
+    @apply shrink-0 font-mono text-xs font-medium tabular-nums text-muted-foreground;
   }
   .pff-options {
     @apply flex flex-col gap-1.5;
