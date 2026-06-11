@@ -1763,7 +1763,7 @@
 
   /* Campo de formulário. */
   .field {
-    @apply space-y-1.5;
+    @apply flex flex-col gap-1.5;
   }
   .field__hint {
     @apply text-xs text-muted-foreground;
