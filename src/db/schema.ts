@@ -786,6 +786,7 @@ export const pages = mysqlTable("pages", {
   showInMenu: boolean("show_in_menu").notNull().default(false),
   menuOrder: int("menu_order").notNull().default(0),
   noindex: boolean("noindex").notNull().default(false),
+  isHome: boolean("is_home").notNull().default(false),
   createdById: bigint("created_by_id", { mode: "number" }),
   createdAt: createdAt(),
   updatedAt: updatedAt(),

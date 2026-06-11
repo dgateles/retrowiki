@@ -29,6 +29,7 @@ export default async function BuilderFullscreen({ params }: { params: Promise<{ 
         showInMenu: page.showInMenu,
         menuOrder: page.menuOrder,
         noindex: page.noindex,
+        isHome: page.isHome,
         layout,
       }}
     />

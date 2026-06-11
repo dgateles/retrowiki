@@ -274,6 +274,13 @@
       "when": 1781209827081,
       "tag": "0038_cold_nightshade",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1781216006076,
+      "tag": "0039_stiff_the_leader",
+      "breakpoints": true
     }
   ]
 }

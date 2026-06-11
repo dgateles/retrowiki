@@ -1,11 +1,26 @@
 import Link from "next/link";
 import { Gamepad2, ArrowRight, GitCompare } from "lucide-react";
 import { listDevices } from "@/lib/devices";
+import { getHomePage, validateLayout } from "@/lib/pages";
 import { Button } from "@/components/ui/button";
 import { DeviceCard } from "@/components/catalog/device-card";
+import { PageRenderer } from "@/components/pages/page-renderer";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 
 export default async function HomePage() {
+  // Se houver uma página marcada como inicial e publicada, ela substitui a home estática.
+  const home = await getHomePage();
+  if (home) {
+    const layout = validateLayout(home.layout);
+    if (layout) {
+      return (
+        <main id="main" className="page">
+          <PageRenderer layout={layout} />
+        </main>
+      );
+    }
+  }
+
   const devices = await listDevices();
 
   return (

@@ -178,6 +178,16 @@ export async function getPublishedPage(slug: string): Promise<PageRow | null> {
   }
 }
 
+/** Página marcada como inicial e publicada (substitui a home estática). */
+export async function getHomePage(): Promise<PageRow | null> {
+  try {
+    const [p] = await db.select().from(pages).where(and(eq(pages.isHome, true), eq(pages.status, "published"))).limit(1);
+    return p ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** Páginas publicadas marcadas para aparecer no menu do header. */
 export async function getMenuPages(): Promise<{ slug: string; title: string }[]> {
   try {
@@ -209,9 +219,13 @@ export async function createPage(input: { slug: string; title: string; createdBy
 
 export async function updatePage(
   id: number,
-  input: { title: string; slug: string; metaDescription: string; layout: Layout; status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean },
+  input: { title: string; slug: string; metaDescription: string; layout: Layout; status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; isHome: boolean },
 ): Promise<boolean> {
   try {
+    // Apenas uma página pode ser a inicial: ao marcar esta, desmarca as outras.
+    if (input.isHome) {
+      await db.update(pages).set({ isHome: false }).where(eq(pages.isHome, true));
+    }
     await db.update(pages).set(input).where(eq(pages.id, id));
     return true;
   } catch {

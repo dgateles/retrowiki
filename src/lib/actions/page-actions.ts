@@ -3,10 +3,94 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth-helpers";
 import { logModAction } from "@/lib/panel";
-import { createPage, deletePage, getPageById, updatePage, uniquePageSlug, validateLayout, validateSection, createBlock, deleteBlock } from "@/lib/pages";
+import { createPage, deletePage, getPageById, getHomePage, updatePage, uniquePageSlug, validateLayout, validateSection, createBlock, deleteBlock, type Layout } from "@/lib/pages";
 import { slugify } from "@/lib/utils";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
+
+let seedCounter = 0;
+const sid = () => `s${Date.now().toString(36)}${(seedCounter++).toString(36)}`;
+
+/** Layout que reproduz a home estática (herói + grade de consoles) de forma editável. */
+function defaultHomeLayout(): Layout {
+  return {
+    sections: [
+      {
+        id: sid(),
+        bg: "particles",
+        padY: "lg",
+        anim: "up",
+        gradFrom: "#10b981",
+        gradTo: "#6366f1",
+        columns: [
+          {
+            id: sid(),
+            span: 12,
+            valign: "center",
+            bg: "none",
+            widgets: [
+              { type: "heading", level: 2, text: "O catálogo e os guias de emulação portátil, feitos pela comunidade", align: "center", color: "default", fx: "gradient" },
+              { type: "text", text: "Fichas técnicas, comparador, tutoriais e firmware num só lugar, com curadoria.", align: "center", color: "muted" },
+              { type: "button", label: "Explorar guias", href: "/guias", variant: "primary", align: "center" },
+              { type: "button", label: "Comparar consoles", href: "/consoles/comparar", variant: "outline", align: "center" },
+            ],
+          },
+        ],
+      },
+      {
+        id: sid(),
+        bg: "none",
+        padY: "md",
+        anim: "none",
+        gradFrom: "#10b981",
+        gradTo: "#6366f1",
+        columns: [
+          {
+            id: sid(),
+            span: 12,
+            valign: "top",
+            bg: "none",
+            widgets: [
+              { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+}
+
+/** Cria (ou reaproveita) a página inicial editável a partir da home atual. */
+export async function seedHomePageAction(): Promise<Result<{ id: number }>> {
+  const actor = await admin();
+  if (!actor) return { ok: false, error: "Acesso restrito." };
+
+  // Idempotente: se já existe página inicial, apenas abre o construtor dela.
+  const existingHome = await getHomePage();
+  if (existingHome) return { ok: true, data: { id: existingHome.id } };
+
+  const layout = validateLayout(defaultHomeLayout());
+  if (!layout) return { ok: false, error: "Falha ao montar o layout inicial." };
+
+  const slug = await uniquePageSlug("pagina-inicial");
+  const id = await createPage({ slug, title: "Página Inicial", createdById: Number(actor.id) });
+  if (!id) return { ok: false, error: "Falha ao criar a página." };
+
+  await updatePage(id, {
+    title: "Página Inicial",
+    slug,
+    metaDescription: "",
+    layout,
+    status: "draft",
+    showInMenu: false,
+    menuOrder: 0,
+    noindex: false,
+    isHome: false, // o admin ativa o toggle e publica para substituir a home
+  });
+  await logModAction(Number(actor.id), "page_create", `page:${id}`, { home_seed: true });
+  revalidatePath("/admin/paginas");
+  return { ok: true, data: { id } };
+}
 
 async function admin() {
   try {
@@ -57,6 +141,7 @@ export async function savePageAction(id: number, payload: string): Promise<Resul
   if (!layout) return { ok: false, error: "Layout inválido (algum widget não é permitido)." };
 
   const status = p.status === "published" ? "published" : "draft";
+  const isHome = Boolean(p.isHome);
   const ok = await updatePage(id, {
     title,
     slug,
@@ -66,13 +151,15 @@ export async function savePageAction(id: number, payload: string): Promise<Resul
     showInMenu: Boolean(p.showInMenu),
     menuOrder: Math.max(0, Math.min(999, Number(p.menuOrder) || 0)),
     noindex: Boolean(p.noindex),
+    isHome,
   });
   if (!ok) return { ok: false, error: "Falha ao salvar." };
 
   await logModAction(Number(actor.id), "page_update", `page:${id}`, { status });
   revalidatePath("/admin/paginas");
   revalidatePath(`/p/${slug}`);
-  revalidatePath("/", "layout"); // menu pode ter mudado
+  revalidatePath("/", "layout"); // menu/home podem ter mudado
+  if (isHome) revalidatePath("/");
   return { ok: true };
 }
 

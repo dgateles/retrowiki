@@ -1,0 +1,1 @@
+ALTER TABLE `pages` ADD `is_home` boolean DEFAULT false NOT NULL;

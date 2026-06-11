@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { listPages } from "@/lib/pages";
 import { NewPageButton } from "@/components/admin/new-page-button";
+import { HomePageButton } from "@/components/admin/home-page-button";
 
 export const dynamic = "force-dynamic";
 
 export default async function PagesAdminPage() {
   const items = await listPages();
+  const hasHome = items.some((p) => p.isHome);
   return (
     <>
       <div className="page__head">
         <div>
           <h1 className="page__title">Páginas</h1>
-          <p className="page__note">Monte páginas próprias (Sobre, Regras, landing) no construtor visual. Header e rodapé continuam fixos.</p>
+          <p className="page__note">Monte páginas próprias (Sobre, Regras, landing) no construtor visual. A página inicial também é editável. Header e rodapé continuam fixos.</p>
         </div>
-        <NewPageButton />
+        <div className="flex items-center gap-2">
+          <HomePageButton hasHome={hasHome} />
+          <NewPageButton />
+        </div>
       </div>
 
       {items.length === 0 ? (
@@ -24,9 +29,10 @@ export default async function PagesAdminPage() {
             <li key={p.id} className="admin-list__row">
               <span className="min-w-0">
                 <Link href={`/construtor/${p.id}`} className="admin-list__title">{p.title}</Link>
-                <span className="admin-list__meta">/p/{p.slug}{p.showInMenu && " · no menu"}</span>
+                <span className="admin-list__meta">{p.isHome ? "/ (página inicial)" : `/p/${p.slug}`}{p.showInMenu && " · no menu"}</span>
               </span>
               <span className="flex items-center gap-3">
+                {p.isHome && <span className="status-pill status-pill--published">Inicial</span>}
                 <span className={`status-pill status-pill--${p.status === "published" ? "published" : "draft"}`}>
                   {p.status === "published" ? "Publicada" : "Rascunho"}
                 </span>

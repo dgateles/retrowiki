@@ -69,7 +69,7 @@ function newWidget(type: WidgetType): Widget {
 
 type PageInput = {
   id: number; title: string; slug: string; metaDescription: string;
-  status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; layout: Layout;
+  status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; isHome: boolean; layout: Layout;
 };
 
 const COL_SPAN: Record<number, string> = {
@@ -95,6 +95,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [showInMenu, setShowInMenu] = useState(page.showInMenu);
   const [menuOrder, setMenuOrder] = useState(page.menuOrder);
   const [noindex, setNoindex] = useState(page.noindex);
+  const [isHome, setIsHome] = useState(page.isHome);
   const [sections, setSections] = useState<Section[]>(page.layout.sections);
   const [selected, setSelected] = useState<Sel | null>(null);
   const [selSection, setSelSection] = useState<number | null>(null);
@@ -273,7 +274,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     const payload = {
       title, slug, metaDescription,
       status: publish === undefined ? page.status : publish ? "published" : "draft",
-      showInMenu, menuOrder, noindex,
+      showInMenu, menuOrder, noindex, isHome,
       layout: { sections },
     };
     const res = await savePageAction(page.id, JSON.stringify(payload));
@@ -508,6 +509,10 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     <label className="flex items-center gap-2 text-sm"><Checkbox checked={showInMenu} onCheckedChange={(c) => setShowInMenu(c === true)} /> Mostrar no menu</label>
                     {showInMenu && <div className="field"><Label htmlFor="pg-order">Ordem no menu</Label><Input id="pg-order" type="number" value={menuOrder} onChange={(e) => setMenuOrder(Number(e.target.value) || 0)} className="w-24" /></div>}
                     <label className="flex items-center gap-2 text-sm"><Checkbox checked={noindex} onCheckedChange={(c) => setNoindex(c === true)} /> Não indexar (noindex)</label>
+                    <div className="rounded-lg border border-border p-3">
+                      <label className="flex items-center gap-2 text-sm font-medium"><Checkbox checked={isHome} onCheckedChange={(c) => setIsHome(c === true)} /> Usar como página inicial</label>
+                      <p className="muted mt-1.5 text-xs">Quando publicada, esta página substitui a home estática em <code>/</code>. Apenas uma página pode ser a inicial.</p>
+                    </div>
                   </div>
                 )}
               </div>
