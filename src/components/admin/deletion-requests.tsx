@@ -8,15 +8,17 @@ import { Check, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { resolveDeletionRequestAction } from "@/lib/actions/privacy-actions";
 import type { DeletionRequest } from "@/lib/privacy";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
 export function DeletionRequests({ requests }: { requests: DeletionRequest[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
 
   async function resolve(id: number, decision: "completed" | "rejected", name: string) {
-    if (decision === "completed" && !window.confirm(`Anonimizar a conta de "${name}"? Os dados pessoais serão apagados e não há como reverter.`)) return;
+    if (decision === "completed" && !(await confirm({ title: "Anonimizar conta", description: `Anonimizar a conta de "${name}"? Os dados pessoais serão apagados e não há como reverter.`, confirmLabel: "Anonimizar", destructive: true }))) return;
     setBusy(true);
     const res = await resolveDeletionRequestAction(id, decision);
     setBusy(false);

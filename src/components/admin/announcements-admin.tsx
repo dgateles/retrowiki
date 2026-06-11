@@ -7,6 +7,7 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   createAnnouncementAction,
   toggleAnnouncementAction,
@@ -22,6 +23,7 @@ const VARIANTS: { value: Variant; label: string }[] = [
 
 export function AnnouncementsAdmin({ items }: { items: Announcement[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [message, setMessage] = useState("");
   const [variant, setVariant] = useState<Variant>("info");
   const [linkUrl, setLinkUrl] = useState("");
@@ -40,7 +42,7 @@ export function AnnouncementsAdmin({ items }: { items: Announcement[] }) {
     if (res.ok) router.refresh(); else toast.error(res.error ?? "Falha.");
   }
   async function remove(id: number) {
-    if (!window.confirm("Excluir este anúncio?")) return;
+    if (!(await confirm({ description: "Excluir este anúncio?", confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteAnnouncementAction(id);
     if (res.ok) { toast.success("Anúncio excluído."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

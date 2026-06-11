@@ -6,9 +6,11 @@ import { toast } from "sonner";
 import { Archive, Upload, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { setArticleStatusAction, deleteArticleAction } from "@/lib/actions/article-actions";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 export function ArticleActions({ id, status, title }: { id: number; status: string; title: string }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
 
   async function setStatus(next: string, label: string) {
@@ -18,7 +20,7 @@ export function ArticleActions({ id, status, title }: { id: number; status: stri
     if (res.ok) { toast.success(label); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function remove() {
-    if (!window.confirm(`Excluir "${title}" e tudo relacionado (revisões, comentários, reações)? Não há como desfazer.`)) return;
+    if (!(await confirm({ title: "Excluir artigo", description: `Excluir "${title}" e tudo relacionado (revisões, comentários, reações)? Não há como desfazer.`, confirmLabel: "Excluir", destructive: true }))) return;
     setBusy(true);
     const res = await deleteArticleAction(id);
     setBusy(false);

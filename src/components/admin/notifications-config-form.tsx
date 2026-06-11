@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { NOTIFICATION_CATEGORIES, type NotificationsConfig, type ChannelMode } from "@/lib/notifications-config";
 import { saveNotificationsConfigAction, resetAllMemberPrefsAction } from "@/lib/actions/notification-config-actions";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 const MODES: { value: ChannelMode; label: string }[] = [
   { value: "default_on", label: "Ligado por padrão" },
@@ -18,6 +19,7 @@ const MODES: { value: ChannelMode; label: string }[] = [
 
 export function NotificationsConfigForm({ config: initial }: { config: NotificationsConfig }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [config, setConfig] = useState<NotificationsConfig>(initial);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -34,7 +36,7 @@ export function NotificationsConfigForm({ config: initial }: { config: Notificat
   }
 
   async function reset() {
-    if (!window.confirm("Isto apaga as preferências de notificação de todos os membros, voltando aos padrões. Continuar?")) return;
+    if (!(await confirm({ title: "Redefinir preferências", description: "Isto apaga as preferências de notificação de todos os membros, voltando aos padrões. Continuar?", confirmLabel: "Redefinir", destructive: true }))) return;
     setResetting(true);
     const res = await resetAllMemberPrefsAction();
     setResetting(false);

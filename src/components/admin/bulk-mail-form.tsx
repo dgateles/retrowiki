@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { sendBulkMailAction } from "@/lib/actions/bulk-mail-actions";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 const AUDIENCES = [
   { value: "all", label: "Todos os membros" },
@@ -19,6 +20,7 @@ const AUDIENCES = [
 
 export function BulkMailForm() {
   const router = useRouter();
+  const confirm = useConfirm();
   const [subject, setSubject] = useState("");
   const [audience, setAudience] = useState("all");
   const [body, setBody] = useState("");
@@ -26,7 +28,7 @@ export function BulkMailForm() {
 
   async function send() {
     if (subject.trim().length < 1 || body.trim().length < 1) { toast.error("Preencha assunto e mensagem."); return; }
-    if (!window.confirm("Enviar este e-mail para a audiência selecionada? Membros que optaram por não receber são excluídos.")) return;
+    if (!(await confirm({ title: "Enviar e-mail em massa", description: "Enviar este e-mail para a audiência selecionada? Membros que optaram por não receber são excluídos.", confirmLabel: "Enviar" }))) return;
     setPending(true);
     const res = await sendBulkMailAction(subject, body, audience);
     setPending(false);

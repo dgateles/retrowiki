@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { ProfileFieldDialog } from "@/components/admin/profile-field-dialog";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import { fieldTypeLabel } from "@/lib/profile-field-types";
 import {
   createGroupAction,
@@ -21,6 +22,7 @@ import type { GroupWithFields, ProfileField } from "@/lib/admin/profile-fields";
 
 export function ProfileFieldsManager({ groups }: { groups: GroupWithFields[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [open, setOpen] = useState<Set<number>>(() => new Set(groups.map((g) => g.id)));
   const [groupDialog, setGroupDialog] = useState<{ mode: "create" | "rename"; id?: number; name: string } | null>(null);
   const [groupPending, setGroupPending] = useState(false);
@@ -53,13 +55,13 @@ export function ProfileFieldsManager({ groups }: { groups: GroupWithFields[] }) 
   }
 
   async function removeGroup(id: number, name: string) {
-    if (!window.confirm(`Excluir o grupo "${name}" e todos os seus campos?`)) return;
+    if (!(await confirm({ description: `Excluir o grupo "${name}" e todos os seus campos?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteGroupAction(id);
     if (res.ok) { toast.success("Grupo excluído."); router.refresh(); } else { toast.error(res.error ?? "Falha."); }
   }
 
   async function removeField(id: number, name: string) {
-    if (!window.confirm(`Excluir o campo "${name}"? Os valores dos membros serão perdidos.`)) return;
+    if (!(await confirm({ description: `Excluir o campo "${name}"? Os valores dos membros serão perdidos.`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteFieldAction(id);
     if (res.ok) { toast.success("Campo excluído."); router.refresh(); } else { toast.error(res.error ?? "Falha."); }
   }

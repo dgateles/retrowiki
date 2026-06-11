@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   setUserRoleAction,
   setUserSuspendedAction,
@@ -26,6 +29,7 @@ type Props = {
 
 export function MemberManage({ userId, role, trusted, suspended, reputation, isSelf }: Props) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, start] = useTransition();
   const [rep, setRep] = useState(String(reputation));
 
@@ -45,26 +49,22 @@ export function MemberManage({ userId, role, trusted, suspended, reputation, isS
     <div className="member-manage">
       <div className="member-manage__row">
         <Label htmlFor="mm-role">Papel</Label>
-        <select
-          id="mm-role"
-          className="rte__select"
-          value={role}
-          disabled={isSelf || pending}
-          onChange={(e) => run(() => setUserRoleAction(userId, e.target.value), "Papel atualizado.")}
-        >
-          <option value="member">Membro</option>
-          <option value="contributor">Colaborador</option>
-          <option value="moderator">Moderador</option>
-          <option value="admin">Administrador</option>
-        </select>
+        <Select value={role} disabled={isSelf || pending} onValueChange={(v) => run(() => setUserRoleAction(userId, v), "Papel atualizado.")}>
+          <SelectTrigger id="mm-role" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="member">Membro</SelectItem>
+            <SelectItem value="contributor">Colaborador</SelectItem>
+            <SelectItem value="moderator">Moderador</SelectItem>
+            <SelectItem value="admin">Administrador</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <label className="member-manage__check">
-        <input
-          type="checkbox"
+      <label className="flex items-center gap-2 text-sm">
+        <Switch
           checked={trusted}
           disabled={pending}
-          onChange={(e) => run(() => setUserTrustedAction(userId, e.target.checked), "Atualizado.")}
+          onCheckedChange={(c) => run(() => setUserTrustedAction(userId, c), "Atualizado.")}
         />
         Confiável (publica sem fila)
       </label>
@@ -110,8 +110,8 @@ export function MemberManage({ userId, role, trusted, suspended, reputation, isS
         size="sm"
         variant="destructive"
         disabled={isSelf || pending}
-        onClick={() => {
-          if (window.confirm("Marcar como spammer? Aplica as ações configuradas (suspender, ocultar conteúdo, banir e-mail).")) {
+        onClick={async () => {
+          if (await confirm({ title: "Marcar como spammer", description: "Aplica as ações configuradas (suspender, ocultar conteúdo, banir e-mail).", confirmLabel: "Marcar", destructive: true })) {
             run(() => flagSpammerAction(userId), "Membro marcado como spammer.");
           }
         }}

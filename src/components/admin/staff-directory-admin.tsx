@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -36,16 +37,17 @@ type CategoryWithEntries = CategoryRow & { entries: EntryRow[] };
 
 export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEntries[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [catDialog, setCatDialog] = useState<{ c: CategoryRow | null } | null>(null);
   const [entryDialog, setEntryDialog] = useState<{ categoryId: number; entry: EntryRow | null } | null>(null);
 
   async function removeCat(id: number, title: string) {
-    if (!window.confirm(`Excluir a categoria "${title}" e suas entradas?`)) return;
+    if (!(await confirm({ description: `Excluir a categoria "${title}" e suas entradas?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteCategoryAction(id);
     if (res.ok) { toast.success("Categoria excluída."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function removeEntry(id: number) {
-    if (!window.confirm("Remover esta entrada?")) return;
+    if (!(await confirm({ description: "Remover esta entrada?", confirmLabel: "Remover", destructive: true }))) return;
     const res = await deleteEntryAction(id);
     if (res.ok) { toast.success("Entrada removida."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

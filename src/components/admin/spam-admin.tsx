@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   saveSpamSettingsAction,
   createQuestionAction,
@@ -32,6 +33,7 @@ export function SpamAdmin({
   geoRules: GeoRule[];
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>("retroguard");
   const [s, setS] = useState(initialSettings);
   const [savingS, setSavingS] = useState(false);
@@ -47,7 +49,7 @@ export function SpamAdmin({
     if (res.ok) toast.success("Configurações salvas."); else toast.error(res.error ?? "Falha.");
   }
   async function removeQuestion(id: number) {
-    if (!window.confirm("Excluir esta pergunta?")) return;
+    if (!(await confirm({ description: "Excluir esta pergunta?", confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteQuestionAction(id);
     if (res.ok) { toast.success("Pergunta excluída."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

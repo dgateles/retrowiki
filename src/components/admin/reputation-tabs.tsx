@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   saveReputationSettingsAction,
   createReactionAction,
@@ -44,6 +45,7 @@ export function ReputationTabs({
   levels: RepLevel[];
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>("config");
   const [s, setS] = useState<ReputationSettings>(initialSettings);
   const [savingS, setSavingS] = useState(false);
@@ -65,7 +67,7 @@ export function ReputationTabs({
   }
 
   async function removeReaction(id: number, name: string) {
-    if (!window.confirm(`Excluir a reação "${name}"?`)) return;
+    if (!(await confirm({ description: `Excluir a reação "${name}"?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteReactionAction(id);
     if (res.ok) { toast.success("Reação excluída."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
@@ -74,7 +76,7 @@ export function ReputationTabs({
     if (res.ok) router.refresh(); else toast.error(res.error ?? "Falha.");
   }
   async function removeLevel(id: number, title: string) {
-    if (!window.confirm(`Excluir o nível "${title}"?`)) return;
+    if (!(await confirm({ description: `Excluir o nível "${title}"?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteLevelAction(id);
     if (res.ok) { toast.success("Nível excluído."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
