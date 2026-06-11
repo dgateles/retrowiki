@@ -6,6 +6,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { saveProfileFieldsAction } from "@/lib/actions/profile-field-actions";
 import type { GroupWithValues, FieldWithValue } from "@/lib/profile-fields";
 
@@ -57,40 +62,38 @@ export function ProfileFieldsForm({ groups }: { groups: GroupWithValues[] }) {
     switch (f.type) {
       case "textarea":
       case "editor":
-        return <textarea id={id} className="q-textarea" rows={4} value={val} maxLength={f.maxLength ?? undefined} onChange={(e) => set(f.id, e.target.value)} />;
+        return <Textarea id={id} rows={4} value={val} maxLength={f.maxLength ?? undefined} onChange={(e) => set(f.id, e.target.value)} />;
       case "select":
         return (
-          <select id={id} className="rte__select" value={val} onChange={(e) => set(f.id, e.target.value)}>
-            <option value="">(Selecione)</option>
-            {f.options.map((o) => (<option key={o} value={o}>{o}</option>))}
-          </select>
+          <Select value={val || undefined} onValueChange={(v) => set(f.id, v)}>
+            <SelectTrigger id={id} className="w-full"><SelectValue placeholder="(Selecione)" /></SelectTrigger>
+            <SelectContent>
+              {f.options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+            </SelectContent>
+          </Select>
         );
       case "radio":
         return (
-          <div className="pff-options" role="radiogroup" aria-label={f.name}>
+          <RadioGroup value={val} onValueChange={(v) => set(f.id, v)} aria-label={f.name} className="gap-2">
             {f.options.map((o) => (
-              <label key={o} className="rule-form__check">
-                <input type="radio" name={id} checked={val === o} onChange={() => set(f.id, o)} /> {o}
-              </label>
+              <label key={o} className="flex items-center gap-2 text-sm"><RadioGroupItem value={o} /> {o}</label>
             ))}
-          </div>
+          </RadioGroup>
         );
       case "checkboxset": {
         const sel = parseSet(val);
         return (
-          <div className="pff-options">
+          <div className="flex flex-col gap-2">
             {f.options.map((o) => (
-              <label key={o} className="rule-form__check">
-                <input type="checkbox" checked={sel.includes(o)} onChange={(e) => toggleSet(f.id, o, e.target.checked)} /> {o}
-              </label>
+              <label key={o} className="flex items-center gap-2 text-sm"><Checkbox checked={sel.includes(o)} onCheckedChange={(c) => toggleSet(f.id, o, c === true)} /> {o}</label>
             ))}
           </div>
         );
       }
       case "yesno":
         return (
-          <label className="rule-form__check">
-            <input type="checkbox" checked={val === "1"} onChange={(e) => set(f.id, e.target.checked ? "1" : "0")} /> Sim
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={val === "1"} onCheckedChange={(c) => set(f.id, c ? "1" : "0")} /> Sim
           </label>
         );
       case "number":

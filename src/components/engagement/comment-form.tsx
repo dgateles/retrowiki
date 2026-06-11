@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { CommentAvatar } from "@/components/engagement/comment-avatar";
 import { COMMENT_REPLY_EVENT, type CommentReplyDetail } from "@/components/engagement/comment-reply-button";
@@ -68,8 +69,8 @@ export function CommentForm({ articleId, meName, meAvatar }: { articleId: number
       <div className="comment-form__main">
         <RichEditor key={editorKey} value={doc} onChange={setDoc} variant="comment" placeholder="Escreva um comentário…" />
         <div className="comment-form__foot">
-          <label className="comment-form__follow">
-            <input type="checkbox" checked={follow} onChange={(e) => setFollow(e.target.checked)} />
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={follow} onCheckedChange={(c) => setFollow(c === true)} />
             Seguir o tópico e receber novas respostas
           </label>
           <Button type="submit" size="sm" disabled={pending || !docHasText(doc)}>
