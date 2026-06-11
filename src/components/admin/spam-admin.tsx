@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import {
   saveSpamSettingsAction,
   createQuestionAction,
@@ -87,9 +89,11 @@ export function SpamAdmin({
                 <p className="field__hint">Maior = mais custo para bots (e um pouco mais de espera). 16 ≈ imperceptível.</p>
               </div>
               <h2 className="rule-form__title mt-4">Ao marcar um membro como spammer</h2>
-              <label className="rule-form__check"><input type="checkbox" checked={s.flagRestrict} onChange={(e) => setS({ ...s, flagRestrict: e.target.checked })} /> Suspender (impedir novos envios)</label>
-              <label className="rule-form__check"><input type="checkbox" checked={s.flagHide} onChange={(e) => setS({ ...s, flagHide: e.target.checked })} /> Ocultar o conteúdo já enviado</label>
-              <label className="rule-form__check"><input type="checkbox" checked={s.flagBan} onChange={(e) => setS({ ...s, flagBan: e.target.checked })} /> Banir o e-mail</label>
+              <SettingGroup>
+                <SettingToggle label="Suspender (impedir novos envios)" checked={s.flagRestrict} onCheckedChange={(c) => setS({ ...s, flagRestrict: c })} />
+                <SettingToggle label="Ocultar o conteúdo já enviado" checked={s.flagHide} onCheckedChange={(c) => setS({ ...s, flagHide: c })} />
+                <SettingToggle label="Banir o e-mail" checked={s.flagBan} onCheckedChange={(c) => setS({ ...s, flagBan: c })} />
+              </SettingGroup>
             </section>
             <div className="rule-form__foot">
               <Button type="button" size="sm" onClick={saveSettings} disabled={savingS}>{savingS ? "Salvando…" : "Salvar"}</Button>
@@ -131,10 +135,13 @@ export function SpamAdmin({
             <p className="muted">Sob ataque de um país, sinalize (cria a conta suspensa) ou bloqueie o cadastro de lá. Código ISO de 2 letras (ex.: RU, CN).</p>
             <div className="pf-inline mt-4">
               <Input className="w-24" placeholder="RU" value={cc} maxLength={2} onChange={(e) => setCc(e.target.value.toUpperCase())} aria-label="Código do país" />
-              <select className="rte__select w-44" value={geoAction} onChange={(e) => setGeoAction(e.target.value as "flag" | "block")}>
-                <option value="flag">Sinalizar (suspender)</option>
-                <option value="block">Bloquear cadastro</option>
-              </select>
+              <Select value={geoAction} onValueChange={(v) => setGeoAction(v as "flag" | "block")}>
+                <SelectTrigger aria-label="Ação de geo" className="w-44"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="flag">Sinalizar (suspender)</SelectItem>
+                  <SelectItem value="block">Bloquear cadastro</SelectItem>
+                </SelectContent>
+              </Select>
               <Button type="button" size="sm" onClick={addGeo}>Adicionar</Button>
             </div>
             {geoRules.length === 0 ? (

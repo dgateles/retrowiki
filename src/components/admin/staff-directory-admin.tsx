@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -133,9 +135,12 @@ function CategoryDialog({ category, onClose, onSaved }: { category: CategoryRow 
           <div className="field"><Label htmlFor="sc-title">Título</Label><Input id="sc-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} /></div>
           <div className="field">
             <Label htmlFor="sc-layout">Layout</Label>
-            <select id="sc-layout" className="rte__select" value={layout} onChange={(e) => setLayout(e.target.value as Layout)}>
-              {LAYOUTS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
-            </select>
+            <Select value={layout} onValueChange={(v) => setLayout(v as Layout)}>
+              <SelectTrigger id="sc-layout" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {LAYOUTS.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="modal-actions">
@@ -186,14 +191,17 @@ function EntryDialog({ categoryId, entry, onClose, onSaved }: { categoryId: numb
               </div>
               <div className="field"><Label htmlFor="se-name">Nome a exibir (em branco = nome do membro)</Label><Input id="se-name" value={customName} onChange={(e) => setCustomName(e.target.value)} maxLength={120} /></div>
               <div className="field"><Label htmlFor="se-title">Título personalizado</Label><Input id="se-title" value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} maxLength={160} placeholder="ex.: Fundador" /></div>
-              <div className="field"><Label htmlFor="se-bio">Biografia</Label><textarea id="se-bio" className="q-textarea" rows={4} value={bio} onChange={(e) => setBio(e.target.value)} maxLength={2000} /></div>
+              <div className="field"><Label htmlFor="se-bio">Biografia</Label><Textarea id="se-bio" rows={4} value={bio} onChange={(e) => setBio(e.target.value)} maxLength={2000} /></div>
             </>
           ) : (
             <div className="field">
               <Label htmlFor="se-role">Grupo</Label>
-              <select id="se-role" className="rte__select" value={groupRole} onChange={(e) => setGroupRole(e.target.value)}>
-                {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
+              <Select value={groupRole} onValueChange={setGroupRole}>
+                <SelectTrigger id="se-role" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
           )}
         </div>

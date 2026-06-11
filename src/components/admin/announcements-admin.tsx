@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import {
   createAnnouncementAction,
   toggleAnnouncementAction,
@@ -56,9 +58,12 @@ export function AnnouncementsAdmin({ items }: { items: Announcement[] }) {
             <div className="field"><Label htmlFor="an-msg">Mensagem</Label><Input id="an-msg" value={message} onChange={(e) => setMessage(e.target.value)} maxLength={500} /></div>
             <div className="field">
               <Label htmlFor="an-var">Estilo</Label>
-              <select id="an-var" className="rte__select" value={variant} onChange={(e) => setVariant(e.target.value as Variant)}>
-                {VARIANTS.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
-              </select>
+              <Select value={variant} onValueChange={(v) => setVariant(v as Variant)}>
+                <SelectTrigger id="an-var" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {VARIANTS.map((v) => <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="pf-inline">
               <div className="field flex-1"><Label htmlFor="an-url">Link (opcional)</Label><Input id="an-url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="/guias ou https://…" /></div>
@@ -83,7 +88,7 @@ export function AnnouncementsAdmin({ items }: { items: Announcement[] }) {
                     <span className="pf-field__meta block">{VARIANTS.find((v) => v.value === a.variant)?.label}{a.linkUrl ? ` · ${a.linkUrl}` : ""}</span>
                   </span>
                   <div className="pf-group__actions items-center gap-3">
-                    <label className="flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={a.active} onChange={(e) => toggle(a.id, e.target.checked)} /> Ativo</label>
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground"><Switch checked={a.active} onCheckedChange={(c) => toggle(a.id, c)} /> Ativo</label>
                     <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => remove(a.id)}><X className="size-4" aria-hidden="true" /></button>
                   </div>
                 </div>
