@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Upload, X, Camera, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { uploadImageAction } from "@/lib/actions/upload-actions";
 
 export function ImageUpload({
@@ -37,34 +37,43 @@ export function ImageUpload({
 
   return (
     <div className="image-upload">
-      {value ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={value} alt="" className={`image-upload__preview${shape === "round" ? " image-upload__preview--round" : ""}`} />
-      ) : (
-        <span className={`image-upload__placeholder${shape === "round" ? " image-upload__placeholder--round" : ""}`} aria-hidden="true">
-          <Upload className="size-5" />
+      <input
+        ref={inputRef}
+        type="file"
+        aria-label="Selecionar imagem para enviar"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="sr-only"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onPick(f);
+          e.target.value = "";
+        }}
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => inputRef.current?.click()}
+        aria-label={value ? "Trocar imagem" : "Enviar imagem"}
+        className={cn("image-upload__drop", shape === "round" && "image-upload__drop--round")}
+      >
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt="" className="image-upload__preview" />
+        ) : (
+          <Upload className="size-5 text-muted-foreground" aria-hidden="true" />
+        )}
+        <span className="image-upload__overlay" aria-hidden="true">
+          {busy ? <Loader2 className="size-5 animate-spin" /> : <Camera className="size-5" />}
         </span>
-      )}
+      </button>
       <div className="image-upload__actions">
-        <input
-          ref={inputRef}
-          type="file"
-          aria-label="Selecionar imagem para enviar"
-          accept="image/png,image/jpeg,image/webp,image/gif"
-          className="sr-only"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) onPick(f);
-            e.target.value = "";
-          }}
-        />
-        <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => inputRef.current?.click()}>
-          <Upload className="size-4" aria-hidden="true" /> {busy ? "Enviando…" : value ? "Trocar" : "Enviar imagem"}
-        </Button>
+        <button type="button" className="image-upload__cta" disabled={busy} onClick={() => inputRef.current?.click()}>
+          {busy ? "Enviando…" : value ? "Trocar imagem" : "Enviar imagem"}
+        </button>
         {value && (
-          <Button type="button" variant="ghost" size="sm" disabled={busy} onClick={() => onChange("")}>
-            <X className="size-4" aria-hidden="true" /> Remover
-          </Button>
+          <button type="button" className="image-upload__remove" disabled={busy} onClick={() => onChange("")}>
+            <X className="size-3.5" aria-hidden="true" /> Remover
+          </button>
         )}
       </div>
     </div>

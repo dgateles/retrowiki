@@ -1271,22 +1271,34 @@
     @apply inline-block size-4 rounded border border-border;
   }
   .image-upload {
-    @apply flex items-center gap-3;
+    @apply flex items-center gap-4;
+  }
+  /* Dropzone clicável: clique na própria imagem para trocar (overlay no hover). */
+  .image-upload__drop {
+    @apply relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/40 transition-colors hover:border-primary/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60;
+  }
+  .image-upload__drop--round {
+    @apply rounded-full;
   }
   .image-upload__preview {
-    @apply size-16 shrink-0 rounded-md border border-border object-cover;
+    @apply size-full object-cover;
   }
-  .image-upload__preview--round {
-    @apply rounded-full;
+  .image-upload__overlay {
+    @apply absolute inset-0 flex items-center justify-center bg-black/55 text-white opacity-0 transition-opacity;
   }
-  .image-upload__placeholder {
-    @apply flex size-16 shrink-0 items-center justify-center rounded-md border border-dashed border-border text-muted-foreground;
-  }
-  .image-upload__placeholder--round {
-    @apply rounded-full;
+  .image-upload__drop:hover .image-upload__overlay,
+  .image-upload__drop:focus-visible .image-upload__overlay,
+  .image-upload__drop:disabled .image-upload__overlay {
+    @apply opacity-100;
   }
   .image-upload__actions {
-    @apply flex flex-wrap items-center gap-2;
+    @apply flex flex-col items-start gap-1;
+  }
+  .image-upload__cta {
+    @apply text-sm font-semibold text-primary transition-colors hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60;
+  }
+  .image-upload__remove {
+    @apply inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60;
   }
   .badge-rare {
     @apply ml-2 inline-flex items-center rounded-full bg-fuchsia-500/15 px-2 py-0.5 text-xs font-medium text-fuchsia-600 dark:text-fuchsia-400;
@@ -2475,28 +2487,28 @@
     @apply mt-8 grid gap-6 md:grid-cols-[220px_1fr];
   }
   .settings__nav {
-    @apply flex flex-col gap-0.5;
+    @apply flex flex-col gap-0.5 md:sticky md:top-20 md:self-start;
   }
   .settings__link {
-    @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+    @apply flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
   }
   .settings__link--active {
-    @apply bg-accent text-foreground;
+    @apply border-primary/30 bg-primary/10 text-primary;
   }
   .settings__panel {
-    @apply min-w-0;
+    @apply min-w-0 rounded-xl border border-border bg-card p-6 shadow-sm md:p-7;
   }
   .settings-section {
-    @apply max-w-xl;
+    @apply max-w-none;
   }
   .settings-section__title {
-    @apply text-xl font-semibold;
+    @apply text-lg font-semibold;
   }
   .settings-section__desc {
     @apply mt-1 text-sm text-muted-foreground;
   }
   .settings-row {
-    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border py-4;
+    @apply flex flex-wrap items-center justify-between gap-3 border-b border-border py-5 first:pt-2 last:border-b-0 last:pb-0;
   }
   .settings-row__label {
     @apply font-medium;
