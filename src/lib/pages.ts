@@ -159,7 +159,9 @@ export type Column = z.infer<typeof ColumnSchema>;
 
 const SectionSchema = z.object({
   id: z.string().max(40),
-  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles", "retrogrid", "meteors", "dots", "ripple", "flickering", "animgrid", "interactivegrid", "hexagon", "striped", "lightrays"]).default("none").catch("none"),
+  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles", "retrogrid", "meteors", "dots", "ripple", "flickering", "animgrid", "interactivegrid", "hexagon", "striped", "lightrays", "lightfall", "lightpillar", "silk", "siderays", "pixelblast", "softaurora", "aurora", "grainient"]).default("none").catch("none"),
+  // Parâmetros customizados dos efeitos React Bits (cor/slider/toggle/select).
+  fxParams: z.record(z.string().max(40), z.union([z.number(), z.boolean(), z.string().max(40)])).default({}).catch({}),
   // Largura total: a seção (e o fundo) ocupam a largura do viewport (full-bleed).
   full: z.boolean().default(false).catch(false),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),

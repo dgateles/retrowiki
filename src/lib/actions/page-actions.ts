@@ -18,6 +18,7 @@ function defaultHomeLayout(): Layout {
       {
         id: sid(),
         bg: "particles",
+        fxParams: {},
         full: true,
         padY: "lg",
         anim: "up",
@@ -41,6 +42,7 @@ function defaultHomeLayout(): Layout {
       {
         id: sid(),
         bg: "none",
+        fxParams: {},
         full: false,
         padY: "md",
         anim: "none",

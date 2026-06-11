@@ -14,6 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { FX_EFFECTS, fxVal, type FxParams, type FxParamValue } from "@/lib/fx-effects";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
@@ -310,7 +313,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -367,7 +370,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               <div className="pb-panel__scroll">
                 <div className="field">
                   <Label htmlFor="pb-bg">Fundo</Label>
-                  <Select value={sections[selSection].bg} onValueChange={(val) => mutate((ss) => { ss[selSection].bg = val as Section["bg"]; })}>
+                  <Select value={sections[selSection].bg} onValueChange={(val) => mutate((ss) => { ss[selSection].bg = val as Section["bg"]; ss[selSection].fxParams = {}; })}>
                     <SelectTrigger id="pb-bg" className="w-full"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Nenhum</SelectItem>
@@ -387,9 +390,17 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="hexagon">Hexágonos</SelectItem>
                       <SelectItem value="striped">Listras</SelectItem>
                       <SelectItem value="lightrays">Raios de luz</SelectItem>
+                      {Object.entries(FX_EFFECTS).map(([key, e]) => <SelectItem key={key} value={key}>{e.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
+                {FX_EFFECTS[sections[selSection].bg] && (
+                  <FxControls
+                    effect={sections[selSection].bg}
+                    params={sections[selSection].fxParams ?? {}}
+                    onChange={(key, value) => mutate((ss) => { ss[selSection].fxParams = { ...(ss[selSection].fxParams ?? {}), [key]: value }; })}
+                  />
+                )}
                 {sections[selSection].bg === "gradient" && (
                   <div className="field">
                     <Label>Cores do gradiente</Label>
@@ -569,7 +580,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 </div>
 
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
-                <SectionFx bg={s.bg} />
+                <SectionFx bg={s.bg} params={s.fxParams} />
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
                     <div
@@ -617,7 +628,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
@@ -670,6 +681,61 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
           </div>
         )}
       </div>
+  );
+}
+
+/** Painel de controles customizáveis de um efeito de fundo (React Bits). */
+function FxControls({ effect, params, onChange }: { effect: string; params: FxParams; onChange: (key: string, value: FxParamValue) => void }) {
+  const def = FX_EFFECTS[effect];
+  if (!def) return null;
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <p className="mb-2 text-xs font-semibold text-muted-foreground">Personalizar {def.label}</p>
+      <div className="flex flex-col gap-3">
+        {def.controls.map((ctl) => {
+          const val = fxVal(effect, params, ctl.key);
+          if (ctl.type === "color") {
+            const v = typeof val === "string" ? val : ctl.default;
+            return (
+              <div key={ctl.key} className="flex items-center justify-between gap-2">
+                <Label className="text-sm">{ctl.label}</Label>
+                <input type="color" aria-label={ctl.label} value={v} onChange={(e) => onChange(ctl.key, e.target.value)} className="h-8 w-10 shrink-0 cursor-pointer rounded-md border border-border bg-transparent" />
+              </div>
+            );
+          }
+          if (ctl.type === "toggle") {
+            return (
+              <label key={ctl.key} className="flex items-center justify-between gap-2 text-sm">
+                {ctl.label}
+                <Switch checked={Boolean(val)} onCheckedChange={(c) => onChange(ctl.key, c)} />
+              </label>
+            );
+          }
+          if (ctl.type === "select") {
+            return (
+              <div key={ctl.key} className="field">
+                <Label className="text-sm">{ctl.label}</Label>
+                <Select value={typeof val === "string" ? val : ctl.default} onValueChange={(v) => onChange(ctl.key, v)}>
+                  <SelectTrigger aria-label={ctl.label} className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>{ctl.options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            );
+          }
+          // slider
+          const num = typeof val === "number" ? val : ctl.default;
+          return (
+            <div key={ctl.key} className="field">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">{ctl.label}</Label>
+                <span className="font-mono text-xs text-muted-foreground">{num}</span>
+              </div>
+              <Slider value={[num]} min={ctl.min} max={ctl.max} step={ctl.step} onValueChange={([v]) => onChange(ctl.key, v)} aria-label={ctl.label} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

@@ -33,6 +33,7 @@ export const SEC_BG: Record<string, string> = {
   gradient: "page-sec--bg page-sec--gradient",
   particles: FX_BG, retrogrid: FX_BG, meteors: FX_BG, dots: FX_BG, ripple: FX_BG, flickering: FX_BG,
   animgrid: FX_BG, interactivegrid: FX_BG, hexagon: FX_BG, striped: FX_BG, lightrays: FX_BG,
+  lightfall: FX_BG, lightpillar: FX_BG, silk: FX_BG, siderays: FX_BG, pixelblast: FX_BG, softaurora: FX_BG, aurora: FX_BG, grainient: FX_BG,
 };
 export const SEC_PADY: Record<string, string> = {
   none: "", sm: "py-5", md: "py-10", lg: "py-16",
@@ -440,7 +441,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
           className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY], s.full && "page-sec--full")}
           style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom}, ${s.gradTo})` } : undefined}
         >
-          <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} /></div>
+          <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} params={s.fxParams} /></div>
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (
               <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
