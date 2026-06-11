@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import {
   saveWarningSettingsAction,
   createReasonAction,
@@ -50,9 +53,6 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
     const res = await saveWarningSettingsAction(JSON.stringify(s));
     setSavingS(false);
     if (res.ok) toast.success("Configurações salvas."); else toast.error(res.error ?? "Falha.");
-  }
-  function toggleRole(role: string, on: boolean) {
-    setS((p) => ({ ...p, cannotWarnRoles: on ? [...new Set([...p.cannotWarnRoles, role])] : p.cannotWarnRoles.filter((r) => r !== role) }));
   }
   async function removeReason(id: number, name: string) {
     if (!(await confirm({ description: `Excluir o motivo "${name}"?`, confirmLabel: "Excluir", destructive: true }))) return;
@@ -129,17 +129,21 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
         {tab === "settings" && (
           <div className="rule-form">
             <section className="rule-form__section">
-              <label className="rule-form__check"><input type="checkbox" checked={s.enabled} onChange={(e) => setS({ ...s, enabled: e.target.checked })} /> Sistema de advertências ativo</label>
+              <SettingGroup>
+                <SettingToggle label="Sistema de advertências ativo" checked={s.enabled} onCheckedChange={(c) => setS({ ...s, enabled: c })} />
+              </SettingGroup>
               <div className="field">
-                <Label>Grupos que não podem ser advertidos</Label>
-                <div className="rule-form__roles">
+                <span className="text-sm font-medium leading-none">Grupos que não podem ser advertidos</span>
+                <ToggleGroup type="multiple" variant="outline" spacing={2} value={s.cannotWarnRoles} onValueChange={(vals) => setS({ ...s, cannotWarnRoles: vals })} className="mt-1 w-full flex-wrap justify-start">
                   {ROLES.map((r) => (
-                    <label key={r.value} className="rule-form__check"><input type="checkbox" checked={s.cannotWarnRoles.includes(r.value)} onChange={(e) => toggleRole(r.value, e.target.checked)} /> {r.label}</label>
+                    <ToggleGroupItem key={r.value} value={r.value} className="px-4 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">{r.label}</ToggleGroupItem>
                   ))}
-                </div>
+                </ToggleGroup>
               </div>
-              <label className="rule-form__check"><input type="checkbox" checked={s.membersCanSee} onChange={(e) => setS({ ...s, membersCanSee: e.target.checked })} /> Membros podem ver os próprios pontos e motivos</label>
-              <label className="rule-form__check"><input type="checkbox" checked={s.mustAcknowledge} onChange={(e) => setS({ ...s, mustAcknowledge: e.target.checked })} /> Exigir confirmação da advertência antes de postar de novo</label>
+              <SettingGroup>
+                <SettingToggle label="Membros podem ver os próprios pontos e motivos" checked={s.membersCanSee} onCheckedChange={(c) => setS({ ...s, membersCanSee: c })} />
+                <SettingToggle label="Exigir confirmação da advertência antes de postar de novo" checked={s.mustAcknowledge} onCheckedChange={(c) => setS({ ...s, mustAcknowledge: c })} />
+              </SettingGroup>
             </section>
             <div className="rule-form__foot"><Button type="button" size="sm" onClick={saveSettings} disabled={savingS}>{savingS ? "Salvando…" : "Salvar"}</Button></div>
           </div>
@@ -221,14 +225,14 @@ function ActionDialog({ onClose, onSaved }: { onClose: () => void; onSaved: () =
             <Label htmlFor="wa-restrict">Restringir postagem por (horas)</Label>
             <div className="pf-inline">
               <Input id="wa-restrict" type="number" min={0} className="w-28" value={restrict} disabled={restrictInd} onChange={(e) => setRestrict(e.target.value)} />
-              <label className="rule-form__check"><input type="checkbox" checked={restrictInd} onChange={(e) => setRestrictInd(e.target.checked)} /> Indefinido</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={restrictInd} onCheckedChange={(c) => setRestrictInd(c === true)} /> Indefinido</label>
             </div>
           </div>
           <div className="field">
             <Label htmlFor="wa-ban">Banir por (horas)</Label>
             <div className="pf-inline">
               <Input id="wa-ban" type="number" min={0} className="w-28" value={ban} disabled={banInd} onChange={(e) => setBan(e.target.value)} />
-              <label className="rule-form__check"><input type="checkbox" checked={banInd} onChange={(e) => setBanInd(e.target.checked)} /> Indefinido</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={banInd} onCheckedChange={(c) => setBanInd(c === true)} /> Indefinido</label>
             </div>
           </div>
         </div>
