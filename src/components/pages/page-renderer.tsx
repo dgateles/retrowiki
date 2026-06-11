@@ -317,7 +317,11 @@ export function PageRenderer({ layout }: { layout: Layout }) {
   return (
     <div className="page-render">
       {layout.sections.map((s) => (
-        <section key={s.id} className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}>
+        <section
+          key={s.id}
+          className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}
+          style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom}, ${s.gradTo})` } : undefined}
+        >
           {s.bg === "particles" && <ParticlesBg />}
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (

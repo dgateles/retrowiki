@@ -117,6 +117,9 @@ const SectionSchema = z.object({
   bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles"]).default("none").catch("none"),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
   anim: z.enum(["none", "fade", "up", "left", "right", "zoom"]).default("none").catch("none"),
+  // Cores do gradiente animado (bg "gradient") — hex validado.
+  gradFrom: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#10b981").catch("#10b981"),
+  gradTo: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#6366f1").catch("#6366f1"),
   columns: z.array(ColumnSchema).min(1).max(4),
 });
 export type Section = z.infer<typeof SectionSchema>;

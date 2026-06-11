@@ -298,7 +298,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -367,6 +367,16 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     </SelectContent>
                   </Select>
                 </div>
+                {sections[selSection].bg === "gradient" && (
+                  <div className="field">
+                    <Label>Cores do gradiente</Label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" aria-label="Cor inicial" value={sections[selSection].gradFrom ?? "#10b981"} onChange={(e) => mutate((ss) => { ss[selSection].gradFrom = e.target.value; })} className="h-9 w-10 shrink-0 cursor-pointer rounded-md border border-border bg-transparent" />
+                      <input type="color" aria-label="Cor final" value={sections[selSection].gradTo ?? "#6366f1"} onChange={(e) => mutate((ss) => { ss[selSection].gradTo = e.target.value; })} className="h-9 w-10 shrink-0 cursor-pointer rounded-md border border-border bg-transparent" />
+                      <span className="h-9 flex-1 rounded-md border border-border" style={{ backgroundImage: `linear-gradient(120deg, ${sections[selSection].gradFrom ?? "#10b981"}, ${sections[selSection].gradTo ?? "#6366f1"})` }} aria-hidden="true" />
+                    </div>
+                  </div>
+                )}
                 <div className="field">
                   <Label htmlFor="pb-pady">Espaçamento vertical</Label>
                   <Select value={sections[selSection].padY} onValueChange={(val) => mutate((ss) => { ss[selSection].padY = val as Section["padY"]; })}>
@@ -527,7 +537,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                   <button type="button" className="pb-mini pb-mini--danger" title="Excluir seção" onClick={() => mutate((ss) => { ss.splice(si, 1); })}><Trash2 className="size-3.5" /></button>
                 </div>
 
-                <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])}>
+                <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
                 {s.bg === "particles" && <ParticlesBg />}
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
@@ -576,7 +586,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
