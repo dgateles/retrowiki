@@ -8,6 +8,7 @@ import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { ArticleBody } from "@/lib/blocks/render";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ReactionBar } from "@/components/engagement/reaction-bar";
 import { listEnabledReactions, getReactionCounts, getUserReaction, getRecentReactors } from "@/lib/reactions";
 import { getReputationSettings, getReportingSettings, getAssignmentSettings, getStaffSettings } from "@/lib/settings";
@@ -129,8 +130,8 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
       ) : (
         <div className="thread-head">
           <div>
-            <span className="article__kind">{typeLabel(a.type)}</span>
-            <h1 className="thread-head__title">{a.title}</h1>
+            <Badge variant="secondary" className="font-mono text-[10px] tracking-wider uppercase">{typeLabel(a.type)}</Badge>
+            <h1 className="thread-head__title mt-2">{a.title}</h1>
           </div>
           <div className="thread-head__actions">
             <SharePopover title={a.title} />
