@@ -82,6 +82,24 @@ Commit leaderboard: 70a7726.
 - Painel: stat-cards em mono. Conta: corrigido dl/dt/dd inválido + input de
   upload sem nome (aria-label, beneficia todos os uploads do admin). Commit a3f5f95.
 
+## Passe VISUAL + shadcn (após feedback do dono)
+
+Feedback do dono (2026-06-11): foco é **VISUAL** e **shadcn em TUDO** (não basta
+acento mono sobre BEM). Ver [[overhaul-shadcn-tudo]]. Refeito com componentes shadcn:
+
+- **Conta > Configurações** (1c44935): painel em Card, dropzone clicável (ImageUpload
+  redesenhado), nav com destaque esmeralda fixa.
+- **Home + lista de consoles** (5c80e23): `DeviceCard` = shadcn Card + Badge; vazios
+  com shadcn `Empty`; hover `.card-glow`.
+- **Lista de guias** (3a46579): Card + Badge + Empty.
+- **Detalhe do console** (1bd632e): `DeviceSpecCard` todo em Cards; conectividade em
+  Badges; emulação em selos coloridos; fichas h2 (heading-order).
+- **Perfil** (fb50a30): sidebar (advertências/rank/stats/conquistas/e-mail) em Cards.
+
+Todas verificadas no navegador, axe 0, build limpo. Componentes shadcn instalados
+no passe: empty. Restante público: detalhe de guia/blog (ArticleView), listas
+menores (link-card), galeria.
+
 ## Fase 4 — Admin (~45 telas) — PRÓXIMA
 Shell do AdminCP, tabelas (shadcn Table), formulários robustos estilo IPB
 (Field/FieldGroup), modais/confirmações (AlertDialog), estados. Maior volume.
