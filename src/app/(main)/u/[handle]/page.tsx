@@ -5,6 +5,8 @@ import { getProfile } from "@/lib/profiles";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { FileText, Mail } from "lucide-react";
 import { getVisibleFields } from "@/lib/profile-fields";
 import { getReputationSettings } from "@/lib/settings";
@@ -146,67 +148,77 @@ export default async function ProfilePage({
       <div className="profile-grid">
         <aside className="profile-side">
           {canSeePrivate && warnSettings.enabled && (
-            <section aria-label="Advertências" className="profile-card">
-              <p className="profile-card__big">{warnPoints} {warnPoints === 1 ? "ponto" : "pontos"} de advertência</p>
-              <p className="muted text-sm">{restricted ? "Postagem restrita por advertências." : "Nenhuma restrição aplicada."}</p>
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="font-mono text-lg font-semibold tabular-nums">{warnPoints} {warnPoints === 1 ? "ponto" : "pontos"} de advertência</p>
+                <p className="mt-1 text-sm text-muted-foreground">{restricted ? "Postagem restrita por advertências." : "Nenhuma restrição aplicada."}</p>
+              </CardContent>
+            </Card>
           )}
 
           {rank && (
-            <section aria-label="Rank" className="rank">
-              <div className="rank__head">
-                <span className="rank__label">{rank.label}</span>
-                <span className="rank__index">Rank {rank.index} de {rank.total}</span>
-              </div>
-              <progress
-                className="rank__progress"
-                value={Math.round(rank.progress * 100)}
-                max={100}
-                aria-label={`Progresso no rank ${rank.label}`}
-              />
-              <p className="rank__next">
-                {rank.next === null
-                  ? "Rank máximo alcançado."
-                  : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
-              </p>
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">{rank.label}</span>
+                  <span className="text-xs text-muted-foreground">Rank {rank.index} de {rank.total}</span>
+                </div>
+                <progress
+                  className="rank__progress"
+                  value={Math.round(rank.progress * 100)}
+                  max={100}
+                  aria-label={`Progresso no rank ${rank.label}`}
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {rank.next === null
+                    ? "Rank máximo alcançado."
+                    : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
+                </p>
+              </CardContent>
+            </Card>
           )}
 
-          <dl className="profile-stats">
-            <div className="profile-stat">
-              <dt className="profile-stat__label">Publicações</dt>
-              <dd className="profile-stat__value">{profile.articles.length}</dd>
-            </div>
-            {repSettings.showOnProfile && (
-              <div className="profile-stat">
-                <dt className="profile-stat__label">Reputação</dt>
-                <dd className="profile-stat__value profile-stat__value--accent">
-                  {profile.reputation}
-                  {repLevel && <span className="profile-stat__level">{repLevel.title}</span>}
-                </dd>
-              </div>
-            )}
-            <div className="profile-stat">
-              <dt className="profile-stat__label">Papel</dt>
-              <dd className="profile-stat__value">{roleLabel(profile.role)}</dd>
-            </div>
-          </dl>
+          <Card>
+            <CardContent className="divide-y divide-border px-6 py-1">
+              <dl>
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-sm text-muted-foreground">Publicações</dt>
+                  <dd className="font-mono font-semibold tabular-nums">{profile.articles.length}</dd>
+                </div>
+                {repSettings.showOnProfile && (
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-sm text-muted-foreground">Reputação</dt>
+                    <dd className="flex items-center gap-2 font-mono font-semibold tabular-nums text-primary">
+                      {profile.reputation}
+                      {repLevel && <Badge variant="secondary" className="font-sans text-[10px]">{repLevel.title}</Badge>}
+                    </dd>
+                  </div>
+                )}
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-sm text-muted-foreground">Papel</dt>
+                  <dd className="text-sm font-medium">{roleLabel(profile.role)}</dd>
+                </div>
+              </dl>
+            </CardContent>
+          </Card>
 
           {gami.enabled && (
-            <section aria-labelledby="p-badges" className="panel-section">
-              <div className="panel-section__head">
-                <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
-              </div>
-              <BadgeList items={userBadges} />
-            </section>
+            <Card>
+              <CardHeader>
+                <h2 id="p-badges" className="text-base font-semibold leading-none">Conquistas</h2>
+              </CardHeader>
+              <CardContent><BadgeList items={userBadges} /></CardContent>
+            </Card>
           )}
 
           {profileEmail && (
-            <section aria-label="E-mail" className="profile-card">
-              <p className="profile-card__label"><Mail className="size-4" aria-hidden="true" /> E-mail</p>
-              <p className="profile-card__value">{profileEmail}</p>
-              <p className="muted text-xs">Só a equipe vê os endereços de e-mail.</p>
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="flex items-center gap-1.5 text-sm font-medium"><Mail className="size-4 text-muted-foreground" aria-hidden="true" /> E-mail</p>
+                <p className="mt-1 text-sm">{profileEmail}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Só a equipe vê os endereços de e-mail.</p>
+              </CardContent>
+            </Card>
           )}
         </aside>
 
