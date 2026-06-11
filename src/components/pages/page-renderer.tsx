@@ -11,6 +11,7 @@ import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
+import { DeviceGridWidget } from "@/components/pages/device-grid-widget";
 
 const FX_BG = "page-sec--bg page-sec--fx-host";
 export const SEC_BG: Record<string, string> = {
@@ -188,6 +189,8 @@ export function WidgetView({ w }: { w: Widget }) {
     }
     case "richtext":
       return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
+    case "deviceGrid":
+      return <DeviceGridWidget title={w.title} limit={w.limit} showAll={w.showAll} />;
     case "download":
       return (
         <div className="dl-list">

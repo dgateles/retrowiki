@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,7 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "gallery", label: "Galeria", icon: Images },
   { type: "card", label: "Cartão", icon: CreditCard },
   { type: "iconList", label: "Lista de ícones", icon: ListChecks },
+  { type: "deviceGrid", label: "Grade de consoles", icon: Gamepad2 },
   { type: "download", label: "Downloads", icon: Download },
   { type: "firmware", label: "Firmwares", icon: HardDrive },
   { type: "buyingGuide", label: "Guia de compra", icon: ShoppingCart },
@@ -59,6 +60,7 @@ function newWidget(type: WidgetType): Widget {
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
     case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
+    case "deviceGrid": return { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -827,6 +829,22 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           {w.items.length < 15 && (
             <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", text: "Novo item" }] })}><Plus className="size-3.5" /> Adicionar item</button>
           )}
+        </div>
+      )}
+      {w.type === "deviceGrid" && (
+        <div className="flex flex-col gap-3">
+          <div className="field">
+            <Label htmlFor="dg-title">Título da seção</Label>
+            <Input id="dg-title" value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={120} placeholder="Consoles" />
+          </div>
+          <div className="field">
+            <Label htmlFor="dg-limit">Limite de consoles</Label>
+            <Input id="dg-limit" type="number" min={0} max={48} value={w.limit} onChange={(e) => onChange({ limit: Math.max(0, Math.min(48, Number(e.target.value) || 0)) })} className="w-28" />
+            <p className="muted text-xs">0 = mostrar todos.</p>
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={w.showAll} onCheckedChange={(c) => onChange({ showAll: c === true })} /> Mostrar link &quot;Ver todos&quot;
+          </label>
         </div>
       )}
       {w.type === "download" && (

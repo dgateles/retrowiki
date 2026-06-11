@@ -54,6 +54,13 @@ const WidgetSchema = z.discriminatedUnion("type", [
   }),
   // Texto rico: reaproveita o editor (Rico/Markdown/HTML) e a allowlist de blocos.
   z.object({ type: z.literal("richtext"), doc: RichDocSchema }),
+  // Grade dinâmica de consoles (puxa o catálogo publicado em tempo real).
+  z.object({
+    type: z.literal("deviceGrid"),
+    title: z.string().max(120).default("Consoles"),
+    limit: z.number().int().min(0).max(48).default(0),
+    showAll: z.boolean().default(true),
+  }),
   // Lista de downloads (versão, tamanho, data, changelog, checksum SHA256).
   z.object({
     type: z.literal("download"),
