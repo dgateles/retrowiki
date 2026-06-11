@@ -23,7 +23,7 @@ const ALIGN = z.enum(["left", "center", "right"]).default("left");
 const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default("default").catch("default");
 
 const WidgetSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR }),
+  z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "shine"]).default("none").catch("none") }),
   z.object({ type: z.literal("text"), text: z.string().max(5000), align: ALIGN, color: COLOR }),
   z.object({ type: z.literal("image"), url: imageUrl, alt: z.string().max(200).default(""), caption: z.string().max(200).default("") }),
   z.object({ type: z.literal("button"), label: z.string().trim().min(1).max(80), href: url, variant: z.enum(["primary", "outline"]).default("primary"), align: ALIGN }),
@@ -114,7 +114,7 @@ export type Column = z.infer<typeof ColumnSchema>;
 
 const SectionSchema = z.object({
   id: z.string().max(40),
-  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles"]).default("none").catch("none"),
+  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles", "retrogrid", "meteors", "dots", "aurora"]).default("none").catch("none"),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
   anim: z.enum(["none", "fade", "up", "left", "right", "zoom"]).default("none").catch("none"),
   // Cores do gradiente animado (bg "gradient") — hex validado.

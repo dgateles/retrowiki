@@ -18,6 +18,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
 import { ParticlesBg } from "@/components/pages/particles-bg";
+import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
 
@@ -46,7 +47,7 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
 
 function newWidget(type: WidgetType): Widget {
   switch (type) {
-    case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left", color: "default" };
+    case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left", color: "default", fx: "none" };
     case "text": return { type: "text", text: "Escreva aqui o texto…", align: "left", color: "default" };
     case "richtext": return { type: "richtext", doc: { type: "doc", content: [{ type: "paragraph" }] } };
     case "image": return { type: "image", url: "", alt: "", caption: "" };
@@ -364,6 +365,10 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="dark">Escuro</SelectItem>
                       <SelectItem value="gradient">Gradiente animado</SelectItem>
                       <SelectItem value="particles">Partículas</SelectItem>
+                      <SelectItem value="retrogrid">Retro Grid</SelectItem>
+                      <SelectItem value="meteors">Meteoros</SelectItem>
+                      <SelectItem value="dots">Dot Pattern</SelectItem>
+                      <SelectItem value="aurora">Aurora</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -539,6 +544,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
 
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
                 {s.bg === "particles" && <ParticlesBg />}
+                <SectionFx bg={s.bg} />
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
                     <div
@@ -659,6 +665,16 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           </div>
           {align}
           {color}
+          <div className="field"><Label>Efeito de texto</Label>
+            <Select value={(w as { fx?: string }).fx ?? "none"} onValueChange={(val) => onChange({ fx: val } as Partial<Widget>)}>
+              <SelectTrigger aria-label="Efeito de texto" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="gradient">Gradiente animado</SelectItem>
+                <SelectItem value="shine">Brilho</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </>
       )}
       {w.type === "text" && (
