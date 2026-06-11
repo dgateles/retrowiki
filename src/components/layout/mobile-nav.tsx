@@ -3,19 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Gamepad2, BookOpen, Search, Menu, Newspaper, Target, Trophy, Users, LayoutDashboard, User, Bell, Shield, ShieldCheck, LogOut, FileText } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Home, Gamepad2, BookOpen, Search, Menu, LayoutDashboard, User, Bell, Shield, ShieldCheck, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { MenuIcon } from "@/components/layout/menu-icon";
+import type { MenuNode } from "@/lib/menu";
 
-type MenuPage = { slug: string; title: string };
 type Props = {
   isLoggedIn: boolean;
   isStaff: boolean;
   isAdmin: boolean;
   handle?: string;
-  menuPages: MenuPage[];
+  menuItems: MenuNode[];
 };
 
 const PRIMARY = [
@@ -25,21 +25,12 @@ const PRIMARY = [
   { href: "/buscar", label: "Buscar", icon: Search },
 ];
 
-const NAV = [
-  { href: "/consoles", label: "Consoles", icon: Gamepad2 },
-  { href: "/guias", label: "Guias", icon: BookOpen },
-  { href: "/blog", label: "Blog", icon: Newspaper },
-  { href: "/missoes", label: "Missões", icon: Target },
-  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/equipe", label: "Equipe", icon: Users },
-];
-
 function isActive(pathname: string, href: string, exact?: boolean) {
   if (exact) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function MobileNav({ isLoggedIn, isStaff, isAdmin, handle, menuPages }: Props) {
+export function MobileNav({ isLoggedIn, isStaff, isAdmin, handle, menuItems }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -71,23 +62,30 @@ export function MobileNav({ isLoggedIn, isStaff, isAdmin, handle, menuPages }: P
             </SheetHeader>
             <div className="flex flex-col gap-1 overflow-y-auto p-3">
               <p className="mobile-menu__group">Navegar</p>
-              {NAV.map((item) => {
-                const active = isActive(pathname, item.href);
+              {menuItems.map((item) => {
+                if (item.children.length === 0 && item.href) {
+                  const active = isActive(pathname, item.href);
+                  return (
+                    <SheetClose asChild key={item.id}>
+                      <Link href={item.href} className="mobile-menu__link" data-active={active} aria-current={active ? "page" : undefined}>
+                        <MenuIcon name={item.icon} className="size-4 text-muted-foreground" /> {item.label}
+                      </Link>
+                    </SheetClose>
+                  );
+                }
                 return (
-                  <SheetClose asChild key={item.href}>
-                    <Link href={item.href} className="mobile-menu__link" data-active={active} aria-current={active ? "page" : undefined}>
-                      <item.icon className="size-4 text-muted-foreground" aria-hidden="true" /> {item.label}
-                    </Link>
-                  </SheetClose>
+                  <div key={item.id} className="flex flex-col gap-1">
+                    <p className="mobile-menu__group">{item.label}</p>
+                    {item.children.map((c) => (
+                      <SheetClose asChild key={c.id}>
+                        <Link href={c.href ?? "#"} className="mobile-menu__link">
+                          <MenuIcon name={c.icon} className="size-4 text-muted-foreground" /> {c.label}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                  </div>
                 );
               })}
-              {menuPages.map((p) => (
-                <SheetClose asChild key={p.slug}>
-                  <Link href={`/p/${p.slug}`} className="mobile-menu__link">
-                    <FileText className="size-4 text-muted-foreground" aria-hidden="true" /> {p.title}
-                  </Link>
-                </SheetClose>
-              ))}
 
               <Separator className="my-2" />
 

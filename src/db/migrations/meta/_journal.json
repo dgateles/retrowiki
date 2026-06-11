@@ -267,6 +267,13 @@
       "when": 1781117097114,
       "tag": "0037_strong_zaladane",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1781209827081,
+      "tag": "0038_cold_nightshade",
+      "breakpoints": true
     }
   ]
 }

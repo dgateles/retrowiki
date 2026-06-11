@@ -12,6 +12,7 @@ import { UserMenu } from "@/components/layout/user-menu";
 import { NotificationsBell, type NotifItem } from "@/components/layout/notifications-bell";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { MainNav } from "@/components/layout/main-nav";
+import { getMenuTree, seedToTree, DEFAULT_HEADER } from "@/lib/menu";
 
 const fmtDate = (d: Date) =>
   new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
@@ -20,8 +21,8 @@ export async function SiteHeader() {
   const user = await getCurrentUser();
   const gami = await getAchievementSettings();
   const rank = user && gami.enabled ? await getRankForReputation(user.reputation) : null;
-  const { getMenuPages } = await import("@/lib/pages");
-  const menuPages = await getMenuPages();
+  const headerTree = await getMenuTree("header");
+  const menu = headerTree.length ? headerTree : seedToTree(DEFAULT_HEADER);
 
   let unread = 0;
   let notifItems: NotifItem[] = [];
@@ -56,7 +57,7 @@ export async function SiteHeader() {
           RetroWiki
         </Link>
 
-        <MainNav menuPages={menuPages} />
+        <MainNav items={menu} />
 
         <SearchBox className="site-header__search" />
 
@@ -90,7 +91,7 @@ export async function SiteHeader() {
       isStaff={can.moderate(user)}
       isAdmin={can.admin(user)}
       handle={user?.handle}
-      menuPages={menuPages}
+      menuItems={menu}
     />
     </>
   );

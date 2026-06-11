@@ -801,7 +801,27 @@ export const pageBlocks = mysqlTable("page_blocks", {
   createdAt: createdAt(),
 }, (t) => [index("page_blocks_name_idx").on(t.name)]);
 
+// Itens do menu de navegação principal (header). Geridos no admin: links
+// simples, flyouts (mega-menu com ícone+descrição) e dropdowns. Itens-filho
+// referenciam o pai via parentId (árvore de 1 nível).
+export const menuItems = mysqlTable("menu_items", {
+  id: pk(),
+  location: mysqlEnum("location", ["header", "footer"]).notNull().default("header"),
+  label: varchar("label", { length: 80 }).notNull(),
+  href: varchar("href", { length: 300 }), // null nos pais de flyout/dropdown/coluna
+  // header: link | flyout | dropdown. footer: link (avulso) | dropdown (coluna com título + filhos).
+  type: mysqlEnum("type", ["link", "flyout", "dropdown"]).notNull().default("link"),
+  parentId: bigint("parent_id", { mode: "number" }), // self-ref; null = topo
+  icon: varchar("icon", { length: 40 }), // chave de ícone (itens de flyout)
+  description: varchar("description", { length: 200 }), // descrição (itens de flyout)
+  sortOrder: int("sort_order").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (t) => [index("menu_items_tree_idx").on(t.location, t.parentId, t.sortOrder)]);
+
 // Tipos exportados --------------------------------------------------------
+export type MenuItem = typeof menuItems.$inferSelect;
 export type UserRole = (typeof users.$inferSelect)["role"];
 export type User = typeof users.$inferSelect;
 export type Device = typeof devices.$inferSelect;
