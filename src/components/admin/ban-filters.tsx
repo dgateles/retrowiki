@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui
 import { createBanFilterAction, deleteBanFilterAction } from "@/lib/actions/ban-actions";
 import { BAN_TYPE_LABEL, type BanFilter, type BanType } from "@/lib/ban-types";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
@@ -72,11 +73,14 @@ export function BanFilters({ filters }: { filters: BanFilter[] }) {
           <div className="member-create">
             <div className="field">
               <Label htmlFor="bf-type">Tipo</Label>
-              <select id="bf-type" className="rte__select" value={type} onChange={(e) => setType(e.target.value as BanType)}>
-                <option value="ip">Endereço IP</option>
-                <option value="email">E-mail</option>
-                <option value="name">Nome de usuário</option>
-              </select>
+              <Select value={type} onValueChange={(v) => setType(v as BanType)}>
+                <SelectTrigger id="bf-type" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ip">Endereço IP</SelectItem>
+                  <SelectItem value="email">E-mail</SelectItem>
+                  <SelectItem value="name">Nome de usuário</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="field">
               <Label htmlFor="bf-content">Conteúdo</Label>

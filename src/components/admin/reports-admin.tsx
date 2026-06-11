@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import {
   resolveReportAction,
@@ -200,12 +201,12 @@ function TypeDialog({ type, onClose, onSaved }: { type: ReportType | null; onClo
           <div className="field"><Label htmlFor="rt-title">Título</Label><Input id="rt-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} /></div>
           <div className="field">
             <Label htmlFor="rt-comp">E-mail ao concluir (opcional)</Label>
-            <textarea id="rt-comp" className="q-textarea" rows={3} value={completed} onChange={(e) => setCompleted(e.target.value)} />
+            <Textarea id="rt-comp" rows={3} value={completed} onChange={(e) => setCompleted(e.target.value)} />
             <p className="field__hint">Tags: {"{name}"}, {"{reason}"}. Em branco = não envia.</p>
           </div>
           <div className="field">
             <Label htmlFor="rt-rej">E-mail ao arquivar (opcional)</Label>
-            <textarea id="rt-rej" className="q-textarea" rows={3} value={rejected} onChange={(e) => setRejected(e.target.value)} />
+            <Textarea id="rt-rej" rows={3} value={rejected} onChange={(e) => setRejected(e.target.value)} />
           </div>
         </div>
         <div className="modal-actions">

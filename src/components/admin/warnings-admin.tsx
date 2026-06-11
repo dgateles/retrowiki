@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -182,7 +183,7 @@ function ReasonDialog({ reason, onClose, onSaved }: { reason: WarningReason | nu
           <div className="field"><Label htmlFor="wr-points">Pontos de advertência</Label><Input id="wr-points" type="number" min={0} className="w-32" value={points} onChange={(e) => setPoints(e.target.value)} /></div>
           <div className="field"><Label htmlFor="wr-remove">Remover pontos após (horas, vazio = nunca)</Label><Input id="wr-remove" type="number" min={0} className="w-40" value={remove} onChange={(e) => setRemove(e.target.value)} /></div>
           <div className="field"><Label htmlFor="wr-deduct">Deduzir reputação</Label><Input id="wr-deduct" type="number" min={0} className="w-32" value={deduct} onChange={(e) => setDeduct(e.target.value)} /></div>
-          <div className="field"><Label htmlFor="wr-note">Nota padrão para o membro</Label><textarea id="wr-note" className="q-textarea" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
+          <div className="field"><Label htmlFor="wr-note">Nota padrão para o membro</Label><Textarea id="wr-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
         </div>
         <div className="modal-actions">
           <DialogClose asChild><Button type="button" variant="ghost" size="sm">Cancelar</Button></DialogClose>

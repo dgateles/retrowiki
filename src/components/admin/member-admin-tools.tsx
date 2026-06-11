@@ -7,6 +7,7 @@ import { Plus, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -116,7 +117,7 @@ export function MemberAdminTools() {
         <DialogContent aria-describedby={undefined}>
           <DialogTitle>Importar membros</DialogTitle>
           <p className="muted mt-1">Cole um CSV com colunas: e-mail, nome, papel (opcional). Cada novo membro recebe um e-mail para definir a senha. Até 200 linhas.</p>
-          <textarea className="q-textarea mt-3" rows={8} value={csv} onChange={(e) => setCsv(e.target.value)} placeholder={"email,nome,papel\nfulano@exemplo.com,Fulano,member"} />
+          <Textarea className="mt-3" rows={8} value={csv} onChange={(e) => setCsv(e.target.value)} placeholder={"email,nome,papel\nfulano@exemplo.com,Fulano,member"} />
           <div className="modal-actions">
             <DialogClose asChild><Button type="button" variant="ghost" size="sm">Cancelar</Button></DialogClose>
             <Button type="button" size="sm" onClick={runImport} disabled={importing || csv.trim().length === 0}>{importing ? "Importando…" : "Importar"}</Button>

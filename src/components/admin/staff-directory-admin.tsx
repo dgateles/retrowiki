@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import {
   createCategoryAction,
@@ -176,11 +177,11 @@ function EntryDialog({ categoryId, entry, onClose, onSaved }: { categoryId: numb
         <DialogTitle>{entry ? "Editar entrada" : "Adicionar ao diretório"}</DialogTitle>
         <div className="member-create">
           <div className="field">
-            <Label>Tipo</Label>
-            <div className="rule-form__roles">
-              <label className="rule-form__check"><input type="radio" name="entry-type" checked={type === "member"} onChange={() => setType("member")} /> Membro (nome, título e bio personalizados)</label>
-              <label className="rule-form__check"><input type="radio" name="entry-type" checked={type === "group"} onChange={() => setType("group")} /> Grupo (atualiza automaticamente)</label>
-            </div>
+            <span className="text-sm font-medium leading-none">Tipo</span>
+            <RadioGroup value={type} onValueChange={(v) => setType(v as typeof type)} className="mt-1 gap-2">
+              <label className="flex items-center gap-2 text-sm"><RadioGroupItem value="member" /> Membro (nome, título e bio personalizados)</label>
+              <label className="flex items-center gap-2 text-sm"><RadioGroupItem value="group" /> Grupo (atualiza automaticamente)</label>
+            </RadioGroup>
           </div>
 
           {type === "member" ? (

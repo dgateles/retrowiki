@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createTaskAction, updateTaskAction } from "@/lib/actions/quest-actions";
 
@@ -61,7 +62,7 @@ export function TaskForm({
       </div>
       <div className="field">
         <Label htmlFor="t-desc">Descrição</Label>
-        <textarea id="t-desc" className="q-textarea" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} rows={3} />
+        <Textarea id="t-desc" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} rows={3} />
       </div>
       <div className="field">
         <Label htmlFor="t-link">Link (opcional)</Label>
