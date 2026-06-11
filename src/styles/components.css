@@ -99,10 +99,10 @@
     @apply mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
   }
   .admin__link {
-    @apply rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+    @apply rounded-md border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
   }
   .admin__link--active {
-    @apply bg-accent text-foreground;
+    @apply border border-primary/30 bg-primary/10 text-primary;
   }
   .admin__main {
     @apply min-w-0;
@@ -111,7 +111,19 @@
     @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
   }
   .admin-card {
-    @apply rounded-xl border border-border bg-card p-5;
+    @apply rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:border-primary/60;
+  }
+  .admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary) 30%, transparent),
+      0 12px 30px -16px color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .admin-card,
+    .admin-card:hover {
+      @apply transform-none transition-none;
+    }
   }
   .admin-card__title {
     @apply font-semibold;
@@ -1220,7 +1232,7 @@
     @apply flex flex-col gap-1 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/60 hover:bg-accent/40;
   }
   .admin-metric__value {
-    @apply text-2xl font-bold tabular-nums;
+    @apply font-mono text-2xl font-bold tabular-nums;
   }
   .admin-metric__label {
     @apply text-sm text-muted-foreground;
