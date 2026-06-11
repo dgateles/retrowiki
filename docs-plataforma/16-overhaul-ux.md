@@ -65,11 +65,26 @@ Todas verificadas no navegador (desktop+mobile) com **axe 0 violações** e buil
 Commits: home+lista (5a411da), detalhe (0dcaff8), comparar (b9114c0), guias
 (f6e0c72), artigo+fix a11y (63be736), perfil (c371cf9).
 
-### Restante das públicas (próximo)
-/buscar, /leaderboard, /missoes, /equipe, /p/[slug] (páginas do construtor).
+### Públicas restantes ✓
+- Leaderboard: ranks + métricas em mono tabular esmeralda (cara de high-score).
+- /missoes, /equipe, /buscar: já consistentes; verificadas (axe 0).
+- /p/[slug]: PageRenderer já refinado no trabalho do construtor.
+Commit leaderboard: 70a7726.
 
-## Fase 3 — Conta
-Painel, conta, notificações (após as públicas restantes).
+## Fase 3 — Auth + Conta ✓
+
+### Auth (login/cadastro/esqueci/redefinir/confirmar/verificar) ✓
+- Fundo com glow radial esmeralda (AuthShell compartilhado → 6 telas).
+- Logo maior (pedido do dono). Título do card vira `<h1>` (corrige
+  page-has-heading-one). Commit c9b46c5.
+
+### Conta (painel/conta/notificações) ✓
+- Painel: stat-cards em mono. Conta: corrigido dl/dt/dd inválido + input de
+  upload sem nome (aria-label, beneficia todos os uploads do admin). Commit a3f5f95.
+
+## Fase 4 — Admin (~45 telas) — PRÓXIMA
+Shell do AdminCP, tabelas (shadcn Table), formulários robustos estilo IPB
+(Field/FieldGroup), modais/confirmações (AlertDialog), estados. Maior volume.
 3. Conta (painel, conta, notificações, missões, leaderboard).
 4. Admin (~45 telas): shell, tabelas (shadcn Table), formulários robustos estilo IPB
    (Field/FieldGroup), modais/confirmações (AlertDialog) padronizados.
