@@ -2373,7 +2373,10 @@
     @apply grid gap-2 sm:grid-cols-2 space-y-0;
   }
   .link-card {
-    @apply flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50;
+    @apply flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-all hover:border-primary/50;
+  }
+  .link-card:hover {
+    box-shadow: 0 8px 22px -18px color-mix(in srgb, var(--primary) 50%, transparent);
   }
   .link-card--sm {
     @apply rounded-md border-border/60 px-3 py-2 text-sm;
@@ -2609,7 +2612,10 @@
     @apply space-y-2;
   }
   .results__item {
-    @apply block rounded-lg border border-border bg-card p-3 hover:border-primary/50;
+    @apply block rounded-lg border border-border bg-card p-3 transition-all hover:border-primary/50;
+  }
+  .results__item:hover {
+    box-shadow: 0 8px 22px -18px color-mix(in srgb, var(--primary) 50%, transparent);
   }
   .results__item-title {
     @apply font-medium;
