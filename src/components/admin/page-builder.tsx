@@ -17,7 +17,6 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
-import { ParticlesBg } from "@/components/pages/particles-bg";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
@@ -368,7 +367,8 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="retrogrid">Retro Grid</SelectItem>
                       <SelectItem value="meteors">Meteoros</SelectItem>
                       <SelectItem value="dots">Dot Pattern</SelectItem>
-                      <SelectItem value="aurora">Aurora</SelectItem>
+                      <SelectItem value="ripple">Ripple</SelectItem>
+                      <SelectItem value="flickering">Flickering Grid</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -543,7 +543,6 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 </div>
 
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
-                {s.bg === "particles" && <ParticlesBg />}
                 <SectionFx bg={s.bg} />
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
@@ -671,7 +670,8 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
               <SelectContent>
                 <SelectItem value="none">Nenhum</SelectItem>
                 <SelectItem value="gradient">Gradiente animado</SelectItem>
-                <SelectItem value="shine">Brilho</SelectItem>
+                <SelectItem value="aurora">Aurora</SelectItem>
+                <SelectItem value="shiny">Brilho (shiny)</SelectItem>
               </SelectContent>
             </Select>
           </div>

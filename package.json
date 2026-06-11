@@ -38,6 +38,7 @@
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.562.0",
     "marked": "^18.0.5",
+    "motion": "^12.40.0",
     "mysql2": "^3.22.4",
     "nanoid": "^5.1.11",
     "next": "16.2.7",

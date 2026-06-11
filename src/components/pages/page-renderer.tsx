@@ -7,15 +7,17 @@ import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { Reveal } from "@/components/pages/reveal";
-import { ParticlesBg } from "@/components/pages/particles-bg";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
+import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { AuroraText } from "@/components/ui/aurora-text";
+import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
 
+const FX_BG = "page-sec--bg page-sec--fx-host";
 export const SEC_BG: Record<string, string> = {
   none: "", muted: "page-sec--bg bg-muted/50", card: "page-sec--bg bg-card",
   primary: "page-sec--bg bg-primary/10", dark: "page-sec--bg bg-foreground/90 text-background",
-  gradient: "page-sec--bg page-sec--gradient", particles: "page-sec--bg page-sec--particles-host",
-  retrogrid: "page-sec--bg page-sec--fx-host", meteors: "page-sec--bg page-sec--fx-host",
-  dots: "page-sec--bg page-sec--fx-host", aurora: "page-sec--bg page-sec--fx-host",
+  gradient: "page-sec--bg page-sec--gradient",
+  particles: FX_BG, retrogrid: FX_BG, meteors: FX_BG, dots: FX_BG, ripple: FX_BG, flickering: FX_BG,
 };
 export const SEC_PADY: Record<string, string> = {
   none: "", sm: "py-5", md: "py-10", lg: "py-16",
@@ -62,11 +64,18 @@ function safeHref(href: string): string | null {
 export function WidgetView({ w }: { w: Widget }) {
   switch (w.type) {
     case "heading": {
-      const fx = w.fx && w.fx !== "none" ? ` page-w__heading--${w.fx}` : "";
-      const cls = `page-w__heading ${ALIGN[w.align] ?? ""} ${w.fx && w.fx !== "none" ? "" : TEXT_COLOR[w.color] ?? ""}${fx}`;
-      if (w.level === 3) return <h3 className={cls}>{w.text}</h3>;
-      if (w.level === 4) return <h4 className={cls}>{w.text}</h4>;
-      return <h2 className={cls}>{w.text}</h2>;
+      const fx = w.fx ?? "none";
+      const cls = `page-w__heading ${ALIGN[w.align] ?? ""} ${fx === "none" ? TEXT_COLOR[w.color] ?? "" : ""}`;
+      // Gradiente animado vira o próprio elemento (Magic UI AnimatedGradientText é um div).
+      if (fx === "gradient") {
+        return <AnimatedGradientText className={cls} colorFrom="#10b981" colorTo="#6366f1" speed={1.2}>{w.text}</AnimatedGradientText>;
+      }
+      const Tag = w.level === 3 ? "h3" : w.level === 4 ? "h4" : "h2";
+      const inner =
+        fx === "aurora" ? <AuroraText colors={["#10b981", "#6366f1", "#22d3ee"]}>{w.text}</AuroraText> :
+        fx === "shiny" ? <AnimatedShinyText>{w.text}</AnimatedShinyText> :
+        w.text;
+      return <Tag className={cls}>{inner}</Tag>;
     }
     case "text":
       return (
@@ -326,7 +335,6 @@ export function PageRenderer({ layout }: { layout: Layout }) {
           className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}
           style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom}, ${s.gradTo})` } : undefined}
         >
-          {s.bg === "particles" && <ParticlesBg />}
           <SectionFx bg={s.bg} />
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (

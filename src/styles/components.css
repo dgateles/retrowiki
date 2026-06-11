@@ -950,85 +950,9 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Host comum dos efeitos de fundo (conteúdo acima do efeito). */
-  .page-sec--particles-host,
+  /* Host comum dos efeitos de fundo Magic UI (conteúdo acima do efeito). */
   .page-sec--fx-host { @apply relative overflow-hidden; }
-  .page-sec__particles { @apply pointer-events-none absolute inset-0 z-0; }
-  .page-sec--particles-host > .page-section,
   .page-sec--fx-host > .page-section { @apply relative z-10; }
-
-  /* Retro Grid (estilo Magic UI) — grade animada com fade-horizonte. */
-  .fx-retrogrid { position: absolute; inset: 0; overflow: hidden; }
-  .fx-retrogrid__grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--primary) 38%, transparent) 1px, transparent 0),
-      linear-gradient(to bottom, color-mix(in srgb, var(--primary) 38%, transparent) 1px, transparent 0);
-    background-size: 44px 44px;
-    -webkit-mask-image: linear-gradient(to top, #000 8%, transparent 92%);
-    mask-image: linear-gradient(to top, #000 8%, transparent 92%);
-    animation: fx-grid 7s linear infinite;
-  }
-  @keyframes fx-grid { from { background-position: 0 0; } to { background-position: 0 44px; } }
-
-  /* Meteoros (estilo Magic UI). */
-  .fx-meteors { position: absolute; inset: 0; overflow: hidden; }
-  .fx-meteor {
-    position: absolute; top: -8%; width: 2px; height: 2px; border-radius: 9999px;
-    background: var(--primary); box-shadow: 0 0 6px 1px color-mix(in srgb, var(--primary) 60%, transparent);
-    animation-name: fx-meteor; animation-timing-function: linear; animation-iteration-count: infinite;
-  }
-  .fx-meteor::before {
-    content: ""; position: absolute; top: 50%; transform: translateY(-50%);
-    width: 70px; height: 1px;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 70%, transparent), transparent);
-  }
-  @keyframes fx-meteor {
-    0% { transform: rotate(215deg) translateX(0); opacity: 1; }
-    70% { opacity: 1; }
-    100% { transform: rotate(215deg) translateX(-420px); opacity: 0; }
-  }
-
-  /* Dot Pattern (estilo Magic UI). */
-  .fx-dots {
-    position: absolute; inset: 0;
-    background-image: radial-gradient(color-mix(in srgb, var(--foreground) 16%, transparent) 1px, transparent 1px);
-    background-size: 18px 18px;
-    -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 72%);
-    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 72%);
-  }
-
-  /* Aurora (estilo React Bits / Magic UI). */
-  .fx-aurora { position: absolute; inset: 0; overflow: hidden; filter: blur(48px); opacity: 0.45; }
-  .fx-aurora span { position: absolute; width: 55%; height: 55%; border-radius: 9999px; mix-blend-mode: screen; }
-  .fx-aurora span:nth-child(1) { background: var(--primary); top: -12%; left: -8%; animation: fx-aur1 16s ease-in-out infinite; }
-  .fx-aurora span:nth-child(2) { background: #6366f1; bottom: -12%; right: -8%; animation: fx-aur2 19s ease-in-out infinite; }
-  .fx-aurora span:nth-child(3) { background: #22d3ee; top: 25%; right: 25%; animation: fx-aur3 22s ease-in-out infinite; }
-  @keyframes fx-aur1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(25%, 18%) scale(1.15); } }
-  @keyframes fx-aur2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20%, -15%) scale(1.1); } }
-  @keyframes fx-aur3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-15%, 20%) scale(1.2); } }
-
-  /* Texto com gradiente animado / brilho (títulos — estilo Magic UI). */
-  .page-w__heading--gradient {
-    background: linear-gradient(90deg, var(--primary), #6366f1, #22d3ee, var(--primary));
-    background-size: 300% 100%;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: fx-textgrad 6s linear infinite;
-  }
-  @keyframes fx-textgrad { to { background-position: 300% 0; } }
-  .page-w__heading--shine {
-    background: linear-gradient(110deg, var(--foreground) 40%, var(--primary) 50%, var(--foreground) 60%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: fx-shine 4s linear infinite;
-  }
-  @keyframes fx-shine { to { background-position: -200% 0; } }
-
-  @media (prefers-reduced-motion: reduce) {
-    .fx-retrogrid__grid, .fx-meteor, .fx-aurora span,
-    .page-w__heading--gradient, .page-w__heading--shine { animation: none !important; }
-    .page-w__heading--shine { color: var(--foreground); -webkit-text-fill-color: var(--foreground); }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .reveal--fade, .reveal--up, .reveal--left, .reveal--right, .reveal--zoom {
