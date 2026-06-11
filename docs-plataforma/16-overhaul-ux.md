@@ -3,10 +3,16 @@
 Spec: `OVERHAUL-UX.md`. Direção: moderno com acento retro/gamer sutil, base shadcn,
 premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas → conta → admin**.
 
-## Backlog pós-overhaul (a fazer depois)
-- **Gerenciador de menus no admin**: gerenciar modos de menu, itens de menu, flyouts
-  e dropdowns da navegação principal pelo painel admin (criar/editar/ordenar itens,
-  escolher tipo: link simples / flyout rico / dropdown). Pedido do dono 2026-06-11.
+## Backlog pós-overhaul
+- ✓ **Gerenciador de menus no admin** (CONCLUÍDO, commits d6a5923/1165f95/73c40d3):
+  tabela `menu_items` (migração 0038, location header/footer, type link/flyout/
+  dropdown, parent self-ref, icon, description, sort, visible); `src/lib/menu.ts`
+  (getMenuTree + DEFAULT_HEADER/FOOTER + seedToTree); MainNav/MobileNav e novo
+  SiteFooter global leem do DB com fallback ao padrão; UI em `/admin/menus`
+  (MenuManager: tabs header/footer, CRUD, reordenar, visibilidade, subitens,
+  ícone/descrição nos flyouts, "Restaurar padrão"). `menu-actions.ts` revalida a
+  layout. **Atenção**: o dev server usa o DB rwtest na :3399 (não o :3308 do .env)
+  — migrar ambos.
 
 ## Fase 1 — Fundação + shell global ✓ CONCLUÍDA
 
