@@ -2,6 +2,8 @@ import { db } from "@/db";
 import { menuItems } from "@/db/schema";
 import { and, asc, eq } from "drizzle-orm";
 
+export type { MenuItem } from "@/db/schema";
+
 export type MenuLocation = "header" | "footer";
 export type MenuItemType = "link" | "flyout" | "dropdown";
 
