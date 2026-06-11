@@ -19,6 +19,7 @@ export const SEC_BG: Record<string, string> = {
   primary: "page-sec--bg bg-primary/10", dark: "page-sec--bg bg-foreground/90 text-background",
   gradient: "page-sec--bg page-sec--gradient",
   particles: FX_BG, retrogrid: FX_BG, meteors: FX_BG, dots: FX_BG, ripple: FX_BG, flickering: FX_BG,
+  animgrid: FX_BG, interactivegrid: FX_BG, hexagon: FX_BG, striped: FX_BG, lightrays: FX_BG,
 };
 export const SEC_PADY: Record<string, string> = {
   none: "", sm: "py-5", md: "py-10", lg: "py-16",

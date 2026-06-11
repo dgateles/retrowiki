@@ -121,7 +121,7 @@ export type Column = z.infer<typeof ColumnSchema>;
 
 const SectionSchema = z.object({
   id: z.string().max(40),
-  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles", "retrogrid", "meteors", "dots", "ripple", "flickering"]).default("none").catch("none"),
+  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles", "retrogrid", "meteors", "dots", "ripple", "flickering", "animgrid", "interactivegrid", "hexagon", "striped", "lightrays"]).default("none").catch("none"),
   // Largura total: a seção (e o fundo) ocupam a largura do viewport (full-bleed).
   full: z.boolean().default(false).catch(false),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),

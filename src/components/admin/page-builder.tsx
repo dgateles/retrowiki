@@ -374,6 +374,11 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="dots">Dot Pattern</SelectItem>
                       <SelectItem value="ripple">Ripple</SelectItem>
                       <SelectItem value="flickering">Flickering Grid</SelectItem>
+                      <SelectItem value="animgrid">Grade animada</SelectItem>
+                      <SelectItem value="interactivegrid">Grade interativa</SelectItem>
+                      <SelectItem value="hexagon">Hexágonos</SelectItem>
+                      <SelectItem value="striped">Listras</SelectItem>
+                      <SelectItem value="lightrays">Raios de luz</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
