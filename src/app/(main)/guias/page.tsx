@@ -6,6 +6,9 @@ import { listDevices } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { FilterBar } from "@/components/catalog/filter-bar";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
 export const metadata: Metadata = {
   title: "Guias e tutoriais",
@@ -81,31 +84,33 @@ export default async function GuidesPage({
       />
 
       {items.length === 0 ? (
-        <div className="empty mt-8">
-          <BookOpen className="empty__icon" aria-hidden="true" />
-          <p className="empty__text">
-            {deviceSlug || type
-              ? "Nenhum guia corresponde a esses filtros."
-              : "Ainda não há guias publicados. Que tal escrever o primeiro?"}
-          </p>
-          {deviceSlug || type ? (
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link href="/guias">Limpar filtros</Link>
-            </Button>
-          ) : (
-            <Button asChild size="sm" className="mt-4">
-              <Link href="/estudio/novo">Escrever guia</Link>
-            </Button>
-          )}
-        </div>
+        <Empty className="mt-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><BookOpen aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>{deviceSlug || type ? "Nenhum guia encontrado" : "Ainda não há guias"}</EmptyTitle>
+            <EmptyDescription>
+              {deviceSlug || type
+                ? "Nenhum guia corresponde a esses filtros. Tente ajustá-los."
+                : "Seja o primeiro a compartilhar um tutorial com a comunidade."}
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            {deviceSlug || type ? (
+              <Button asChild variant="outline" size="sm"><Link href="/guias">Limpar filtros</Link></Button>
+            ) : (
+              <Button asChild size="sm"><Link href="/estudio/novo">Escrever guia</Link></Button>
+            )}
+          </EmptyContent>
+        </Empty>
       ) : (
         <>
           <ul className="guide-list">
             {items.map((a) => (
               <li key={a.id}>
-                <Link href={`/guias/${a.slug}`} className="guide-card">
-                  <span className="guide-card__kind">{typeLabel(a.type)}</span>
-                  <h2 className="guide-card__title">{a.title}</h2>
+                <Link href={`/guias/${a.slug}`} className="group block">
+                  <Card className="card-glow p-5">
+                  <Badge variant="secondary" className="font-mono text-[10px] tracking-wider uppercase">{typeLabel(a.type)}</Badge>
+                  <h2 className="guide-card__title mt-2">{a.title}</h2>
                   {a.summary && <p className="guide-card__summary">{a.summary}</p>}
                   <div className="guide-card__foot">
                     <p className="guide-card__meta">
@@ -123,6 +128,7 @@ export default async function GuidesPage({
                       )}
                     </div>
                   </div>
+                  </Card>
                 </Link>
               </li>
             ))}
