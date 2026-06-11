@@ -42,12 +42,34 @@ premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas
 - Verificado no navegador (desktop): hero/pill/cards/hover OK, **axe 0 violações**,
   estrutura semântica limpa (banner/nav/main/region/contentinfo), build limpo.
 
-### Próximas telas da fase
-Consoles (lista/detalhe/comparar) → Guias → Blog → Perfil. Estados vazio/erro/
-carregando (shadcn Empty/Skeleton/Alert) + SEO/HTML semântico.
+### Consoles ✓
+- Lista: estado vazio com CTA "Limpar filtros" (filtros já eram shadcn Select).
+- Detalhe: marca + selos de "Emulação por sistema" em mono uppercase. Já era
+  rico/semântico (JsonLd Product, dl/dt/dd, prós/contras).
+- Comparar: níveis de emulação viram **selos coloridos mono** (emu-pill) na tabela
+  — escaneamento visual; tabela rola no mobile sem estourar a página.
 
-## Próximas fases
-2b. (restante das públicas acima)
+### Guias ✓
+- Lista: selo de tipo mono uppercase + hover com sombra esmeralda + estado vazio
+  com CTA ("Limpar filtros" / "Escrever guia").
+- Detalhe (ArticleView, compartilhado com blog): selo de tipo mono; **corrigido
+  aria-hidden-focus** (avatares decorativos focáveis → tabIndex=-1).
+
+### Blog ✓
+- Lista: estado vazio limpo (sem posts no seed). Post usa o mesmo ArticleView.
+
+### Perfil ✓
+- Números de stats em mono tabular (acento de dados).
+
+Todas verificadas no navegador (desktop+mobile) com **axe 0 violações** e build limpo.
+Commits: home+lista (5a411da), detalhe (0dcaff8), comparar (b9114c0), guias
+(f6e0c72), artigo+fix a11y (63be736), perfil (c371cf9).
+
+### Restante das públicas (próximo)
+/buscar, /leaderboard, /missoes, /equipe, /p/[slug] (páginas do construtor).
+
+## Fase 3 — Conta
+Painel, conta, notificações (após as públicas restantes).
 3. Conta (painel, conta, notificações, missões, leaderboard).
 4. Admin (~45 telas): shell, tabelas (shadcn Table), formulários robustos estilo IPB
    (Field/FieldGroup), modais/confirmações (AlertDialog) padronizados.
