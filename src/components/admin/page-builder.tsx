@@ -11,6 +11,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
@@ -349,23 +352,29 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
               <div className="pb-panel__scroll">
                 <div className="field">
-                  <Label>Fundo</Label>
-                  <select className="pb-select" value={sections[selSection].bg} onChange={(e) => mutate((ss) => { ss[selSection].bg = e.target.value as Section["bg"]; })}>
-                    <option value="none">Nenhum</option>
-                    <option value="muted">Cinza suave</option>
-                    <option value="card">Cartão</option>
-                    <option value="primary">Destaque (cor primária)</option>
-                    <option value="dark">Escuro</option>
-                  </select>
+                  <Label htmlFor="pb-bg">Fundo</Label>
+                  <Select value={sections[selSection].bg} onValueChange={(val) => mutate((ss) => { ss[selSection].bg = val as Section["bg"]; })}>
+                    <SelectTrigger id="pb-bg" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      <SelectItem value="muted">Cinza suave</SelectItem>
+                      <SelectItem value="card">Cartão</SelectItem>
+                      <SelectItem value="primary">Destaque (cor primária)</SelectItem>
+                      <SelectItem value="dark">Escuro</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="field">
-                  <Label>Espaçamento vertical</Label>
-                  <select className="pb-select" value={sections[selSection].padY} onChange={(e) => mutate((ss) => { ss[selSection].padY = e.target.value as Section["padY"]; })}>
-                    <option value="none">Nenhum</option>
-                    <option value="sm">Pequeno</option>
-                    <option value="md">Médio</option>
-                    <option value="lg">Grande</option>
-                  </select>
+                  <Label htmlFor="pb-pady">Espaçamento vertical</Label>
+                  <Select value={sections[selSection].padY} onValueChange={(val) => mutate((ss) => { ss[selSection].padY = val as Section["padY"]; })}>
+                    <SelectTrigger id="pb-pady" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      <SelectItem value="sm">Pequeno</SelectItem>
+                      <SelectItem value="md">Médio</SelectItem>
+                      <SelectItem value="lg">Grande</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button type="button" variant="ghost" size="sm" className="mt-3 w-full" onClick={() => dupSection(selSection)}>
                   <Copy className="size-4" /> Duplicar seção
@@ -386,20 +395,26 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
               <div className="pb-panel__scroll">
                 <div className="field">
-                  <Label>Alinhamento vertical</Label>
-                  <select className="pb-select" value={sections[selCol.si].columns[selCol.ci].valign} onChange={(e) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].valign = e.target.value as Section["columns"][number]["valign"]; })}>
-                    <option value="top">Topo</option>
-                    <option value="center">Centro</option>
-                    <option value="bottom">Base</option>
-                  </select>
+                  <Label htmlFor="pb-valign">Alinhamento vertical</Label>
+                  <Select value={sections[selCol.si].columns[selCol.ci].valign} onValueChange={(val) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].valign = val as Section["columns"][number]["valign"]; })}>
+                    <SelectTrigger id="pb-valign" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="top">Topo</SelectItem>
+                      <SelectItem value="center">Centro</SelectItem>
+                      <SelectItem value="bottom">Base</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="field">
-                  <Label>Fundo da coluna</Label>
-                  <select className="pb-select" value={sections[selCol.si].columns[selCol.ci].bg} onChange={(e) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].bg = e.target.value as Section["columns"][number]["bg"]; })}>
-                    <option value="none">Nenhum</option>
-                    <option value="muted">Cinza suave</option>
-                    <option value="card">Cartão</option>
-                  </select>
+                  <Label htmlFor="pb-colbg">Fundo da coluna</Label>
+                  <Select value={sections[selCol.si].columns[selCol.ci].bg} onValueChange={(val) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].bg = val as Section["columns"][number]["bg"]; })}>
+                    <SelectTrigger id="pb-colbg" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum</SelectItem>
+                      <SelectItem value="muted">Cinza suave</SelectItem>
+                      <SelectItem value="card">Cartão</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 {sections[selCol.si].columns.length > 1 && (
                   <Button type="button" variant="ghost" size="sm" className="mt-3 w-full text-destructive" onClick={() => { mutate((ss) => { ss[selCol.si].columns.splice(selCol.ci, 1); const sp = evenSpans(ss[selCol.si].columns.length); ss[selCol.si].columns.forEach((c, idx) => { c.span = sp[idx]; }); }); deselect(); }}>
@@ -454,9 +469,9 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     <div className="field"><Label htmlFor="pg-title">Título</Label><Input id="pg-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} /></div>
                     <div className="field"><Label htmlFor="pg-slug">Slug (/p/…)</Label><Input id="pg-slug" value={slug} onChange={(e) => setSlug(e.target.value)} maxLength={120} /></div>
                     <div className="field"><Label htmlFor="pg-meta">Meta description</Label><Input id="pg-meta" value={metaDescription} onChange={(e) => setMeta(e.target.value)} maxLength={320} /></div>
-                    <label className="pb-check"><input type="checkbox" checked={showInMenu} onChange={(e) => setShowInMenu(e.target.checked)} /> Mostrar no menu</label>
+                    <label className="flex items-center gap-2 text-sm"><Checkbox checked={showInMenu} onCheckedChange={(c) => setShowInMenu(c === true)} /> Mostrar no menu</label>
                     {showInMenu && <div className="field"><Label htmlFor="pg-order">Ordem no menu</Label><Input id="pg-order" type="number" value={menuOrder} onChange={(e) => setMenuOrder(Number(e.target.value) || 0)} className="w-24" /></div>}
-                    <label className="pb-check"><input type="checkbox" checked={noindex} onChange={(e) => setNoindex(e.target.checked)} /> Não indexar (noindex)</label>
+                    <label className="flex items-center gap-2 text-sm"><Checkbox checked={noindex} onCheckedChange={(c) => setNoindex(c === true)} /> Não indexar (noindex)</label>
                   </div>
                 )}
               </div>
@@ -577,23 +592,29 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
   const align = (
     <div className="field">
       <Label>Alinhamento</Label>
-      <select className="pb-select" value={(w as { align?: string }).align ?? "left"} onChange={(e) => onChange({ align: e.target.value } as Partial<Widget>)}>
-        <option value="left">Esquerda</option>
-        <option value="center">Centro</option>
-        <option value="right">Direita</option>
-      </select>
+      <Select value={(w as { align?: string }).align ?? "left"} onValueChange={(val) => onChange({ align: val } as Partial<Widget>)}>
+        <SelectTrigger aria-label="Alinhamento" className="w-full"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="left">Esquerda</SelectItem>
+          <SelectItem value="center">Centro</SelectItem>
+          <SelectItem value="right">Direita</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
   const color = (
     <div className="field">
       <Label>Cor</Label>
-      <select className="pb-select" value={(w as { color?: string }).color ?? "default"} onChange={(e) => onChange({ color: e.target.value } as Partial<Widget>)}>
-        <option value="default">Padrão</option>
-        <option value="muted">Suave</option>
-        <option value="primary">Primária</option>
-        <option value="success">Verde</option>
-        <option value="warn">Âmbar</option>
-      </select>
+      <Select value={(w as { color?: string }).color ?? "default"} onValueChange={(val) => onChange({ color: val } as Partial<Widget>)}>
+        <SelectTrigger aria-label="Cor" className="w-full"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="default">Padrão</SelectItem>
+          <SelectItem value="muted">Suave</SelectItem>
+          <SelectItem value="primary">Primária</SelectItem>
+          <SelectItem value="success">Verde</SelectItem>
+          <SelectItem value="warn">Âmbar</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 
@@ -603,9 +624,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
         <>
           <div className="field"><Label>Texto</Label><Input value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={200} /></div>
           <div className="field"><Label>Nível</Label>
-            <select className="pb-select" value={w.level} onChange={(e) => onChange({ level: Number(e.target.value) as 2 | 3 | 4 })}>
-              <option value={2}>Título (H2)</option><option value={3}>Subtítulo (H3)</option><option value={4}>Menor (H4)</option>
-            </select>
+            <Select value={String(w.level)} onValueChange={(val) => onChange({ level: Number(val) as 2 | 3 | 4 })}>
+              <SelectTrigger aria-label="Nível" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="2">Título (H2)</SelectItem><SelectItem value="3">Subtítulo (H3)</SelectItem><SelectItem value="4">Menor (H4)</SelectItem></SelectContent>
+            </Select>
           </div>
           {align}
           {color}
@@ -613,7 +635,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       )}
       {w.type === "text" && (
         <>
-          <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={5000} rows={5} /></div>
+          <div className="field"><Label>Texto</Label><Textarea value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={5000} rows={5} /></div>
           {align}
           {color}
         </>
@@ -636,18 +658,20 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <div className="field"><Label>Texto do botão</Label><Input value={w.label} onChange={(e) => onChange({ label: e.target.value })} maxLength={80} /></div>
           <div className="field"><Label>Link (URL ou /caminho)</Label><Input value={w.href} onChange={(e) => onChange({ href: e.target.value })} maxLength={500} /></div>
           <div className="field"><Label>Estilo</Label>
-            <select className="pb-select" value={w.variant} onChange={(e) => onChange({ variant: e.target.value as "primary" | "outline" })}>
-              <option value="primary">Preenchido</option><option value="outline">Contorno</option>
-            </select>
+            <Select value={w.variant} onValueChange={(val) => onChange({ variant: val as "primary" | "outline" })}>
+              <SelectTrigger aria-label="Estilo" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="primary">Preenchido</SelectItem><SelectItem value="outline">Contorno</SelectItem></SelectContent>
+            </Select>
           </div>
           {align}
         </>
       )}
       {w.type === "spacer" && (
         <div className="field"><Label>Tamanho</Label>
-          <select className="pb-select" value={w.size} onChange={(e) => onChange({ size: e.target.value as "sm" | "md" | "lg" })}>
-            <option value="sm">Pequeno</option><option value="md">Médio</option><option value="lg">Grande</option>
-          </select>
+          <Select value={w.size} onValueChange={(val) => onChange({ size: val as "sm" | "md" | "lg" })}>
+            <SelectTrigger aria-label="Tamanho" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="sm">Pequeno</SelectItem><SelectItem value="md">Médio</SelectItem><SelectItem value="lg">Grande</SelectItem></SelectContent>
+          </Select>
         </div>
       )}
       {w.type === "video" && (
@@ -656,11 +680,12 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       {w.type === "callout" && (
         <>
           <div className="field"><Label>Tom</Label>
-            <select className="pb-select" value={w.tone} onChange={(e) => onChange({ tone: e.target.value as "info" | "warn" | "success" })}>
-              <option value="info">Informação</option><option value="warn">Atenção</option><option value="success">Sucesso</option>
-            </select>
+            <Select value={w.tone} onValueChange={(val) => onChange({ tone: val as "info" | "warn" | "success" })}>
+              <SelectTrigger aria-label="Tom" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="info">Informação</SelectItem><SelectItem value="warn">Atenção</SelectItem><SelectItem value="success">Sucesso</SelectItem></SelectContent>
+            </Select>
           </div>
-          <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
+          <div className="field"><Label>Texto</Label><Textarea value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
         </>
       )}
       {w.type === "accordion" && (
@@ -672,7 +697,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                 <Input value={it.title} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, title: e.target.value } : x) })} placeholder="Título" maxLength={200} />
                 {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover item" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
               </div>
-              <textarea className="pb-textarea mt-1" value={it.body} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, body: e.target.value } : x) })} placeholder="Conteúdo" maxLength={3000} rows={2} />
+              <Textarea className="mt-1" value={it.body} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, body: e.target.value } : x) })} placeholder="Conteúdo" maxLength={3000} rows={2} />
             </div>
           ))}
           {w.items.length < 15 && (
@@ -683,9 +708,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       {w.type === "gallery" && (
         <>
           <div className="field"><Label>Colunas</Label>
-            <select className="pb-select" value={w.columns} onChange={(e) => onChange({ columns: Number(e.target.value) as 2 | 3 | 4 })}>
-              <option value={2}>2</option><option value={3}>3</option><option value={4}>4</option>
-            </select>
+            <Select value={String(w.columns)} onValueChange={(val) => onChange({ columns: Number(val) as 2 | 3 | 4 })}>
+              <SelectTrigger aria-label="Colunas" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="2">2</SelectItem><SelectItem value="3">3</SelectItem><SelectItem value="4">4</SelectItem></SelectContent>
+            </Select>
           </div>
           {w.images.map((im, i) => (
             <div key={i} className="pb-acc-item">
@@ -706,7 +732,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
         <>
           <div className="field"><Label>Imagem (opcional)</Label><ImageUpload value={w.image} onChange={(image) => onChange({ image })} folder="pages" /></div>
           <div className="field"><Label>Título</Label><Input value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={200} /></div>
-          <div className="field"><Label>Texto</Label><textarea className="pb-textarea" value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
+          <div className="field"><Label>Texto</Label><Textarea value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
           <div className="field"><Label>Link do botão (opcional)</Label><Input value={w.href} onChange={(e) => onChange({ href: e.target.value })} placeholder="/guias" maxLength={500} /></div>
           <div className="field"><Label>Texto do botão (opcional)</Label><Input value={w.buttonLabel} onChange={(e) => onChange({ buttonLabel: e.target.value })} maxLength={80} /></div>
         </>
@@ -717,9 +743,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           {w.items.map((it, i) => (
             <div key={i} className="pb-acc-item">
               <div className="flex items-center gap-2">
-                <select className="pb-select" value={it.icon} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, icon: e.target.value as typeof ICON_KEYS[number] } : x) })}>
-                  {ICON_KEYS.map((k) => <option key={k} value={k}>{ICON_LABELS[k]}</option>)}
-                </select>
+                <Select value={it.icon} onValueChange={(val) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, icon: val as typeof ICON_KEYS[number] } : x) })}>
+                  <SelectTrigger aria-label="Ícone" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>{ICON_KEYS.map((k) => <SelectItem key={k} value={k}>{ICON_LABELS[k]}</SelectItem>)}</SelectContent>
+                </Select>
                 <Input value={it.text} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, text: e.target.value } : x) })} placeholder="Texto" maxLength={300} />
                 {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
               </div>
@@ -772,7 +799,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                   <Input value={it.repo} onChange={(e) => set({ repo: e.target.value })} placeholder="repo" maxLength={120} />
                 </div>
                 <Input className="mt-1" value={it.website} onChange={(e) => set({ website: e.target.value })} placeholder="Site (se não for GitHub)" maxLength={500} />
-                <label className="pb-check mt-1"><input type="checkbox" checked={it.deprecated} onChange={(e) => set({ deprecated: e.target.checked })} /> Obsoleto</label>
+                <label className="mt-1 flex items-center gap-2 text-sm"><Checkbox checked={it.deprecated} onCheckedChange={(c) => set({ deprecated: c === true })} /> Obsoleto</label>
               </div>
             );
           })}
@@ -796,9 +823,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                   <Input className="mt-1" value={s.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" maxLength={300} />
                   <Input className="mt-1" value={s.href} onChange={(e) => set({ href: e.target.value })} placeholder="Link" maxLength={500} />
                   <div className="mt-1 flex gap-2">
-                    <select className="pb-select" value={s.trustLevel} onChange={(e) => set({ trustLevel: e.target.value as typeof s.trustLevel })}>
-                      <option value="verified">Verificado</option><option value="trusted">Confiável</option><option value="caution">Cautela</option><option value="choice">Escolha</option>
-                    </select>
+                    <Select value={s.trustLevel} onValueChange={(val) => set({ trustLevel: val as typeof s.trustLevel })}>
+                      <SelectTrigger aria-label="Confiança" className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="verified">Verificado</SelectItem><SelectItem value="trusted">Confiável</SelectItem><SelectItem value="caution">Cautela</SelectItem><SelectItem value="choice">Escolha</SelectItem></SelectContent>
+                    </Select>
                     <Input value={s.badge} onChange={(e) => set({ badge: e.target.value })} placeholder="Selo (opcional)" maxLength={40} />
                   </div>
                 </div>
@@ -818,9 +846,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                   </div>
                   <Input className="mt-1" value={a.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" maxLength={300} />
                   <Input className="mt-1" value={a.href} onChange={(e) => set({ href: e.target.value })} placeholder="Link" maxLength={500} />
-                  <select className="pb-select mt-1" value={a.category} onChange={(e) => set({ category: e.target.value as typeof a.category })}>
-                    <option value="storage">Armazenamento</option><option value="connectivity">Conectividade</option><option value="protection">Proteção</option><option value="other">Outros</option>
-                  </select>
+                  <Select value={a.category} onValueChange={(val) => set({ category: val as typeof a.category })}>
+                    <SelectTrigger aria-label="Categoria" className="mt-1 w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent><SelectItem value="storage">Armazenamento</SelectItem><SelectItem value="connectivity">Conectividade</SelectItem><SelectItem value="protection">Proteção</SelectItem><SelectItem value="other">Outros</SelectItem></SelectContent>
+                  </Select>
                 </div>
               );
             })}
@@ -834,12 +863,13 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                 <div key={i} className="pb-acc-item">
                   <div className="flex items-center gap-2">
                     <Input value={tp.title} onChange={(e) => set({ title: e.target.value })} placeholder="Título" maxLength={120} />
-                    <select className="pb-select" value={tp.type} onChange={(e) => set({ type: e.target.value as typeof tp.type })}>
-                      <option value="tip">Dica</option><option value="warning">Aviso</option>
-                    </select>
+                    <Select value={tp.type} onValueChange={(val) => set({ type: val as typeof tp.type })}>
+                      <SelectTrigger aria-label="Tipo" className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="tip">Dica</SelectItem><SelectItem value="warning">Aviso</SelectItem></SelectContent>
+                    </Select>
                     <button type="button" className="pb-icon pb-icon--danger" onClick={() => onChange({ tips: w.tips.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>
                   </div>
-                  <textarea className="pb-textarea mt-1" value={tp.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" rows={2} maxLength={400} />
+                  <Textarea className="mt-1" value={tp.description} onChange={(e) => set({ description: e.target.value })} placeholder="Descrição" rows={2} maxLength={400} />
                 </div>
               );
             })}

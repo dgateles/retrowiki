@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ListEditor, EmulationEditor, type EmuRow } from "@/components/admin/field-editors";
 import { createDeviceAction, updateDeviceAction } from "@/lib/actions/admin-actions";
@@ -226,11 +227,10 @@ export function DeviceForm({ initial }: Props) {
         <legend className="admin-form__legend">Recursos</legend>
         <div className="admin-form__features">
           {FEATURES.map(({ key, label }) => (
-            <label key={key} className="editor__check">
-              <input
-                type="checkbox"
+            <label key={key} className="flex items-center gap-2 text-sm">
+              <Checkbox
                 checked={features[key]}
-                onChange={(e) => setFeatures((f) => ({ ...f, [key]: e.target.checked }))}
+                onCheckedChange={(c) => setFeatures((f) => ({ ...f, [key]: c === true }))}
               />
               {label}
             </label>
