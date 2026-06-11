@@ -1,7 +1,12 @@
 import Link from "next/link";
+import { Home, ExternalLink, Pencil, FileText } from "lucide-react";
 import { listPages } from "@/lib/pages";
 import { NewPageButton } from "@/components/admin/new-page-button";
 import { HomePageButton } from "@/components/admin/home-page-button";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 
 export const dynamic = "force-dynamic";
 
@@ -22,25 +27,45 @@ export default async function PagesAdminPage() {
       </div>
 
       {items.length === 0 ? (
-        <p className="empty mt-8">Nenhuma página ainda. Crie a primeira.</p>
+        <Empty className="mt-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><FileText aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>Nenhuma página ainda</EmptyTitle>
+            <EmptyDescription>Crie a primeira página no construtor visual.</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
-        <ul className="admin-list mt-6">
+        <ul className="mt-6 flex flex-col gap-3">
           {items.map((p) => (
-            <li key={p.id} className="admin-list__row">
-              <span className="min-w-0">
-                <Link href={`/construtor/${p.id}`} className="admin-list__title">{p.title}</Link>
-                <span className="admin-list__meta">{p.isHome ? "/ (página inicial)" : `/p/${p.slug}`}{p.showInMenu && " · no menu"}</span>
-              </span>
-              <span className="flex items-center gap-3">
-                {p.isHome && <span className="status-pill status-pill--published">Inicial</span>}
-                <span className={`status-pill status-pill--${p.status === "published" ? "published" : "draft"}`}>
-                  {p.status === "published" ? "Publicada" : "Rascunho"}
-                </span>
-                {p.status === "published" && (
-                  <Link href={`/p/${p.slug}`} className="link-inline text-sm" target="_blank">ver</Link>
-                )}
-                <Link href={`/construtor/${p.id}`} className="link-inline text-sm">editar</Link>
-              </span>
+            <li key={p.id}>
+              <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/40 text-muted-foreground">
+                    {p.isHome ? <Home className="size-4" aria-hidden="true" /> : <FileText className="size-4" aria-hidden="true" />}
+                  </span>
+                  <div className="min-w-0">
+                    <Link href={`/construtor/${p.id}`} className="block truncate font-semibold hover:text-primary">{p.title}</Link>
+                    <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">
+                      {p.isHome ? "/" : `/p/${p.slug}`}{p.showInMenu && " · no menu"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 flex-wrap items-center gap-2 sm:pl-3">
+                  {p.isHome && <Badge variant="secondary" className="gap-1"><Home className="size-3" aria-hidden="true" /> Inicial</Badge>}
+                  <Badge variant={p.status === "published" ? "default" : "outline"}>
+                    {p.status === "published" ? "Publicada" : "Rascunho"}
+                  </Badge>
+                  {p.status === "published" && (
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={p.isHome ? "/" : `/p/${p.slug}`} target="_blank"><ExternalLink className="size-4" aria-hidden="true" /> Ver</Link>
+                    </Button>
+                  )}
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/construtor/${p.id}`}><Pencil className="size-4" aria-hidden="true" /> Editar</Link>
+                  </Button>
+                </div>
+              </Card>
             </li>
           ))}
         </ul>
