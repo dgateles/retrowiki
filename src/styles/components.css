@@ -1534,41 +1534,6 @@
   .site-header__nav {
     @apply hidden items-center gap-0.5 sm:flex;
   }
-  /* Flyout (mega-menu) e dropdown da navegação principal (NavigationMenu). */
-  .flyout {
-    @apply w-[440px] max-w-[90vw] p-2;
-  }
-  .flyout__list {
-    @apply flex flex-col gap-0.5;
-  }
-  .flyout__item {
-    @apply flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-accent;
-  }
-  .flyout__icon {
-    @apply flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-primary transition-colors;
-  }
-  .flyout__item:hover .flyout__icon {
-    @apply border-primary/40 bg-primary/10;
-    box-shadow: 0 0 16px -4px color-mix(in srgb, var(--primary) 45%, transparent);
-  }
-  .flyout__title {
-    @apply block text-sm font-semibold;
-  }
-  .flyout__desc {
-    @apply block text-sm text-muted-foreground;
-  }
-  .flyout__foot {
-    @apply mt-2 grid grid-cols-2 gap-1 border-t border-border pt-2;
-  }
-  .flyout__action {
-    @apply flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent;
-  }
-  .dropdown-menu-nav {
-    @apply flex w-56 flex-col gap-0.5 p-2;
-  }
-  .dropdown-menu-nav__link {
-    @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent;
-  }
   /* Navegação mobile (barra inferior app-like) */
   .mobile-bar {
     @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background/95 backdrop-blur;

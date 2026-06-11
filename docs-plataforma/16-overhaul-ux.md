@@ -3,6 +3,11 @@
 Spec: `OVERHAUL-UX.md`. Direção: moderno com acento retro/gamer sutil, base shadcn,
 premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas → conta → admin**.
 
+## Backlog pós-overhaul (a fazer depois)
+- **Gerenciador de menus no admin**: gerenciar modos de menu, itens de menu, flyouts
+  e dropdowns da navegação principal pelo painel admin (criar/editar/ordenar itens,
+  escolher tipo: link simples / flyout rico / dropdown). Pedido do dono 2026-06-11.
+
 ## Fase 1 — Fundação + shell global ✓ CONCLUÍDA
 
 - **Primitivos shadcn instalados**: badge, alert, tabs, sheet, tooltip, avatar,
