@@ -1080,6 +1080,24 @@
     @apply inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
   }
 
+  /* Prévia da página: sobreposição full-screen sem chrome do editor. */
+  .pb-preview {
+    @apply fixed inset-0 z-[60] flex flex-col bg-background;
+  }
+  .pb-preview__bar {
+    @apply flex shrink-0 items-center gap-3 border-b border-border bg-card/95 px-4 py-2.5 backdrop-blur;
+  }
+  .pb-preview__title {
+    @apply mr-auto max-w-md truncate text-sm font-semibold;
+  }
+  .pb-preview__scroll {
+    @apply flex-1 overflow-auto bg-muted/30 p-6;
+  }
+  .pb-preview__frame {
+    @apply mx-auto w-full rounded-lg border border-border bg-background p-6 shadow-sm sm:p-8;
+    transition: max-width 0.2s ease;
+  }
+
   /* ── Construtor de páginas (admin, estilo Elementor) ────────────────── */
   .pb-shell {
     @apply flex flex-col;

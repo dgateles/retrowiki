@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
+import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
@@ -99,6 +99,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [selCol, setSelCol] = useState<{ si: number; ci: number } | null>(null);
   const [leftTab, setLeftTab] = useState<"elements" | "blocks" | "page">("elements");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [preview, setPreview] = useState(false);
   const [pending, setPending] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [blockList, setBlockList] = useState<SavedBlock[]>(blocks);
@@ -314,6 +315,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     function onKey(e: KeyboardEvent) {
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.key === "Escape" && preview) { setPreview(false); return; }
       const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key.toLowerCase() === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
       else if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
@@ -321,7 +323,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [past, future]);
+  }, [past, future, preview]);
 
   const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
 
@@ -612,11 +614,37 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
           </span>
           <span className={`status-pill status-pill--${page.status === "published" ? "published" : "draft"}`}>{page.status === "published" ? "Publicada" : "Rascunho"}</span>
           <span className="ml-1 flex items-center gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setPreview(true)}><Eye className="size-4" /> Prévia</Button>
             <Button type="button" variant="ghost" size="sm" onClick={remove}>Excluir</Button>
             <Button type="button" variant="outline" size="sm" onClick={() => save(false)} disabled={pending}>Salvar</Button>
             <Button type="button" size="sm" onClick={() => save(true)} disabled={pending}>{pending ? "…" : "Publicar"}</Button>
           </span>
         </div>
+
+        {/* Prévia: renderiza a página como ficará publicada, sem o chrome do editor */}
+        {preview && (
+          <div className="pb-preview" role="dialog" aria-modal="true" aria-label="Prévia da página">
+            <div className="pb-preview__bar">
+              <span className="pb-preview__title">Prévia — {title || "Sem título"}</span>
+              <span className="pb-dev-toggle" role="group" aria-label="Pré-visualização responsiva">
+                <button type="button" className={cn("pb-mini", device === "desktop" && "pb-mini--on")} title="Desktop" onClick={() => setDevice("desktop")}><Monitor className="size-4" /></button>
+                <button type="button" className={cn("pb-mini", device === "tablet" && "pb-mini--on")} title="Tablet" onClick={() => setDevice("tablet")}><Tablet className="size-4" /></button>
+                <button type="button" className={cn("pb-mini", device === "mobile" && "pb-mini--on")} title="Celular" onClick={() => setDevice("mobile")}><Smartphone className="size-4" /></button>
+              </span>
+              <Button type="button" variant="outline" size="sm" onClick={() => setPreview(false)}><X className="size-4" /> Fechar prévia</Button>
+            </div>
+            <div className="pb-preview__scroll">
+              <div className={cn("pb-preview__frame", `pb-dev--${device}`)}>
+                <main className="page">
+                  <h1 className="page__title">{title || "Sem título"}</h1>
+                  <div className="mt-6">
+                    <PageRenderer layout={{ sections }} />
+                  </div>
+                </main>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
   );
 }
