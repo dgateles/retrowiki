@@ -31,9 +31,11 @@ export default async function RanksPage() {
               <p className="rank-row__name">{r.title}</p>
               <p className="rank-row__meta">{counts[r.id] ?? 0} membro(s) · {r.points} pontos</p>
             </div>
-            <Link href={`/admin/ranks/${r.id}`} className="rule-row__edit" aria-label={`Editar ${r.title}`}>
-              <Pencil className="size-4" aria-hidden="true" /> Editar
-            </Link>
+            <Button asChild variant="outline" size="sm" className="ml-auto">
+              <Link href={`/admin/ranks/${r.id}`} aria-label={`Editar ${r.title}`}>
+                <Pencil className="size-4" aria-hidden="true" /> Editar
+              </Link>
+            </Button>
             <RankDelete id={r.id} title={r.title} />
           </li>
         ))}

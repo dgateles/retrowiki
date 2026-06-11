@@ -35,9 +35,11 @@ export default async function QuestsPage() {
                 </p>
               </div>
               <QuestToggle id={q.id} enabled={q.enabled} />
-              <Link href={`/admin/quests/${q.id}`} className="rule-row__edit" aria-label={`Editar ${q.title}`}>
-                <Pencil className="size-4" aria-hidden="true" /> Editar
-              </Link>
+              <Button asChild variant="outline" size="sm" className="ml-auto">
+                <Link href={`/admin/quests/${q.id}`} aria-label={`Editar ${q.title}`}>
+                  <Pencil className="size-4" aria-hidden="true" /> Editar
+                </Link>
+              </Button>
               <QuestDelete id={q.id} title={q.title} />
             </li>
           ))}

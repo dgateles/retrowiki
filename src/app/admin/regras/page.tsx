@@ -55,9 +55,11 @@ export default async function AchievementRulesPage() {
                 </p>
                 <p className="rule-row__meta">{summarize(r.trigger, r.rewards)}{!r.enabled && " · pausada"}</p>
               </div>
-              <Link href={`/admin/regras/${r.id}`} className="rule-row__edit" aria-label={`Editar ${r.name}`}>
-                <Pencil className="size-4" aria-hidden="true" /> Editar
-              </Link>
+              <Button asChild variant="outline" size="sm" className="ml-auto">
+                <Link href={`/admin/regras/${r.id}`} aria-label={`Editar ${r.name}`}>
+                  <Pencil className="size-4" aria-hidden="true" /> Editar
+                </Link>
+              </Button>
               <AchievementRuleDelete id={r.id} name={r.name} />
             </li>
           ))}

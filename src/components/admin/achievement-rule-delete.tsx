@@ -14,9 +14,9 @@ export function AchievementRuleDelete({ id, name }: { id: number; name: string }
   const [pending, start] = useTransition();
   return (
     <>
-      <button type="button" className="rule-row__del" aria-label={`Excluir ${name}`} onClick={() => setOpen(true)}>
+      <Button type="button" variant="outline" size="icon" className="size-9 shrink-0 text-muted-foreground hover:border-destructive hover:text-destructive" aria-label={`Excluir ${name}`} onClick={() => setOpen(true)}>
         <Trash2 className="size-4" aria-hidden="true" />
-      </button>
+      </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent aria-describedby={undefined}>
           <DialogTitle>Excluir regra</DialogTitle>

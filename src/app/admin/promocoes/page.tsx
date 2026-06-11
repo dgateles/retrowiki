@@ -39,9 +39,11 @@ export default async function PromotionsPage() {
                   {!r.enabled && " · desativada"}
                 </p>
               </div>
-              <Link href={`/admin/promocoes/${r.id}`} className="rule-row__edit" aria-label={`Editar ${r.name}`}>
-                <Pencil className="size-4" aria-hidden="true" /> Editar
-              </Link>
+              <Button asChild variant="outline" size="sm" className="ml-auto">
+                <Link href={`/admin/promocoes/${r.id}`} aria-label={`Editar ${r.name}`}>
+                  <Pencil className="size-4" aria-hidden="true" /> Editar
+                </Link>
+              </Button>
               <RuleDeleteButton id={r.id} name={r.name} />
             </li>
           ))}

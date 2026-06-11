@@ -71,9 +71,11 @@ export default async function EditQuestPage({ params }: { params: Promise<{ id: 
                 <p className="rule-row__name">{t.title}</p>
                 <p className="rule-row__meta">{ruleName.get(t.ruleId) ?? `regra #${t.ruleId}`}</p>
               </div>
-              <Link href={`/admin/quests/${quest.id}/tarefas/${t.id}`} className="rule-row__edit" aria-label={`Editar tarefa ${t.title}`}>
-                <Pencil className="size-4" aria-hidden="true" /> Editar
-              </Link>
+              <Button asChild variant="outline" size="sm" className="ml-auto">
+                <Link href={`/admin/quests/${quest.id}/tarefas/${t.id}`} aria-label={`Editar tarefa ${t.title}`}>
+                  <Pencil className="size-4" aria-hidden="true" /> Editar
+                </Link>
+              </Button>
               <TaskDelete id={t.id} questId={quest.id} title={t.title} />
             </li>
           ))}

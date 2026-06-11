@@ -35,9 +35,11 @@ export default async function BadgesPage() {
                 {b.manuallyAwardable && " · manual"}
               </p>
             </div>
-            <Link href={`/admin/badges/${b.id}`} className="rule-row__edit" aria-label={`Editar ${b.name}`}>
-              <Pencil className="size-4" aria-hidden="true" /> Editar
-            </Link>
+            <Button asChild variant="outline" size="sm" className="ml-auto">
+              <Link href={`/admin/badges/${b.id}`} aria-label={`Editar ${b.name}`}>
+                <Pencil className="size-4" aria-hidden="true" /> Editar
+              </Link>
+            </Button>
             <BadgeDelete id={b.id} name={b.name} />
           </li>
         ))}
