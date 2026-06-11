@@ -1953,7 +1953,7 @@
     @apply flex-1 text-center md:text-left;
   }
   .spec__brand {
-    @apply text-xs font-medium text-primary;
+    @apply font-mono text-xs font-medium uppercase tracking-wider text-primary;
   }
   .spec__name {
     @apply mt-1 text-2xl font-bold md:text-3xl;
@@ -2011,7 +2011,7 @@
     @apply font-medium text-foreground;
   }
   .emu__level {
-    @apply font-semibold;
+    @apply font-mono text-xs font-semibold uppercase tracking-wide;
   }
   .emu--excellent {
     @apply border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400;
