@@ -7,6 +7,7 @@ import type { JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { createDraftAction, updateDraftAction, submitForReviewAction, proposeEditAction } from "@/lib/actions/article-actions";
@@ -97,11 +98,12 @@ export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initi
       {!isBlog && (
         <div className="field">
           <Label htmlFor="type">Tipo</Label>
-          <select id="type" aria-label="Tipo do conteúdo" value={type} onChange={(e) => setType(e.target.value)} className="editor__select editor__select--full">
-            {TYPES.map((t) => (
-              <option key={t.type} value={t.type}>{t.label}</option>
-            ))}
-          </select>
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger id="type" aria-label="Tipo do conteúdo" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {TYPES.map((t) => <SelectItem key={t.type} value={t.type}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
       )}
       <div className="field">

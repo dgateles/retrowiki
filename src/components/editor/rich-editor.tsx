@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -348,12 +349,12 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
 
       {s.inCode && (
         <div className="rte__toolbar rte__toolbar--ctx">
-          <label className="sr-only" htmlFor="rte-codelang">Linguagem do código</label>
-          <select id="rte-codelang" className="rte__select" value={s.codeLang} onChange={(e) => chain().updateAttributes("codeBlock", { language: e.target.value }).run()}>
-            {CODE_LANGS.map((l) => (
-              <option key={l.value} value={l.value}>{l.label}</option>
-            ))}
-          </select>
+          <Select value={s.codeLang} onValueChange={(v) => chain().updateAttributes("codeBlock", { language: v }).run()}>
+            <SelectTrigger id="rte-codelang" aria-label="Linguagem do código" className="h-8 w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {CODE_LANGS.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
