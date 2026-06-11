@@ -34,7 +34,7 @@ export function ArticleActions({ id, status, title }: { id: number; status: stri
       ) : (
         <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => setStatus("published", "Artigo publicado.")}><Upload className="size-4" aria-hidden="true" /> Publicar</Button>
       )}
-      <button type="button" className="pf-icon pf-icon--danger" title="Excluir" disabled={busy} onClick={remove}><Trash2 className="size-4" aria-hidden="true" /></button>
+      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" disabled={busy} onClick={remove}><Trash2 className="size-4" aria-hidden="true" /></Button>
     </div>
   );
 }

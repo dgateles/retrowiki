@@ -93,8 +93,8 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
                       <span className="pf-field__meta block">{r.points} ponto(s){r.removeAfterHours ? ` · expira em ${r.removeAfterHours}h` : ""}{r.deductReputation ? ` · −${r.deductReputation} reputação` : ""}</span>
                     </span>
                     <div className="pf-group__actions">
-                      <button type="button" className="pf-icon" title="Editar" onClick={() => setReasonDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></button>
-                      <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeReason(r.id, r.name)}><X className="size-4" aria-hidden="true" /></button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setReasonDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeReason(r.id, r.name)}><X className="size-4" aria-hidden="true" /></Button>
                     </div>
                   </div>
                 </li>
@@ -119,7 +119,7 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
                     <span className="font-medium">{a.points}</span>
                     <span className="muted">{hoursLabel(a.restrictHours)}</span>
                     <span className="muted">{hoursLabel(a.banHours)}</span>
-                    <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeAction(a.id)}><X className="size-4" aria-hidden="true" /></button>
+                    <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeAction(a.id)}><X className="size-4" aria-hidden="true" /></Button>
                   </div>
                 ))}
               </div>

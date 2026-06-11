@@ -157,8 +157,8 @@ export function ReputationTabs({
                     </span>
                     <div className="pf-group__actions">
                       <label className="mr-2 flex items-center gap-2 text-sm"><Switch checked={r.enabled} onCheckedChange={(c) => toggleReaction(r.id, c)} /> Ativa</label>
-                      <button type="button" className="pf-icon" title="Editar" onClick={() => setReactionDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></button>
-                      <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeReaction(r.id, r.name)}><X className="size-4" aria-hidden="true" /></button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setReactionDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeReaction(r.id, r.name)}><X className="size-4" aria-hidden="true" /></Button>
                     </div>
                   </div>
                 </li>
@@ -206,8 +206,8 @@ export function ReputationTabs({
                       <span className="pf-field__meta">a partir de {l.points} pts</span>
                     </span>
                     <div className="pf-group__actions">
-                      <button type="button" className="pf-icon" title="Editar" onClick={() => setLevelDialog({ l })}><Pencil className="size-4" aria-hidden="true" /></button>
-                      <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeLevel(l.id, l.title)}><X className="size-4" aria-hidden="true" /></button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setLevelDialog({ l })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeLevel(l.id, l.title)}><X className="size-4" aria-hidden="true" /></Button>
                     </div>
                   </div>
                 </li>

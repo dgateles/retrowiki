@@ -61,7 +61,7 @@ export function BanFilters({ filters }: { filters: BanFilter[] }) {
               <span className="bantable__content">{f.content}</span>
               <span className="muted">{f.reason || "—"}</span>
               <span className="muted">{fmt(f.createdAt)}</span>
-              <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => remove(f.id)}><X className="size-4" aria-hidden="true" /></button>
+              <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => remove(f.id)}><X className="size-4" aria-hidden="true" /></Button>
             </div>
           ))}
         </div>

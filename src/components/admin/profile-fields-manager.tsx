@@ -94,15 +94,15 @@ export function ProfileFieldsManager({ groups }: { groups: GroupWithFields[] }) 
                     <span className="pf-group__count">{g.fields.length}</span>
                   </button>
                   <div className="pf-group__actions">
-                    <button type="button" className="pf-icon" title="Adicionar campo" onClick={() => setFieldDialog({ field: null, groupId: g.id })}>
+                    <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Adicionar campo" onClick={() => setFieldDialog({ field: null, groupId: g.id })}>
                       <Plus className="size-4" aria-hidden="true" />
-                    </button>
-                    <button type="button" className="pf-icon" title="Renomear grupo" onClick={() => setGroupDialog({ mode: "rename", id: g.id, name: g.name })}>
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Renomear grupo" onClick={() => setGroupDialog({ mode: "rename", id: g.id, name: g.name })}>
                       <Pencil className="size-4" aria-hidden="true" />
-                    </button>
-                    <button type="button" className="pf-icon pf-icon--danger" title="Excluir grupo" onClick={() => removeGroup(g.id, g.name)}>
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir grupo" onClick={() => removeGroup(g.id, g.name)}>
                       <Trash2 className="size-4" aria-hidden="true" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -118,15 +118,15 @@ export function ProfileFieldsManager({ groups }: { groups: GroupWithFields[] }) 
                             <span className="pf-field__meta">{fieldTypeLabel(f.type)}{f.required ? " · obrigatório" : ""}</span>
                           </div>
                           <div className="pf-field__actions">
-                            <button type="button" className="pf-icon" title="Editar" onClick={() => setFieldDialog({ field: f, groupId: f.groupId })}>
+                            <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setFieldDialog({ field: f, groupId: f.groupId })}>
                               <Pencil className="size-4" aria-hidden="true" />
-                            </button>
-                            <button type="button" className="pf-icon" title="Copiar" onClick={() => copyOneField(f.id)}>
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Copiar" onClick={() => copyOneField(f.id)}>
                               <Copy className="size-4" aria-hidden="true" />
-                            </button>
-                            <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeField(f.id, f.name)}>
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeField(f.id, f.name)}>
                               <X className="size-4" aria-hidden="true" />
-                            </button>
+                            </Button>
                           </div>
                         </li>
                       ))

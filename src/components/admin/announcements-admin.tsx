@@ -89,7 +89,7 @@ export function AnnouncementsAdmin({ items }: { items: Announcement[] }) {
                   </span>
                   <div className="pf-group__actions items-center gap-3">
                     <label className="flex items-center gap-2 text-xs text-muted-foreground"><Switch checked={a.active} onCheckedChange={(c) => toggle(a.id, c)} /> Ativo</label>
-                    <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => remove(a.id)}><X className="size-4" aria-hidden="true" /></button>
+                    <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => remove(a.id)}><X className="size-4" aria-hidden="true" /></Button>
                   </div>
                 </div>
               </li>

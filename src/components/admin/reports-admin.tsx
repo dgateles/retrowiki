@@ -114,8 +114,8 @@ export function ReportsAdmin({
                   <div className="pf-group__head">
                     <span className="pf-group__name">{t.title}</span>
                     <div className="pf-group__actions">
-                      <button type="button" className="pf-icon" title="Editar" onClick={() => setTypeDialog({ t })}><Pencil className="size-4" aria-hidden="true" /></button>
-                      <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeType(t.id, t.title)}><X className="size-4" aria-hidden="true" /></button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setTypeDialog({ t })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                      <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeType(t.id, t.title)}><X className="size-4" aria-hidden="true" /></Button>
                     </div>
                   </div>
                 </li>

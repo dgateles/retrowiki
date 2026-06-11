@@ -119,8 +119,8 @@ export function SpamAdmin({
                         <span className="pf-field__meta block">{q.answers.length} resposta(s) aceita(s)</span>
                       </span>
                       <div className="pf-group__actions">
-                        <button type="button" className="pf-icon" title="Editar" onClick={() => setQDialog({ q })}><Pencil className="size-4" aria-hidden="true" /></button>
-                        <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeQuestion(q.id)}><X className="size-4" aria-hidden="true" /></button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setQDialog({ q })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeQuestion(q.id)}><X className="size-4" aria-hidden="true" /></Button>
                       </div>
                     </div>
                   </li>
@@ -154,7 +154,7 @@ export function SpamAdmin({
                       <span className="pf-group__name">{g.countryCode}</span>
                       <div className="pf-group__actions">
                         <span className="pf-field__meta mr-2">{g.action === "block" ? "Bloquear" : "Sinalizar"}</span>
-                        <button type="button" className="pf-icon pf-icon--danger" title="Remover" onClick={() => removeGeo(g.id)}><X className="size-4" aria-hidden="true" /></button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Remover" onClick={() => removeGeo(g.id)}><X className="size-4" aria-hidden="true" /></Button>
                       </div>
                     </div>
                   </li>
@@ -201,7 +201,7 @@ function QuestionDialog({ question, onClose, onSaved }: { question: SpamQuestion
             {answers.map((a, i) => (
               <div key={i} className="pf-inline mt-1">
                 <Input value={a} onChange={(e) => setAns(i, e.target.value)} placeholder="Resposta" />
-                {answers.length > 1 && <button type="button" className="pf-icon pf-icon--danger" onClick={() => removeAns(i)} title="Remover"><X className="size-4" aria-hidden="true" /></button>}
+                {answers.length > 1 && <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => removeAns(i)} title="Remover"><X className="size-4" aria-hidden="true" /></Button>}
               </div>
             ))}
             <Button type="button" variant="ghost" size="sm" className="mt-1" onClick={addAns}><Plus className="size-4" aria-hidden="true" /> Adicionar resposta</Button>

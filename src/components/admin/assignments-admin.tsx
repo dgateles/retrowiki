@@ -104,8 +104,8 @@ export function AssignmentsAdmin({ assignments, teams, mods, settings: initial }
                     <div className="pf-group__head">
                       <span className="min-w-0"><span className="pf-group__name">{t.name}</span><span className="pf-field__meta block">{t.memberCount} membro(s)</span></span>
                       <div className="pf-group__actions">
-                        <button type="button" className="pf-icon" title="Editar" onClick={() => setTeamDialog({ t })}><Pencil className="size-4" aria-hidden="true" /></button>
-                        <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeTeam(t.id, t.name)}><X className="size-4" aria-hidden="true" /></button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setTeamDialog({ t })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeTeam(t.id, t.name)}><X className="size-4" aria-hidden="true" /></Button>
                       </div>
                     </div>
                   </li>

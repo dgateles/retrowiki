@@ -78,11 +78,11 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
               <div className="pf-group__head">
                 <span className="min-w-0"><span className="pf-group__name">{c.title}</span><span className="pf-field__meta block">{LAYOUTS.find((l) => l.value === c.layout)?.label} · {c.entries.length} entrada(s)</span></span>
                 <div className="pf-group__actions">
-                  <button type="button" className="pf-icon" title="Subir" disabled={ci === 0} onClick={() => moveCat(c.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></button>
-                  <button type="button" className="pf-icon" title="Descer" disabled={ci === categories.length - 1} onClick={() => moveCat(c.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></button>
-                  <button type="button" className="pf-icon" title="Adicionar membro ou grupo" onClick={() => setEntryDialog({ categoryId: c.id, entry: null })}><UserPlus className="size-4" aria-hidden="true" /></button>
-                  <button type="button" className="pf-icon" title="Editar categoria" onClick={() => setCatDialog({ c })}><Pencil className="size-4" aria-hidden="true" /></button>
-                  <button type="button" className="pf-icon pf-icon--danger" title="Excluir categoria" onClick={() => removeCat(c.id, c.title)}><X className="size-4" aria-hidden="true" /></button>
+                  <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Subir" disabled={ci === 0} onClick={() => moveCat(c.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Descer" disabled={ci === categories.length - 1} onClick={() => moveCat(c.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Adicionar membro ou grupo" onClick={() => setEntryDialog({ categoryId: c.id, entry: null })}><UserPlus className="size-4" aria-hidden="true" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar categoria" onClick={() => setCatDialog({ c })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                  <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir categoria" onClick={() => removeCat(c.id, c.title)}><X className="size-4" aria-hidden="true" /></Button>
                 </div>
               </div>
               {c.entries.length > 0 && (
@@ -94,10 +94,10 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
                         <span className="pf-field__meta">{e.type === "member" ? (e.customTitle || "membro") : "atualiza automaticamente"}</span>
                       </span>
                       <span className="pf-field__actions">
-                        <button type="button" className="pf-icon" title="Subir" disabled={ei === 0} onClick={() => moveEnt(e.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></button>
-                        <button type="button" className="pf-icon" title="Descer" disabled={ei === c.entries.length - 1} onClick={() => moveEnt(e.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></button>
-                        <button type="button" className="pf-icon" title="Editar" onClick={() => setEntryDialog({ categoryId: c.id, entry: e })}><Pencil className="size-4" aria-hidden="true" /></button>
-                        <button type="button" className="pf-icon pf-icon--danger" title="Remover" onClick={() => removeEntry(e.id)}><X className="size-4" aria-hidden="true" /></button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Subir" disabled={ei === 0} onClick={() => moveEnt(e.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Descer" disabled={ei === c.entries.length - 1} onClick={() => moveEnt(e.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setEntryDialog({ categoryId: c.id, entry: e })}><Pencil className="size-4" aria-hidden="true" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Remover" onClick={() => removeEntry(e.id)}><X className="size-4" aria-hidden="true" /></Button>
                       </span>
                     </li>
                   ))}
