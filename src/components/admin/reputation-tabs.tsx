@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import {
   saveReputationSettingsAction,
@@ -55,9 +60,6 @@ export function ReputationTabs({
   function setField<K extends keyof ReputationSettings>(key: K, val: ReputationSettings[K]) {
     setS((prev) => ({ ...prev, [key]: val }));
   }
-  function toggleRole(key: "excludeRoles" | "leaderboardExcludeRoles", role: string, on: boolean) {
-    setS((prev) => ({ ...prev, [key]: on ? [...new Set([...prev[key], role])] : prev[key].filter((r) => r !== role) }));
-  }
 
   async function saveSettings() {
     setSavingS(true);
@@ -102,35 +104,35 @@ export function ReputationTabs({
         {tab === "config" && (
           <div className="rule-form">
             <section className="rule-form__section">
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.enabled} onChange={(e) => setField("enabled", e.target.checked)} /> Reputação e reações ativas
-              </label>
+              <SettingGroup>
+                <SettingToggle label="Reputação e reações ativas" description="Liga o sistema de reações e pontos de reputação." checked={s.enabled} onCheckedChange={(c) => setField("enabled", c)} />
+              </SettingGroup>
+
               <div className="field">
-                <Label>Excluir estes grupos (conteúdo não recebe reações)</Label>
-                <div className="rule-form__roles">
+                <span className="text-sm font-medium leading-none">Excluir estes grupos (conteúdo não recebe reações)</span>
+                <ToggleGroup type="multiple" variant="outline" spacing={2} value={s.excludeRoles} onValueChange={(vals) => setField("excludeRoles", vals)} className="mt-1 w-full flex-wrap justify-start">
                   {ROLES.map((r) => (
-                    <label key={r.value} className="rule-form__check">
-                      <input type="checkbox" checked={s.excludeRoles.includes(r.value)} onChange={(e) => toggleRole("excludeRoles", r.value, e.target.checked)} /> {r.label}
-                    </label>
+                    <ToggleGroupItem key={r.value} value={r.value} className="px-4 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">{r.label}</ToggleGroupItem>
                   ))}
-                </div>
+                </ToggleGroup>
               </div>
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.reactToOwn} onChange={(e) => setField("reactToOwn", e.target.checked)} /> Membros podem reagir ao próprio conteúdo
-              </label>
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.showOnProfile} onChange={(e) => setField("showOnProfile", e.target.checked)} /> Mostrar a reputação total no perfil
-              </label>
+
+              <SettingGroup>
+                <SettingToggle label="Membros podem reagir ao próprio conteúdo" checked={s.reactToOwn} onCheckedChange={(c) => setField("reactToOwn", c)} />
+                <SettingToggle label="Mostrar a reputação total no perfil" checked={s.showOnProfile} onCheckedChange={(c) => setField("showOnProfile", c)} />
+              </SettingGroup>
+
               <div className="field">
                 <Label htmlFor="rep-hl">Destacar conteúdo com reputação ≥ (0 = nunca)</Label>
                 <Input id="rep-hl" type="number" min={0} className="w-32" value={String(s.highlightThreshold)} onChange={(e) => setField("highlightThreshold", Math.max(0, Math.floor(Number(e.target.value) || 0)))} />
               </div>
+
               <div className="field">
-                <Label>Exibição das reações</Label>
-                <div className="pff-options">
-                  <label className="rule-form__check"><input type="radio" name="rep-disp" checked={s.reactionDisplay === "individual"} onChange={() => setField("reactionDisplay", "individual")} /> Mostrar reações individualmente</label>
-                  <label className="rule-form__check"><input type="radio" name="rep-disp" checked={s.reactionDisplay === "total"} onChange={() => setField("reactionDisplay", "total")} /> Mostrar valor total</label>
-                </div>
+                <span className="text-sm font-medium leading-none">Exibição das reações</span>
+                <RadioGroup value={s.reactionDisplay} onValueChange={(v) => setField("reactionDisplay", v as "individual" | "total")} className="mt-1 gap-2">
+                  <label className="flex items-center gap-2 text-sm"><RadioGroupItem value="individual" /> Mostrar reações individualmente</label>
+                  <label className="flex items-center gap-2 text-sm"><RadioGroupItem value="total" /> Mostrar valor total</label>
+                </RadioGroup>
               </div>
             </section>
             <div className="rule-form__foot">
@@ -154,7 +156,7 @@ export function ReputationTabs({
                       <span className="pf-field__meta">{WEIGHT_LABEL[r.weight]}</span>
                     </span>
                     <div className="pf-group__actions">
-                      <label className="rule-form__check mr-2"><input type="checkbox" checked={r.enabled} onChange={(e) => toggleReaction(r.id, e.target.checked)} /> Ativa</label>
+                      <label className="mr-2 flex items-center gap-2 text-sm"><Switch checked={r.enabled} onCheckedChange={(c) => toggleReaction(r.id, c)} /> Ativa</label>
                       <button type="button" className="pf-icon" title="Editar" onClick={() => setReactionDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></button>
                       <button type="button" className="pf-icon pf-icon--danger" title="Excluir" onClick={() => removeReaction(r.id, r.name)}><X className="size-4" aria-hidden="true" /></button>
                     </div>
@@ -168,18 +170,16 @@ export function ReputationTabs({
         {tab === "leaderboard" && (
           <div className="rule-form">
             <section className="rule-form__section">
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.leaderboardEnabled} onChange={(e) => setField("leaderboardEnabled", e.target.checked)} /> Leaderboard ativo
-              </label>
+              <SettingGroup>
+                <SettingToggle label="Leaderboard ativo" checked={s.leaderboardEnabled} onCheckedChange={(c) => setField("leaderboardEnabled", c)} />
+              </SettingGroup>
               <div className="field">
-                <Label>Excluir estes grupos do leaderboard</Label>
-                <div className="rule-form__roles">
+                <span className="text-sm font-medium leading-none">Excluir estes grupos do leaderboard</span>
+                <ToggleGroup type="multiple" variant="outline" spacing={2} value={s.leaderboardExcludeRoles} onValueChange={(vals) => setField("leaderboardExcludeRoles", vals)} className="mt-1 w-full flex-wrap justify-start">
                   {ROLES.map((r) => (
-                    <label key={r.value} className="rule-form__check">
-                      <input type="checkbox" checked={s.leaderboardExcludeRoles.includes(r.value)} onChange={(e) => toggleRole("leaderboardExcludeRoles", r.value, e.target.checked)} /> {r.label}
-                    </label>
+                    <ToggleGroupItem key={r.value} value={r.value} className="px-4 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">{r.label}</ToggleGroupItem>
                   ))}
-                </div>
+                </ToggleGroup>
               </div>
               <div className="field">
                 <Label htmlFor="lb-tz">Fuso horário do leaderboard</Label>
@@ -247,11 +247,14 @@ function ReactionDialog({ reaction, onClose, onSaved }: { reaction: Reaction | n
           <div className="field"><Label htmlFor="rd-emoji">Emoji</Label><Input id="rd-emoji" value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={16} className="w-24 text-xl" /></div>
           <div className="field">
             <Label htmlFor="rd-weight">Peso (reputação)</Label>
-            <select id="rd-weight" className="rte__select" value={weight} onChange={(e) => setWeight(e.target.value)}>
-              <option value="1">Positiva (+1)</option>
-              <option value="0">Neutra</option>
-              <option value="-1">Negativa (−1)</option>
-            </select>
+            <Select value={weight} onValueChange={setWeight}>
+              <SelectTrigger id="rd-weight" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Positiva (+1)</SelectItem>
+                <SelectItem value="0">Neutra</SelectItem>
+                <SelectItem value="-1">Negativa (−1)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="modal-actions">
