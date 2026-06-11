@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import { saveGallerySettingsAction, saveProfileCompletionSettingsAction } from "@/lib/actions/gallery-actions";
 import type { GallerySettings, ProfileCompletionSettings } from "@/lib/settings";
 
@@ -20,7 +21,9 @@ export function GallerySettingsForm({ initial }: { initial: GallerySettings }) {
   return (
     <div className="rule-form">
       <section className="rule-form__section">
-        <label className="rule-form__check"><input type="checkbox" checked={s.enabled} onChange={(e) => setS({ ...s, enabled: e.target.checked })} /> Permitir galeria de fotos no perfil dos membros</label>
+        <SettingGroup>
+          <SettingToggle label="Permitir galeria de fotos no perfil dos membros" checked={s.enabled} onCheckedChange={(c) => setS({ ...s, enabled: c })} />
+        </SettingGroup>
         <div className="field">
           <Label htmlFor="g-max">Máximo de fotos por membro</Label>
           <Input id="g-max" type="number" min={1} max={100} className="w-32" value={String(s.maxPhotos)} onChange={(e) => setS({ ...s, maxPhotos: Math.max(1, Math.min(100, Math.floor(Number(e.target.value) || 1))) })} />
@@ -44,9 +47,11 @@ export function ProfileCompletionSettingsForm({ initial }: { initial: ProfileCom
     <div className="rule-form">
       <section className="rule-form__section">
         <p className="muted text-sm">Exibe um aviso no painel do membro até ele completar o perfil.</p>
-        <label className="rule-form__check"><input type="checkbox" checked={s.enabled} onChange={(e) => setS({ ...s, enabled: e.target.checked })} /> Mostrar o aviso de conclusão de perfil</label>
-        <label className="rule-form__check"><input type="checkbox" checked={s.requireAvatar} onChange={(e) => setS({ ...s, requireAvatar: e.target.checked })} /> Exigir avatar</label>
-        <label className="rule-form__check"><input type="checkbox" checked={s.requireFields} onChange={(e) => setS({ ...s, requireFields: e.target.checked })} /> Exigir os campos de perfil editáveis preenchidos</label>
+        <SettingGroup>
+          <SettingToggle label="Mostrar o aviso de conclusão de perfil" checked={s.enabled} onCheckedChange={(c) => setS({ ...s, enabled: c })} />
+          <SettingToggle label="Exigir avatar" checked={s.requireAvatar} onCheckedChange={(c) => setS({ ...s, requireAvatar: c })} />
+          <SettingToggle label="Exigir os campos de perfil editáveis preenchidos" checked={s.requireFields} onCheckedChange={(c) => setS({ ...s, requireFields: c })} />
+        </SettingGroup>
       </section>
       <div className="rule-form__foot"><Button type="button" size="sm" onClick={save} disabled={pending}>{pending ? "Salvando…" : "Salvar"}</Button></div>
     </div>

@@ -7,6 +7,8 @@ import { RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import { saveAchievementSettingsAction } from "@/lib/actions/settings-actions";
 import { recalculateBadgesAction } from "@/lib/actions/badge-actions";
 
@@ -48,10 +50,9 @@ export function AchievementSettingsForm({ initial }: { initial: Settings }) {
   return (
     <div className="rule-form">
       <section className="rule-form__section">
-        <label className="rule-form__check">
-          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /> Gamificação ativada
-        </label>
-        <p className="muted">Quando desativada, as Regras não concedem pontos nem badges.</p>
+        <SettingGroup>
+          <SettingToggle label="Gamificação ativada" description="Quando desativada, as Regras não concedem pontos nem badges." checked={enabled} onCheckedChange={setEnabled} />
+        </SettingGroup>
       </section>
 
       <section className="rule-form__section">
@@ -60,18 +61,18 @@ export function AchievementSettingsForm({ initial }: { initial: Settings }) {
           <Label htmlFor="as-rare">Marcar como rara se conquistada por menos de (% dos membros)</Label>
           <Input id="as-rare" type="number" min={0} max={100} value={String(rareThreshold)} disabled={rareNever} onChange={(e) => setRareThreshold(Math.max(0, Math.min(100, Number(e.target.value) || 0)))} className="w-28" />
         </div>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={rareNever} onChange={(e) => setRareNever(e.target.checked)} /> Nunca marcar como rara
-        </label>
+        <SettingGroup>
+          <SettingToggle label="Nunca marcar como rara" checked={rareNever} onCheckedChange={setRareNever} />
+        </SettingGroup>
       </section>
 
       <section className="rule-form__section">
         <h2 className="rule-form__title">Papéis excluídos</h2>
         <p className="muted">Membros nestes papéis não ganham pontos nem badges.</p>
-        <div className="rule-form__roles">
+        <div className="flex flex-wrap gap-x-6 gap-y-3">
           {ROLES.map((r) => (
-            <label key={r.value} className="rule-form__check">
-              <input type="checkbox" checked={excludeRoles.includes(r.value)} onChange={(e) => toggleRole(r.value, e.target.checked)} /> {r.label}
+            <label key={r.value} className="flex cursor-pointer items-center gap-2 text-sm">
+              <Checkbox checked={excludeRoles.includes(r.value)} onCheckedChange={(c) => toggleRole(r.value, c === true)} /> {r.label}
             </label>
           ))}
         </div>
