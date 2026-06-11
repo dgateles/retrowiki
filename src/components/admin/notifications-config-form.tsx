@@ -54,30 +54,30 @@ export function NotificationsConfigForm({ config: initial }: { config: Notificat
           const c = config[cat.key];
           if (!c) return null;
           return (
-            <li key={cat.key} className="pf-group">
-              <div className="notif-cfg">
-                <div>
-                  <h2 className="pf-group__name">{cat.label}</h2>
-                  <p className="pf-field__meta">{cat.description}</p>
+            <li key={cat.key} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="font-semibold">{cat.label}</h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{cat.description}</p>
                 </div>
-                <div className="notif-cfg__controls">
-                  <label className="flex items-center gap-2 text-sm">
-                    <Checkbox checked={c.memberEditable} onCheckedChange={(ck) => set(cat.key, { memberEditable: ck === true })} /> Membro pode editar
-                  </label>
-                  <div className="notif-cfg__channel">
-                    <Label>Sino (in-app)</Label>
-                    <Select value={c.inApp} onValueChange={(val) => set(cat.key, { inApp: val as ChannelMode })}>
-                      <SelectTrigger aria-label={`Sino (in-app) — ${cat.label}`} className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </div>
-                  <div className="notif-cfg__channel">
-                    <Label>E-mail</Label>
-                    <Select value={c.email} onValueChange={(val) => set(cat.key, { email: val as ChannelMode })}>
-                      <SelectTrigger aria-label={`E-mail — ${cat.label}`} className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </div>
+                <label className="flex shrink-0 items-center gap-2 text-sm">
+                  <Checkbox checked={c.memberEditable} onCheckedChange={(ck) => set(cat.key, { memberEditable: ck === true })} /> Membro pode editar
+                </label>
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 sm:max-w-md">
+                <div className="field">
+                  <Label htmlFor={`nc-app-${cat.key}`}>Sino (in-app)</Label>
+                  <Select value={c.inApp} onValueChange={(val) => set(cat.key, { inApp: val as ChannelMode })}>
+                    <SelectTrigger id={`nc-app-${cat.key}`} className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="field">
+                  <Label htmlFor={`nc-email-${cat.key}`}>E-mail</Label>
+                  <Select value={c.email} onValueChange={(val) => set(cat.key, { email: val as ChannelMode })}>
+                    <SelectTrigger id={`nc-email-${cat.key}`} className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                  </Select>
                 </div>
               </div>
             </li>
