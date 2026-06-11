@@ -1390,6 +1390,34 @@
   .image-upload__remove {
     @apply inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60;
   }
+  /* Dropzone full-width (capas, páginas). */
+  .image-dropzone {
+    @apply flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center transition-colors hover:border-primary/50 hover:bg-muted/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60;
+  }
+  .image-dropzone--drag {
+    @apply border-primary bg-primary/10;
+  }
+  .image-dropzone__icon {
+    @apply mb-1 flex size-11 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground;
+  }
+  .image-dropzone__title {
+    @apply text-sm font-medium text-foreground;
+  }
+  .image-dropzone__hint {
+    @apply text-xs text-muted-foreground;
+  }
+  .image-dropzone__cta-text {
+    @apply mt-0.5 text-sm font-semibold text-primary;
+  }
+  .image-dropzone--filled {
+    @apply relative w-full overflow-hidden rounded-xl border border-border;
+  }
+  .image-dropzone__preview {
+    @apply max-h-64 w-full object-cover;
+  }
+  .image-dropzone__bar {
+    @apply flex items-center justify-end gap-4 border-t border-border bg-card/80 px-4 py-2;
+  }
   .badge-rare {
     @apply ml-2 inline-flex items-center rounded-full bg-fuchsia-500/15 px-2 py-0.5 text-xs font-medium text-fuchsia-600 dark:text-fuchsia-400;
   }
