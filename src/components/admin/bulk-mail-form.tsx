@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { sendBulkMailAction } from "@/lib/actions/bulk-mail-actions";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 const AUDIENCES = [
   { value: "all", label: "Todos os membros" },
@@ -40,9 +42,12 @@ export function BulkMailForm() {
       <section className="rule-form__section">
         <div className="field">
           <Label htmlFor="bm-aud">Audiência</Label>
-          <select id="bm-aud" className="rte__select" value={audience} onChange={(e) => setAudience(e.target.value)}>
-            {AUDIENCES.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
-          </select>
+          <Select value={audience} onValueChange={setAudience}>
+            <SelectTrigger id="bm-aud" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {AUDIENCES.map((a) => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label htmlFor="bm-subj">Assunto</Label>
@@ -50,7 +55,7 @@ export function BulkMailForm() {
         </div>
         <div className="field">
           <Label htmlFor="bm-body">Mensagem (HTML simples permitido)</Label>
-          <textarea id="bm-body" className="q-textarea" rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+          <Textarea id="bm-body" rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
           <p className="field__hint">Membros que optaram por não receber e contas removidas são sempre excluídos.</p>
         </div>
       </section>

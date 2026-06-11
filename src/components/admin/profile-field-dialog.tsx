@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createFieldAction, updateFieldAction } from "@/lib/actions/profile-field-actions";
 import { FIELD_TYPES, TYPES_WITH_OPTIONS, VISIBILITY, type FieldType, type Visibility } from "@/lib/profile-field-types";
 import type { ProfileField } from "@/lib/admin/profile-fields";
@@ -137,35 +140,33 @@ export function ProfileFieldDialog({
           </div>
           <div className="field">
             <Label htmlFor="pf-group">Grupo</Label>
-            <select id="pf-group" className="rte__select" value={v.groupId} onChange={(e) => set("groupId", Number(e.target.value))}>
-              {groups.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
-              ))}
-            </select>
+            <Select value={String(v.groupId)} onValueChange={(val) => set("groupId", Number(val))}>
+              <SelectTrigger id="pf-group" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>{groups.map((g) => <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
           <div className="field">
             <Label htmlFor="pf-type">Tipo</Label>
-            <select id="pf-type" className="rte__select" value={v.type} onChange={(e) => set("type", e.target.value as FieldType)}>
-              {FIELD_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
+            <Select value={v.type} onValueChange={(val) => set("type", val as FieldType)}>
+              <SelectTrigger id="pf-type" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>{FIELD_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
           {TYPES_WITH_OPTIONS.has(v.type) && (
             <div className="field">
               <Label htmlFor="pf-options">Opções (uma por linha)</Label>
-              <textarea id="pf-options" className="q-textarea" rows={4} value={v.optionsText} onChange={(e) => set("optionsText", e.target.value)} />
+              <Textarea id="pf-options" rows={4} value={v.optionsText} onChange={(e) => set("optionsText", e.target.value)} />
             </div>
           )}
-          <label className="rule-form__check">
-            <input type="checkbox" checked={v.required} onChange={(e) => set("required", e.target.checked)} /> Obrigatório
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={v.required} onCheckedChange={(c) => set("required", c === true)} /> Obrigatório
           </label>
           <div className="field">
             <Label>Tamanho máximo</Label>
             <div className="pf-inline">
               <Input type="number" min={1} className="w-28" value={v.maxLength} disabled={v.unlimited} onChange={(e) => set("maxLength", e.target.value)} />
-              <label className="rule-form__check">
-                <input type="checkbox" checked={v.unlimited} onChange={(e) => set("unlimited", e.target.checked)} /> Ilimitado
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox checked={v.unlimited} onCheckedChange={(c) => set("unlimited", c === true)} /> Ilimitado
               </label>
             </div>
           </div>
@@ -175,22 +176,21 @@ export function ProfileFieldDialog({
           </div>
 
           <h3 className="pf-form__legend">Permissões</h3>
-          <label className="rule-form__check">
-            <input type="checkbox" checked={v.showOnRegister} onChange={(e) => set("showOnRegister", e.target.checked)} /> Mostrar no cadastro
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={v.showOnRegister} onCheckedChange={(c) => set("showOnRegister", c === true)} /> Mostrar no cadastro
           </label>
-          <label className="rule-form__check">
-            <input type="checkbox" checked={v.memberEditable} onChange={(e) => set("memberEditable", e.target.checked)} /> O membro pode editar
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={v.memberEditable} onCheckedChange={(c) => set("memberEditable", c === true)} /> O membro pode editar
           </label>
           <div className="field">
             <Label htmlFor="pf-vis">Mostrar no perfil do membro</Label>
-            <select id="pf-vis" className="rte__select" value={v.visibility} onChange={(e) => set("visibility", e.target.value as Visibility)}>
-              {VISIBILITY.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
+            <Select value={v.visibility} onValueChange={(val) => set("visibility", val as Visibility)}>
+              <SelectTrigger id="pf-vis" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>{VISIBILITY.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
-          <label className="rule-form__check">
-            <input type="checkbox" checked={v.pii} onChange={(e) => set("pii", e.target.checked)} /> Contém dado pessoal (entra na exportação)
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked={v.pii} onCheckedChange={(c) => set("pii", c === true)} /> Contém dado pessoal (entra na exportação)
           </label>
         </div>
 
