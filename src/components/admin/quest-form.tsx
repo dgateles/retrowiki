@@ -6,6 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createQuestAction, updateQuestAction } from "@/lib/actions/quest-actions";
 import { ImageUpload } from "@/components/admin/image-upload";
 
@@ -76,16 +80,17 @@ export function QuestForm({
         </div>
         <div className="field">
           <Label htmlFor="q-desc">Descrição</Label>
-          <textarea id="q-desc" className="q-textarea" value={v.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} rows={4} />
+          <Textarea id="q-desc" value={v.description} onChange={(e) => set("description", e.target.value)} maxLength={2000} rows={4} />
         </div>
         <div className="field">
           <Label htmlFor="q-badge">Recompensa (badge)</Label>
-          <select id="q-badge" className="rte__select" value={v.rewardBadge} onChange={(e) => set("rewardBadge", e.target.value)}>
-            <option value="">(Nenhuma)</option>
-            {badges.map((b) => (
-              <option key={b.value} value={b.value}>{b.label}</option>
-            ))}
-          </select>
+          <Select value={v.rewardBadge || "none"} onValueChange={(val) => set("rewardBadge", val === "none" ? "" : val)}>
+            <SelectTrigger id="q-badge" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">(Nenhuma)</SelectItem>
+              {badges.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label>Imagem de capa (opcional)</Label>
@@ -107,18 +112,20 @@ export function QuestForm({
           <Label>Público-alvo (papéis; nenhum marcado = todos)</Label>
           <div className="rule-form__roles">
             {roles.map((r) => (
-              <label key={r.value} className="rule-form__check">
-                <input type="checkbox" checked={v.audienceRoles.includes(r.value)} onChange={(e) => toggleRole(r.value, e.target.checked)} /> {r.label}
+              <label key={r.value} className="flex items-center gap-2 text-sm">
+                <Checkbox checked={v.audienceRoles.includes(r.value)} onCheckedChange={(c) => toggleRole(r.value, c === true)} /> {r.label}
               </label>
             ))}
           </div>
         </div>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={v.allowOptOut} onChange={(e) => set("allowOptOut", e.target.checked)} /> Permitir que o usuário saia da missão
-        </label>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={v.retroactive} onChange={(e) => set("retroactive", e.target.checked)} /> Regras retroativas (marca tarefas já cumpridas)
-        </label>
+        <div className="flex items-center gap-2">
+          <Switch id="q-optout" checked={v.allowOptOut} onCheckedChange={(c) => set("allowOptOut", c)} />
+          <Label htmlFor="q-optout" className="font-normal">Permitir que o usuário saia da missão</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch id="q-retro" checked={v.retroactive} onCheckedChange={(c) => set("retroactive", c)} />
+          <Label htmlFor="q-retro" className="font-normal">Regras retroativas (marca tarefas já cumpridas)</Label>
+        </div>
       </section>
 
       <div className="rule-form__foot">

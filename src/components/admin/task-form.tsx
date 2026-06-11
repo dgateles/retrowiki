@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createTaskAction, updateTaskAction } from "@/lib/actions/quest-actions";
 
 type RuleOpt = { id: number; label: string };
@@ -68,12 +69,12 @@ export function TaskForm({
       </div>
       <div className="field">
         <Label htmlFor="t-rule">Regra (completa a tarefa quando a ação acontece)</Label>
-        <select id="t-rule" className="rte__select" value={ruleId} onChange={(e) => setRuleId(Number(e.target.value))}>
-          {rules.length === 0 && <option value={0}>Crie uma regra primeiro</option>}
-          {rules.map((r) => (
-            <option key={r.id} value={r.id}>{r.label}</option>
-          ))}
-        </select>
+        <Select value={String(ruleId)} onValueChange={(v) => setRuleId(Number(v))} disabled={rules.length === 0}>
+          <SelectTrigger id="t-rule" className="w-full"><SelectValue placeholder="Crie uma regra primeiro" /></SelectTrigger>
+          <SelectContent>
+            {rules.map((r) => <SelectItem key={r.id} value={String(r.id)}>{r.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
       <div className="rule-form__foot">
         <Button type="button" size="sm" onClick={save} disabled={pending || rules.length === 0}>
