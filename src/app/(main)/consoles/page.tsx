@@ -75,9 +75,15 @@ export default async function ConsolesPage({
         <div className="empty mt-8">
           <Gamepad2 className="empty__icon" aria-hidden="true" />
           <p className="empty__text">
-            Nenhum console com esses filtros. Rode o seed para popular o catálogo
-            ou ajuste os filtros.
+            {filters.manufacturer || filters.formFactor
+              ? "Nenhum console corresponde a esses filtros."
+              : "O catálogo ainda não tem consoles."}
           </p>
+          {(filters.manufacturer || filters.formFactor) && (
+            <Button asChild variant="outline" size="sm" className="mt-4">
+              <Link href="/consoles">Limpar filtros</Link>
+            </Button>
+          )}
         </div>
       ) : (
         <ul className="grid-cards grid-cards--three">
