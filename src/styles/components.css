@@ -2768,7 +2768,7 @@
     @apply mb-6;
   }
   .article__kind {
-    @apply text-xs font-medium text-primary;
+    @apply font-mono text-[11px] font-medium uppercase tracking-wider text-primary;
   }
   .article__title {
     @apply mt-1 text-3xl font-bold tracking-tight md:text-4xl;

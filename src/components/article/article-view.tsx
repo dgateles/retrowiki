@@ -112,7 +112,7 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
             <SharePopover title={a.title} />
           </div>
           <div className="blog-head__byline">
-            <Link href={`/u/${a.authorHandle}`} className="post__avatar" aria-hidden="true">
+            <Link href={`/u/${a.authorHandle}`} className="post__avatar" aria-hidden="true" tabIndex={-1}>
               {a.authorAvatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={a.authorAvatar} alt="" className="post__avatar-img" />
@@ -142,7 +142,7 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
         {!isBlog && (
           <header className="post__header">
             <div className="post__author">
-              <Link href={`/u/${a.authorHandle}`} className="post__avatar" aria-hidden="true">
+              <Link href={`/u/${a.authorHandle}`} className="post__avatar" aria-hidden="true" tabIndex={-1}>
                 {initials(a.authorName)}
               </Link>
               <div>
