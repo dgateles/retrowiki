@@ -2,109 +2,134 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
-  LayoutDashboard, Users, Shield, TrendingUp, Globe, Lock,
-  ScrollText, Medal, Award, Target, Sparkles, Settings2,
-  IdCard, Heart, Bell, Ban, Gift,
-  Flag, ShieldAlert, TriangleAlert, ClipboardList,
-  ShieldCheck, Contact, FileText, Gamepad2, LayoutPanelLeft,
-  Megaphone, Mail, type LucideIcon,
+  LayoutDashboard, Users, Award, Settings2, ShieldAlert,
+  ShieldCheck, FileText, Megaphone, ChevronDown, type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NavLink = { href: string; label: string; icon: LucideIcon; exact?: boolean };
-type NavGroup = { title?: string; links: NavLink[] };
+type NavItem = { href: string; label: string; exact?: boolean };
+type NavGroup = { title: string; icon: LucideIcon; items: NavItem[] };
 
-// Navegação agrupada por seções, no estilo do AdminCP — ícone por item.
+const OVERVIEW = { href: "/admin", label: "Visão geral", icon: LayoutDashboard };
+
 const GROUPS: NavGroup[] = [
-  { links: [{ href: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true }] },
   {
-    title: "Membros",
-    links: [
-      { href: "/admin/membros", label: "Membros", icon: Users },
-      { href: "/admin/grupos", label: "Grupos", icon: Shield },
-      { href: "/admin/promocoes", label: "Promoções", icon: TrendingUp },
-      { href: "/admin/ip", label: "Ferramentas de IP", icon: Globe },
-      { href: "/admin/privacidade", label: "Privacidade (LGPD)", icon: Lock },
+    title: "Membros", icon: Users, items: [
+      { href: "/admin/membros", label: "Membros" },
+      { href: "/admin/grupos", label: "Grupos" },
+      { href: "/admin/promocoes", label: "Promoções" },
+      { href: "/admin/ip", label: "Ferramentas de IP" },
+      { href: "/admin/privacidade", label: "Privacidade (LGPD)" },
     ],
   },
   {
-    title: "Conquistas",
-    links: [
-      { href: "/admin/regras", label: "Regras", icon: ScrollText },
-      { href: "/admin/ranks", label: "Ranks", icon: Medal },
-      { href: "/admin/badges", label: "Badges", icon: Award },
-      { href: "/admin/quests", label: "Missões", icon: Target },
-      { href: "/admin/gamificacao", label: "Gamificação", icon: Sparkles, exact: true },
-      { href: "/admin/gamificacao/configuracoes", label: "Configurações", icon: Settings2 },
+    title: "Conquistas", icon: Award, items: [
+      { href: "/admin/regras", label: "Regras" },
+      { href: "/admin/ranks", label: "Ranks" },
+      { href: "/admin/badges", label: "Badges" },
+      { href: "/admin/quests", label: "Missões" },
+      { href: "/admin/gamificacao", label: "Gamificação", exact: true },
+      { href: "/admin/gamificacao/configuracoes", label: "Configurações" },
     ],
   },
   {
-    title: "Config. de membros",
-    links: [
-      { href: "/admin/perfis", label: "Perfis", icon: IdCard },
-      { href: "/admin/reputacao", label: "Reputação & Reações", icon: Heart },
-      { href: "/admin/notificacoes", label: "Notificações", icon: Bell },
-      { href: "/admin/banimentos", label: "Banimentos", icon: Ban },
-      { href: "/admin/indicacoes", label: "Indicações", icon: Gift },
+    title: "Config. membros", icon: Settings2, items: [
+      { href: "/admin/perfis", label: "Perfis" },
+      { href: "/admin/reputacao", label: "Reputação & Reações" },
+      { href: "/admin/notificacoes", label: "Notificações" },
+      { href: "/admin/banimentos", label: "Banimentos" },
+      { href: "/admin/indicacoes", label: "Indicações" },
     ],
   },
   {
-    title: "Moderação de conteúdo",
-    links: [
-      { href: "/admin/denuncias", label: "Denúncias", icon: Flag },
-      { href: "/admin/spam", label: "Prevenção de spam", icon: ShieldAlert },
-      { href: "/admin/avisos", label: "Avisos", icon: TriangleAlert },
-      { href: "/admin/atribuicoes", label: "Atribuições", icon: ClipboardList },
+    title: "Moderação", icon: ShieldAlert, items: [
+      { href: "/admin/denuncias", label: "Denúncias" },
+      { href: "/admin/spam", label: "Prevenção de spam" },
+      { href: "/admin/avisos", label: "Avisos" },
+      { href: "/admin/atribuicoes", label: "Atribuições" },
     ],
   },
   {
-    title: "Equipe",
-    links: [
-      { href: "/admin/moderadores", label: "Moderadores", icon: ShieldCheck },
-      { href: "/admin/diretorio", label: "Diretório da equipe", icon: Contact },
+    title: "Equipe", icon: ShieldCheck, items: [
+      { href: "/admin/moderadores", label: "Moderadores" },
+      { href: "/admin/diretorio", label: "Diretório da equipe" },
     ],
   },
   {
-    title: "Conteúdo",
-    links: [
-      { href: "/admin/artigos", label: "Artigos", icon: FileText },
-      { href: "/admin/consoles", label: "Consoles", icon: Gamepad2 },
-      { href: "/admin/paginas", label: "Páginas", icon: LayoutPanelLeft },
+    title: "Conteúdo", icon: FileText, items: [
+      { href: "/admin/artigos", label: "Artigos" },
+      { href: "/admin/consoles", label: "Consoles" },
+      { href: "/admin/paginas", label: "Páginas" },
     ],
   },
   {
-    title: "Comunicação",
-    links: [
-      { href: "/admin/anuncios", label: "Anúncios", icon: Megaphone },
-      { href: "/admin/bulk-mail", label: "E-mail em massa", icon: Mail },
+    title: "Comunicação", icon: Megaphone, items: [
+      { href: "/admin/anuncios", label: "Anúncios" },
+      { href: "/admin/bulk-mail", label: "E-mail em massa" },
     ],
   },
 ];
 
+function itemActive(pathname: string, it: NavItem) {
+  return it.exact ? pathname === it.href : pathname.startsWith(it.href);
+}
+
 export function AdminNav() {
   const pathname = usePathname();
+  const activeGroup = GROUPS.find((g) => g.items.some((it) => itemActive(pathname, it)))?.title ?? null;
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const isOpen = (t: string) => open[t] ?? t === activeGroup;
+
   return (
     <nav className="admin__nav" aria-label="Administração">
-      {GROUPS.map((group, gi) => (
-        <div key={group.title ?? `g${gi}`} className="admin__group">
-          {group.title && <p className="admin__group-title">{group.title}</p>}
-          {group.links.map((l) => {
-            const active = l.exact ? pathname === l.href : pathname.startsWith(l.href);
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={active ? "page" : undefined}
-                className={cn("admin__link", active && "admin__link--active")}
-              >
-                <l.icon className="admin__link-icon" aria-hidden="true" />
-                <span className="truncate">{l.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      ))}
+      <Link
+        href={OVERVIEW.href}
+        aria-current={pathname === OVERVIEW.href ? "page" : undefined}
+        className={cn("admin__link", pathname === OVERVIEW.href && "admin__link--active")}
+      >
+        <OVERVIEW.icon className="admin__link-icon" aria-hidden="true" />
+        <span className="truncate">{OVERVIEW.label}</span>
+      </Link>
+
+      {GROUPS.map((g) => {
+        const opened = isOpen(g.title);
+        const hasActive = g.title === activeGroup;
+        const panelId = `adm-${g.title.replace(/\W+/g, "-")}`;
+        return (
+          <div key={g.title} className="admin__group">
+            <button
+              type="button"
+              aria-expanded={opened}
+              aria-controls={panelId}
+              onClick={() => setOpen((o) => ({ ...o, [g.title]: !opened }))}
+              className={cn("admin__link admin__group-btn", hasActive && "text-foreground")}
+            >
+              <g.icon className="admin__link-icon" aria-hidden="true" />
+              <span className="flex-1 truncate text-left">{g.title}</span>
+              <ChevronDown className={cn("admin__chevron", !opened && "-rotate-90")} aria-hidden="true" />
+            </button>
+            {opened && (
+              <div id={panelId} className="admin__sub">
+                {g.items.map((it) => {
+                  const active = itemActive(pathname, it);
+                  return (
+                    <Link
+                      key={it.href}
+                      href={it.href}
+                      aria-current={active ? "page" : undefined}
+                      className={cn("admin__sublink", active && "admin__sublink--active")}
+                    >
+                      {it.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }

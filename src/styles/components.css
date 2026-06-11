@@ -90,10 +90,25 @@
     @apply mx-auto grid w-full max-w-6xl gap-6 px-6 py-10 md:grid-cols-[200px_1fr];
   }
   .admin__nav {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-1;
   }
   .admin__group {
-    @apply flex flex-col gap-0.5;
+    @apply flex flex-col;
+  }
+  .admin__group-btn {
+    @apply w-full cursor-pointer;
+  }
+  .admin__chevron {
+    @apply size-4 shrink-0 text-muted-foreground/70 transition-transform duration-200;
+  }
+  .admin__sub {
+    @apply mt-0.5 mb-1 flex flex-col gap-0.5 border-l border-border pl-3 ml-[1.4rem];
+  }
+  .admin__sublink {
+    @apply rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .admin__sublink--active {
+    @apply bg-primary/10 font-medium text-primary;
   }
   .admin__group-title {
     @apply mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
