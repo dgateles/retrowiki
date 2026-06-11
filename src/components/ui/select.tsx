@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 
 const Select = Primitive.Root;
 const SelectValue = Primitive.Value;
+const SelectGroup = Primitive.Group;
+
+function SelectLabel({ className, ...props }: React.ComponentProps<typeof Primitive.Label>) {
+  return <Primitive.Label className={cn("px-2 py-1.5 text-xs font-medium text-muted-foreground", className)} {...props} />;
+}
 
 function SelectTrigger({
   className,
@@ -74,4 +79,4 @@ function SelectItem({
   );
 }
 
-export { Select, SelectValue, SelectTrigger, SelectContent, SelectItem };
+export { Select, SelectValue, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectLabel };

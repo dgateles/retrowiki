@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -67,14 +68,13 @@ export function ModerationActions({ reviewId }: { reviewId: number }) {
               if (modal) run(modal, reason.trim() || undefined);
             }}
           >
-            <textarea
+            <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
               autoFocus
               aria-label="Motivo"
               placeholder="Explique o que precisa mudar"
-              className="editor__control"
             />
             <div className="modal-actions">
               <DialogClose asChild>

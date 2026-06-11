@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { reportContentAction } from "@/lib/actions/report-actions";
 
@@ -61,15 +63,16 @@ export function ReportButton({
           <div className="member-create">
             <div className="field">
               <Label htmlFor="rp-type">Motivo</Label>
-              <select id="rp-type" className="rte__select" value={typeId} onChange={(e) => setTypeId(Number(e.target.value))}>
-                {reportTypes.map((t) => (
-                  <option key={t.id} value={t.id}>{t.title}</option>
-                ))}
-              </select>
+              <Select value={String(typeId)} onValueChange={(v) => setTypeId(Number(v))}>
+                <SelectTrigger id="rp-type" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {reportTypes.map((t) => <SelectItem key={t.id} value={String(t.id)}>{t.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="field">
               <Label htmlFor="rp-msg">Mensagem{messageMandatory ? " *" : " (opcional)"}</Label>
-              <textarea id="rp-msg" className="q-textarea" rows={3} value={message} maxLength={1000} onChange={(e) => setMessage(e.target.value)} />
+              <Textarea id="rp-msg" rows={3} value={message} maxLength={1000} onChange={(e) => setMessage(e.target.value)} />
             </div>
           </div>
           <div className="modal-actions">

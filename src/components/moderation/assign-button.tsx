@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { assignContentAction } from "@/lib/actions/assignment-actions";
 
@@ -44,20 +46,25 @@ export function AssignButton({ articleId, mods, teams }: { articleId: number; mo
           <div className="member-create">
             <div className="field">
               <Label htmlFor="ab-assignee">Atribuir a</Label>
-              <select id="ab-assignee" className="rte__select" value={assignee} onChange={(e) => setAssignee(e.target.value)}>
-                {mods.length > 0 && (
-                  <optgroup label="Moderadores">
-                    {mods.map((m) => <option key={`u${m.id}`} value={`user:${m.id}`}>{m.name}</option>)}
-                  </optgroup>
-                )}
-                {teams.length > 0 && (
-                  <optgroup label="Equipes">
-                    {teams.map((t) => <option key={`t${t.id}`} value={`team:${t.id}`}>{t.name}</option>)}
-                  </optgroup>
-                )}
-              </select>
+              <Select value={assignee} onValueChange={setAssignee}>
+                <SelectTrigger id="ab-assignee" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {mods.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel>Moderadores</SelectLabel>
+                      {mods.map((m) => <SelectItem key={`u${m.id}`} value={`user:${m.id}`}>{m.name}</SelectItem>)}
+                    </SelectGroup>
+                  )}
+                  {teams.length > 0 && (
+                    <SelectGroup>
+                      <SelectLabel>Equipes</SelectLabel>
+                      {teams.map((t) => <SelectItem key={`t${t.id}`} value={`team:${t.id}`}>{t.name}</SelectItem>)}
+                    </SelectGroup>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="field"><Label htmlFor="ab-note">Nota (opcional)</Label><textarea id="ab-note" className="q-textarea" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
+            <div className="field"><Label htmlFor="ab-note">Nota (opcional)</Label><Textarea id="ab-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
           </div>
           <div className="modal-actions">
             <DialogClose asChild><Button type="button" variant="ghost" size="sm">Cancelar</Button></DialogClose>
