@@ -12,11 +12,12 @@ export default async function HomePage() {
     <div className="home">
       <main id="main" className="flex-1">
         {/* Hero compacto */}
-        <section className="hero">
+        <section className="hero scanlines">
           <div className="hero__inner">
-            <p className="hero__eyebrow">Comunidade de handhelds retrô</p>
+            <p className="hero__eyebrow glow-box">Comunidade de handhelds retrô</p>
             <h1 className="hero__title">
-              O catálogo e os guias de emulação portátil, feitos pela comunidade
+              O catálogo e os guias de emulação portátil,{" "}
+              <span className="text-primary glow-text">feitos pela comunidade</span>
             </h1>
             <p className="hero__lead">
               Fichas técnicas, comparador, tutoriais e firmware num só lugar, com curadoria.

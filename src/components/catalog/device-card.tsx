@@ -16,7 +16,7 @@ export function DeviceCard({ slug, name, manufacturer, frontImage }: Props) {
   return (
     <Link href={`/consoles/${slug}`} className="group block h-full">
       <Card className="card-glow flex h-full flex-col gap-3 p-4">
-        <div className="relative flex h-28 items-center justify-center overflow-hidden">
+        <div className="crt-screen flex h-28 items-center justify-center p-3">
           {frontImage ? (
             <Image
               src={frontImage}
