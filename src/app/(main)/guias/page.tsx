@@ -83,7 +83,20 @@ export default async function GuidesPage({
       {items.length === 0 ? (
         <div className="empty mt-8">
           <BookOpen className="empty__icon" aria-hidden="true" />
-          <p className="empty__text">Nenhum guia com esses filtros.</p>
+          <p className="empty__text">
+            {deviceSlug || type
+              ? "Nenhum guia corresponde a esses filtros."
+              : "Ainda não há guias publicados. Que tal escrever o primeiro?"}
+          </p>
+          {deviceSlug || type ? (
+            <Button asChild variant="outline" size="sm" className="mt-4">
+              <Link href="/guias">Limpar filtros</Link>
+            </Button>
+          ) : (
+            <Button asChild size="sm" className="mt-4">
+              <Link href="/estudio/novo">Escrever guia</Link>
+            </Button>
+          )}
         </div>
       ) : (
         <>

@@ -1909,10 +1909,13 @@
     @apply mt-6 space-y-3;
   }
   .guide-card {
-    @apply block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50;
+    @apply block rounded-lg border border-border bg-card p-5 transition-all duration-200 hover:border-primary/50;
+  }
+  .guide-card:hover {
+    box-shadow: 0 10px 26px -18px color-mix(in srgb, var(--primary) 50%, transparent);
   }
   .guide-card__kind {
-    @apply text-xs font-medium text-primary;
+    @apply font-mono text-[11px] font-medium uppercase tracking-wider text-primary;
   }
   .guide-card__title {
     @apply mt-1 font-semibold;
