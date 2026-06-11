@@ -110,21 +110,23 @@ export function QuestForm({
         </div>
         <div className="field">
           <Label>Público-alvo (papéis; nenhum marcado = todos)</Label>
-          <div className="rule-form__roles">
+          <div className="mt-1 flex flex-wrap gap-x-6 gap-y-3">
             {roles.map((r) => (
-              <label key={r.value} className="flex items-center gap-2 text-sm">
+              <label key={r.value} className="flex cursor-pointer items-center gap-2 text-sm">
                 <Checkbox checked={v.audienceRoles.includes(r.value)} onCheckedChange={(c) => toggleRole(r.value, c === true)} /> {r.label}
               </label>
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Switch id="q-optout" checked={v.allowOptOut} onCheckedChange={(c) => set("allowOptOut", c)} />
-          <Label htmlFor="q-optout" className="font-normal">Permitir que o usuário saia da missão</Label>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch id="q-retro" checked={v.retroactive} onCheckedChange={(c) => set("retroactive", c)} />
-          <Label htmlFor="q-retro" className="font-normal">Regras retroativas (marca tarefas já cumpridas)</Label>
+        <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+          <div className="flex items-center justify-between gap-4 px-4 py-3">
+            <Label htmlFor="q-optout" className="font-normal">Permitir que o usuário saia da missão</Label>
+            <Switch id="q-optout" checked={v.allowOptOut} onCheckedChange={(c) => set("allowOptOut", c)} />
+          </div>
+          <div className="flex items-center justify-between gap-4 px-4 py-3">
+            <Label htmlFor="q-retro" className="font-normal">Regras retroativas (marca tarefas já cumpridas)</Label>
+            <Switch id="q-retro" checked={v.retroactive} onCheckedChange={(c) => set("retroactive", c)} />
+          </div>
         </div>
       </section>
 

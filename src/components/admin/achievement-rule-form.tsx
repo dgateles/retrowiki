@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createRuleAction, updateRuleAction } from "@/lib/actions/achievement-actions";
 
 type Recipient = { key: "actor" | "target"; label: string };
@@ -79,9 +81,10 @@ export function AchievementRuleForm({
           <Label htmlFor="ar-name">Nome</Label>
           <Input id="ar-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
         </div>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /> Ativada
-        </label>
+        <div className="flex items-center gap-2">
+          <Switch id="ar-enabled" checked={enabled} onCheckedChange={setEnabled} />
+          <Label htmlFor="ar-enabled" className="font-normal">Ativada</Label>
+        </div>
         <div className="field">
           <Label htmlFor="ar-order">Ordem</Label>
           <Input id="ar-order" type="number" min={0} value={String(sortOrder)} onChange={(e) => setSortOrder(Math.max(0, Math.floor(Number(e.target.value) || 0)))} className="w-24" />
@@ -92,11 +95,12 @@ export function AchievementRuleForm({
         <h2 className="rule-form__title">Quando</h2>
         <div className="field">
           <Label htmlFor="ar-trigger">Gatilho</Label>
-          <select id="ar-trigger" className="rte__select" value={trigger} onChange={(e) => changeTrigger(e.target.value)}>
-            {triggers.map((t) => (
-              <option key={t.key} value={t.key}>{t.label}</option>
-            ))}
-          </select>
+          <Select value={trigger} onValueChange={changeTrigger}>
+            <SelectTrigger id="ar-trigger" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {triggers.map((t) => <SelectItem key={t.key} value={t.key}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label htmlFor="ar-milestone">Marco (0 = toda vez; N = só na N-ésima ação do usuário)</Label>
@@ -116,12 +120,13 @@ export function AchievementRuleForm({
               </div>
               <div className="field">
                 <Label htmlFor={`ar-badge-${rec.key}`}>Badge</Label>
-                <select id={`ar-badge-${rec.key}`} className="rte__select" value={rewards[rec.key]?.badge ?? ""} onChange={(e) => setReward(rec.key, { badge: e.target.value })}>
-                  <option value="">(Nenhuma)</option>
-                  {badges.map((b) => (
-                    <option key={b.value} value={b.value}>{b.label}</option>
-                  ))}
-                </select>
+                <Select value={rewards[rec.key]?.badge || "none"} onValueChange={(val) => setReward(rec.key, { badge: val === "none" ? "" : val })}>
+                  <SelectTrigger id={`ar-badge-${rec.key}`} className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">(Nenhuma)</SelectItem>
+                    {badges.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
