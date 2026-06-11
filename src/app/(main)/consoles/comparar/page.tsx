@@ -96,7 +96,9 @@ export default async function ComparePage({
                   <th key={d.device.id} scope="col" className="compare__device">
                     <Link href={`/consoles/${d.device.slug}`} className="compare__device-link">
                       {d.images[0] && (
-                        <Image src={d.images[0].url} alt={d.images[0].alt} width={64} height={64} className="object-contain" />
+                        <span className="crt-screen flex size-20 items-center justify-center p-2">
+                          <Image src={d.images[0].url} alt={d.images[0].alt} width={64} height={64} className="object-contain" />
+                        </span>
                       )}
                       <span className="font-semibold">{d.device.name}</span>
                     </Link>
