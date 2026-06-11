@@ -1432,6 +1432,29 @@
   .site-header__nav {
     @apply hidden items-center gap-0.5 sm:flex;
   }
+  /* Navegação mobile (barra inferior app-like) */
+  .mobile-bar {
+    @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background/95 backdrop-blur;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .mobile-bar__item {
+    @apply flex min-h-14 flex-col items-center justify-center gap-0.5 text-muted-foreground transition-colors active:bg-accent;
+  }
+  .mobile-bar__item[data-active="true"] {
+    @apply text-primary;
+  }
+  .mobile-bar__label {
+    @apply text-[10px] font-medium;
+  }
+  .mobile-menu__group {
+    @apply px-2 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+  .mobile-menu__link {
+    @apply flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-foreground transition-colors hover:bg-accent;
+  }
+  .mobile-menu__link[data-active="true"] {
+    @apply bg-primary/10 text-primary;
+  }
   .site-header__search {
     @apply ml-auto hidden w-full max-w-xs lg:block;
   }

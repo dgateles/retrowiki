@@ -9,7 +9,7 @@ export default async function MainLayout({ children }: { children: ReactNode }) 
     <>
       <SiteHeader />
       {announcements.length > 0 && <AnnouncementBanner items={announcements} />}
-      {children}
+      <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">{children}</div>
     </>
   );
 }

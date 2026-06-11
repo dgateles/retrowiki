@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { SearchBox } from "@/components/layout/search-box";
 import { UserMenu } from "@/components/layout/user-menu";
 import { NotificationsBell, type NotifItem } from "@/components/layout/notifications-bell";
+import { MobileNav } from "@/components/layout/mobile-nav";
 
 const fmtDate = (d: Date) =>
   new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
@@ -46,6 +47,7 @@ export async function SiteHeader() {
   }
 
   return (
+    <>
     <header className="site-header">
       <div className="site-header__inner">
         <Link href="/" className="site-header__brand">
@@ -106,5 +108,13 @@ export async function SiteHeader() {
         </div>
       </div>
     </header>
+    <MobileNav
+      isLoggedIn={!!user}
+      isStaff={can.moderate(user)}
+      isAdmin={can.admin(user)}
+      handle={user?.handle}
+      menuPages={menuPages}
+    />
+    </>
   );
 }
