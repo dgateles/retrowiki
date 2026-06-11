@@ -4,6 +4,15 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import {
   setUserRoleAction,
   setUserSuspendedAction,
@@ -36,28 +45,31 @@ export function MemberRowActions({ userId, role, trusted, suspended, isSelf }: P
 
   return (
     <div className="member-actions">
-      <select
-        aria-label="Papel"
-        className="rte__select"
+      <Select
         value={role}
         disabled={isSelf || pending}
-        onChange={(e) => run(() => setUserRoleAction(userId, e.target.value), "Papel atualizado.")}
+        onValueChange={(v) => run(() => setUserRoleAction(userId, v), "Papel atualizado.")}
       >
-        <option value="member">Membro</option>
-        <option value="contributor">Colaborador</option>
-        <option value="moderator">Moderador</option>
-        <option value="admin">Administrador</option>
-      </select>
+        <SelectTrigger aria-label="Papel" className="w-40">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="member">Membro</SelectItem>
+          <SelectItem value="contributor">Colaborador</SelectItem>
+          <SelectItem value="moderator">Moderador</SelectItem>
+          <SelectItem value="admin">Administrador</SelectItem>
+        </SelectContent>
+      </Select>
 
-      <label className="editor__check">
-        <input
-          type="checkbox"
+      <div className="flex items-center gap-2">
+        <Switch
+          id={`trust-${userId}`}
           checked={trusted}
           disabled={pending}
-          onChange={(e) => run(() => setUserTrustedAction(userId, e.target.checked), "Atualizado.")}
+          onCheckedChange={(c) => run(() => setUserTrustedAction(userId, c), "Atualizado.")}
         />
-        Confiável
-      </label>
+        <Label htmlFor={`trust-${userId}`} className="text-sm font-normal">Confiável</Label>
+      </div>
 
       <Button
         type="button"
