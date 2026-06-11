@@ -100,6 +100,16 @@ Todas verificadas no navegador, axe 0, build limpo. Componentes shadcn instalado
 no passe: empty. Restante público: detalhe de guia/blog (ArticleView), listas
 menores (link-card), galeria.
 
+### Finalização pré-admin ✓
+- **Painel** (7b9be80): rank/stats/conquistas/conteúdo/notificações em shadcn Cards.
+- **Detalhe de guia/blog** (5dd3fad): tipo em Badge.
+- **link-cards / resultados de busca** (7434ae3): hover esmeralda premium.
+- Subseções de form da Conta (Perfil/Senha/E-mail) e **Galeria**: já em Input/Label
+  shadcn dentro do card, upload com o ImageUpload redesenhado. Verificadas, axe 0.
+
+**Tudo fora do admin concluído** (públicas + auth + conta + painel), com shadcn e
+visual premium. Próxima e última: Admin.
+
 ## Fase 4 — Admin (~45 telas) — PRÓXIMA
 Shell do AdminCP, tabelas (shadcn Table), formulários robustos estilo IPB
 (Field/FieldGroup), modais/confirmações (AlertDialog), estados. Maior volume.
