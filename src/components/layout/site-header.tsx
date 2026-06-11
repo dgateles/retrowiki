@@ -11,6 +11,7 @@ import { SearchBox } from "@/components/layout/search-box";
 import { UserMenu } from "@/components/layout/user-menu";
 import { NotificationsBell, type NotifItem } from "@/components/layout/notifications-bell";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { MainNav } from "@/components/layout/main-nav";
 
 const fmtDate = (d: Date) =>
   new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
@@ -55,31 +56,7 @@ export async function SiteHeader() {
           RetroWiki
         </Link>
 
-        <nav aria-label="Principal" className="site-header__nav">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/consoles">Consoles</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/guias">Guias</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/blog">Blog</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/missoes">Missões</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/leaderboard">Leaderboard</Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/equipe">Equipe</Link>
-          </Button>
-          {menuPages.map((p) => (
-            <Button key={p.slug} asChild variant="ghost" size="sm">
-              <Link href={`/p/${p.slug}`}>{p.title}</Link>
-            </Button>
-          ))}
-        </nav>
+        <MainNav menuPages={menuPages} />
 
         <SearchBox className="site-header__search" />
 
