@@ -1508,6 +1508,9 @@
   .mobile-bar__item[data-active="true"] {
     @apply text-primary;
   }
+  .mobile-bar__item[data-active="true"] svg {
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--primary) 55%, transparent));
+  }
   .mobile-bar__label {
     @apply text-[10px] font-medium;
   }

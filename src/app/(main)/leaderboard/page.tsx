@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cn } from "@/lib/utils";
 import { getLeaderboardData, type LeaderMember } from "@/lib/leaderboard";
 
 export const metadata: Metadata = { title: "Leaderboard", description: "Os membros e guias em destaque na comunidade RetroWiki." };
@@ -13,7 +14,7 @@ function initials(name: string) {
 function MemberRow({ m, i, metric }: { m: LeaderMember; i: number; metric: string }) {
   return (
     <li className="lb-row">
-      <span className="lb-row__rank tabular-nums">{i + 1}</span>
+      <span className={cn("lb-row__rank tabular-nums", i === 0 && "glow-text")}>{i + 1}</span>
       <span className="lb-row__avatar" aria-hidden="true">
         {m.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -67,7 +68,7 @@ export default async function LeaderboardPage() {
             <ol className="lb-list">
               {data.todayContent.map((c, i) => (
                 <li key={c.id} className="lb-row">
-                  <span className="lb-row__rank tabular-nums">{i + 1}</span>
+                  <span className={cn("lb-row__rank tabular-nums", i === 0 && "glow-text")}>{i + 1}</span>
                   <Link href={`/guias/${c.slug}`} className="lb-row__name link-inline">{c.title}</Link>
                   <span className="lb-row__metric tabular-nums">{c.reactions} {c.reactions === 1 ? "reação" : "reações"}</span>
                 </li>

@@ -109,7 +109,7 @@ export default async function ProfilePage({
 
   return (
     <main id="main" className="page">
-      <div className="profile-cover">
+      <div className="profile-cover scanlines">
         {profile.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={profile.coverUrl} alt="" className="profile-cover__img" aria-hidden="true" />

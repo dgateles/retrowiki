@@ -14,7 +14,7 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <main id="main" className="auth-page">
+    <main id="main" className="auth-page scanlines">
       <div className="auth-page__inner">
         <Link href="/" className="auth-page__brand">
           <Gamepad2 className="brand-icon" aria-hidden="true" />
