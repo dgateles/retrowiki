@@ -23,10 +23,10 @@ const ALIGN = z.enum(["left", "center", "right"]).default("left");
 const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default("default").catch("default");
 
 const WidgetSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "aurora", "shiny"]).default("none").catch("none") }),
+  z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]).default("none").catch("none") }),
   z.object({ type: z.literal("text"), text: z.string().max(5000), align: ALIGN, color: COLOR }),
   z.object({ type: z.literal("image"), url: imageUrl, alt: z.string().max(200).default(""), caption: z.string().max(200).default("") }),
-  z.object({ type: z.literal("button"), label: z.string().trim().min(1).max(80), href: url, variant: z.enum(["primary", "outline"]).default("primary"), align: ALIGN }),
+  z.object({ type: z.literal("button"), label: z.string().trim().min(1).max(80), href: url, variant: z.enum(["primary", "outline", "rainbow"]).default("primary"), align: ALIGN }),
   z.object({ type: z.literal("divider") }),
   z.object({ type: z.literal("spacer"), size: z.enum(["sm", "md", "lg"]).default("md") }),
   z.object({ type: z.literal("video"), url: z.string().trim().max(500).refine((u) => parseVideoEmbed(u) !== null, "Use uma URL do YouTube ou Vimeo.") }),
@@ -47,6 +47,8 @@ const WidgetSchema = z.discriminatedUnion("type", [
     text: z.string().max(2000).default(""),
     href: url.optional().default(""),
     buttonLabel: z.string().max(80).default(""),
+    // Efeito de borda/realce (Magic UI / React Bits).
+    effect: z.enum(["none", "beam", "shine", "magic", "glare"]).default("none").catch("none"),
   }),
   z.object({
     type: z.literal("iconList"),
@@ -60,6 +62,42 @@ const WidgetSchema = z.discriminatedUnion("type", [
     title: z.string().max(120).default("Consoles"),
     limit: z.number().int().min(0).max(48).default(0),
     showAll: z.boolean().default(true),
+  }),
+  // Contador animado (Number Ticker) — números que sobem ao entrar na tela.
+  z.object({
+    type: z.literal("numberTicker"),
+    value: z.number().min(0).max(1_000_000_000).default(100),
+    prefix: z.string().max(8).default(""),
+    suffix: z.string().max(8).default(""),
+    label: z.string().max(80).default(""),
+    align: ALIGN,
+  }),
+  // Marquee — faixa de texto em rolagem infinita.
+  z.object({
+    type: z.literal("marquee"),
+    items: z.array(z.object({ text: z.string().trim().min(1).max(120) })).min(1).max(30),
+    reverse: z.boolean().default(false),
+    pauseOnHover: z.boolean().default(true),
+  }),
+  // Bento Grid — destaques em cartões de tamanhos variados.
+  z.object({
+    type: z.literal("bento"),
+    items: z.array(z.object({
+      icon: z.enum(ICON_KEYS).default("check"),
+      title: z.string().trim().min(1).max(120),
+      description: z.string().max(300).default(""),
+      href: url.optional().default(""),
+      wide: z.boolean().default(false),
+    })).min(1).max(12),
+  }),
+  // Lista animada — itens que surgem em sequência (estilo notificações).
+  z.object({
+    type: z.literal("animatedList"),
+    items: z.array(z.object({
+      icon: z.enum(ICON_KEYS).default("check"),
+      title: z.string().trim().min(1).max(120),
+      description: z.string().max(200).default(""),
+    })).min(1).max(20),
   }),
   // Lista de downloads (versão, tamanho, data, changelog, checksum SHA256).
   z.object({
@@ -125,7 +163,7 @@ const SectionSchema = z.object({
   // Largura total: a seção (e o fundo) ocupam a largura do viewport (full-bleed).
   full: z.boolean().default(false).catch(false),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
-  anim: z.enum(["none", "fade", "up", "left", "right", "zoom"]).default("none").catch("none"),
+  anim: z.enum(["none", "fade", "up", "left", "right", "zoom", "blur"]).default("none").catch("none"),
   // Cores do gradiente animado (bg "gradient") — hex validado.
   gradFrom: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#10b981").catch("#10b981"),
   gradTo: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#6366f1").catch("#6366f1"),

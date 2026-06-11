@@ -11,6 +11,19 @@ import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
+import { TextAnimate } from "@/components/ui/text-animate";
+import { TypingAnimation } from "@/components/ui/typing-animation";
+import { LineShadowText } from "@/components/ui/line-shadow-text";
+import { HyperText } from "@/components/ui/hyper-text";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { Marquee } from "@/components/ui/marquee";
+import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
+import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-list";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { MagicCard } from "@/components/ui/magic-card";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { ShineBorder } from "@/components/ui/shine-border";
+import GlareHover from "@/components/GlareHover";
 import { DeviceGridWidget } from "@/components/pages/device-grid-widget";
 
 const FX_BG = "page-sec--bg page-sec--fx-host";
@@ -74,6 +87,10 @@ export function WidgetView({ w }: { w: Widget }) {
         fx === "gradient" ? <AnimatedGradientText colorFrom="#10b981" colorTo="#6366f1" speed={1.2}>{w.text}</AnimatedGradientText> :
         fx === "aurora" ? <AuroraText colors={["#10b981", "#6366f1", "#22d3ee"]}>{w.text}</AuroraText> :
         fx === "shiny" ? <AnimatedShinyText className="inline">{w.text}</AnimatedShinyText> :
+        fx === "textanimate" ? <TextAnimate as="span" animation="blurInUp" by="word" className="inline-block">{w.text}</TextAnimate> :
+        fx === "typing" ? <TypingAnimation as="span" className="inline">{w.text}</TypingAnimation> :
+        fx === "lineshadow" ? <LineShadowText shadowColor="#10b981">{w.text}</LineShadowText> :
+        fx === "hyper" ? <HyperText as="span" className="inline-block">{w.text}</HyperText> :
         w.text;
       return <Tag className={cls}>{inner}</Tag>;
     }
@@ -104,9 +121,20 @@ export function WidgetView({ w }: { w: Widget }) {
     case "button": {
       const href = safeHref(w.href);
       if (!href) return null;
-      const cls = `page-w__btn page-w__btn--${w.variant}`;
       const wrap = `page-w__btnwrap ${ALIGN[w.align] ?? ""}`;
       const isInternal = href.startsWith("/");
+      if (w.variant === "rainbow") {
+        return (
+          <div className={wrap}>
+            <RainbowButton asChild>
+              {isInternal
+                ? <Link href={href}>{w.label}</Link>
+                : <a href={href} rel="nofollow noopener noreferrer" target="_blank">{w.label}</a>}
+            </RainbowButton>
+          </div>
+        );
+      }
+      const cls = `page-w__btn page-w__btn--${w.variant}`;
       return (
         <div className={wrap}>
           {isInternal ? (
@@ -168,8 +196,9 @@ export function WidgetView({ w }: { w: Widget }) {
       );
     case "card": {
       const href = w.href ? safeHref(w.href) : null;
-      return (
-        <div className="page-w__card">
+      const effect = w.effect ?? "none";
+      const inner = (
+        <>
           {w.image && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={w.image} alt="" className="page-w__card-img" loading="lazy" />
@@ -183,6 +212,23 @@ export function WidgetView({ w }: { w: Widget }) {
                 : <a href={href} className="page-w__btn page-w__btn--primary mt-1" rel="nofollow noopener noreferrer" target="_blank">{w.buttonLabel}</a>
             )}
           </div>
+        </>
+      );
+      if (effect === "magic") {
+        return <MagicCard className="page-w__card page-w__card--fx" gradientColor="#10b981" gradientOpacity={0.18}>{inner}</MagicCard>;
+      }
+      if (effect === "glare") {
+        return (
+          <GlareHover width="100%" height="100%" background="transparent" borderRadius="0.75rem" borderColor="transparent" glareColor="#10b981" glareOpacity={0.3}>
+            <div className="page-w__card page-w__card--fx w-full">{inner}</div>
+          </GlareHover>
+        );
+      }
+      return (
+        <div className={cn("page-w__card", effect !== "none" && "page-w__card--fx")}>
+          {effect === "beam" && <BorderBeam colorFrom="#10b981" colorTo="#6366f1" size={70} />}
+          {effect === "shine" && <ShineBorder shineColor={["#10b981", "#6366f1"]} />}
+          {inner}
         </div>
       );
     }
@@ -190,6 +236,63 @@ export function WidgetView({ w }: { w: Widget }) {
       return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
     case "deviceGrid":
       return <DeviceGridWidget title={w.title} limit={w.limit} showAll={w.showAll} />;
+    case "numberTicker":
+      return (
+        <div className={`page-w__ticker ${ALIGN[w.align] ?? ""}`}>
+          <span className="page-w__ticker-num">
+            {w.prefix}<NumberTicker value={w.value} className="text-inherit" />{w.suffix}
+          </span>
+          {w.label && <span className="page-w__ticker-label">{w.label}</span>}
+        </div>
+      );
+    case "marquee":
+      return (
+        <Marquee className="[--duration:30s]" reverse={w.reverse} pauseOnHover={w.pauseOnHover}>
+          {w.items.map((it, i) => (
+            <span key={i} className="page-w__marquee-item">{it.text}</span>
+          ))}
+        </Marquee>
+      );
+    case "bento":
+      return (
+        <BentoGrid className="auto-rows-[14rem] grid-cols-1 sm:grid-cols-3">
+          {w.items.map((it, i) => {
+            const Icon = ICONS[it.icon] ?? Check;
+            const bhref = it.href ? safeHref(it.href) : null;
+            return (
+              <BentoCard
+                key={i}
+                name={it.title}
+                className={cn("col-span-1", it.wide ? "sm:col-span-2" : "sm:col-span-1")}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />}
+                Icon={Icon}
+                description={it.description}
+                href={bhref ?? "#"}
+                cta="Ver mais"
+              />
+            );
+          })}
+        </BentoGrid>
+      );
+    case "animatedList":
+      return (
+        <AnimatedList className="w-full" delay={1400}>
+          {w.items.map((it, i) => {
+            const Icon = ICONS[it.icon] ?? Check;
+            return (
+              <AnimatedListItem key={i}>
+                <figure className="page-w__alist-item">
+                  <span className="page-w__alist-icon"><Icon className="size-5" aria-hidden="true" /></span>
+                  <div className="min-w-0">
+                    <figcaption className="page-w__alist-title">{it.title}</figcaption>
+                    {it.description && <p className="page-w__alist-desc">{it.description}</p>}
+                  </div>
+                </figure>
+              </AnimatedListItem>
+            );
+          })}
+        </AnimatedList>
+      );
     case "download":
       return (
         <div className="dl-list">

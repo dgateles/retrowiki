@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -38,6 +38,10 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "card", label: "Cartão", icon: CreditCard },
   { type: "iconList", label: "Lista de ícones", icon: ListChecks },
   { type: "deviceGrid", label: "Grade de consoles", icon: Gamepad2 },
+  { type: "numberTicker", label: "Contador", icon: Hash },
+  { type: "marquee", label: "Marquee", icon: ArrowLeftRight },
+  { type: "bento", label: "Bento Grid", icon: LayoutGrid },
+  { type: "animatedList", label: "Lista animada", icon: List },
   { type: "download", label: "Downloads", icon: Download },
   { type: "firmware", label: "Firmwares", icon: HardDrive },
   { type: "buyingGuide", label: "Guia de compra", icon: ShoppingCart },
@@ -58,9 +62,13 @@ function newWidget(type: WidgetType): Widget {
     case "callout": return { type: "callout", tone: "info", text: "Texto em destaque." };
     case "accordion": return { type: "accordion", items: [{ title: "Pergunta", body: "Resposta." }] };
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
-    case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "" };
+    case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "", effect: "none" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
     case "deviceGrid": return { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true };
+    case "numberTicker": return { type: "numberTicker", value: 100, prefix: "", suffix: "+", label: "Membros", align: "center" };
+    case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
+    case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
+    case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -418,6 +426,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="left">Da esquerda</SelectItem>
                       <SelectItem value="right">Da direita</SelectItem>
                       <SelectItem value="zoom">Zoom</SelectItem>
+                      <SelectItem value="blur">Desfoque (blur)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -715,6 +724,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                 <SelectItem value="gradient">Gradiente animado</SelectItem>
                 <SelectItem value="aurora">Aurora</SelectItem>
                 <SelectItem value="shiny">Brilho (shiny)</SelectItem>
+                <SelectItem value="textanimate">Animar por palavra</SelectItem>
+                <SelectItem value="typing">Digitação</SelectItem>
+                <SelectItem value="lineshadow">Sombra de linha</SelectItem>
+                <SelectItem value="hyper">Hyper (embaralhar)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -745,9 +758,9 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <div className="field"><Label>Texto do botão</Label><Input value={w.label} onChange={(e) => onChange({ label: e.target.value })} maxLength={80} /></div>
           <div className="field"><Label>Link (URL ou /caminho)</Label><Input value={w.href} onChange={(e) => onChange({ href: e.target.value })} maxLength={500} /></div>
           <div className="field"><Label>Estilo</Label>
-            <Select value={w.variant} onValueChange={(val) => onChange({ variant: val as "primary" | "outline" })}>
+            <Select value={w.variant} onValueChange={(val) => onChange({ variant: val as "primary" | "outline" | "rainbow" })}>
               <SelectTrigger aria-label="Estilo" className="w-full"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="primary">Preenchido</SelectItem><SelectItem value="outline">Contorno</SelectItem></SelectContent>
+              <SelectContent><SelectItem value="primary">Preenchido</SelectItem><SelectItem value="outline">Contorno</SelectItem><SelectItem value="rainbow">Arco-íris</SelectItem></SelectContent>
             </Select>
           </div>
           {align}
@@ -822,7 +835,86 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <div className="field"><Label>Texto</Label><Textarea value={w.text} onChange={(e) => onChange({ text: e.target.value })} maxLength={2000} rows={3} /></div>
           <div className="field"><Label>Link do botão (opcional)</Label><Input value={w.href} onChange={(e) => onChange({ href: e.target.value })} placeholder="/guias" maxLength={500} /></div>
           <div className="field"><Label>Texto do botão (opcional)</Label><Input value={w.buttonLabel} onChange={(e) => onChange({ buttonLabel: e.target.value })} maxLength={80} /></div>
+          <div className="field"><Label>Efeito da borda</Label>
+            <Select value={(w as { effect?: string }).effect ?? "none"} onValueChange={(val) => onChange({ effect: val } as Partial<Widget>)}>
+              <SelectTrigger aria-label="Efeito da borda" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="beam">Feixe (Border Beam)</SelectItem>
+                <SelectItem value="shine">Brilho (Shine Border)</SelectItem>
+                <SelectItem value="magic">Magic Card (spotlight)</SelectItem>
+                <SelectItem value="glare">Glare (reflexo no hover)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </>
+      )}
+      {w.type === "numberTicker" && (
+        <>
+          <div className="field"><Label>Valor</Label><Input type="number" min={0} value={w.value} onChange={(e) => onChange({ value: Math.max(0, Number(e.target.value) || 0) })} /></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="field"><Label>Prefixo</Label><Input value={w.prefix} onChange={(e) => onChange({ prefix: e.target.value })} maxLength={8} placeholder="R$" /></div>
+            <div className="field"><Label>Sufixo</Label><Input value={w.suffix} onChange={(e) => onChange({ suffix: e.target.value })} maxLength={8} placeholder="+" /></div>
+          </div>
+          <div className="field"><Label>Legenda</Label><Input value={w.label} onChange={(e) => onChange({ label: e.target.value })} maxLength={80} placeholder="Membros" /></div>
+          {align}
+        </>
+      )}
+      {w.type === "marquee" && (
+        <>
+          <div className="field">
+            <Label>Itens (texto)</Label>
+            {w.items.map((it, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input value={it.text} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { text: e.target.value } : x) })} maxLength={120} />
+                {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+            ))}
+            {w.items.length < 30 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { text: "Novo item" }] })}><Plus className="size-3.5" /> Adicionar item</button>}
+          </div>
+          <label className="flex items-center gap-2 text-sm"><Checkbox checked={w.reverse} onCheckedChange={(c) => onChange({ reverse: c === true })} /> Inverter direção</label>
+          <label className="flex items-center gap-2 text-sm"><Checkbox checked={w.pauseOnHover} onCheckedChange={(c) => onChange({ pauseOnHover: c === true })} /> Pausar ao passar o mouse</label>
+        </>
+      )}
+      {w.type === "bento" && (
+        <div className="field">
+          <Label>Cartões</Label>
+          {w.items.map((it, i) => (
+            <div key={i} className="pb-acc-item space-y-2">
+              <div className="flex items-center gap-2">
+                <Select value={it.icon} onValueChange={(val) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, icon: val as typeof ICON_KEYS[number] } : x) })}>
+                  <SelectTrigger aria-label="Ícone" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>{ICON_KEYS.map((k) => <SelectItem key={k} value={k}>{ICON_LABELS[k]}</SelectItem>)}</SelectContent>
+                </Select>
+                {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+              <Input value={it.title} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, title: e.target.value } : x) })} placeholder="Título" maxLength={120} />
+              <Textarea value={it.description} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, description: e.target.value } : x) })} placeholder="Descrição" rows={2} maxLength={300} />
+              <Input value={it.href} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, href: e.target.value } : x) })} placeholder="Link (opcional)" maxLength={500} />
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={it.wide} onCheckedChange={(c) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, wide: c === true } : x) })} /> Cartão largo</label>
+            </div>
+          ))}
+          {w.items.length < 12 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", title: "Recurso", description: "", href: "", wide: false }] })}><Plus className="size-3.5" /> Adicionar cartão</button>}
+        </div>
+      )}
+      {w.type === "animatedList" && (
+        <div className="field">
+          <Label>Itens</Label>
+          {w.items.map((it, i) => (
+            <div key={i} className="pb-acc-item space-y-2">
+              <div className="flex items-center gap-2">
+                <Select value={it.icon} onValueChange={(val) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, icon: val as typeof ICON_KEYS[number] } : x) })}>
+                  <SelectTrigger aria-label="Ícone" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>{ICON_KEYS.map((k) => <SelectItem key={k} value={k}>{ICON_LABELS[k]}</SelectItem>)}</SelectContent>
+                </Select>
+                {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+              </div>
+              <Input value={it.title} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, title: e.target.value } : x) })} placeholder="Título" maxLength={120} />
+              <Input value={it.description} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, description: e.target.value } : x) })} placeholder="Descrição" maxLength={200} />
+            </div>
+          ))}
+          {w.items.length < 20 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", title: "Notificação", description: "" }] })}><Plus className="size-3.5" /> Adicionar item</button>}
+        </div>
       )}
       {w.type === "iconList" && (
         <div className="field">

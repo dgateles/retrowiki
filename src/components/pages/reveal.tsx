@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export type AnimType = "none" | "fade" | "up" | "left" | "right" | "zoom";
+export type AnimType = "none" | "fade" | "up" | "left" | "right" | "zoom" | "blur";
 
 /** Revela o conteúdo com uma animação de entrada quando ele entra na viewport.
  * Respeita prefers-reduced-motion (o CSS neutraliza o efeito). */
