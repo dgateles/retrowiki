@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -116,7 +118,9 @@ export function AssignmentsAdmin({ assignments, teams, mods, settings: initial }
         {tab === "config" && (
           <div className="rule-form">
             <section className="rule-form__section">
-              <label className="rule-form__check"><input type="checkbox" checked={s.enabled} onChange={(e) => setS({ ...s, enabled: e.target.checked })} /> Atribuições de conteúdo ativas</label>
+              <SettingGroup>
+                <SettingToggle label="Atribuições de conteúdo ativas" checked={s.enabled} onCheckedChange={(c) => setS({ ...s, enabled: c })} />
+              </SettingGroup>
               <div className="field">
                 <Label htmlFor="as-close">Fechar automaticamente após (dias sem atividade; 0 = nunca)</Label>
                 <Input id="as-close" type="number" min={0} className="w-32" value={String(s.autoCloseDays)} onChange={(e) => setS({ ...s, autoCloseDays: Math.max(0, Math.floor(Number(e.target.value) || 0)) })} />
@@ -157,9 +161,9 @@ function TeamDialog({ team, mods, onClose, onSaved }: { team: ModTeam | null; mo
           <div className="field"><Label htmlFor="tm-name">Nome</Label><Input id="tm-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} /></div>
           <div className="field">
             <Label>Membros (moderadores e admins)</Label>
-            <div className="pff-options">
+            <div className="flex flex-col gap-2">
               {mods.length === 0 ? <p className="muted text-sm">Nenhum moderador disponível.</p> : mods.map((m) => (
-                <label key={m.id} className="rule-form__check"><input type="checkbox" checked={selected.has(m.id)} onChange={(e) => toggle(m.id, e.target.checked)} /> {m.name}</label>
+                <label key={m.id} className="flex items-center gap-2 text-sm"><Checkbox checked={selected.has(m.id)} onCheckedChange={(c) => toggle(m.id, c === true)} /> {m.name}</label>
               ))}
             </div>
           </div>

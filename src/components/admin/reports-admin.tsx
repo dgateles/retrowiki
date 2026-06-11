@@ -20,6 +20,7 @@ import {
 import type { ReportGroup, ReportType } from "@/lib/reports";
 import type { ReportingSettings } from "@/lib/settings";
 import { useConfirm } from "@/components/admin/confirm-dialog";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 
 type Tab = "fila" | "tipos" | "config";
 
@@ -125,12 +126,10 @@ export function ReportsAdmin({
         {tab === "config" && (
           <div className="rule-form">
             <section className="rule-form__section">
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.messageMandatory} onChange={(e) => setS({ ...s, messageMandatory: e.target.checked })} /> Mensagem obrigatória ao denunciar
-              </label>
-              <label className="rule-form__check">
-                <input type="checkbox" checked={s.autoModEnabled} onChange={(e) => setS({ ...s, autoModEnabled: e.target.checked })} /> Ativar moderação automática
-              </label>
+              <SettingGroup>
+                <SettingToggle label="Mensagem obrigatória ao denunciar" checked={s.messageMandatory} onCheckedChange={(c) => setS({ ...s, messageMandatory: c })} />
+                <SettingToggle label="Ativar moderação automática" description="Oculta conteúdo automaticamente após denúncias suficientes." checked={s.autoModEnabled} onCheckedChange={(c) => setS({ ...s, autoModEnabled: c })} />
+              </SettingGroup>
               <div className="field">
                 <Label htmlFor="rs-th">Ocultar conteúdo após (denunciantes únicos)</Label>
                 <Input id="rs-th" type="number" min={1} className="w-32" value={String(s.autoModThreshold)} onChange={(e) => setS({ ...s, autoModThreshold: Math.max(1, Math.floor(Number(e.target.value) || 1)) })} />
@@ -138,9 +137,9 @@ export function ReportsAdmin({
 
               {s.autoModEnabled && (
                 <div className="mt-4 border-t border-border/60 pt-4">
-                  <label className="rule-form__check">
-                    <input type="checkbox" checked={s.trustedAutoMod} onChange={(e) => setS({ ...s, trustedAutoMod: e.target.checked })} /> Ser mais rígido com autores de baixa confiança
-                  </label>
+                  <SettingGroup>
+                    <SettingToggle label="Ser mais rígido com autores de baixa confiança" checked={s.trustedAutoMod} onCheckedChange={(c) => setS({ ...s, trustedAutoMod: c })} />
+                  </SettingGroup>
                   {s.trustedAutoMod && (
                     <>
                       <p className="muted mt-2 text-xs">Autores que NÃO atingem o patamar abaixo têm o conteúdo ocultado com um limiar menor de denúncias.</p>
