@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createRankAction, updateRankAction } from "@/lib/actions/rank-actions";
 import { RankIcon, RANK_ICON_NAMES } from "@/components/admin/rank-icon";
 import { ImageUpload } from "@/components/admin/image-upload";
@@ -59,11 +60,12 @@ export function RankForm({
           <Label htmlFor="rk-icon">Ícone</Label>
           <div className="rank-icon-pick">
             <span className="rank-badge" aria-hidden="true"><RankIcon name={icon} image={image} className="size-5" /></span>
-            <select id="rk-icon" className="rte__select" value={icon} onChange={(e) => setIcon(e.target.value)}>
-              {RANK_ICON_NAMES.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+            <Select value={icon} onValueChange={setIcon}>
+              <SelectTrigger id="rk-icon" className="flex-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {RANK_ICON_NAMES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="field">

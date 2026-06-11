@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createBadgeAction, updateBadgeAction } from "@/lib/actions/badge-actions";
 import { BadgeIcon, BADGE_ICON_NAMES } from "@/components/admin/badge-icon";
 import { ImageUpload } from "@/components/admin/image-upload";
@@ -71,11 +73,12 @@ export function BadgeForm({
           <Label htmlFor="bd-icon">Ícone</Label>
           <div className="rank-icon-pick">
             <span className={`badge-preview__icon badge-preview__icon--${tier}`} aria-hidden="true"><BadgeIcon name={icon} className="size-5" /></span>
-            <select id="bd-icon" className="rte__select" value={icon} onChange={(e) => setIcon(e.target.value)}>
-              {BADGE_ICON_NAMES.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+            <Select value={icon} onValueChange={setIcon}>
+              <SelectTrigger id="bd-icon" className="flex-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {BADGE_ICON_NAMES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="field">
@@ -84,15 +87,19 @@ export function BadgeForm({
         </div>
         <div className="field">
           <Label htmlFor="bd-tier">Nível</Label>
-          <select id="bd-tier" className="rte__select" value={tier} onChange={(e) => setTier(e.target.value as Tier)}>
-            <option value="bronze">Bronze</option>
-            <option value="silver">Prata</option>
-            <option value="gold">Ouro</option>
-          </select>
+          <Select value={tier} onValueChange={(v) => setTier(v as Tier)}>
+            <SelectTrigger id="bd-tier" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="bronze">Bronze</SelectItem>
+              <SelectItem value="silver">Prata</SelectItem>
+              <SelectItem value="gold">Ouro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={manual} onChange={(e) => setManual(e.target.checked)} /> Concedível manualmente (por moderador/admin)
-        </label>
+        <div className="flex items-center gap-2">
+          <Switch id="bd-manual" checked={manual} onCheckedChange={setManual} />
+          <Label htmlFor="bd-manual" className="font-normal">Concedível manualmente (por moderador/admin)</Label>
+        </div>
       </section>
 
       <div className="rule-form__foot">
