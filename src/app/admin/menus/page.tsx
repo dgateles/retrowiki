@@ -1,9 +1,12 @@
-import { getAllMenuItems } from "@/lib/menu";
+import { getAllMenuItems, ensureMenuSeeded } from "@/lib/menu";
 import { MenuManager } from "@/components/admin/menu-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMenusPage() {
+  // Materializa o padrão em localizações vazias para que o editor reflita o
+  // que o site exibe (header/footer usam o mesmo padrão como fallback).
+  await ensureMenuSeeded();
   const [header, footer] = await Promise.all([getAllMenuItems("header"), getAllMenuItems("footer")]);
 
   return (

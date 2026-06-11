@@ -108,6 +108,51 @@ export const DEFAULT_FOOTER: SeedNode[] = [
   },
 ];
 
+/** Insere a estrutura padrão de uma localização (sem checar permissão). */
+export async function insertSeed(location: MenuLocation) {
+  const seed = location === "header" ? DEFAULT_HEADER : DEFAULT_FOOTER;
+  let order = 0;
+  for (const node of seed) {
+    const [res] = await db.insert(menuItems).values({
+      location,
+      label: node.label,
+      href: node.href ?? null,
+      type: node.type,
+      parentId: null,
+      sortOrder: order++,
+      visible: true,
+    });
+    const parentId = Number(res.insertId);
+    let childOrder = 0;
+    for (const c of node.children ?? []) {
+      await db.insert(menuItems).values({
+        location,
+        label: c.label,
+        href: c.href,
+        type: "link",
+        parentId,
+        icon: c.icon ?? null,
+        description: c.description ?? null,
+        sortOrder: childOrder++,
+        visible: true,
+      });
+    }
+  }
+}
+
+/** Materializa header/footer vazios com o padrão (idempotente). Usado pelo
+ * editor do admin para que a árvore reflita o que o site exibe no fallback. */
+export async function ensureMenuSeeded(): Promise<void> {
+  try {
+    for (const location of ["header", "footer"] as const) {
+      const existing = await db.select({ id: menuItems.id }).from(menuItems).where(eq(menuItems.location, location)).limit(1);
+      if (existing.length === 0) await insertSeed(location);
+    }
+  } catch {
+    // tabela ausente / DB indisponível — ignora (o site usa o fallback).
+  }
+}
+
 /** Converte a estrutura padrão em árvore renderizável (fallback sem IDs reais). */
 export function seedToTree(seed: SeedNode[]): MenuNode[] {
   let id = 0;
