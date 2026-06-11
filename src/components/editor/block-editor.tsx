@@ -7,6 +7,9 @@ import { Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createDraftAction, updateDraftAction, submitForReviewAction, proposeEditAction } from "@/lib/actions/article-actions";
 import type { Block } from "@/lib/blocks/schema";
 
@@ -243,17 +246,12 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
       </div>
       <div className="field">
         <Label htmlFor="type">Tipo</Label>
-        <select
-          id="type"
-          aria-label="Tipo do conteúdo"
-          value={type}
-          onChange={(e) => setType(e.target.value as typeof type)}
-          className="editor__select editor__select--full"
-        >
-          {TYPES.map((t) => (
-            <option key={t.type} value={t.type}>{t.label}</option>
-          ))}
-        </select>
+        <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
+          <SelectTrigger id="type" aria-label="Tipo do conteúdo" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {TYPES.map((t) => <SelectItem key={t.type} value={t.type}>{t.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       <fieldset className="editor__fieldset">
@@ -279,34 +277,30 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
               <Input value={b.text} onChange={(e) => update(b._id, { text: e.target.value })} placeholder="Texto do título" />
             )}
             {b.type === "paragraph" && (
-              <textarea
+              <Textarea
                 value={b.text}
                 onChange={(e) => update(b._id, { text: e.target.value })}
                 placeholder="Escreva o parágrafo"
                 aria-label="Texto do parágrafo"
                 rows={4}
-                className="editor__control"
               />
             )}
             {b.type === "callout" && (
               <div className="space-y-2">
-                <select
-                  value={b.variant}
-                  aria-label="Variante do alerta"
-                  onChange={(e) => update(b._id, { variant: e.target.value as "info" })}
-                  className="editor__select"
-                >
-                  <option value="info">Informação</option>
-                  <option value="success">Sucesso</option>
-                  <option value="warning">Atenção</option>
-                  <option value="danger">Perigo</option>
-                </select>
-                <textarea
+                <Select value={b.variant} onValueChange={(v) => update(b._id, { variant: v as "info" })}>
+                  <SelectTrigger aria-label="Variante do alerta" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="info">Informação</SelectItem>
+                    <SelectItem value="success">Sucesso</SelectItem>
+                    <SelectItem value="warning">Atenção</SelectItem>
+                    <SelectItem value="danger">Perigo</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Textarea
                   value={b.text}
                   onChange={(e) => update(b._id, { text: e.target.value })}
                   aria-label="Texto do alerta"
                   rows={2}
-                  className="editor__control"
                 />
               </div>
             )}
@@ -318,14 +312,14 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   placeholder="Linguagem (opcional, ex.: bash, json)"
                   aria-label="Linguagem do código"
                 />
-                <textarea
+                <Textarea
                   value={b.code}
                   onChange={(e) => update(b._id, { code: e.target.value })}
                   aria-label="Código"
                   rows={5}
                   spellCheck={false}
                   placeholder="Cole o código aqui"
-                  className="editor__control editor__control--mono"
+                  className="font-mono"
                 />
               </div>
             )}
@@ -352,21 +346,16 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
             )}
             {b.type === "list" && (
               <div className="space-y-2">
-                <label className="editor__check">
-                  <input
-                    type="checkbox"
-                    checked={b.ordered}
-                    onChange={(e) => update(b._id, { ordered: e.target.checked })}
-                  />
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox checked={b.ordered} onCheckedChange={(c) => update(b._id, { ordered: c === true })} />
                   Lista numerada
                 </label>
-                <textarea
+                <Textarea
                   value={b.itemsText}
                   onChange={(e) => update(b._id, { itemsText: e.target.value })}
                   aria-label="Itens da lista, um por linha"
                   rows={4}
                   placeholder="Um item por linha"
-                  className="editor__control"
                 />
               </div>
             )}
@@ -378,24 +367,22 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
                   placeholder="Cabeçalhos separados por |  (ex.: Marca | Capacidade)"
                   aria-label="Cabeçalhos da tabela"
                 />
-                <textarea
+                <Textarea
                   value={b.rowsText}
                   onChange={(e) => update(b._id, { rowsText: e.target.value })}
                   aria-label="Linhas da tabela"
                   rows={4}
                   placeholder="Uma linha por linha, células separadas por |"
-                  className="editor__control"
                 />
               </div>
             )}
             {b.type === "steps" && (
-              <textarea
+              <Textarea
                 value={b.itemsText}
                 onChange={(e) => update(b._id, { itemsText: e.target.value })}
                 aria-label="Passos, um por linha no formato Título :: descrição"
                 rows={4}
                 placeholder="Um passo por linha: Título :: descrição"
-                className="editor__control"
               />
             )}
             {b.type === "store-links" && (
