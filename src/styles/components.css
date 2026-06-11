@@ -1578,7 +1578,10 @@
 
   /* Hero da home. */
   .hero {
-    @apply border-b border-border bg-linear-to-b from-primary/5 to-transparent;
+    @apply relative overflow-hidden border-b border-border;
+    background:
+      radial-gradient(60% 55% at 50% -10%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 70%),
+      linear-gradient(to bottom, color-mix(in srgb, var(--primary) 4%, transparent), transparent 60%);
   }
   .section-title {
     @apply text-2xl font-bold;
@@ -1593,7 +1596,7 @@
     @apply mx-auto max-w-6xl px-6 py-14 text-center;
   }
   .hero__eyebrow {
-    @apply text-sm font-medium text-primary;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs font-medium uppercase tracking-wider text-primary;
   }
   .hero__title {
     @apply mx-auto mt-2 max-w-3xl text-4xl font-black tracking-tight md:text-5xl;
@@ -1794,24 +1797,41 @@
     @apply lg:grid-cols-3;
   }
 
-  /* Card de console. */
+  /* Card de console — microinteração retro (elevação + brilho esmeralda no hover). */
   .device-card {
-    @apply flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50;
+    @apply relative flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-all duration-200;
+  }
+  .device-card:hover {
+    @apply border-primary/60;
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent),
+      0 12px 30px -14px color-mix(in srgb, var(--primary) 50%, transparent);
   }
   .device-card__media {
     @apply relative flex h-28 items-center justify-center overflow-hidden;
   }
   .device-card__img {
-    @apply max-h-full w-auto object-contain;
+    @apply max-h-full w-auto object-contain transition-transform duration-300;
+  }
+  .device-card:hover .device-card__img {
+    transform: scale(1.05);
   }
   .device-card__placeholder {
     @apply size-12 text-muted-foreground/30;
   }
   .device-card__brand {
-    @apply mt-3 text-xs font-medium text-primary;
+    @apply mt-3 font-mono text-[11px] font-medium uppercase tracking-wider text-primary;
   }
   .device-card__name {
     @apply font-semibold leading-tight;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .device-card,
+    .device-card:hover,
+    .device-card__img {
+      @apply transform-none transition-none;
+    }
   }
 
   /* Card de guia. */

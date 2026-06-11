@@ -26,9 +26,28 @@ premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas
   foco (já existia + `<main id="main">` em 19/21 páginas).
 - Build de produção limpo; tokens resolvem; skip link e foco verificados no navegador.
 
+## Fase 2 — Páginas públicas (em andamento)
+
+### Home ✓
+- **Hero**: glow radial esmeralda (depth) + eyebrow virou **pill mono uppercase**
+  com borda esmeralda (acento retro). `text-wrap: balance` no título.
+- **Cards de console** (`.device-card`): marca em **mono uppercase tracking**
+  (acento de dados retro) + **microinteração no hover**: elevação (−2px), **brilho
+  esmeralda** (ring + sombra colorida) e zoom suave (1.05) da imagem. Respeita
+  `prefers-reduced-motion`.
+- Aprendizados TW v4 reconfirmados: `group` não vai em `@apply`; utilitárias
+  `-translate-*`/`scale-*` às vezes não compõem `transform` dentro de `@apply` em
+  regra `:hover` aninhada → usei `transform` explícito. Cache do Turbopack precisou
+  de `rm -rf .next` após o erro de `group`.
+- Verificado no navegador (desktop): hero/pill/cards/hover OK, **axe 0 violações**,
+  estrutura semântica limpa (banner/nav/main/region/contentinfo), build limpo.
+
+### Próximas telas da fase
+Consoles (lista/detalhe/comparar) → Guias → Blog → Perfil. Estados vazio/erro/
+carregando (shadcn Empty/Skeleton/Alert) + SEO/HTML semântico.
+
 ## Próximas fases
-2. Páginas públicas (home, consoles lista/detalhe/comparar, guias, blog, perfil) +
-   estados vazio/erro/carregando + SEO/HTML semântico.
+2b. (restante das públicas acima)
 3. Conta (painel, conta, notificações, missões, leaderboard).
 4. Admin (~45 telas): shell, tabelas (shadcn Table), formulários robustos estilo IPB
    (Field/FieldGroup), modais/confirmações (AlertDialog) padronizados.
