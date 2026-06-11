@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { NOTIFICATION_CATEGORIES, type NotificationsConfig, type ChannelMode } from "@/lib/notifications-config";
 import { saveNotificationsConfigAction, resetAllMemberPrefsAction } from "@/lib/actions/notification-config-actions";
 
@@ -59,20 +61,22 @@ export function NotificationsConfigForm({ config: initial }: { config: Notificat
                   <p className="pf-field__meta">{cat.description}</p>
                 </div>
                 <div className="notif-cfg__controls">
-                  <label className="rule-form__check">
-                    <input type="checkbox" checked={c.memberEditable} onChange={(e) => set(cat.key, { memberEditable: e.target.checked })} /> Membro pode editar
+                  <label className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={c.memberEditable} onCheckedChange={(ck) => set(cat.key, { memberEditable: ck === true })} /> Membro pode editar
                   </label>
                   <div className="notif-cfg__channel">
                     <Label>Sino (in-app)</Label>
-                    <select className="rte__select" value={c.inApp} onChange={(e) => set(cat.key, { inApp: e.target.value as ChannelMode })}>
-                      {MODES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                    </select>
+                    <Select value={c.inApp} onValueChange={(val) => set(cat.key, { inApp: val as ChannelMode })}>
+                      <SelectTrigger aria-label={`Sino (in-app) — ${cat.label}`} className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                    </Select>
                   </div>
                   <div className="notif-cfg__channel">
                     <Label>E-mail</Label>
-                    <select className="rte__select" value={c.email} onChange={(e) => set(cat.key, { email: e.target.value as ChannelMode })}>
-                      {MODES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                    </select>
+                    <Select value={c.email} onValueChange={(val) => set(cat.key, { email: val as ChannelMode })}>
+                      <SelectTrigger aria-label={`E-mail — ${cat.label}`} className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>

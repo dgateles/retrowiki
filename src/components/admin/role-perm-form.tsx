@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { setRolePermissionsAction } from "@/lib/actions/role-actions";
 
 type FieldType = "bool" | "number" | "color";
@@ -67,11 +68,10 @@ export function RolePermForm({ role, fields, initial }: { role: string; fields: 
             </div>
             <div className="perm-field__control">
               {f.type === "bool" && (
-                <input
+                <Switch
                   id={`pf-${f.key}`}
-                  type="checkbox"
                   checked={Boolean(values[f.key])}
-                  onChange={(e) => set(f.key, e.target.checked)}
+                  onCheckedChange={(c) => set(f.key, c)}
                 />
               )}
               {f.type === "number" && (
