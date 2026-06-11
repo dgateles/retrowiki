@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
 export function AuthShell({
   title,
@@ -22,7 +22,7 @@ export function AuthShell({
         </Link>
         <Card>
           <CardHeader>
-            <CardTitle>{title}</CardTitle>
+            <h1 className="text-lg font-semibold leading-none">{title}</h1>
             {description && <CardDescription>{description}</CardDescription>}
           </CardHeader>
           <CardContent>{children}</CardContent>

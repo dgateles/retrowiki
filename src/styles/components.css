@@ -1610,13 +1610,19 @@
 
   /* Página de autenticação (cartão central). */
   .auth-page {
-    @apply flex min-h-dvh items-center justify-center bg-background px-4 py-12;
+    @apply relative flex min-h-dvh items-center justify-center px-4 py-12;
+    background:
+      radial-gradient(55% 45% at 50% 0%, color-mix(in srgb, var(--primary) 11%, transparent), transparent 70%),
+      var(--background);
   }
   .auth-page__inner {
     @apply w-full max-w-sm;
   }
   .auth-page__brand {
-    @apply mb-6 flex items-center justify-center gap-2 font-bold;
+    @apply mb-8 flex items-center justify-center gap-2.5 text-2xl font-bold tracking-tight;
+  }
+  .auth-page__brand .brand-icon {
+    @apply size-8;
   }
   .auth-page__footer {
     @apply mt-4 text-center text-sm text-muted-foreground;
