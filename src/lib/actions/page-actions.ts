@@ -18,6 +18,7 @@ function defaultHomeLayout(): Layout {
       {
         id: sid(),
         bg: "particles",
+        full: true,
         padY: "lg",
         anim: "up",
         gradFrom: "#10b981",
@@ -40,6 +41,7 @@ function defaultHomeLayout(): Layout {
       {
         id: sid(),
         bg: "none",
+        full: false,
         padY: "md",
         anim: "none",
         gradFrom: "#10b981",

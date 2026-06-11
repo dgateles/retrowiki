@@ -167,6 +167,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Seções full-bleed (100vw) podem ultrapassar a largura útil pela barra de
+       rolagem; clip remove o scroll horizontal fantasma sem virar scroll-container
+       (preserva position: sticky do header). */
+    overflow-x: clip;
   }
   /* Títulos: tracking levemente fechado + quebra equilibrada (premium) */
   h1, h2, h3, h4 {

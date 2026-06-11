@@ -302,7 +302,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -399,6 +399,9 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     </SelectContent>
                   </Select>
                 </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox checked={sections[selSection].full ?? false} onCheckedChange={(c) => mutate((ss) => { ss[selSection].full = c === true; })} /> Largura total (fundo ocupa a tela inteira)
+                </label>
                 <div className="field">
                   <Label htmlFor="pb-anim">Animação de entrada</Label>
                   <Select value={sections[selSection].anim ?? "none"} onValueChange={(val) => mutate((ss) => { ss[selSection].anim = val as Section["anim"]; })}>
@@ -600,7 +603,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>

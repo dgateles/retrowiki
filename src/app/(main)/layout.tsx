@@ -10,7 +10,7 @@ export default async function MainLayout({ children }: { children: ReactNode }) 
     <>
       <SiteHeader />
       {announcements.length > 0 && <AnnouncementBanner items={announcements} />}
-      <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">{children}</div>
+      <div className="overflow-x-clip pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">{children}</div>
       <SiteFooter />
     </>
   );
