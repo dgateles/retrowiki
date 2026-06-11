@@ -6,10 +6,13 @@ import { parseVideoEmbed } from "@/lib/video-embed";
 import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
+import { Reveal } from "@/components/pages/reveal";
+import { ParticlesBg } from "@/components/pages/particles-bg";
 
 export const SEC_BG: Record<string, string> = {
   none: "", muted: "page-sec--bg bg-muted/50", card: "page-sec--bg bg-card",
   primary: "page-sec--bg bg-primary/10", dark: "page-sec--bg bg-foreground/90 text-background",
+  gradient: "page-sec--bg page-sec--gradient", particles: "page-sec--bg page-sec--particles-host",
 };
 export const SEC_PADY: Record<string, string> = {
   none: "", sm: "py-5", md: "py-10", lg: "py-16",
@@ -315,7 +318,8 @@ export function PageRenderer({ layout }: { layout: Layout }) {
     <div className="page-render">
       {layout.sections.map((s) => (
         <section key={s.id} className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY])}>
-          <div className="page-section">
+          {s.bg === "particles" && <ParticlesBg />}
+          <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (
               <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
                 {c.widgets.map((w, i) => (
@@ -325,7 +329,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
                 ))}
               </div>
             ))}
-          </div>
+          </Reveal>
         </section>
       ))}
     </div>

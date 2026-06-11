@@ -17,6 +17,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { ImageUpload } from "@/components/admin/image-upload";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
+import { ParticlesBg } from "@/components/pages/particles-bg";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
 
@@ -297,7 +298,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -361,6 +362,8 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="card">Cartão</SelectItem>
                       <SelectItem value="primary">Destaque (cor primária)</SelectItem>
                       <SelectItem value="dark">Escuro</SelectItem>
+                      <SelectItem value="gradient">Gradiente animado</SelectItem>
+                      <SelectItem value="particles">Partículas</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -373,6 +376,20 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="sm">Pequeno</SelectItem>
                       <SelectItem value="md">Médio</SelectItem>
                       <SelectItem value="lg">Grande</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="field">
+                  <Label htmlFor="pb-anim">Animação de entrada</Label>
+                  <Select value={sections[selSection].anim ?? "none"} onValueChange={(val) => mutate((ss) => { ss[selSection].anim = val as Section["anim"]; })}>
+                    <SelectTrigger id="pb-anim" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhuma</SelectItem>
+                      <SelectItem value="fade">Fade</SelectItem>
+                      <SelectItem value="up">Subir</SelectItem>
+                      <SelectItem value="left">Da esquerda</SelectItem>
+                      <SelectItem value="right">Da direita</SelectItem>
+                      <SelectItem value="zoom">Zoom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -511,6 +528,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 </div>
 
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])}>
+                {s.bg === "particles" && <ParticlesBg />}
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
                     <div
@@ -558,7 +576,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", padY: "none", anim: "none", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>

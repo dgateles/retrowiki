@@ -114,8 +114,9 @@ export type Column = z.infer<typeof ColumnSchema>;
 
 const SectionSchema = z.object({
   id: z.string().max(40),
-  bg: z.enum(["none", "muted", "card", "primary", "dark"]).default("none").catch("none"),
+  bg: z.enum(["none", "muted", "card", "primary", "dark", "gradient", "particles"]).default("none").catch("none"),
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
+  anim: z.enum(["none", "fade", "up", "left", "right", "zoom"]).default("none").catch("none"),
   columns: z.array(ColumnSchema).min(1).max(4),
 });
 export type Section = z.infer<typeof SectionSchema>;
