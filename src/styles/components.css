@@ -2458,7 +2458,7 @@
     @apply text-sm text-muted-foreground;
   }
   .profile-stat__value {
-    @apply font-semibold tabular-nums;
+    @apply font-mono font-semibold tabular-nums;
   }
   .profile-stat__value--accent {
     @apply text-primary;
