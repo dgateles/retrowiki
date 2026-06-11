@@ -966,6 +966,16 @@
   /* Host comum dos efeitos de fundo Magic UI (conteúdo acima do efeito). */
   .page-sec--fx-host { @apply relative overflow-hidden; }
   .page-sec--fx-host > .page-section { @apply relative z-10; }
+  /* Camada do efeito de fundo: ocupa a seção e dissolve nas bordas (sem corte
+     retangular duro). O conteúdo (.page-section, z-10) não é afetado. */
+  .page-sec__fx {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(125% 115% at 50% 50%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(125% 115% at 50% 50%, #000 60%, transparent 100%);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .reveal--fade, .reveal--up, .reveal--left, .reveal--right, .reveal--zoom {
@@ -2969,16 +2979,17 @@
   .badges {
     @apply flex flex-wrap gap-2;
   }
-  .badge-chip {
+  /* Pílula de conquista (ícone + nome) — usada no painel e no perfil. */
+  .badge-pill {
     @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
   }
-  .badge-chip--bronze {
+  .badge-pill--bronze {
     @apply border-amber-700/30 bg-amber-700/10 text-amber-700 dark:text-amber-500;
   }
-  .badge-chip--silver {
+  .badge-pill--silver {
     @apply border-slate-400/40 bg-slate-400/10 text-slate-600 dark:text-slate-300;
   }
-  .badge-chip--gold {
+  .badge-pill--gold {
     @apply border-yellow-500/40 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400;
   }
 

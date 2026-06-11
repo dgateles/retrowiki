@@ -336,7 +336,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
           className={cn("page-sec", SEC_BG[s.bg], SEC_PADY[s.padY], s.full && "page-sec--full")}
           style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom}, ${s.gradTo})` } : undefined}
         >
-          <SectionFx bg={s.bg} />
+          <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} /></div>
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (
               <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>

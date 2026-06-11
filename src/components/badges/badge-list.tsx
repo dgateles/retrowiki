@@ -32,7 +32,7 @@ export function BadgeList({ items }: { items: UserBadge[] }) {
       {items.map((b) => {
         const Icon = ICONS[b.icon] ?? Award;
         return (
-          <li key={b.slug} className={cn("badge-chip", `badge-chip--${b.tier}`)} title={b.description}>
+          <li key={b.slug} className={cn("badge-pill", `badge-pill--${b.tier}`)} title={b.description}>
             <Icon className="size-4" aria-hidden="true" />
             {b.name}
           </li>
