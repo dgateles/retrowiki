@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
 import { createRuleAction, updateRuleAction } from "@/lib/actions/promotion-actions";
 
 type Criteria = {
@@ -47,10 +50,6 @@ export function PromotionRuleForm({
   function setCrit<K extends keyof Criteria>(key: K, v: Criteria[K]) {
     setC((prev) => ({ ...prev, [key]: v }));
   }
-  function toggleRole(role: string, on: boolean) {
-    setC((prev) => ({ ...prev, fromRoles: on ? [...new Set([...prev.fromRoles, role])] : prev.fromRoles.filter((r) => r !== role) }));
-  }
-
   async function save() {
     if (name.trim().length < 2) {
       toast.error("Dê um nome à regra.");
@@ -77,9 +76,9 @@ export function PromotionRuleForm({
           <Label htmlFor="rf-name">Nome</Label>
           <Input id="rf-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
         </div>
-        <label className="rule-form__check">
-          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /> Ativada
-        </label>
+        <SettingGroup>
+          <SettingToggle label="Ativada" checked={enabled} onCheckedChange={setEnabled} />
+        </SettingGroup>
         <div className="field">
           <Label htmlFor="rf-order">Ordem (a última regra que bate vence)</Label>
           <Input id="rf-order" type="number" min={0} value={String(sortOrder)} onChange={(e) => setSortOrder(Math.max(0, Math.floor(Number(e.target.value) || 0)))} className="w-28" />
@@ -98,29 +97,34 @@ export function PromotionRuleForm({
         </div>
         <div className="field">
           <Label htmlFor="rf-rank">Rank mínimo</Label>
-          <select id="rf-rank" className="rte__select" value={c.minRank} onChange={(e) => setCrit("minRank", Number(e.target.value))}>
-            <option value={0}>Qualquer</option>
-            {rankTiers.map((t) => (
-              <option key={t.index} value={t.index}>{t.index}. {t.label}</option>
-            ))}
-          </select>
+          <Select value={String(c.minRank)} onValueChange={(val) => setCrit("minRank", Number(val))}>
+            <SelectTrigger id="rf-rank" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">Qualquer</SelectItem>
+              {rankTiers.map((t) => <SelectItem key={t.index} value={String(t.index)}>{t.index}. {t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label htmlFor="rf-badge">Badge exigida</Label>
-          <select id="rf-badge" className="rte__select" value={c.badge} onChange={(e) => setCrit("badge", e.target.value)}>
-            <option value="">Qualquer</option>
-            {badges.map((b) => (
-              <option key={b.value} value={b.value}>{b.label}</option>
-            ))}
-          </select>
+          <Select value={c.badge || "any"} onValueChange={(val) => setCrit("badge", val === "any" ? "" : val)}>
+            <SelectTrigger id="rf-badge" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Qualquer</SelectItem>
+              {badges.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label htmlFor="rf-susp">Suspenso</Label>
-          <select id="rf-susp" className="rte__select" value={c.suspended} onChange={(e) => setCrit("suspended", e.target.value as Criteria["suspended"])}>
-            <option value="any">Qualquer</option>
-            <option value="no">Não suspenso</option>
-            <option value="yes">Suspenso</option>
-          </select>
+          <Select value={c.suspended} onValueChange={(val) => setCrit("suspended", val as Criteria["suspended"])}>
+            <SelectTrigger id="rf-susp" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Qualquer</SelectItem>
+              <SelectItem value="no">Não suspenso</SelectItem>
+              <SelectItem value="yes">Suspenso</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="field">
           <Label htmlFor="rf-joined">Entrou há pelo menos (dias, 0 = qualquer)</Label>
@@ -131,14 +135,12 @@ export function PromotionRuleForm({
           <Input id="rf-active" type="number" min={0} value={String(c.activeWithinDays)} onChange={(e) => setCrit("activeWithinDays", Math.max(0, Math.floor(Number(e.target.value) || 0)))} className="w-32" />
         </div>
         <div className="field">
-          <Label>Aplica-se aos papéis atuais</Label>
-          <div className="rule-form__roles">
+          <span className="text-sm font-medium leading-none">Aplica-se aos papéis atuais</span>
+          <ToggleGroup type="multiple" variant="outline" spacing={2} value={c.fromRoles} onValueChange={(vals) => setCrit("fromRoles", vals)} className="mt-1 w-full flex-wrap justify-start">
             {roles.map((r) => (
-              <label key={r.value} className="rule-form__check">
-                <input type="checkbox" checked={c.fromRoles.includes(r.value)} onChange={(e) => toggleRole(r.value, e.target.checked)} /> {r.label}
-              </label>
+              <ToggleGroupItem key={r.value} value={r.value} className="px-4 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/10 data-[state=on]:text-primary">{r.label}</ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
       </section>
 
@@ -146,15 +148,17 @@ export function PromotionRuleForm({
         <h2 className="rule-form__title">Ação</h2>
         <div className="field">
           <Label htmlFor="rf-target">Mover para o papel</Label>
-          <select id="rf-target" className="rte__select" value={targetRole} onChange={(e) => setTargetRole(e.target.value)}>
-            {roles.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
+          <Select value={targetRole} onValueChange={setTargetRole}>
+            <SelectTrigger id="rf-target" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {roles.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
       </section>
 
-      <div className="rule-form__foot">
+      <div className="rule-form__foot rule-form__foot--split">
+        <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/promocoes")} disabled={pending}>Cancelar</Button>
         <Button type="button" size="sm" onClick={save} disabled={pending}>
           {pending ? "Salvando…" : "Salvar"}
         </Button>
