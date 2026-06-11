@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", 
 
 export function AssignmentsAdmin({ assignments, teams, mods, settings: initial }: { assignments: AssignmentRow[]; teams: ModTeam[]; mods: ModOpt[]; settings: AssignmentSettings }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>("lista");
   const [s, setS] = useState(initial);
   const [savingS, setSavingS] = useState(false);
@@ -40,7 +42,7 @@ export function AssignmentsAdmin({ assignments, teams, mods, settings: initial }
     if (res.ok) { toast.success("Atribuição fechada."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function removeTeam(id: number, name: string) {
-    if (!window.confirm(`Excluir a equipe "${name}"?`)) return;
+    if (!(await confirm({ description: `Excluir a equipe "${name}"?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteTeamAction(id);
     if (res.ok) { toast.success("Equipe excluída."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

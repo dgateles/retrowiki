@@ -19,6 +19,7 @@ import {
 } from "@/lib/actions/report-actions";
 import type { ReportGroup, ReportType } from "@/lib/reports";
 import type { ReportingSettings } from "@/lib/settings";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 type Tab = "fila" | "tipos" | "config";
 
@@ -32,6 +33,7 @@ export function ReportsAdmin({
   settings: ReportingSettings;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>("fila");
   const [s, setS] = useState(initialSettings);
   const [savingS, setSavingS] = useState(false);
@@ -45,7 +47,7 @@ export function ReportsAdmin({
     if (res.ok) { toast.success(decision === "completed" ? "Conteúdo removido." : "Denúncia arquivada."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function removeType(id: number, title: string) {
-    if (!window.confirm(`Excluir o tipo "${title}"?`)) return;
+    if (!(await confirm({ description: `Excluir o tipo "${title}"?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteReportTypeAction(id);
     if (res.ok) { toast.success("Tipo excluído."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

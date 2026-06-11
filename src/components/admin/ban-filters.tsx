@@ -10,11 +10,13 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { createBanFilterAction, deleteBanFilterAction } from "@/lib/actions/ban-actions";
 import { BAN_TYPE_LABEL, type BanFilter, type BanType } from "@/lib/ban-types";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 
 const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
 export function BanFilters({ filters }: { filters: BanFilter[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<BanType>("ip");
   const [content, setContent] = useState("");
@@ -34,7 +36,7 @@ export function BanFilters({ filters }: { filters: BanFilter[] }) {
   }
 
   async function remove(id: number) {
-    if (!window.confirm("Excluir este filtro de banimento?")) return;
+    if (!(await confirm({ description: "Excluir este filtro de banimento?", confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteBanFilterAction(id);
     if (res.ok) { toast.success("Filtro excluído."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }

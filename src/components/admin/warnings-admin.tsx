@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Pencil, X } from "lucide-react";
@@ -37,6 +38,7 @@ function hoursLabel(h: number): string {
 
 export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons: WarningReason[]; actions: WarningAction[]; settings: WarningSettings }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [tab, setTab] = useState<Tab>("reasons");
   const [s, setS] = useState(initial);
   const [savingS, setSavingS] = useState(false);
@@ -53,12 +55,12 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
     setS((p) => ({ ...p, cannotWarnRoles: on ? [...new Set([...p.cannotWarnRoles, role])] : p.cannotWarnRoles.filter((r) => r !== role) }));
   }
   async function removeReason(id: number, name: string) {
-    if (!window.confirm(`Excluir o motivo "${name}"?`)) return;
+    if (!(await confirm({ description: `Excluir o motivo "${name}"?`, confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteReasonAction(id);
     if (res.ok) { toast.success("Motivo excluído."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
   async function removeAction(id: number) {
-    if (!window.confirm("Excluir esta ação?")) return;
+    if (!(await confirm({ description: "Excluir esta ação?", confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deleteActionAction(id);
     if (res.ok) { toast.success("Ação excluída."); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
