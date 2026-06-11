@@ -13,6 +13,7 @@ import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
 import { BadgeList } from "@/components/badges/badge-list";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Meu painel", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -83,58 +84,59 @@ export default async function PanelPage() {
 
       <ReferralCard link={referralLink} count={referralCount} />
 
-      <section aria-label="Rank" className="rank mt-6">
-        <div className="rank__head">
-          <span className="rank__label">{rank.label}</span>
-          <span className="rank__index">Rank {rank.index} de {rank.total}</span>
-        </div>
-        <progress
-          className="rank__progress"
-          value={Math.round(rank.progress * 100)}
-          max={100}
-          aria-label={`Progresso no rank ${rank.label}`}
-        />
-        <p className="rank__next">
-          {rank.next === null
-            ? "Rank máximo alcançado."
-            : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
-        </p>
-      </section>
+      <Card className="mt-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">{rank.label}</span>
+            <span className="text-xs text-muted-foreground">Rank {rank.index} de {rank.total}</span>
+          </div>
+          <progress
+            className="rank__progress"
+            value={Math.round(rank.progress * 100)}
+            max={100}
+            aria-label={`Progresso no rank ${rank.label}`}
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {rank.next === null
+              ? "Rank máximo alcançado."
+              : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
+          </p>
+        </CardContent>
+      </Card>
 
-      <dl className="stat-cards">
-        <div className="stat-card">
-          <dd className="stat-card__value">{drafts}</dd>
-          <dt className="stat-card__label">Rascunhos</dt>
-        </div>
-        <div className="stat-card">
-          <dd className="stat-card__value">{published}</dd>
-          <dt className="stat-card__label">Publicados</dt>
-        </div>
-        <div className="stat-card">
-          <dd className="stat-card__value">{commentCount}</dd>
-          <dt className="stat-card__label">Comentários</dt>
-        </div>
-        <div className="stat-card">
-          <dd className="stat-card__value">{user.reputation}</dd>
-          <dt className="stat-card__label">Reputação</dt>
-        </div>
+      <dl className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {[
+          { v: drafts, l: "Rascunhos" },
+          { v: published, l: "Publicados" },
+          { v: commentCount, l: "Comentários" },
+          { v: user.reputation, l: "Reputação" },
+        ].map((s) => (
+          <Card key={s.l} className="p-4">
+            <dd className="font-mono text-2xl font-bold tabular-nums">{s.v}</dd>
+            <dt className="mt-0.5 text-sm text-muted-foreground">{s.l}</dt>
+          </Card>
+        ))}
       </dl>
 
-      <section aria-labelledby="p-badges" className="panel-section mt-6">
-        <div className="panel-section__head">
-          <h2 id="p-badges" className="panel-section__title">Conquistas</h2>
-        </div>
-        <BadgeList items={userBadges} />
+      <section aria-labelledby="p-badges" className="mt-6">
+        <Card>
+          <CardHeader>
+            <h2 id="p-badges" className="text-base font-semibold leading-none">Conquistas</h2>
+          </CardHeader>
+          <CardContent><BadgeList items={userBadges} /></CardContent>
+        </Card>
       </section>
 
       <div className="panel-grid">
-        <section aria-labelledby="p-drafts" className="panel-section">
-          <div className="panel-section__head">
-            <h2 id="p-drafts" className="panel-section__title">Meu conteúdo</h2>
-            <Link href="/estudio" className="panel-section__link">Ver tudo</Link>
-          </div>
+        <section aria-labelledby="p-drafts">
+          <Card className="h-full">
+          <CardHeader className="flex-row items-center justify-between gap-2 space-y-0">
+            <h2 id="p-drafts" className="text-base font-semibold leading-none">Meu conteúdo</h2>
+            <Link href="/estudio" className="text-sm text-primary hover:underline">Ver tudo</Link>
+          </CardHeader>
+          <CardContent>
           {recent.length === 0 ? (
-            <p className="empty__text">Você ainda não escreveu nada.</p>
+            <p className="text-sm text-muted-foreground">Você ainda não escreveu nada.</p>
           ) : (
             <ul className="link-list">
               {recent.map((a) => {
@@ -154,15 +156,19 @@ export default async function PanelPage() {
               })}
             </ul>
           )}
+          </CardContent>
+          </Card>
         </section>
 
-        <section aria-labelledby="p-notifs" className="panel-section">
-          <div className="panel-section__head">
-            <h2 id="p-notifs" className="panel-section__title">Notificações</h2>
-            <Link href="/notificacoes" className="panel-section__link">Ver todas</Link>
-          </div>
+        <section aria-labelledby="p-notifs">
+          <Card className="h-full">
+          <CardHeader className="flex-row items-center justify-between gap-2 space-y-0">
+            <h2 id="p-notifs" className="text-base font-semibold leading-none">Notificações</h2>
+            <Link href="/notificacoes" className="text-sm text-primary hover:underline">Ver todas</Link>
+          </CardHeader>
+          <CardContent>
           {recentNotifs.length === 0 ? (
-            <p className="empty__text">Nada por aqui ainda.</p>
+            <p className="text-sm text-muted-foreground">Nada por aqui ainda.</p>
           ) : (
             <ul className="notif-list">
               {recentNotifs.map((n) => {
@@ -177,6 +183,8 @@ export default async function PanelPage() {
               })}
             </ul>
           )}
+          </CardContent>
+          </Card>
         </section>
       </div>
 
