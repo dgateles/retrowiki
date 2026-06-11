@@ -73,54 +73,52 @@ export default async function AccountPage({
               <h2 id="s-geral" className="settings-section__title">Visão geral</h2>
               <div className="settings-row">
                 <div>
-                  <dt className="settings-row__label">Avatar</dt>
-                  <dd className="settings-row__value muted">PNG, JPG, WEBP ou GIF (máx. 5 MB).</dd>
+                  <div className="settings-row__label">Avatar</div>
+                  <div className="settings-row__value muted">PNG, JPG, WEBP ou GIF (máx. 5 MB).</div>
                 </div>
                 <AvatarForm initial={user.avatarUrl ?? ""} />
               </div>
               <div className="settings-row">
                 <div>
-                  <dt className="settings-row__label">Capa do perfil</dt>
-                  <dd className="settings-row__value muted">Imagem larga exibida no topo do seu perfil.</dd>
+                  <div className="settings-row__label">Capa do perfil</div>
+                  <div className="settings-row__value muted">Imagem larga exibida no topo do seu perfil.</div>
                 </div>
                 <CoverForm initial={user.coverUrl ?? ""} />
               </div>
-              <dl>
                 <div className="settings-row">
                   <div>
-                    <dt className="settings-row__label">Nome de exibição</dt>
-                    <dd className="settings-row__value">{user.displayName}</dd>
+                    <div className="settings-row__label">Nome de exibição</div>
+                    <div className="settings-row__value">{user.displayName}</div>
                   </div>
                   <Link href="/conta?secao=nome" className="link-inline">Alterar</Link>
                 </div>
                 <div className="settings-row">
                   <div>
-                    <dt className="settings-row__label">Usuário</dt>
-                    <dd className="settings-row__value">
+                    <div className="settings-row__label">Usuário</div>
+                    <div className="settings-row__value">
                       <Link href={`/u/${user.handle}`} className="link-inline">@{user.handle}</Link>
-                    </dd>
+                    </div>
                   </div>
                 </div>
                 <div className="settings-row">
                   <div>
-                    <dt className="settings-row__label">E-mail</dt>
-                    <dd className="settings-row__value">{user.email}</dd>
+                    <div className="settings-row__label">E-mail</div>
+                    <div className="settings-row__value">{user.email}</div>
                   </div>
                   <Link href="/conta?secao=email" className="link-inline">Alterar</Link>
                 </div>
                 <div className="settings-row">
                   <div>
-                    <dt className="settings-row__label">Papel</dt>
-                    <dd className="settings-row__value">{roleLabel(user.role)}</dd>
+                    <div className="settings-row__label">Papel</div>
+                    <div className="settings-row__value">{roleLabel(user.role)}</div>
                   </div>
                 </div>
                 <div className="settings-row">
                   <div>
-                    <dt className="settings-row__label">Membro desde</dt>
-                    <dd className="settings-row__value">{memberSince}</dd>
+                    <div className="settings-row__label">Membro desde</div>
+                    <div className="settings-row__value">{memberSince}</div>
                   </div>
                 </div>
-              </dl>
             </section>
           )}
 

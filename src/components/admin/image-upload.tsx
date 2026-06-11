@@ -49,6 +49,7 @@ export function ImageUpload({
         <input
           ref={inputRef}
           type="file"
+          aria-label="Selecionar imagem para enviar"
           accept="image/png,image/jpeg,image/webp,image/gif"
           className="sr-only"
           onChange={(e) => {
