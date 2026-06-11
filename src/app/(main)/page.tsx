@@ -63,10 +63,6 @@ export default async function HomePage() {
           )}
         </section>
       </main>
-
-      <footer className="site-footer">
-        <div className="site-footer__inner">© {new Date().getFullYear()} RetroWiki</div>
-      </footer>
     </div>
   );
 }

@@ -1868,10 +1868,34 @@
 
   /* Rodapé do site. */
   .site-footer {
-    @apply border-t border-border;
+    @apply mt-16 border-t border-border bg-card/30;
   }
   .site-footer__inner {
-    @apply mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground;
+    @apply mx-auto max-w-6xl px-6 py-12 text-sm text-muted-foreground;
+  }
+  .site-footer__cols {
+    @apply grid grid-cols-2 gap-8 sm:grid-cols-4;
+  }
+  .site-footer__brand {
+    @apply col-span-2 sm:col-span-1;
+  }
+  .site-footer__logo {
+    @apply inline-flex items-center gap-2 text-base font-semibold text-foreground transition-colors hover:text-primary;
+  }
+  .site-footer__tagline {
+    @apply mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground;
+  }
+  .site-footer__heading {
+    @apply mb-3 block text-sm font-semibold text-foreground;
+  }
+  .site-footer__links {
+    @apply flex flex-col gap-2;
+  }
+  .site-footer__link {
+    @apply text-muted-foreground transition-colors hover:text-foreground;
+  }
+  .site-footer__bottom {
+    @apply mt-10 border-t border-border pt-6 text-xs text-muted-foreground;
   }
 
   /* Painel (dashboard) de usuário e moderador. */
