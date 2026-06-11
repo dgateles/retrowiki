@@ -13,8 +13,10 @@ export default async function HomePage() {
   if (home) {
     const layout = validateLayout(home.layout);
     if (layout) {
+      // Se a primeira seção é largura total, ela encosta no header (sem o gap do py-10).
+      const flushTop = layout.sections[0]?.full;
       return (
-        <main id="main" className="page">
+        <main id="main" className={`page${flushTop ? " page--flush-top" : ""}`}>
           <PageRenderer layout={layout} />
         </main>
       );

@@ -1640,6 +1640,12 @@
   .page--wide {
     @apply max-w-7xl;
   }
+  /* Home com herói de largura total: remove o respiro do topo para o fundo
+     encostar no header (como a home estática). O padY da seção dá o espaço
+     interno do conteúdo. */
+  .page--flush-top {
+    @apply pt-0;
+  }
   .page__note {
     @apply mt-2 text-sm text-muted-foreground;
   }
