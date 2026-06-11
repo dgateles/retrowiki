@@ -2,74 +2,82 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard, Users, Shield, TrendingUp, Globe, Lock,
+  ScrollText, Medal, Award, Target, Sparkles, Settings2,
+  IdCard, Heart, Bell, Ban, Gift,
+  Flag, ShieldAlert, TriangleAlert, ClipboardList,
+  ShieldCheck, Contact, FileText, Gamepad2, LayoutPanelLeft,
+  Megaphone, Mail, type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NavLink = { href: string; label: string; exact?: boolean };
+type NavLink = { href: string; label: string; icon: LucideIcon; exact?: boolean };
 type NavGroup = { title?: string; links: NavLink[] };
 
-// Navegação agrupada por seções, no estilo do AdminCP.
+// Navegação agrupada por seções, no estilo do AdminCP — ícone por item.
 const GROUPS: NavGroup[] = [
-  { links: [{ href: "/admin", label: "Visão geral", exact: true }] },
+  { links: [{ href: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true }] },
   {
     title: "Membros",
     links: [
-      { href: "/admin/membros", label: "Membros" },
-      { href: "/admin/grupos", label: "Grupos" },
-      { href: "/admin/promocoes", label: "Promoções" },
-      { href: "/admin/ip", label: "Ferramentas de IP" },
-      { href: "/admin/privacidade", label: "Privacidade (LGPD)" },
+      { href: "/admin/membros", label: "Membros", icon: Users },
+      { href: "/admin/grupos", label: "Grupos", icon: Shield },
+      { href: "/admin/promocoes", label: "Promoções", icon: TrendingUp },
+      { href: "/admin/ip", label: "Ferramentas de IP", icon: Globe },
+      { href: "/admin/privacidade", label: "Privacidade (LGPD)", icon: Lock },
     ],
   },
   {
     title: "Conquistas",
     links: [
-      { href: "/admin/regras", label: "Regras" },
-      { href: "/admin/ranks", label: "Ranks" },
-      { href: "/admin/badges", label: "Badges" },
-      { href: "/admin/quests", label: "Missões" },
-      { href: "/admin/gamificacao", label: "Gamificação", exact: true },
-      { href: "/admin/gamificacao/configuracoes", label: "Configurações" },
+      { href: "/admin/regras", label: "Regras", icon: ScrollText },
+      { href: "/admin/ranks", label: "Ranks", icon: Medal },
+      { href: "/admin/badges", label: "Badges", icon: Award },
+      { href: "/admin/quests", label: "Missões", icon: Target },
+      { href: "/admin/gamificacao", label: "Gamificação", icon: Sparkles, exact: true },
+      { href: "/admin/gamificacao/configuracoes", label: "Configurações", icon: Settings2 },
     ],
   },
   {
     title: "Config. de membros",
     links: [
-      { href: "/admin/perfis", label: "Perfis" },
-      { href: "/admin/reputacao", label: "Reputação & Reações" },
-      { href: "/admin/notificacoes", label: "Notificações" },
-      { href: "/admin/banimentos", label: "Banimentos" },
-      { href: "/admin/indicacoes", label: "Indicações" },
+      { href: "/admin/perfis", label: "Perfis", icon: IdCard },
+      { href: "/admin/reputacao", label: "Reputação & Reações", icon: Heart },
+      { href: "/admin/notificacoes", label: "Notificações", icon: Bell },
+      { href: "/admin/banimentos", label: "Banimentos", icon: Ban },
+      { href: "/admin/indicacoes", label: "Indicações", icon: Gift },
     ],
   },
   {
     title: "Moderação de conteúdo",
     links: [
-      { href: "/admin/denuncias", label: "Denúncias" },
-      { href: "/admin/spam", label: "Prevenção de spam" },
-      { href: "/admin/avisos", label: "Avisos" },
-      { href: "/admin/atribuicoes", label: "Atribuições" },
+      { href: "/admin/denuncias", label: "Denúncias", icon: Flag },
+      { href: "/admin/spam", label: "Prevenção de spam", icon: ShieldAlert },
+      { href: "/admin/avisos", label: "Avisos", icon: TriangleAlert },
+      { href: "/admin/atribuicoes", label: "Atribuições", icon: ClipboardList },
     ],
   },
   {
     title: "Equipe",
     links: [
-      { href: "/admin/moderadores", label: "Moderadores" },
-      { href: "/admin/diretorio", label: "Diretório da equipe" },
+      { href: "/admin/moderadores", label: "Moderadores", icon: ShieldCheck },
+      { href: "/admin/diretorio", label: "Diretório da equipe", icon: Contact },
     ],
   },
   {
     title: "Conteúdo",
     links: [
-      { href: "/admin/artigos", label: "Artigos" },
-      { href: "/admin/consoles", label: "Consoles" },
-      { href: "/admin/paginas", label: "Páginas" },
+      { href: "/admin/artigos", label: "Artigos", icon: FileText },
+      { href: "/admin/consoles", label: "Consoles", icon: Gamepad2 },
+      { href: "/admin/paginas", label: "Páginas", icon: LayoutPanelLeft },
     ],
   },
   {
     title: "Comunicação",
     links: [
-      { href: "/admin/anuncios", label: "Anúncios" },
-      { href: "/admin/bulk-mail", label: "E-mail em massa" },
+      { href: "/admin/anuncios", label: "Anúncios", icon: Megaphone },
+      { href: "/admin/bulk-mail", label: "E-mail em massa", icon: Mail },
     ],
   },
 ];
@@ -90,7 +98,8 @@ export function AdminNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn("admin__link", active && "admin__link--active")}
               >
-                {l.label}
+                <l.icon className="admin__link-icon" aria-hidden="true" />
+                <span className="truncate">{l.label}</span>
               </Link>
             );
           })}

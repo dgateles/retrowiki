@@ -99,10 +99,20 @@
     @apply mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
   }
   .admin__link {
-    @apply rounded-md border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+    @apply flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .admin__link-icon {
+    @apply size-4 shrink-0 text-muted-foreground/70 transition-colors;
+  }
+  .admin__link:hover .admin__link-icon {
+    @apply text-foreground;
   }
   .admin__link--active {
-    @apply border border-primary/30 bg-primary/10 text-primary;
+    @apply border-primary/30 bg-primary/10 text-primary;
+  }
+  .admin__link--active .admin__link-icon {
+    @apply text-primary;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--primary) 50%, transparent));
   }
   .admin__main {
     @apply min-w-0;
