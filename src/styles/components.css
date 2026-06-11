@@ -2026,6 +2026,23 @@
     @apply border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-400;
   }
 
+  /* Selo inline de nível de emulação (usado na tabela de comparação). */
+  .emu-pill {
+    @apply inline-block rounded-md border px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide;
+  }
+  .emu-pill--excellent {
+    @apply border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400;
+  }
+  .emu-pill--good {
+    @apply border-yellow-500/30 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400;
+  }
+  .emu-pill--playable {
+    @apply border-orange-500/30 bg-orange-500/15 text-orange-600 dark:text-orange-400;
+  }
+  .emu-pill--poor {
+    @apply border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-400;
+  }
+
   /* Prós e contras. */
   .proscons {
     @apply grid gap-6 md:grid-cols-2;

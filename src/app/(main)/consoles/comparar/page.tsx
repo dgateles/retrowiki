@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { GitCompare } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { listDevices, getDeviceBySlug, type DeviceDetail } from "@/lib/devices";
 import { FilterBar } from "@/components/catalog/filter-bar";
 
@@ -9,11 +11,11 @@ export const metadata: Metadata = {
   description: "Compare specs e capacidade de emulação de handhelds retrô lado a lado.",
 };
 
-function emuLabel(score: number) {
-  if (score >= 95) return "Excelente";
-  if (score >= 75) return "Bom";
-  if (score >= 50) return "Jogável";
-  return "Ruim";
+function emuLevel(score: number): { label: string; mod: string } {
+  if (score >= 95) return { label: "Excelente", mod: "emu-pill--excellent" };
+  if (score >= 75) return { label: "Bom", mod: "emu-pill--good" };
+  if (score >= 50) return { label: "Jogável", mod: "emu-pill--playable" };
+  return { label: "Ruim", mod: "emu-pill--poor" };
 }
 
 function specValue(d: DeviceDetail): Record<string, string> {
@@ -75,7 +77,12 @@ export default async function ComparePage({
       />
 
       {selected.length < 2 ? (
-        <p className="empty mt-8">Escolha pelo menos dois consoles para ver a comparação.</p>
+        <div className="empty mt-8">
+          <GitCompare className="empty__icon" aria-hidden="true" />
+          <p className="empty__text">
+            Escolha pelo menos dois consoles acima para ver a comparação lado a lado.
+          </p>
+        </div>
       ) : (
         <div className="compare">
           <table className="compare__table">
@@ -121,7 +128,13 @@ export default async function ComparePage({
                   <th scope="row" className="compare__key">{sys}</th>
                   {selected.map((d) => {
                     const e = d.emulation.find((x) => x.system === sys);
-                    return <td key={d.device.id} className="compare__val">{e ? emuLabel(e.score) : "—"}</td>;
+                    if (!e) return <td key={d.device.id} className="compare__val text-muted-foreground">—</td>;
+                    const lv = emuLevel(e.score);
+                    return (
+                      <td key={d.device.id} className="compare__val">
+                        <span className={cn("emu-pill", lv.mod)}>{lv.label}</span>
+                      </td>
+                    );
                   })}
                 </tr>
               ))}
