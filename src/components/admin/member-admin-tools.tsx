@@ -7,6 +7,8 @@ import { Plus, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { createMemberAction, importMembersAction } from "@/lib/actions/member-actions";
 
@@ -81,15 +83,18 @@ export function MemberAdminTools() {
             </div>
             <div className="field">
               <Label htmlFor="cm-role">Papel</Label>
-              <select id="cm-role" className="rte__select" value={role} onChange={(e) => setRole(e.target.value)}>
-                <option value="member">Membro</option>
-                <option value="contributor">Colaborador</option>
-                <option value="moderator">Moderador</option>
-                <option value="admin">Administrador</option>
-              </select>
+              <Select value={role} onValueChange={setRole}>
+                <SelectTrigger id="cm-role" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">Membro</SelectItem>
+                  <SelectItem value="contributor">Colaborador</SelectItem>
+                  <SelectItem value="moderator">Moderador</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <label className="rule-form__check">
-              <input type="checkbox" checked={setPwd} onChange={(e) => setSetPwd(e.target.checked)} /> Definir uma senha agora
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox checked={setPwd} onCheckedChange={(c) => setSetPwd(c === true)} /> Definir uma senha agora
             </label>
             {setPwd ? (
               <div className="field">

@@ -7,6 +7,7 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { recalculateBadgesAction, awardBadgeAction, revokeBadgeAction } from "@/lib/actions/badge-actions";
 
 type Opt = { slug: string; name: string };
@@ -67,11 +68,12 @@ export function GamificationTools({ badges }: { badges: Opt[] }) {
           </div>
           <div className="field">
             <Label htmlFor="gami-badge">Badge</Label>
-            <select id="gami-badge" className="rte__select" value={slug} onChange={(e) => setSlug(e.target.value)}>
-              {badges.map((b) => (
-                <option key={b.slug} value={b.slug}>{b.name}</option>
-              ))}
-            </select>
+            <Select value={slug} onValueChange={setSlug}>
+              <SelectTrigger id="gami-badge" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {badges.map((b) => <SelectItem key={b.slug} value={b.slug}>{b.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div className="gami-tools__actions">
             <Button type="button" size="sm" disabled={pending} onClick={() => run(() => awardBadgeAction(handle, slug))}>

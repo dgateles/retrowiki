@@ -7,6 +7,8 @@ import { TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { warnMemberAction } from "@/lib/actions/warning-actions";
 
@@ -47,12 +49,15 @@ export function WarnMember({ userId, reasons }: { userId: number; reasons: Reaso
           <div className="member-create">
             <div className="field">
               <Label htmlFor="wm-reason">Motivo</Label>
-              <select id="wm-reason" className="rte__select" value={reasonId} onChange={(e) => onReasonChange(Number(e.target.value))}>
-                {reasons.map((r) => (<option key={r.id} value={r.id}>{r.name} ({r.points} pt)</option>))}
-              </select>
+              <Select value={String(reasonId)} onValueChange={(v) => onReasonChange(Number(v))}>
+                <SelectTrigger id="wm-reason" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {reasons.map((r) => <SelectItem key={r.id} value={String(r.id)}>{r.name} ({r.points} pt)</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="field"><Label htmlFor="wm-points">Pontos</Label><Input id="wm-points" type="number" min={0} className="w-32" value={points} onChange={(e) => setPoints(e.target.value)} /></div>
-            <div className="field"><Label htmlFor="wm-note">Nota</Label><textarea id="wm-note" className="q-textarea" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
+            <div className="field"><Label htmlFor="wm-note">Nota</Label><Textarea id="wm-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} /></div>
           </div>
           <div className="modal-actions">
             <DialogClose asChild><Button type="button" variant="ghost" size="sm">Cancelar</Button></DialogClose>
