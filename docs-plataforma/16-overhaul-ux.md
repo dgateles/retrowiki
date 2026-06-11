@@ -3,9 +3,8 @@
 Spec: `OVERHAUL-UX.md`. Direção: moderno com acento retro/gamer sutil, base shadcn,
 premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas → conta → admin**.
 
-## Fase 1 — Fundação + shell global (em andamento)
+## Fase 1 — Fundação + shell global ✓ CONCLUÍDA
 
-### Entregue
 - **Primitivos shadcn instalados**: badge, alert, tabs, sheet, tooltip, avatar,
   skeleton, separator, breadcrumb, switch, checkbox, radio-group, textarea, popover,
   table, scroll-area, drawer. (já existiam: button, card, dialog, dropdown-menu,
@@ -16,15 +15,16 @@ premium, A/AA, mobile app-like. Ordem: **fundação + shell global → públicas
   (Navegar + Conta/Sair ou Criar conta/Entrar). Renderizado como irmão do
   `<header>` (o header tem `backdrop-filter`, que cria containing block e jogava o
   `fixed` pro topo — corrigido). Conteúdo do `(main)` ganhou padding inferior no
-  mobile. Antes: no mobile **não havia navegação alguma** (`.site-header__nav` é
-  `hidden sm:flex`). Verificado: barra no rodapé (bottom=innerHeight), drawer abre,
-  desktop inalterado (barra `display:none`, nav inline volta), **axe 0 violações**.
-
-### Pendente nesta fase
-- Refino de tokens/tipografia (escala tipográfica, acento mono em selos/dados,
-  sombras/cantos suaves) em `globals.css`.
-- Polimento do header desktop (densidade, busca, foco) e header compacto no mobile.
-- Skip link "pular para o conteúdo" + landmark `<main id>`.
+  mobile. Antes: no mobile **não havia navegação alguma**. Verificado: barra no
+  rodapé, drawer abre, desktop inalterado, **axe 0 violações**.
+- **Tokens semânticos completados** em `globals.css`: `--success/-foreground`,
+  `--warning/-foreground`, `--info/-foreground` (light+dark) mapeados no
+  `@theme inline` → variantes consistentes de Alert/Badge nas próximas fases.
+- **Polimento base premium**: `:focus-visible` elegante (outline 2px ring +offset),
+  `::selection` esmeralda, font-smoothing, `text-wrap: balance` em títulos e
+  `pretty` em parágrafos. Skip link "Pular para o conteúdo" agora visível só ao
+  foco (já existia + `<main id="main">` em 19/21 páginas).
+- Build de produção limpo; tokens resolvem; skip link e foco verificados no navegador.
 
 ## Próximas fases
 2. Páginas públicas (home, consoles lista/detalhe/comparar, guias, blog, perfil) +

@@ -22,7 +22,11 @@
   --destructive: hsl(0 72% 51%);
   --destructive-foreground: hsl(0 0% 100%);
   --success: hsl(142 71% 45%);
+  --success-foreground: hsl(0 0% 100%);
   --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(38 92% 12%);
+  --info: hsl(199 89% 48%);
+  --info-foreground: hsl(0 0% 100%);
   --border: hsl(214 32% 91%);
   --input: hsl(214 32% 91%);
   --ring: hsl(160 84% 39%);
@@ -47,7 +51,11 @@
   --destructive: hsl(0 63% 51%);
   --destructive-foreground: hsl(210 40% 98%);
   --success: hsl(142 71% 45%);
+  --success-foreground: hsl(222 47% 6%);
   --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(38 92% 10%);
+  --info: hsl(199 89% 52%);
+  --info-foreground: hsl(222 47% 6%);
   --border: hsl(217 33% 17%);
   --input: hsl(217 33% 20%);
   --ring: hsl(160 84% 45%);
@@ -71,7 +79,11 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -91,6 +103,40 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* Títulos: tracking levemente fechado + quebra equilibrada (premium) */
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Foco visível elegante e consistente (WCAG 2.4.7) */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+  /* Acento retro sutil: numerais tabulares em dados/selos via .tabular-nums (shadcn) */
+}
+
+@layer components {
+  /* Skip link — visível só ao receber foco pelo teclado */
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only fixed left-4 top-4 z-[100] rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg outline-none;
+    clip: auto;
+    width: auto;
+    height: auto;
   }
 }
 
