@@ -1815,6 +1815,24 @@
     @apply lg:grid-cols-3;
   }
 
+  /* Hover premium reaproveitável: elevação + brilho esmeralda (qualquer card). */
+  .card-glow {
+    @apply transition-all duration-200;
+  }
+  .card-glow:hover {
+    @apply border-primary/60;
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent),
+      0 12px 30px -14px color-mix(in srgb, var(--primary) 50%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-glow,
+    .card-glow:hover {
+      @apply transform-none transition-none;
+    }
+  }
+
   /* Card de console — microinteração retro (elevação + brilho esmeralda no hover). */
   .device-card {
     @apply relative flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-all duration-200;

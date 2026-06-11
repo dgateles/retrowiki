@@ -1,11 +1,12 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { Gamepad2 } from "lucide-react";
 import { listDevices, listManufacturers, type DeviceFilters } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { FilterBar } from "@/components/catalog/filter-bar";
+import { DeviceCard } from "@/components/catalog/device-card";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
 export const metadata: Metadata = {
   title: "Consoles",
@@ -72,34 +73,33 @@ export default async function ConsolesPage({
       </p>
 
       {devices.length === 0 ? (
-        <div className="empty mt-8">
-          <Gamepad2 className="empty__icon" aria-hidden="true" />
-          <p className="empty__text">
-            {filters.manufacturer || filters.formFactor
-              ? "Nenhum console corresponde a esses filtros."
-              : "O catálogo ainda não tem consoles."}
-          </p>
+        <Empty className="mt-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Gamepad2 aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>
+              {filters.manufacturer || filters.formFactor
+                ? "Nenhum console encontrado"
+                : "Catálogo vazio"}
+            </EmptyTitle>
+            <EmptyDescription>
+              {filters.manufacturer || filters.formFactor
+                ? "Nenhum console corresponde a esses filtros. Tente ajustá-los."
+                : "Os consoles aparecerão aqui assim que forem cadastrados."}
+            </EmptyDescription>
+          </EmptyHeader>
           {(filters.manufacturer || filters.formFactor) && (
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link href="/consoles">Limpar filtros</Link>
-            </Button>
+            <EmptyContent>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/consoles">Limpar filtros</Link>
+              </Button>
+            </EmptyContent>
           )}
-        </div>
+        </Empty>
       ) : (
         <ul className="grid-cards grid-cards--three">
           {devices.map((d) => (
             <li key={d.id}>
-              <Link href={`/consoles/${d.slug}`} className="device-card">
-                <span className="device-card__media">
-                  {d.frontImage ? (
-                    <Image src={d.frontImage} alt={`${d.name}, vista frontal`} fill sizes="160px" className="device-card__img" />
-                  ) : (
-                    <Gamepad2 className="device-card__placeholder" aria-hidden="true" />
-                  )}
-                </span>
-                <span className="device-card__brand">{d.manufacturer}</span>
-                <span className="device-card__name">{d.name}</span>
-              </Link>
+              <DeviceCard slug={d.slug} name={d.name} manufacturer={d.manufacturer} frontImage={d.frontImage} />
             </li>
           ))}
         </ul>

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Gamepad2, ArrowRight, GitCompare } from "lucide-react";
 import { listDevices } from "@/lib/devices";
 import { Button } from "@/components/ui/button";
+import { DeviceCard } from "@/components/catalog/device-card";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 
 export default async function HomePage() {
   const devices = await listDevices();
@@ -43,22 +44,18 @@ export default async function HomePage() {
           </div>
 
           {devices.length === 0 ? (
-            <p className="empty">O catálogo será populado pelo seed.</p>
+            <Empty className="mt-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon"><Gamepad2 aria-hidden="true" /></EmptyMedia>
+                <EmptyTitle>Catálogo vazio</EmptyTitle>
+                <EmptyDescription>Os consoles aparecerão aqui assim que forem cadastrados.</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <ul className="grid-cards">
               {devices.map((d) => (
                 <li key={d.id}>
-                  <Link href={`/consoles/${d.slug}`} className="device-card">
-                    <span className="device-card__media">
-                      {d.frontImage ? (
-                        <Image src={d.frontImage} alt={`${d.name}, vista frontal`} fill sizes="160px" className="device-card__img" />
-                      ) : (
-                        <Gamepad2 className="device-card__placeholder" aria-hidden="true" />
-                      )}
-                    </span>
-                    <span className="device-card__brand">{d.manufacturer}</span>
-                    <span className="device-card__name">{d.name}</span>
-                  </Link>
+                  <DeviceCard slug={d.slug} name={d.name} manufacturer={d.manufacturer} frontImage={d.frontImage} />
                 </li>
               ))}
             </ul>
