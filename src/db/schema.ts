@@ -46,6 +46,8 @@ export const users = mysqlTable(
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
+    // Incrementado ao trocar/resetar a senha — invalida sessões JWT antigas.
+    sessionVersion: int("session_version").notNull().default(0),
     emailVerifiedAt: datetime("email_verified_at"),
     lastSeenAt: datetime("last_seen_at"),
     createdAt: createdAt(),

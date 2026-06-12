@@ -22,6 +22,8 @@ export async function getCurrentUser(): Promise<User | null> {
     .where(eq(users.id, Number(session.user.id)))
     .limit(1);
   if (!user) return null;
+  // Sessão revogada: usuário suspenso ou senha trocada (sessionVersion mudou).
+  if (user.isSuspended || user.sessionVersion !== (session.user.sv ?? 0)) return null;
 
   // Presença: atualiza "visto por último" no máximo a cada 5 min.
   const last = user.lastSeenAt ? new Date(user.lastSeenAt).getTime() : 0;
@@ -37,15 +39,19 @@ export async function getCurrentUser(): Promise<User | null> {
 
 export type SessionUser = { id: string; role: UserRole; handle: string };
 
-/** Garante que há um usuário autenticado; lança caso contrário. */
+/** Garante que há um usuário autenticado; lança caso contrário. Revalida contra
+ * o banco (papel/suspensão/sessionVersion atuais), não confia só no JWT — assim
+ * suspensão, rebaixamento e troca de senha têm efeito imediato. */
 export async function requireUser(): Promise<SessionUser> {
   const session = await auth();
   if (!session?.user?.id) throw new Error("UNAUTHENTICATED");
-  return {
-    id: session.user.id,
-    role: session.user.role,
-    handle: session.user.handle,
-  };
+  const [u] = await db
+    .select({ id: users.id, role: users.role, handle: users.handle, isSuspended: users.isSuspended, sessionVersion: users.sessionVersion })
+    .from(users)
+    .where(eq(users.id, Number(session.user.id)))
+    .limit(1);
+  if (!u || u.isSuspended || u.sessionVersion !== (session.user.sv ?? 0)) throw new Error("UNAUTHENTICATED");
+  return { id: String(u.id), role: u.role, handle: u.handle };
 }
 
 const RANK: Record<UserRole, number> = {

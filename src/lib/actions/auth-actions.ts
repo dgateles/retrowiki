@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -223,7 +223,8 @@ export async function resetPasswordAction(input: { token: string; password: stri
   if (!row) return { ok: false, error: "Link inválido ou expirado." };
 
   const passwordHash = await hashPassword(parsed.data.password);
-  await db.update(users).set({ passwordHash }).where(eq(users.email, row.email));
+  // Invalida sessões antigas (JWT) ao redefinir a senha.
+  await db.update(users).set({ passwordHash, sessionVersion: sql`${users.sessionVersion} + 1` }).where(eq(users.email, row.email));
   try {
     await sendEmail({ to: row.email, ...passwordChanged() });
   } catch {

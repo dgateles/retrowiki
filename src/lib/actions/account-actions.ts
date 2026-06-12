@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
@@ -114,7 +114,8 @@ export async function changePasswordAction(input: unknown): Promise<Result> {
   if (!ok) return { ok: false, error: "Senha atual incorreta." };
 
   const passwordHash = await hashPassword(parsed.data.newPassword);
-  await db.update(users).set({ passwordHash }).where(eq(users.id, user.id));
+  // Invalida sessões antigas (JWT) ao trocar a senha.
+  await db.update(users).set({ passwordHash, sessionVersion: sql`${users.sessionVersion} + 1` }).where(eq(users.id, user.id));
 
   try {
     await sendEmail({ to: user.email, ...passwordChanged() });

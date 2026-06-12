@@ -65,6 +65,7 @@ export async function setUserSuspendedAction(userId: number, suspended: boolean)
 export async function setUserTrustedAction(userId: number, trusted: boolean): Promise<Result> {
   const actor = await asAdmin();
   if (!actor) return { ok: false, error: "Acesso restrito." };
+  if (Number(actor.id) === userId) return { ok: false, error: "Você não pode alterar a si mesmo." };
 
   try {
     await db.update(users).set({ trusted }).where(eq(users.id, userId));

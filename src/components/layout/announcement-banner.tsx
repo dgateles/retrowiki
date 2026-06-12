@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { isSafeHref } from "@/lib/safe-url";
 import type { Announcement } from "@/lib/announcements";
 
 const KEY = "rw-dismissed-announcements";
@@ -41,7 +42,7 @@ export function AnnouncementBanner({ items }: { items: Announcement[] }) {
         <div key={a.id} className={cn("announce__bar", `announce__bar--${a.variant}`)} role="status">
           <p className="announce__msg">
             {a.message}
-            {/^(https?:\/\/|\/)/i.test(a.linkUrl) && (
+            {isSafeHref(a.linkUrl) && (
               <>
                 {" "}
                 <Link href={a.linkUrl} className="announce__link">{a.linkLabel || "Saiba mais"}</Link>

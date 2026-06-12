@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { slugify } from "@/lib/utils";
 
-export type OAuthUser = { id: number; role: string; handle: string; isSuspended: boolean };
+export type OAuthUser = { id: number; role: string; handle: string; isSuspended: boolean; sessionVersion: number };
 
 /** Encontra (ou cria) um usuário a partir de um login social. O e-mail do Google
  * já é verificado, então a conta entra com `emailVerifiedAt`. Sem senha. */
@@ -13,7 +13,7 @@ export async function getOrCreateOAuthUser(email: string, name?: string | null, 
   if (!lower || !/@/.test(lower)) return null;
 
   try {
-    const [existing] = await db.select({ id: users.id, role: users.role, handle: users.handle, isSuspended: users.isSuspended, avatarUrl: users.avatarUrl, emailVerifiedAt: users.emailVerifiedAt, passwordHash: users.passwordHash }).from(users).where(eq(users.email, lower)).limit(1);
+    const [existing] = await db.select({ id: users.id, role: users.role, handle: users.handle, isSuspended: users.isSuspended, sessionVersion: users.sessionVersion, avatarUrl: users.avatarUrl, emailVerifiedAt: users.emailVerifiedAt, passwordHash: users.passwordHash }).from(users).where(eq(users.email, lower)).limit(1);
     if (existing) {
       // Segurança (anti-account-takeover): NÃO vincular automaticamente a uma
       // conta com senha que nunca confirmou o e-mail — ela pode ter sido
@@ -29,7 +29,7 @@ export async function getOrCreateOAuthUser(email: string, name?: string | null, 
       if (!existing.emailVerifiedAt) patch.emailVerifiedAt = new Date();
       if (!existing.avatarUrl && image) patch.avatarUrl = image.slice(0, 500);
       if (Object.keys(patch).length) await db.update(users).set(patch).where(eq(users.id, existing.id));
-      return { id: existing.id, role: existing.role, handle: existing.handle, isSuspended: existing.isSuspended };
+      return { id: existing.id, role: existing.role, handle: existing.handle, isSuspended: existing.isSuspended, sessionVersion: existing.sessionVersion };
     }
 
     // Cria um handle único a partir do nome ou do local-part do e-mail.
@@ -50,7 +50,7 @@ export async function getOrCreateOAuthUser(email: string, name?: string | null, 
       avatarUrl: image ? image.slice(0, 500) : null,
     });
     const id = (res as unknown as { insertId: number }).insertId;
-    return { id, role: "member", handle, isSuspended: false };
+    return { id, role: "member", handle, isSuspended: false, sessionVersion: 0 };
   } catch {
     return null;
   }

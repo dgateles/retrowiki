@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { HEX_COLOR, FONT_SIZES, ALIGNMENTS } from "@/lib/editor/options";
+import { isSafeHref } from "@/lib/safe-url";
 
 // Validação por allowlist do documento do editor rico (formato ProseMirror/TipTap).
 // Só os nós, marcas e atributos abaixo são aceitos; o resto é rejeitado no
@@ -10,10 +11,7 @@ const safeHref = z
   .string()
   .trim()
   .max(2000)
-  .refine(
-    (h) => /^https?:\/\//i.test(h) || h.startsWith("/") || h.startsWith("#") || h.startsWith("mailto:"),
-    "URL não permitida",
-  );
+  .refine((h) => isSafeHref(h), "URL não permitida");
 
 const align = z.enum(ALIGNMENTS).nullish();
 

@@ -3,6 +3,7 @@ import { Check, Star, Zap, Shield, Heart, Gamepad2, Download, Settings, Info, Tr
 import type { Layout, Widget } from "@/lib/pages";
 import type { IconKey } from "@/lib/page-icons";
 import { parseVideoEmbed } from "@/lib/video-embed";
+import { isSafeHref } from "@/lib/safe-url";
 import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
@@ -75,7 +76,7 @@ export const COL_VALIGN: Record<string, string> = { top: "justify-start", center
 export const COL_BG: Record<string, string> = { none: "", muted: "rounded-lg bg-muted/40 p-4", card: "rounded-lg border border-border bg-card p-4" };
 
 function safeHref(href: string): string | null {
-  return /^(https?:\/\/|\/|#)/i.test(href) ? href : null;
+  return isSafeHref(href) ? href : null;
 }
 
 export function WidgetView({ w }: { w: Widget }) {

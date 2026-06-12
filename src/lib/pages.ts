@@ -6,17 +6,18 @@ import { pages } from "@/db/schema";
 import { parseVideoEmbed } from "@/lib/video-embed";
 import { ICON_KEYS } from "@/lib/page-icons";
 import { RichDocSchema } from "@/lib/blocks/rich-schema";
+import { isSafeHref, isSafeImageSrc } from "@/lib/safe-url";
 
 // ── Allowlist do layout (seções → colunas → widgets) ────────────────────────
 // Fonte da verdade da segurança: o que não está aqui é descartado. Nada de
 // HTML cru, scripts ou CSS arbitrário; tudo é renderizado via JSX.
 
 const url = z.string().trim().max(500).refine(
-  (u) => u === "" || /^(https?:\/\/|\/|#)/i.test(u),
+  (u) => u === "" || isSafeHref(u),
   "URL inválida.",
 );
 const imageUrl = z.string().trim().max(500).refine(
-  (u) => u === "" || /^(https:\/\/|\/)/i.test(u),
+  (u) => u === "" || isSafeImageSrc(u),
   "Imagem deve vir de uma URL https.",
 );
 const ALIGN = z.enum(["left", "center", "right"]).default("left");
