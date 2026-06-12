@@ -16,17 +16,21 @@ export function DeviceCard({ slug, name, manufacturer, frontImage }: Props) {
   return (
     <Link href={`/consoles/${slug}`} className="group block h-full">
       <Card className="card-glow flex h-full flex-col gap-3 p-4">
-        <div className="crt-screen flex h-28 items-center justify-center p-3">
+        <div className="crt-screen relative aspect-[4/3] w-full p-6">
           {frontImage ? (
-            <Image
-              src={frontImage}
-              alt={`${name}, vista frontal`}
-              fill
-              sizes="200px"
-              className="object-contain transition-transform duration-300 group-hover:scale-105"
-            />
+            <span className="relative block h-full w-full">
+              <Image
+                src={frontImage}
+                alt={`${name}, vista frontal`}
+                fill
+                sizes="240px"
+                className="object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+            </span>
           ) : (
-            <Gamepad2 className="size-12 text-muted-foreground/30" aria-hidden="true" />
+            <span className="flex h-full w-full items-center justify-center">
+              <Gamepad2 className="size-12 text-muted-foreground/30" aria-hidden="true" />
+            </span>
           )}
         </div>
         <div className="flex flex-col gap-1.5">
