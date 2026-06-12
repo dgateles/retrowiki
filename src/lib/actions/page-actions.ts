@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth-helpers";
 import { logModAction } from "@/lib/panel";
-import { createPage, deletePage, getPageById, getHomePage, updatePage, uniquePageSlug, validateLayout, validateSection, createBlock, deleteBlock, type Layout } from "@/lib/pages";
+import { createPage, deletePage, getPageById, updatePage, uniquePageSlug, validateLayout, validateSection, createBlock, deleteBlock, type Layout } from "@/lib/pages";
 import { slugify } from "@/lib/utils";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -64,15 +64,28 @@ function defaultHomeLayout(): Layout {
   };
 }
 
-/** Cria (ou reaproveita) a página inicial editável a partir da home atual. */
+/** Abre (ou cria) a página inicial editável. Idempotente: reaproveita uma página
+ *  já marcada como inicial — ou uma "pagina-inicial" semeada antes — e garante
+ *  que ela seja a home (isHome + publicada), em vez de criar uma página solta. */
 export async function seedHomePageAction(): Promise<Result<{ id: number }>> {
   const actor = await admin();
   if (!actor) return { ok: false, error: "Acesso restrito." };
 
-  // Idempotente: se já existe página inicial, apenas abre o construtor dela.
-  const existingHome = await getHomePage();
-  if (existingHome) return { ok: true, data: { id: existingHome.id } };
+  const { getHomePageAny, getPageBySlug, setPageAsHome } = await import("@/lib/pages");
 
+  // 1) já existe uma página inicial (qualquer status)? abre ela.
+  // 2) senão, uma página semeada antes (slug pagina-inicial)? reaproveita e marca.
+  const existing = (await getHomePageAny()) ?? (await getPageBySlug("pagina-inicial"));
+  if (existing) {
+    if (!existing.isHome) {
+      await setPageAsHome(existing.id);
+      revalidatePath("/", "layout");
+      revalidatePath("/admin/paginas");
+    }
+    return { ok: true, data: { id: existing.id } };
+  }
+
+  // 3) cria a página inicial já publicada e marcada como home.
   const layout = validateLayout(defaultHomeLayout());
   if (!layout) return { ok: false, error: "Falha ao montar o layout inicial." };
 
@@ -85,14 +98,15 @@ export async function seedHomePageAction(): Promise<Result<{ id: number }>> {
     slug,
     metaDescription: "",
     layout,
-    status: "draft",
+    status: "published",
     showInMenu: false,
     menuOrder: 0,
     noindex: false,
-    isHome: false, // o admin ativa o toggle e publica para substituir a home
+    isHome: true, // passa a ser a home em / imediatamente
   });
   await logModAction(Number(actor.id), "page_create", `page:${id}`, { home_seed: true });
   revalidatePath("/admin/paginas");
+  revalidatePath("/", "layout");
   return { ok: true, data: { id } };
 }
 

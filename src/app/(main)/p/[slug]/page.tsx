@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getPublishedPage, validateLayout, EMPTY_LAYOUT } from "@/lib/pages";
 import { PageRenderer } from "@/components/pages/page-renderer";
 
@@ -18,6 +18,8 @@ export default async function CustomPage({ params }: { params: Promise<{ slug: s
   const { slug } = await params;
   const p = await getPublishedPage(slug);
   if (!p) notFound();
+  // A página inicial mora em "/", não duplica em /p/slug.
+  if (p.isHome) redirect("/");
   const layout = validateLayout(p.layout) ?? EMPTY_LAYOUT;
 
   return (

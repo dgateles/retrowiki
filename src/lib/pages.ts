@@ -244,6 +244,37 @@ export async function getHomePage(): Promise<PageRow | null> {
   }
 }
 
+/** Página marcada como inicial, em qualquer status (para o construtor). */
+export async function getHomePageAny(): Promise<PageRow | null> {
+  try {
+    const [p] = await db.select().from(pages).where(eq(pages.isHome, true)).limit(1);
+    return p ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Busca por slug em qualquer status. */
+export async function getPageBySlug(slug: string): Promise<PageRow | null> {
+  try {
+    const [p] = await db.select().from(pages).where(eq(pages.slug, slug)).limit(1);
+    return p ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Marca uma página como inicial (desmarca as demais). */
+export async function setPageAsHome(id: number): Promise<boolean> {
+  try {
+    await db.update(pages).set({ isHome: false }).where(eq(pages.isHome, true));
+    await db.update(pages).set({ isHome: true }).where(eq(pages.id, id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Páginas publicadas marcadas para aparecer no menu do header. */
 export async function getMenuPages(): Promise<{ slug: string; title: string }[]> {
   try {
