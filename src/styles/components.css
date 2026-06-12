@@ -2063,10 +2063,12 @@
 
   /* Grade de itens. */
   .grid-cards {
-    @apply mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4;
+    @apply mt-6 grid gap-4;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
+  /* Mantido por compat; a grade base já é compacta (auto-fill ~220px). */
   .grid-cards--three {
-    @apply lg:grid-cols-3;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 
   /* Hover premium reaproveitável: elevação + brilho esmeralda (qualquer card). */

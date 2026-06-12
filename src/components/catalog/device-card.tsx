@@ -16,14 +16,14 @@ export function DeviceCard({ slug, name, manufacturer, frontImage }: Props) {
   return (
     <Link href={`/consoles/${slug}`} className="group block h-full">
       <Card className="card-glow flex h-full flex-col gap-3 p-4">
-        <div className="crt-screen relative aspect-[4/3] w-full p-6">
+        <div className="crt-screen relative mx-auto h-[150px] w-[195px] max-w-full p-3">
           {frontImage ? (
             <span className="relative block h-full w-full">
               <Image
                 src={frontImage}
                 alt={`${name}, vista frontal`}
                 fill
-                sizes="240px"
+                sizes="195px"
                 className="object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </span>
