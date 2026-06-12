@@ -116,7 +116,7 @@ function fromBlockTree(blocks: Block[]): EditorBlock[] {
   });
 }
 
-type Initial = { articleId: number; title: string; type: (typeof TYPES)[number]["type"]; blocks: Block[]; published?: boolean };
+type Initial = { articleId: number; title: string; type: (typeof TYPES)[number]["type"]; blocks: Block[]; published?: boolean; isAuthor?: boolean };
 
 export function BlockEditor({ initial }: { initial?: Initial }) {
   const router = useRouter();
@@ -125,7 +125,10 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
   const [blocks, setBlocks] = useState<EditorBlock[]>(
     initial && initial.blocks.length ? fromBlockTree(initial.blocks) : [newBlock("paragraph")],
   );
+  const [note, setNote] = useState("");
   const [pending, setPending] = useState(false);
+  const isProposal = !!initial?.published;
+  const isAuthor = initial?.isAuthor !== false;
 
   const update = (id: string, patch: Partial<EditorBlock>) =>
     setBlocks((bs) => bs.map((b) => (b._id === id ? ({ ...b, ...patch } as EditorBlock) : b)));
@@ -227,7 +230,7 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
   async function onProposeEdit() {
     if (!initial?.articleId) return;
     setPending(true);
-    const payload = { title, type, deviceId: null, body: JSON.stringify(toBlockTree()) };
+    const payload = { title, type, deviceId: null, body: JSON.stringify(toBlockTree()), note };
     const res = await proposeEditAction(initial.articleId, payload);
     setPending(false);
     if (res.ok) {
@@ -405,10 +408,28 @@ export function BlockEditor({ initial }: { initial?: Initial }) {
         ))}
       </div>
 
+      {isProposal && (
+        <div className="field">
+          <Label htmlFor="edit-note">Justificativa da alteração</Label>
+          <Textarea
+            id="edit-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            required
+            minLength={10}
+            maxLength={300}
+            rows={3}
+            placeholder={isAuthor ? "O que você mudou nesta versão?" : "Explique o que mudou e por quê — um moderador vai revisar antes de publicar."}
+            aria-describedby="edit-note-hint"
+          />
+          <p id="edit-note-hint" className="muted text-sm">Obrigatório · 10–300 caracteres. Vai junto para a fila de moderação.</p>
+        </div>
+      )}
+
       <div className="btn-row">
-        {initial?.published ? (
-          <Button type="button" onClick={onProposeEdit} disabled={pending || title.length < 8 || blocks.length === 0}>
-            {pending ? "Enviando…" : "Enviar alteração para revisão"}
+        {isProposal ? (
+          <Button type="button" onClick={onProposeEdit} disabled={pending || title.length < 8 || blocks.length === 0 || note.trim().length < 10}>
+            {pending ? "Enviando…" : isAuthor ? "Enviar alteração para revisão" : "Enviar sugestão para revisão"}
           </Button>
         ) : (
           <>

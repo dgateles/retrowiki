@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { highlightCode } from "@/lib/prism";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
+import { CalloutBlock, StepsBlock } from "@/components/blocks/static-blocks";
+import { GithubReleasesBlock } from "@/components/blocks/github-releases";
 
 // Renderiza o documento do editor rico (TipTap/ProseMirror) com segurança:
 // nós e marcas mapeados para elementos via JSX. Estilos inline (cor, tamanho,
@@ -195,6 +197,14 @@ function renderBlock(node: Node, key: number): React.ReactNode {
       );
     case "horizontalRule":
       return <hr key={key} className="blk-hr" />;
+    // Blocos-widget atômicos: reaproveitam os mesmos componentes do render
+    // estático para manter paridade visual com o formato antigo.
+    case "callout":
+      return <CalloutBlock key={key} variant={node.attrs?.variant ?? "info"} text={node.attrs?.text ?? ""} />;
+    case "steps":
+      return <StepsBlock key={key} items={node.attrs?.items ?? []} />;
+    case "githubReleases":
+      return <GithubReleasesBlock key={key} owner={node.attrs?.owner} repo={node.attrs?.repo} limit={node.attrs?.limit} />;
     default:
       return null;
   }

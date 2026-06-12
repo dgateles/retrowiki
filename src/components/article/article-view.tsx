@@ -48,7 +48,7 @@ function relTime(d: Date) {
  * a trilha, o cabeçalho e os rótulos de navegação. */
 export async function ArticleView({ a }: { a: PublishedArticle }) {
   const isBlog = a.kind === "blog";
-  const section = isBlog ? { label: "Blog", href: "/blog", back: "Voltar ao blog", edit: "Editar post" } : { label: "Guias", href: "/guias", back: "Voltar aos guias", edit: "Editar guia" };
+  const section = isBlog ? { label: "Blog", href: "/blog", back: "Voltar ao blog", edit: "Editar post", propose: "Sugerir edição" } : { label: "Guias", href: "/guias", back: "Voltar aos guias", edit: "Editar guia", propose: "Sugerir edição" };
 
   const session = await auth();
   const userId = session?.user ? Number(session.user.id) : null;
@@ -175,9 +175,11 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
           {userId && userId !== a.authorId && reportTypeOpts.length > 0 && (
             <ReportButton targetType="article" targetId={a.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} />
           )}
-          {userId === a.authorId && (
+          {userId === a.authorId ? (
             <Link href={`/estudio/${a.id}`} className="report-trigger"><Pencil className="size-4" aria-hidden="true" /><span>{section.edit}</span></Link>
-          )}
+          ) : userId ? (
+            <Link href={`/estudio/${a.id}`} className="report-trigger"><Pencil className="size-4" aria-hidden="true" /><span>{section.propose}</span></Link>
+          ) : null}
           {isMod && assignSettings.enabled && (
             <AssignButton articleId={a.id} mods={assigneeOptions.users} teams={assigneeOptions.teams} />
           )}

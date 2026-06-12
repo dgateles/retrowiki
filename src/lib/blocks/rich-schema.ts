@@ -93,7 +93,12 @@ export type RichNode =
   | { type: "tableHeader"; attrs?: { colspan: number; rowspan: number }; content?: RichNode[] }
   | { type: "tableCell"; attrs?: { colspan: number; rowspan: number }; content?: RichNode[] }
   | { type: "horizontalRule" }
-  | { type: "hardBreak" };
+  | { type: "hardBreak" }
+  // Blocos-widget atômicos (migrados do formato antigo de blocos): guardam os
+  // dados nos attrs, sem conteúdo aninhado.
+  | { type: "callout"; attrs: { variant: "info" | "success" | "warning" | "danger"; text: string } }
+  | { type: "steps"; attrs: { items: { title: string; text: string }[] } }
+  | { type: "githubReleases"; attrs: { owner: string; repo: string; limit: number } };
 
 const arr = () => z.array(Node).max(400).optional();
 
@@ -128,6 +133,30 @@ const Node = z.lazy(() =>
     z.object({ type: z.literal("tableCell"), attrs: cellAttrs, content: arr() }),
     z.object({ type: z.literal("horizontalRule") }),
     z.object({ type: z.literal("hardBreak") }),
+    z.object({
+      type: z.literal("callout"),
+      attrs: z.object({
+        variant: z.enum(["info", "success", "warning", "danger"]).catch("info"),
+        text: z.string().max(2000),
+      }),
+    }),
+    z.object({
+      type: z.literal("steps"),
+      attrs: z.object({
+        items: z
+          .array(z.object({ title: z.string().max(160), text: z.string().max(2000) }))
+          .max(30)
+          .default([]),
+      }),
+    }),
+    z.object({
+      type: z.literal("githubReleases"),
+      attrs: z.object({
+        owner: z.string().regex(/^[A-Za-z0-9-]{1,39}$/),
+        repo: z.string().regex(/^[A-Za-z0-9._-]{1,100}$/),
+        limit: z.coerce.number().int().min(1).max(5).catch(3),
+      }),
+    }),
   ]),
 ) as unknown as z.ZodType<RichNode>;
 
@@ -148,6 +177,8 @@ export function richDocToText(doc: RichDoc): string {
   const walk = (nodes?: RichNode[]) => {
     for (const n of nodes ?? []) {
       if (n.type === "text") parts.push(n.text);
+      else if (n.type === "callout") parts.push(n.attrs.text);
+      else if (n.type === "steps") n.attrs.items.forEach((it) => parts.push(it.title, it.text));
       else if ("content" in n) walk(n.content);
     }
   };

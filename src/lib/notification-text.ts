@@ -34,6 +34,8 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `"${title}" precisa de ajustes${p.reason ? `: ${p.reason}` : "."}`, href: articleHref };
     case "article.rejected":
       return { text: `"${title}" foi rejeitado${p.reason ? `: ${p.reason}` : "."}`, href: articleHref };
+    case "article.edit_proposed":
+      return { text: `Alguém sugeriu uma edição em "${title}". Aguarda revisão da moderação.`, href: articleHref };
     case "comment.reply":
       return { text: `${actor} comentou em "${title}".`, href: commentHref, image: p.actorAvatar, actor };
     case "comment.quote":

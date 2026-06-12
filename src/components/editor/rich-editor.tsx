@@ -23,6 +23,7 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code, Subscript as SubIcon, Superscript as SupIcon,
   Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link as LinkIcon, Smile, RemoveFormatting,
   Rows3, Columns3, Grid2x2, Trash2, Pilcrow, ChevronDown, Search as SearchIcon,
+  AlertTriangle, ListChecks, Github,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Box, Spoiler } from "@/components/editor/box-node";
+import { Callout, Steps, GithubReleases } from "@/components/editor/widget-nodes";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, EMOJIS, CODE_LANGS } from "@/lib/editor/options";
 
 function TBtn({ onClick, active, label, children }: { onClick: () => void; active?: boolean; label: string; children: React.ReactNode }) {
@@ -228,6 +230,9 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
         <DropdownMenuItem onSelect={() => run(() => chain().toggleOrderedList().run())}><ListOrdered aria-hidden="true" /> Lista numerada</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("spoiler").run())}><EyeOff aria-hidden="true" /> Spoiler</DropdownMenuItem>
         {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleCodeBlock().run())}><Code2 aria-hidden="true" /> Bloco de código</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().insertContent({ type: "callout", attrs: { variant: "info", text: "" } }).run())}><AlertTriangle aria-hidden="true" /> Alerta</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().insertContent({ type: "steps", attrs: { items: [{ title: "", text: "" }] } }).run())}><ListChecks aria-hidden="true" /> Passos</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().insertContent({ type: "githubReleases", attrs: { owner: "", repo: "", limit: 3 } }).run())}><Github aria-hidden="true" /> Releases do GitHub</DropdownMenuItem>}
         {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleWrap("box").run())}><SquareStack aria-hidden="true" /> Box</DropdownMenuItem>}
         {full && <DropdownMenuItem onSelect={() => run(() => chain().toggleBlockquote().run())}><Quote aria-hidden="true" /> Citação</DropdownMenuItem>}
         {full && <DropdownMenuItem onSelect={() => run(() => chain().setHorizontalRule().run())}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>}
@@ -403,6 +408,9 @@ export function RichEditor({ value, onChange, variant = "full", placeholder = "E
       Image,
       Box,
       Spoiler,
+      Callout,
+      Steps,
+      GithubReleases,
     ],
     content: value ?? "",
     onUpdate: ({ editor: e }) => onChange(e.getJSON()),

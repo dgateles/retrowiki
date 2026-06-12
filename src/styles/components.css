@@ -2447,6 +2447,65 @@
   .rte-cv__body {
     @apply px-3 pb-2 pt-1;
   }
+
+  /* Nós-widget do editor rico (callout, passos, releases): mini-formulários. */
+  .rte-wgt {
+    @apply my-3 rounded-lg border border-border bg-muted/30 p-3;
+  }
+  .rte-wgt--callout-info {
+    @apply border-l-4 border-l-blue-500;
+  }
+  .rte-wgt--callout-success {
+    @apply border-l-4 border-l-green-500;
+  }
+  .rte-wgt--callout-warning {
+    @apply border-l-4 border-l-amber-500;
+  }
+  .rte-wgt--callout-danger {
+    @apply border-l-4 border-l-red-500;
+  }
+  .rte-wgt__head {
+    @apply mb-2 flex items-center gap-2;
+  }
+  .rte-wgt__label {
+    @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  }
+  .rte-wgt__select {
+    @apply h-7 rounded-md border border-border bg-background px-2 text-sm;
+  }
+  .rte-wgt__textarea {
+    @apply w-full resize-y rounded-md border border-border bg-background px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+  .rte-wgt__input {
+    @apply h-8 rounded-md border border-border bg-background px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+  .rte-wgt__input--num {
+    @apply w-16;
+  }
+  .rte-wgt__steps {
+    @apply space-y-2;
+  }
+  .rte-wgt__step {
+    @apply flex items-start gap-2;
+  }
+  .rte-wgt__step-num {
+    @apply mt-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary;
+  }
+  .rte-wgt__step-fields {
+    @apply flex flex-1 flex-col gap-1;
+  }
+  .rte-wgt__step-fields .rte-wgt__input {
+    @apply w-full;
+  }
+  .rte-wgt__remove {
+    @apply mt-1 inline-flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive;
+  }
+  .rte-wgt__add {
+    @apply mt-2 inline-flex items-center gap-1 rounded-md border border-dashed border-border px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
+  }
+  .rte-wgt__gh-fields {
+    @apply flex flex-wrap items-center gap-2;
+  }
   .blk-spoiler {
     @apply my-5 overflow-hidden rounded-lg border border-border;
   }

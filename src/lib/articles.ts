@@ -1,5 +1,6 @@
 import "server-only";
 import { and, desc, eq, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/mysql-core";
 import { db } from "@/db";
 import { articles, revisions, reviews, users, devices, comments } from "@/db/schema";
 import type { BlockTree } from "@/lib/blocks/schema";
@@ -135,6 +136,7 @@ export const QUEUE_PAGE_SIZE = 20;
 
 export async function getModerationQueue(page = 1) {
   const offset = (Math.max(1, page) - 1) * QUEUE_PAGE_SIZE;
+  const editors = alias(users, "queue_editors");
   try {
     const rows = await db
       .select({
@@ -142,7 +144,11 @@ export async function getModerationQueue(page = 1) {
         title: articles.title,
         type: articles.type,
         status: articles.status,
+        authorId: articles.authorId,
         authorHandle: users.handle,
+        editorId: revisions.editorId,
+        editorHandle: editors.handle,
+        note: revisions.note,
         reviewId: reviews.id,
         revisionId: reviews.revisionId,
         submittedAt: reviews.createdAt,
@@ -151,6 +157,7 @@ export async function getModerationQueue(page = 1) {
       .innerJoin(revisions, eq(revisions.id, reviews.revisionId))
       .innerJoin(articles, eq(articles.id, revisions.articleId))
       .innerJoin(users, eq(users.id, articles.authorId))
+      .leftJoin(editors, eq(editors.id, revisions.editorId))
       .where(eq(reviews.decision, "pending"))
       .orderBy(desc(reviews.createdAt))
       .limit(QUEUE_PAGE_SIZE + 1)

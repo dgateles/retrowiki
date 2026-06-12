@@ -53,6 +53,16 @@ const CreateSchema = z.object({
   body: z.unknown(),
 });
 
+// Edição colaborativa de um guia publicado: exige uma justificativa (resumo da
+// alteração) que o moderador vê na fila antes de aprovar.
+const ProposeSchema = CreateSchema.extend({
+  note: z
+    .string()
+    .trim()
+    .min(10, "Explique brevemente o que mudou (mínimo 10 caracteres).")
+    .max(300, "Justificativa muito longa (máximo 300 caracteres)."),
+});
+
 export async function createDraftAction(input: unknown): Promise<Result<{ id: number }>> {
   let user;
   try {
@@ -148,8 +158,10 @@ export async function updateDraftAction(articleId: number, input: unknown): Prom
   return { ok: true, data: { id: articleId } };
 }
 
-/** Edição de um artigo JÁ PUBLICADO: cria uma nova revisão pendente sem derrubar
- * a versão no ar. A troca só ocorre quando um moderador aprova. */
+/** Edição colaborativa de um artigo JÁ PUBLICADO (modelo wiki): qualquer membro
+ * logado pode propor uma alteração. A proposta cria uma nova revisão pendente,
+ * com justificativa, e vai para a fila de moderação — a versão no ar permanece
+ * até um moderador aprovar. */
 export async function proposeEditAction(articleId: number, input: unknown): Promise<Result> {
   let user;
   try {
@@ -163,19 +175,19 @@ export async function proposeEditAction(articleId: number, input: unknown): Prom
   const gate = await postingGate(Number(user.id));
   if (!gate.ok) return { ok: false, error: gate.error };
 
-  const parsed = CreateSchema.safeParse(input);
+  const parsed = ProposeSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
 
   const [article] = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
   if (!article) return { ok: false, error: "Conteúdo não encontrado." };
-  if (article.authorId !== Number(user.id)) return { ok: false, error: "Sem permissão." };
   if (article.status !== "published") return { ok: false, error: "Use o fluxo de rascunho para conteúdo não publicado." };
 
   const checked = validateBody(parsed.data.body);
   if (!checked.ok) return { ok: false, error: checked.error };
 
   // Nova revisão (não vira a corrente) + review pendente. Os metadados (título,
-  // tipo, console) ficam versionados na revisão e só entram no ar ao aprovar.
+  // tipo, console) e a justificativa ficam versionados na revisão; só entram no
+  // ar ao aprovar.
   const [rev] = await db.insert(revisions).values({
     articleId,
     body: checked.body,
@@ -183,11 +195,27 @@ export async function proposeEditAction(articleId: number, input: unknown): Prom
     type: parsed.data.type,
     deviceId: parsed.data.deviceId ?? null,
     editorId: Number(user.id),
+    note: parsed.data.note,
   });
   const revisionId = (rev as unknown as { insertId: number }).insertId;
   await db.insert(reviews).values({ revisionId, decision: "pending" });
 
-  return { ok: true, message: "Alteração enviada para revisão. A versão atual continua no ar até a aprovação." };
+  // Avisa o autor do guia quando a sugestão vem de outra pessoa.
+  if (article.authorId !== Number(user.id)) {
+    await createNotification(article.authorId, "article.edit_proposed", {
+      articleId: article.id,
+      slug: article.slug,
+      title: article.title,
+    });
+  }
+
+  const mine = article.authorId === Number(user.id);
+  return {
+    ok: true,
+    message: mine
+      ? "Alteração enviada para revisão. A versão atual continua no ar até a aprovação."
+      : "Sugestão enviada para revisão. O autor foi avisado e a versão atual continua no ar até a aprovação.",
+  };
 }
 
 export async function submitForReviewAction(articleId: number): Promise<Result> {

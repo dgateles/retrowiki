@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { JSONContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { RichEditor } from "@/components/editor/rich-editor";
@@ -20,7 +21,7 @@ const TYPES = [
   { type: "general", label: "Geral" },
 ] as const;
 
-type Initial = { articleId: number; title: string; type: string; doc: JSONContent; published?: boolean; kind?: "guide" | "blog"; coverImage?: string | null };
+type Initial = { articleId: number; title: string; type: string; doc: JSONContent; published?: boolean; kind?: "guide" | "blog"; coverImage?: string | null; isAuthor?: boolean };
 
 export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initial; kind?: "guide" | "blog" }) {
   const router = useRouter();
@@ -30,7 +31,10 @@ export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initi
   const [type, setType] = useState(String(initial?.type ?? (isBlog ? "general" : "tutorial")));
   const [coverImage, setCoverImage] = useState<string>(initial?.coverImage ?? "");
   const [doc, setDoc] = useState<JSONContent | null>(initial?.doc ?? null);
+  const [note, setNote] = useState("");
   const [pending, setPending] = useState(false);
+  const isProposal = !!initial?.published;
+  const isAuthor = initial?.isAuthor !== false;
   const backTo = isBlog ? "/blog" : "/guias";
 
   function payload() {
@@ -79,7 +83,7 @@ export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initi
   async function onProposeEdit() {
     if (!initial?.articleId) return;
     setPending(true);
-    const res = await proposeEditAction(initial.articleId, payload());
+    const res = await proposeEditAction(initial.articleId, { ...payload(), note });
     setPending(false);
     if (res.ok) {
       toast.success(res.message ?? "Alteração enviada para revisão.");
@@ -116,10 +120,28 @@ export function RichArticleEditor({ initial, kind: kindProp }: { initial?: Initi
         <RichEditor value={initial?.doc} onChange={setDoc} />
       </div>
 
+      {isProposal && (
+        <div className="field">
+          <Label htmlFor="edit-note">Justificativa da alteração</Label>
+          <Textarea
+            id="edit-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            required
+            minLength={10}
+            maxLength={300}
+            rows={3}
+            placeholder={isAuthor ? "O que você mudou nesta versão?" : "Explique o que mudou e por quê — um moderador vai revisar antes de publicar."}
+            aria-describedby="edit-note-hint"
+          />
+          <p id="edit-note-hint" className="muted text-sm">Obrigatório · 10–300 caracteres. Vai junto para a fila de moderação.</p>
+        </div>
+      )}
+
       <div className="btn-row">
-        {initial?.published ? (
-          <Button type="button" onClick={onProposeEdit} disabled={pending || title.length < 8}>
-            {pending ? "Enviando…" : "Enviar alteração para revisão"}
+        {isProposal ? (
+          <Button type="button" onClick={onProposeEdit} disabled={pending || title.length < 8 || note.trim().length < 10}>
+            {pending ? "Enviando…" : isAuthor ? "Enviar alteração para revisão" : "Enviar sugestão para revisão"}
           </Button>
         ) : (
           <>

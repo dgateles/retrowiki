@@ -96,9 +96,17 @@ export default async function ModerationPage({
                   <span className="mod-item__kind">{typeLabel(q.type)}</span>
                   <h2 className="mod-item__title">{q.title}</h2>
                   <p className="mod-item__author">por @{q.authorHandle}</p>
+                  {q.editorHandle && q.editorId !== q.authorId && (
+                    <p className="mod-item__author">Sugestão de edição por <strong>@{q.editorHandle}</strong></p>
+                  )}
                 </div>
                 <ModerationActions reviewId={q.reviewId} />
               </div>
+              {q.note && (
+                <p className="mod-item__note mt-2 text-sm">
+                  <strong>Justificativa:</strong> {q.note}
+                </p>
+              )}
               <details className="mod-preview">
                 <summary className="mod-preview__summary">Pré-visualizar conteúdo</summary>
                 <div className="mod-preview__body">
