@@ -99,6 +99,18 @@ const WidgetSchema = z.discriminatedUnion("type", [
       description: z.string().max(200).default(""),
     })).min(1).max(20),
   }),
+  // Logo Clouds — faixa de logos (parceiros/marcas), em grade ou marquee.
+  z.object({
+    type: z.literal("logoCloud"),
+    title: z.string().max(120).default(""),
+    display: z.enum(["grid", "marquee"]).default("grid"),
+    grayscale: z.boolean().default(true),
+    items: z.array(z.object({
+      image: imageUrl,
+      alt: z.string().max(120).default(""),
+      href: url.optional().default(""),
+    })).min(1).max(24),
+  }),
   // Lista de downloads (versão, tamanho, data, changelog, checksum SHA256).
   z.object({
     type: z.literal("download"),

@@ -233,6 +233,32 @@ export function WidgetView({ w }: { w: Widget }) {
         </div>
       );
     }
+    case "logoCloud": {
+      const logos = w.items.filter((it) => it.image);
+      const Logo = ({ it }: { it: { image: string; alt: string; href?: string } }) => {
+        const cls = cn("page-w__logo", w.grayscale && "page-w__logo--gray");
+        /* eslint-disable-next-line @next/next/no-img-element */
+        const img = <img src={it.image} alt={it.alt} className={cls} loading="lazy" />;
+        const href = it.href ? safeHref(it.href) : null;
+        return href
+          ? <a href={href} rel="nofollow noopener noreferrer" target="_blank" className="page-w__logo-link">{img}</a>
+          : img;
+      };
+      return (
+        <div className="page-w__logos">
+          {w.title && <p className="page-w__logos-title">{w.title}</p>}
+          {w.display === "marquee" ? (
+            <Marquee className="[--duration:28s]" pauseOnHover>
+              {logos.map((it, i) => <span key={i} className="mx-6 inline-flex items-center">{<Logo it={it} />}</span>)}
+            </Marquee>
+          ) : (
+            <div className="page-w__logos-grid">
+              {logos.map((it, i) => <Logo key={i} it={it} />)}
+            </div>
+          )}
+        </div>
+      );
+    }
     case "richtext":
       return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
     case "deviceGrid":

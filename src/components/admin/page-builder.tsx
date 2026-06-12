@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -45,6 +45,7 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "marquee", label: "Marquee", icon: ArrowLeftRight },
   { type: "bento", label: "Bento Grid", icon: LayoutGrid },
   { type: "animatedList", label: "Lista animada", icon: List },
+  { type: "logoCloud", label: "Logo Clouds", icon: Building2 },
   { type: "download", label: "Downloads", icon: Download },
   { type: "firmware", label: "Firmwares", icon: HardDrive },
   { type: "buyingGuide", label: "Guia de compra", icon: ShoppingCart },
@@ -72,6 +73,7 @@ function newWidget(type: WidgetType): Widget {
     case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
     case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
     case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
+    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", grayscale: true, items: [{ image: "", alt: "", href: "" }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -981,6 +983,37 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           ))}
           {w.items.length < 20 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { icon: "check", title: "Notificação", description: "" }] })}><Plus className="size-3.5" /> Adicionar item</button>}
         </div>
+      )}
+      {w.type === "logoCloud" && (
+        <>
+          <div className="field"><Label>Título (opcional)</Label><Input value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={120} placeholder="Parceiros" /></div>
+          <div className="field">
+            <Label>Exibição</Label>
+            <Select value={w.display} onValueChange={(val) => onChange({ display: val as "grid" | "marquee" })}>
+              <SelectTrigger aria-label="Exibição" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="grid">Grade</SelectItem>
+                <SelectItem value="marquee">Marquee (rolagem)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <label className="flex items-center gap-2 text-sm"><Checkbox checked={w.grayscale} onCheckedChange={(c) => onChange({ grayscale: c === true })} /> Escala de cinza (colore ao passar o mouse)</label>
+          <div className="field">
+            <Label>Logos</Label>
+            {w.items.map((it, i) => (
+              <div key={i} className="pb-acc-item space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Logo {i + 1}</span>
+                  {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
+                </div>
+                <ImageUpload value={it.image} onChange={(image) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, image } : x) })} folder="pages" />
+                <Input value={it.alt} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, alt: e.target.value } : x) })} placeholder="Nome / alt" maxLength={120} />
+                <Input value={it.href} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, href: e.target.value } : x) })} placeholder="Link (opcional)" maxLength={500} />
+              </div>
+            ))}
+            {w.items.length < 24 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { image: "", alt: "", href: "" }] })}><Plus className="size-3.5" /> Adicionar logo</button>}
+          </div>
+        </>
       )}
       {w.type === "iconList" && (
         <div className="field">

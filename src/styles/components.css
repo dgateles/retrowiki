@@ -1015,6 +1015,14 @@
   .page-w__alist-title { @apply font-semibold leading-tight; }
   .page-w__alist-desc { @apply truncate text-sm text-muted-foreground; }
 
+  /* Logo Clouds (faixa de logos de parceiros/marcas). */
+  .page-w__logos { @apply w-full; }
+  .page-w__logos-title { @apply mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground; }
+  .page-w__logos-grid { @apply flex flex-wrap items-center justify-center gap-x-10 gap-y-6; }
+  .page-w__logo { @apply h-8 w-auto max-w-[160px] object-contain sm:h-10; }
+  .page-w__logo--gray { @apply opacity-70 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0; }
+  .page-w__logo-link { @apply inline-flex items-center; }
+
   .page-w__divider { @apply border-t border-border; }
   .page-w__spacer--sm { @apply h-4; }
   .page-w__spacer--md { @apply h-8; }
