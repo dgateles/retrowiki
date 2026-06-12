@@ -219,3 +219,18 @@ export async function seedMenuDefaultsAction(location: MenuLocation): Promise<Re
     return { ok: false, error: "Falha ao popular." };
   }
 }
+
+// ── Texto do rodapé (tagline + copyright) ──────────────────────────────────
+
+export async function saveFooterSettingsAction(body: string): Promise<Result> {
+  if (!(await admin())) return { ok: false, error: "Acesso restrito." };
+  try {
+    const { setSetting, sanitizeFooterSettings } = await import("@/lib/settings");
+    await setSetting("footer", sanitizeFooterSettings(JSON.parse(body)));
+    revalidatePath("/", "layout"); // rodapé aparece em todas as páginas
+    revalidatePath("/admin/menus");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Falha ao salvar." };
+  }
+}

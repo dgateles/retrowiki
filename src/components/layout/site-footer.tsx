@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { Gamepad2 } from "lucide-react";
 import { getMenuTree, seedToTree, DEFAULT_FOOTER } from "@/lib/menu";
+import { getFooterSettings } from "@/lib/settings";
 
 export async function SiteFooter() {
   const tree = await getMenuTree("footer");
   const cols = tree.length ? tree : seedToTree(DEFAULT_FOOTER);
+  const footer = await getFooterSettings();
+  const copyright = footer.copyright.replaceAll("{year}", String(new Date().getFullYear()));
 
   return (
     <footer className="site-footer">
@@ -14,9 +17,7 @@ export async function SiteFooter() {
             <Link href="/" className="site-footer__logo">
               <Gamepad2 className="size-5 text-primary" aria-hidden="true" /> RetroWiki
             </Link>
-            <p className="site-footer__tagline">
-              O catálogo e os guias de emulação portátil, feitos pela comunidade.
-            </p>
+            <p className="site-footer__tagline">{footer.tagline}</p>
           </div>
 
           {cols.map((col) =>
@@ -39,7 +40,7 @@ export async function SiteFooter() {
           )}
         </div>
 
-        <div className="site-footer__bottom">© {new Date().getFullYear()} RetroWiki</div>
+        <div className="site-footer__bottom">{copyright}</div>
       </div>
     </footer>
   );

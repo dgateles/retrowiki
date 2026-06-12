@@ -254,6 +254,30 @@ export async function getStaffSettings(): Promise<StaffSettings> {
   return sanitizeStaffSettings({ ...STAFF_DEFAULTS, ...raw });
 }
 
+// ── Rodapé (texto editável) ───────────────────────────────────────────────
+
+export type FooterSettings = { tagline: string; copyright: string };
+const FOOTER_DEFAULTS: FooterSettings = {
+  tagline: "O catálogo e os guias de emulação portátil, feitos pela comunidade.",
+  // {year} é substituído pelo ano atual no render.
+  copyright: "© {year} RetroWiki",
+};
+
+export function sanitizeFooterSettings(raw: unknown): FooterSettings {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const tagline = String(r.tagline ?? FOOTER_DEFAULTS.tagline).slice(0, 300);
+  const copyright = String(r.copyright ?? FOOTER_DEFAULTS.copyright).slice(0, 200);
+  return {
+    tagline: tagline.trim() || FOOTER_DEFAULTS.tagline,
+    copyright: copyright.trim() || FOOTER_DEFAULTS.copyright,
+  };
+}
+
+export async function getFooterSettings(): Promise<FooterSettings> {
+  const raw = await getSetting<Partial<FooterSettings>>("footer", FOOTER_DEFAULTS);
+  return sanitizeFooterSettings({ ...FOOTER_DEFAULTS, ...raw });
+}
+
 // ── Galeria de fotos ──────────────────────────────────────────────────────
 
 export type GallerySettings = { enabled: boolean; maxPhotos: number };

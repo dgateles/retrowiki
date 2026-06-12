@@ -1,5 +1,7 @@
 import { getAllMenuItems, ensureMenuSeeded } from "@/lib/menu";
+import { getFooterSettings } from "@/lib/settings";
 import { MenuManager } from "@/components/admin/menu-manager";
+import { FooterSettingsForm } from "@/components/admin/footer-settings-form";
 
 export const dynamic = "force-dynamic";
 
@@ -7,7 +9,11 @@ export default async function AdminMenusPage() {
   // Materializa o padrão em localizações vazias para que o editor reflita o
   // que o site exibe (header/footer usam o mesmo padrão como fallback).
   await ensureMenuSeeded();
-  const [header, footer] = await Promise.all([getAllMenuItems("header"), getAllMenuItems("footer")]);
+  const [header, footer, footerSettings] = await Promise.all([
+    getAllMenuItems("header"),
+    getAllMenuItems("footer"),
+    getFooterSettings(),
+  ]);
 
   return (
     <>
@@ -19,6 +25,9 @@ export default async function AdminMenusPage() {
         Submenus aparecem dentro de flyouts/dropdowns; flyouts mostram ícone e descrição.
       </p>
       <MenuManager header={header} footer={footer} />
+      <div className="mt-8">
+        <FooterSettingsForm initial={footerSettings} />
+      </div>
     </>
   );
 }
