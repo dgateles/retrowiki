@@ -51,7 +51,14 @@ export function ArticleBody({ body }: { body: unknown }) {
   if (isRichDoc(body)) {
     const rich = RichDocSchema.safeParse(body);
     if (!rich.success) return null;
-    return <RichContent doc={rich.data} />;
+    // O bloco de releases depende do banco (server-only): injeta-se aqui para
+    // manter o render rico compartilhável com o cliente.
+    return (
+      <RichContent
+        doc={rich.data}
+        renderGithub={(a) => <GithubReleasesBlock owner={a.owner} repo={a.repo} limit={a.limit} />}
+      />
+    );
   }
   // Formato antigo: árvore de blocos.
   const parsed = BlockTreeSchema.safeParse(body);

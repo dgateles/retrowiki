@@ -2,7 +2,22 @@ import { Fragment } from "react";
 import { highlightCode } from "@/lib/prism";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { CalloutBlock, StepsBlock } from "@/components/blocks/static-blocks";
-import { GithubReleasesBlock } from "@/components/blocks/github-releases";
+
+// Renderizador do bloco de releases do GitHub. É injetado pelo render server-only
+// (render.tsx) porque depende do banco; aqui (módulo compartilhado com o cliente)
+// não podemos importar o componente server-only diretamente.
+type GhRenderer = (a: { owner: string; repo: string; limit: number }) => React.ReactNode;
+
+function ghPlaceholder(attrs: { owner?: string; repo?: string }, key: number) {
+  const url = attrs.owner && attrs.repo ? `https://github.com/${attrs.owner}/${attrs.repo}/releases` : "#";
+  return (
+    <p key={key} className="blk-p">
+      <a href={url} rel="nofollow noopener noreferrer" target="_blank" className="blk-a">
+        Releases de {attrs.owner}/{attrs.repo} no GitHub →
+      </a>
+    </p>
+  );
+}
 
 // Renderiza o documento do editor rico (TipTap/ProseMirror) com segurança:
 // nós e marcas mapeados para elementos via JSX. Estilos inline (cor, tamanho,
@@ -82,13 +97,13 @@ function alignStyle(node: Node): React.CSSProperties | undefined {
 }
 
 /** Conteúdo de itens de lista e células: parágrafos viram inline. */
-function renderFlow(nodes: Node[] | undefined) {
+function renderFlow(nodes: Node[] | undefined, gh?: GhRenderer) {
   return (nodes ?? []).map((child: Node, i: number) =>
-    child.type === "paragraph" ? <Fragment key={i}>{renderInline(child.content)}</Fragment> : renderBlock(child, i),
+    child.type === "paragraph" ? <Fragment key={i}>{renderInline(child.content)}</Fragment> : renderBlock(child, i, gh),
   );
 }
 
-function renderBlock(node: Node, key: number): React.ReactNode {
+function renderBlock(node: Node, key: number, gh?: GhRenderer): React.ReactNode {
   switch (node.type) {
     case "paragraph":
       return (
@@ -109,7 +124,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
       return (
         <ul key={key} className="blk-list blk-list--unordered">
           {(node.content ?? []).map((li: Node, i: number) => (
-            <li key={i} className="blk-list__item">{renderFlow(li.content)}</li>
+            <li key={i} className="blk-list__item">{renderFlow(li.content, gh)}</li>
           ))}
         </ul>
       );
@@ -117,19 +132,19 @@ function renderBlock(node: Node, key: number): React.ReactNode {
       return (
         <ol key={key} className="blk-list blk-list--ordered" start={node.attrs?.start ?? 1}>
           {(node.content ?? []).map((li: Node, i: number) => (
-            <li key={i} className="blk-list__item">{renderFlow(li.content)}</li>
+            <li key={i} className="blk-list__item">{renderFlow(li.content, gh)}</li>
           ))}
         </ol>
       );
     case "blockquote":
       return (
         <blockquote key={key} className="blk-quote">
-          {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
+          {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i, gh))}
         </blockquote>
       );
     case "box": {
       const boxTitle = (node.attrs?.title as string) || "";
-      const body = (node.content ?? []).map((c: Node, i: number) => renderBlock(c, i));
+      const body = (node.content ?? []).map((c: Node, i: number) => renderBlock(c, i, gh));
       if (node.attrs?.collapsed) {
         return (
           <details key={key} className="blk-box">
@@ -150,7 +165,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
         <details key={key} className="blk-spoiler">
           <summary className="blk-spoiler__summary">{(node.attrs?.title as string) || "Spoiler"}</summary>
           <div className="blk-spoiler__body">
-            {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i))}
+            {(node.content ?? []).map((c: Node, i: number) => renderBlock(c, i, gh))}
           </div>
         </details>
       );
@@ -172,7 +187,7 @@ function renderBlock(node: Node, key: number): React.ReactNode {
         <div key={key} className="blk-table-wrap">
           <table className="blk-table">
             <tbody>
-              {(node.content ?? []).map((row: Node, i: number) => renderBlock(row, i))}
+              {(node.content ?? []).map((row: Node, i: number) => renderBlock(row, i, gh))}
             </tbody>
           </table>
         </div>
@@ -180,19 +195,19 @@ function renderBlock(node: Node, key: number): React.ReactNode {
     case "tableRow":
       return (
         <tr key={key} className="blk-table__row">
-          {(node.content ?? []).map((cell: Node, i: number) => renderBlock(cell, i))}
+          {(node.content ?? []).map((cell: Node, i: number) => renderBlock(cell, i, gh))}
         </tr>
       );
     case "tableHeader":
       return (
         <th key={key} className="blk-table__th" colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
-          {renderFlow(node.content)}
+          {renderFlow(node.content, gh)}
         </th>
       );
     case "tableCell":
       return (
         <td key={key} className="blk-table__td" colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
-          {renderFlow(node.content)}
+          {renderFlow(node.content, gh)}
         </td>
       );
     case "horizontalRule":
@@ -204,12 +219,14 @@ function renderBlock(node: Node, key: number): React.ReactNode {
     case "steps":
       return <StepsBlock key={key} items={node.attrs?.items ?? []} />;
     case "githubReleases":
-      return <GithubReleasesBlock key={key} owner={node.attrs?.owner} repo={node.attrs?.repo} limit={node.attrs?.limit} />;
+      return gh
+        ? <Fragment key={key}>{gh({ owner: node.attrs?.owner, repo: node.attrs?.repo, limit: node.attrs?.limit })}</Fragment>
+        : ghPlaceholder(node.attrs ?? {}, key);
     default:
       return null;
   }
 }
 
-export function RichContent({ doc }: { doc: RichDoc }) {
-  return <>{(doc.content as Node[]).map((n, i) => renderBlock(n, i))}</>;
+export function RichContent({ doc, renderGithub }: { doc: RichDoc; renderGithub?: GhRenderer }) {
+  return <>{(doc.content as Node[]).map((n, i) => renderBlock(n, i, renderGithub))}</>;
 }
