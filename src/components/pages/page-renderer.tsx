@@ -17,6 +17,7 @@ import { LineShadowText } from "@/components/ui/line-shadow-text";
 import { HyperText } from "@/components/ui/hyper-text";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { Marquee } from "@/components/ui/marquee";
+import { LogoMarquee } from "@/components/pages/logo-marquee";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-list";
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -250,8 +251,9 @@ export function WidgetView({ w }: { w: Widget }) {
     }
     case "logoCloud": {
       const logos = w.items.filter((it) => it.image);
+      const sizeCls = `page-w__logo--${w.size ?? "lg"}`;
       const Logo = ({ it }: { it: { image: string; imageDark?: string; alt: string; href?: string } }) => {
-        const cls = cn("page-w__logo", w.grayscale && "page-w__logo--gray");
+        const cls = cn("page-w__logo", sizeCls, w.grayscale && "page-w__logo--gray");
         const img = it.imageDark ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -265,16 +267,16 @@ export function WidgetView({ w }: { w: Widget }) {
         );
         const href = it.href ? safeHref(it.href) : null;
         return href
-          ? <a href={href} rel="nofollow noopener noreferrer" target="_blank" className="page-w__logo-link">{img}</a>
+          ? <a href={href} rel="nofollow noopener noreferrer" target="_blank" className="page-w__logo-link inline-flex items-center">{img}</a>
           : img;
       };
       return (
         <div className="page-w__logos">
           {w.title && <p className="page-w__logos-title">{w.title}</p>}
           {w.display === "marquee" ? (
-            <Marquee className="[--duration:28s]" pauseOnHover>
-              {logos.map((it, i) => <span key={i} className="mx-6 inline-flex items-center">{<Logo it={it} />}</span>)}
-            </Marquee>
+            <LogoMarquee>
+              {logos.map((it, i) => <span key={i} className="inline-flex shrink-0 items-center">{<Logo it={it} />}</span>)}
+            </LogoMarquee>
           ) : (
             <div className="page-w__logos-grid">
               {logos.map((it, i) => <Logo key={i} it={it} />)}

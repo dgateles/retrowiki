@@ -73,7 +73,7 @@ function newWidget(type: WidgetType): Widget {
     case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
     case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
     case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
-    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
+    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", size: "lg", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -996,6 +996,18 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
               <SelectContent>
                 <SelectItem value="grid">Grade</SelectItem>
                 <SelectItem value="marquee">Marquee (rolagem)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="field">
+            <Label>Tamanho dos logos</Label>
+            <Select value={(w as { size?: string }).size ?? "lg"} onValueChange={(val) => onChange({ size: val } as Partial<Widget>)}>
+              <SelectTrigger aria-label="Tamanho dos logos" className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="sm">Pequeno</SelectItem>
+                <SelectItem value="md">Médio</SelectItem>
+                <SelectItem value="lg">Grande</SelectItem>
+                <SelectItem value="xl">Extra grande</SelectItem>
               </SelectContent>
             </Select>
           </div>

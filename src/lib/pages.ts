@@ -104,6 +104,7 @@ const WidgetSchema = z.discriminatedUnion("type", [
     type: z.literal("logoCloud"),
     title: z.string().max(120).default(""),
     display: z.enum(["grid", "marquee"]).default("grid"),
+    size: z.enum(["sm", "md", "lg", "xl"]).default("lg").catch("lg"),
     grayscale: z.boolean().default(true),
     items: z.array(z.object({
       image: imageUrl,
