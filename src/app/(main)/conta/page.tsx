@@ -19,7 +19,7 @@ import { hasOpenDeletionRequest } from "@/lib/privacy";
 import { BulkMailOptOut } from "@/components/account/bulk-mail-optout";
 import { ChangeEmailForm } from "@/components/account/change-email-form";
 import { GalleryManager } from "@/components/account/gallery-manager";
-import { listPhotos } from "@/lib/gallery";
+import { listPhotosManage, listAlbums } from "@/lib/gallery";
 import { getGallerySettings } from "@/lib/settings";
 import {
   SettingsNav,
@@ -56,7 +56,8 @@ export default async function AccountPage({
   const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
   const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
   const gallerySettings = active === "galeria" ? await getGallerySettings() : null;
-  const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotos(Number(user.id)) : [];
+  const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotosManage(Number(user.id)) : [];
+  const albums = active === "galeria" && gallerySettings?.enabled ? await listAlbums(Number(user.id)) : [];
   const fmtWarn = (d: Date) => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(d));
 
   return (
@@ -157,7 +158,7 @@ export default async function AccountPage({
               ) : (
                 <>
                   <p className="settings-section__desc">Fotos exibidas no seu perfil público.</p>
-                  <div className="mt-4"><GalleryManager photos={photos} max={gallerySettings.maxPhotos} /></div>
+                  <div className="mt-4"><GalleryManager photos={photos} albums={albums} max={gallerySettings.maxPhotos} /></div>
                 </>
               )}
             </section>

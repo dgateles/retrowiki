@@ -1,11 +1,11 @@
 import "server-only";
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { reportTypes, contentReports, articles, comments, users } from "@/db/schema";
+import { reportTypes, contentReports, articles, comments, users, memberPhotos } from "@/db/schema";
 import { getReportingSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
 
-export type TargetType = "article" | "comment";
+export type TargetType = "article" | "comment" | "photo";
 export type ReportType = { id: number; title: string; completedNotification: string; rejectedNotification: string; sortOrder: number };
 
 const DEFAULT_TYPES = [
@@ -89,6 +89,10 @@ async function contentAuthorId(targetType: TargetType, targetId: number): Promis
       const [a] = await db.select({ id: articles.authorId }).from(articles).where(eq(articles.id, targetId)).limit(1);
       return a?.id ?? null;
     }
+    if (targetType === "photo") {
+      const [p] = await db.select({ id: memberPhotos.userId }).from(memberPhotos).where(eq(memberPhotos.id, targetId)).limit(1);
+      return p?.id ?? null;
+    }
     const [c] = await db.select({ id: comments.authorId }).from(comments).where(eq(comments.id, targetId)).limit(1);
     return c?.id ?? null;
   } catch {
@@ -99,6 +103,8 @@ async function contentAuthorId(targetType: TargetType, targetId: number): Promis
 async function hideContent(targetType: TargetType, targetId: number): Promise<void> {
   if (targetType === "article") {
     await db.update(articles).set({ status: "archived" }).where(eq(articles.id, targetId));
+  } else if (targetType === "photo") {
+    await db.update(memberPhotos).set({ hidden: true }).where(eq(memberPhotos.id, targetId));
   } else {
     await db.update(comments).set({ status: "hidden" }).where(eq(comments.id, targetId));
   }
@@ -196,6 +202,22 @@ export async function getReportQueue(): Promise<ReportGroup[]> {
     // Enriquecer com título/link/autor do conteúdo.
     const articleIds = [...groups.values()].filter((g) => g.targetType === "article").map((g) => g.targetId);
     const commentIds = [...groups.values()].filter((g) => g.targetType === "comment").map((g) => g.targetId);
+    const photoIds = [...groups.values()].filter((g) => g.targetType === "photo").map((g) => g.targetId);
+    if (photoIds.length) {
+      const phs = await db
+        .select({ id: memberPhotos.id, caption: memberPhotos.caption, userId: memberPhotos.userId, handle: users.handle })
+        .from(memberPhotos)
+        .leftJoin(users, eq(users.id, memberPhotos.userId))
+        .where(inArray(memberPhotos.id, photoIds));
+      for (const p of phs) {
+        const g = groups.get(`photo:${p.id}`);
+        if (g) {
+          g.title = `Foto da galeria${p.caption ? `: ${p.caption.slice(0, 70)}` : ""}`;
+          g.link = p.handle ? `/u/${p.handle}` : null;
+          g.authorId = p.userId;
+        }
+      }
+    }
     if (articleIds.length) {
       const arts = await db.select({ id: articles.id, slug: articles.slug, title: articles.title, authorId: articles.authorId }).from(articles).where(inArray(articles.id, articleIds));
       for (const a of arts) {

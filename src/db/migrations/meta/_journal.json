@@ -281,6 +281,13 @@
       "when": 1781216006076,
       "tag": "0039_stiff_the_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "5",
+      "when": 1781225645105,
+      "tag": "0040_spotty_hardball",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ import { getVisibleFields } from "@/lib/profile-fields";
 import { getReputationSettings } from "@/lib/settings";
 import { levelForReputation } from "@/lib/reputation-levels";
 import { ProfileFieldsDisplay } from "@/components/profile/profile-fields-display";
+import { ProfileGallery } from "@/components/profile/profile-gallery";
 import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
@@ -76,9 +77,7 @@ export default async function ProfilePage({
   const rank = gami.enabled ? await getRankForReputation(profile.reputation) : null;
   if (gami.enabled) await evaluateBadges(profile.id);
   const { getGallerySettings } = await import("@/lib/settings");
-  const { listPhotos } = await import("@/lib/gallery");
   const gallerySettings = await getGallerySettings();
-  const photos = gallerySettings.enabled ? await listPhotos(profile.id) : [];
   const { getUserActivity } = await import("@/lib/activity");
   const activity = await getUserActivity(profile.id, 15);
   const userBadges = gami.enabled ? await getUserBadges(profile.id) : [];
@@ -91,6 +90,15 @@ export default async function ProfilePage({
   const isOwner = Boolean(viewer && Number(viewer.id) === profile.id);
   const isStaff = can.moderate(viewer);
   const canSeePrivate = isOwner || isStaff;
+
+  // Galeria: staff vê as ocultas (para moderar); demais veem só as visíveis.
+  const { listPhotos, listPhotosManage, listAlbums } = await import("@/lib/gallery");
+  const photos = gallerySettings.enabled ? (isStaff ? await listPhotosManage(profile.id) : await listPhotos(profile.id)) : [];
+  const galleryAlbums = gallerySettings.enabled && photos.length ? await listAlbums(profile.id) : [];
+  const { listReportTypes } = await import("@/lib/reports");
+  const { getReportingSettings } = await import("@/lib/settings");
+  const galleryReportTypes = !isOwner && viewer && photos.length ? await listReportTypes() : [];
+  const galleryReportMandatory = galleryReportTypes.length ? (await getReportingSettings()).messageMandatory : false;
 
   // Advertências (privadas): só o dono ou a equipe veem.
   const warnSettings = await getWarningSettings();
@@ -225,20 +233,14 @@ export default async function ProfilePage({
         <div className="profile-main">
           <ProfileFieldsDisplay groups={profileFields} />
 
-          {photos.length > 0 && (
-            <section aria-labelledby="p-gallery">
-              <h2 id="p-gallery" className="comments__title">Galeria</h2>
-              <ul className="gallery-grid gallery-grid--view mt-4">
-                {photos.map((p) => (
-                  <li key={p.id} className="gallery-grid__item">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.url} alt={p.caption} className="gallery-grid__img" loading="lazy" />
-                    {p.caption && <span className="gallery-grid__cap">{p.caption}</span>}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <ProfileGallery
+            photos={photos}
+            albums={galleryAlbums}
+            reportTypes={galleryReportTypes}
+            canReport={Boolean(!isOwner && viewer)}
+            isStaff={isStaff}
+            messageMandatory={galleryReportMandatory}
+          />
 
           <section aria-labelledby="contrib">
           <h2 id="contrib" className="comments__title">

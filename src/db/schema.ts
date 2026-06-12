@@ -552,12 +552,23 @@ export const announcements = mysqlTable("announcements", {
   createdAt: createdAt(),
 }, (t) => [index("announcements_active_idx").on(t.active)]);
 
+// Álbuns da galeria do membro (agrupam fotos no perfil).
+export const memberAlbums = mysqlTable("member_albums", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  title: varchar("title", { length: 120 }).notNull(),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("member_albums_user_idx").on(t.userId, t.sortOrder)]);
+
 // Galeria de fotos do membro (exibida no perfil público).
 export const memberPhotos = mysqlTable("member_photos", {
   id: pk(),
   userId: bigint("user_id", { mode: "number" }).notNull(),
+  albumId: bigint("album_id", { mode: "number" }), // null = sem álbum (Geral)
   url: varchar("url", { length: 500 }).notNull(),
   caption: varchar("caption", { length: 200 }).notNull().default(""),
+  hidden: boolean("hidden").notNull().default(false), // oculta por moderação/denúncia
   sortOrder: int("sort_order").notNull().default(0),
   createdAt: createdAt(),
 }, (t) => [index("member_photos_user_idx").on(t.userId, t.sortOrder)]);
@@ -711,7 +722,7 @@ export const reportTypes = mysqlTable("report_types", {
 export const contentReports = mysqlTable("content_reports", {
   id: pk(),
   reporterId: bigint("reporter_id", { mode: "number" }).notNull(),
-  targetType: mysqlEnum("target_type", ["article", "comment"]).notNull(),
+  targetType: mysqlEnum("target_type", ["article", "comment", "photo"]).notNull(),
   targetId: bigint("target_id", { mode: "number" }).notNull(),
   reportTypeId: bigint("report_type_id", { mode: "number" }).notNull(),
   message: varchar("message", { length: 1000 }).notNull().default(""),

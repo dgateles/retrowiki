@@ -25,7 +25,7 @@ export async function reportContentAction(targetType: TargetType, targetId: numb
   } catch {
     return { ok: false, error: "Faça login para denunciar." };
   }
-  if (targetType !== "article" && targetType !== "comment") return { ok: false, error: "Alvo inválido." };
+  if (targetType !== "article" && targetType !== "comment" && targetType !== "photo") return { ok: false, error: "Alvo inválido." };
   const res = await createReport(Number(user.id), targetType, targetId, Math.floor(Number(reportTypeId) || 0), String(message ?? ""));
   return res;
 }
