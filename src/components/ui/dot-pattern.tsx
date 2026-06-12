@@ -5,6 +5,13 @@ import { motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
+// Pseudo-aleatório determinístico por índice: evita Math.random() durante o
+// render (impuro / mismatch de hidratação) mantendo variação visual estável.
+function seededRandom(seed: number) {
+  const v = Math.sin(seed * 12.9898) * 43758.5453
+  return v - Math.floor(v)
+}
+
 /**
  *  DotPattern Component Props
  *
@@ -102,8 +109,8 @@ export function DotPattern({
       return {
         x: col * width + cx + x,
         y: row * height + cy + y,
-        delay: Math.random() * 5,
-        duration: Math.random() * 3 + 2,
+        delay: seededRandom(i) * 5,
+        duration: seededRandom(i + 0.5) * 3 + 2,
       }
     }
   )

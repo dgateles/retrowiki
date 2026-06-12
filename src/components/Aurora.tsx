@@ -115,12 +115,17 @@ interface AuroraProps {
   speed?: number;
 }
 
+const DEFAULT_COLOR_STOPS = ['#5227FF', '#7cff67', '#5227FF'];
+
 export default function Aurora(props: AuroraProps) {
-  const { colorStops = ['#5227FF', '#7cff67', '#5227FF'], amplitude = 1.0, blend = 0.5 } = props;
+  const { colorStops = DEFAULT_COLOR_STOPS, amplitude = 1.0, blend = 0.5 } = props;
   const propsRef = useRef<AuroraProps>(props);
-  propsRef.current = props;
 
   const ctnDom = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    propsRef.current = props;
+  }, [props]);
 
   useEffect(() => {
     const ctn = ctnDom.current;
@@ -136,8 +141,6 @@ export default function Aurora(props: AuroraProps) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.canvas.style.backgroundColor = 'transparent';
-
-    let program: Program | undefined;
 
     function resize() {
       if (!ctn) return;
@@ -160,7 +163,7 @@ export default function Aurora(props: AuroraProps) {
       return [c.r, c.g, c.b];
     });
 
-    program = new Program(gl, {
+    const program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
@@ -203,7 +206,7 @@ export default function Aurora(props: AuroraProps) {
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [amplitude]);
+  }, [amplitude, blend, colorStops]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }

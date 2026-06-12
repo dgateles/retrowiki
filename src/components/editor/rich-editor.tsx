@@ -22,7 +22,7 @@ import {
   Plus, List, ListOrdered, Code2, SquareStack, EyeOff, Quote, Minus, Table as TableIcon, ImageIcon,
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code, Subscript as SubIcon, Superscript as SupIcon,
   Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link as LinkIcon, Smile, RemoveFormatting,
-  Rows3, Columns3, Grid2x2, Trash2, Pilcrow, ChevronDown, Check, Search as SearchIcon,
+  Rows3, Columns3, Grid2x2, Trash2, Pilcrow, ChevronDown, Search as SearchIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

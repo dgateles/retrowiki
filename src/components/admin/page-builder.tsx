@@ -124,7 +124,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [past, setPast] = useState<Section[][]>([]);
   const [future, setFuture] = useState<Section[][]>([]);
   const sectionsRef = useRef(sections);
-  sectionsRef.current = sections;
+  useEffect(() => { sectionsRef.current = sections; }, [sections]);
 
   function selectWidget(s: Sel) { setSelected(s); setSelSection(null); setSelCol(null); }
   function selectSection(si: number) { setSelSection(si); setSelected(null); setSelCol(null); }

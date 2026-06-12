@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { Home, Gamepad2, BookOpen, Search, Menu, LayoutDashboard, User, Bell, Shield, ShieldCheck, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -98,7 +99,7 @@ export function MobileNav({ isLoggedIn, isStaff, isAdmin, handle, menuItems }: P
                   {isStaff && <SheetClose asChild><Link href="/moderacao" className="mobile-menu__link"><Shield className="size-4 text-muted-foreground" aria-hidden="true" /> Moderação</Link></SheetClose>}
                   {isAdmin && <SheetClose asChild><Link href="/admin" className="mobile-menu__link"><ShieldCheck className="size-4 text-muted-foreground" aria-hidden="true" /> Administração</Link></SheetClose>}
                   <SheetClose asChild>
-                    <a href="/api/auth/signout" className="mobile-menu__link text-destructive"><LogOut className="size-4" aria-hidden="true" /> Sair</a>
+                    <button type="button" className="mobile-menu__link text-destructive" onClick={() => signOut({ callbackUrl: "/" })}><LogOut className="size-4" aria-hidden="true" /> Sair</button>
                   </SheetClose>
                 </>
               ) : (

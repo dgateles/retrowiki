@@ -37,7 +37,8 @@ export const Meteors = ({
         Math.floor(Math.random() * (maxDuration - minDuration) + minDuration) +
         "s",
     }))
-    setMeteorStyles(styles)
+    const timeout = window.setTimeout(() => setMeteorStyles(styles), 0)
+    return () => window.clearTimeout(timeout)
   }, [number, minDelay, maxDelay, minDuration, maxDuration, angle])
 
   return (

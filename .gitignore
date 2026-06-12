@@ -15,6 +15,7 @@ next-env.d.ts
 *.tsbuildinfo
 .antigravity
 .vercel
+.coop
 
 # debug
 npm-debug.log*

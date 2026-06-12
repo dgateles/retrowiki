@@ -60,8 +60,8 @@ export function MemberAdminTools() {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button asChild variant="outline" size="sm">
-        <a href="/admin/membros/export"><Download className="size-4" aria-hidden="true" /> Exportar</a>
+      <Button variant="outline" size="sm" onClick={() => window.location.assign("/admin/membros/export")}>
+        <Download className="size-4" aria-hidden="true" /> Exportar
       </Button>
       <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
         <Upload className="size-4" aria-hidden="true" /> Importar
@@ -100,7 +100,7 @@ export function MemberAdminTools() {
             {setPwd ? (
               <div className="field">
                 <Label htmlFor="cm-pwd">Senha (mín. 8)</Label>
-                <Input id="cm-pwd" type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input id="cm-pwd" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
             ) : (
               <p className="muted">Sem senha: o membro recebe um e-mail para criar a própria.</p>

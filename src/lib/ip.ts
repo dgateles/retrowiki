@@ -1,6 +1,6 @@
 import "server-only";
 import { headers } from "next/headers";
-import { and, desc, eq, inArray, like, lt, sql } from "drizzle-orm";
+import { desc, eq, inArray, like, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { memberIps, users } from "@/db/schema";
 

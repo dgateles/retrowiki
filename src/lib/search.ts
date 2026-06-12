@@ -10,6 +10,8 @@ export type SearchResults = {
   articles: { slug: string; title: string; summary: string | null; authorHandle: string }[];
 };
 
+const MAX_QUERY_LENGTH = 100;
+
 /** Monta a expressão boolean do FULLTEXT: cada token vira "+token*" (exigido +
  * prefixo). Remove os operadores boolean do MySQL para evitar erro de sintaxe. */
 function booleanQuery(q: string): string {
@@ -39,7 +41,7 @@ async function searchArticlesLike(term: string) {
 }
 
 export async function searchAll(query: string, scope: SearchScope = "tudo"): Promise<SearchResults> {
-  const q = query.trim();
+  const q = query.trim().slice(0, MAX_QUERY_LENGTH);
   if (q.length < 2) return { devices: [], articles: [] };
   const term = `%${q.replace(/[%_]/g, "\\$&")}%`;
   const boolean = booleanQuery(q);

@@ -14,7 +14,23 @@ const globalForRl = globalThis as unknown as {
 const buckets = globalForRl.__rwRateLimit ?? new Map<string, Bucket>();
 globalForRl.__rwRateLimit = buckets;
 
+const MAX_BUCKETS = 10_000;
+
 export type RateLimitResult = { ok: boolean; remaining: number; resetAt: number };
+
+function makeRoom(now: number) {
+  if (buckets.size < MAX_BUCKETS) return;
+
+  for (const [key, bucket] of buckets) {
+    if (bucket.resetAt <= now) buckets.delete(key);
+  }
+
+  while (buckets.size >= MAX_BUCKETS) {
+    const oldest = buckets.keys().next().value;
+    if (oldest === undefined) break;
+    buckets.delete(oldest);
+  }
+}
 
 export async function checkRateLimit(
   key: string,
@@ -25,6 +41,7 @@ export async function checkRateLimit(
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt <= now) {
+    if (!bucket) makeRoom(now);
     const resetAt = now + windowMs;
     buckets.set(key, { count: 1, resetAt });
     return { ok: true, remaining: limit - 1, resetAt };

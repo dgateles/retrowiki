@@ -9,7 +9,6 @@ import {
   userWarnings,
   profileFieldValues,
   profileFields,
-  referrals,
   privacyRequests,
 } from "@/db/schema";
 

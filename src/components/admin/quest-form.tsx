@@ -49,10 +49,6 @@ export function QuestForm({
   function set<K extends keyof QuestFormInitial>(key: K, val: QuestFormInitial[K]) {
     setV((prev) => ({ ...prev, [key]: val }));
   }
-  function toggleRole(role: string, on: boolean) {
-    setV((prev) => ({ ...prev, audienceRoles: on ? [...new Set([...prev.audienceRoles, role])] : prev.audienceRoles.filter((r) => r !== role) }));
-  }
-
   async function save() {
     if (v.title.trim().length < 2) {
       toast.error("Dê um título à missão.");

@@ -16,7 +16,6 @@ export function ReactionBar({
   initialCounts,
   initialReaction,
   reactorNames,
-  initialTotal,
 }: {
   articleId: number;
   reactions: ReactionOpt[];

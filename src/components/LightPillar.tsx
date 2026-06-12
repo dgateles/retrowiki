@@ -49,7 +49,8 @@ const LightPillar: React.FC<LightPillarProps> = ({
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
     if (!gl) {
-      setWebGLSupported(false);
+      const timeout = window.setTimeout(() => setWebGLSupported(false), 0);
+      return () => window.clearTimeout(timeout);
     }
   }, []);
 
@@ -99,8 +100,8 @@ const LightPillar: React.FC<LightPillarProps> = ({
       });
     } catch (error) {
       console.error('Failed to create WebGL renderer:', error);
-      setWebGLSupported(false);
-      return;
+      const timeout = window.setTimeout(() => setWebGLSupported(false), 0);
+      return () => window.clearTimeout(timeout);
     }
 
     renderer.setSize(width, height);
@@ -390,7 +391,19 @@ const LightPillar: React.FC<LightPillarProps> = ({
       geometryRef.current = null;
       rafRef.current = null;
     };
-  }, [webGLSupported, quality]);
+  }, [
+    bottomColor,
+    glowAmount,
+    intensity,
+    interactive,
+    noiseIntensity,
+    pillarHeight,
+    pillarRotation,
+    pillarWidth,
+    quality,
+    topColor,
+    webGLSupported,
+  ]);
 
   useEffect(() => {
     rotationSpeedRef.current = rotationSpeed;

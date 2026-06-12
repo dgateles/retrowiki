@@ -420,7 +420,7 @@ export function WidgetView({ w }: { w: Widget }) {
                       </div>
                       {s.description && <p className="buy-store__desc">{s.description}</p>}
                     </div>
-                    {href && <a href={href} className="buy-store__btn" target="_blank" rel="nofollow noopener noreferrer"><ExternalLink className="size-4" aria-hidden="true" /></a>}
+                    {href && <a href={href} className="buy-store__btn" target="_blank" rel="nofollow noopener noreferrer" aria-label={`Visitar loja ${s.name}`}><ExternalLink className="size-4" aria-hidden="true" /></a>}
                   </div>
                 );
               })}
@@ -442,7 +442,7 @@ export function WidgetView({ w }: { w: Widget }) {
                       </div>
                       {a.description && <p className="buy-store__desc">{a.description}</p>}
                     </div>
-                    {href && <a href={href} className="buy-store__btn" target="_blank" rel="nofollow noopener noreferrer"><ExternalLink className="size-4" aria-hidden="true" /></a>}
+                    {href && <a href={href} className="buy-store__btn" target="_blank" rel="nofollow noopener noreferrer" aria-label={`Ver acessório ${a.name}`}><ExternalLink className="size-4" aria-hidden="true" /></a>}
                   </div>
                 );
               })}

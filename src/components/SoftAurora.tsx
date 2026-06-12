@@ -185,8 +185,7 @@ export default function SoftAurora({
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
 
-    let program: Program;
-    let currentMouse = [0.5, 0.5];
+    const currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
 
     function handleMouseMove(e: MouseEvent) {
@@ -208,10 +207,9 @@ export default function SoftAurora({
       }
     }
     window.addEventListener('resize', resize);
-    resize();
 
     const geometry = new Triangle(gl);
-    program = new Program(gl, {
+    const program = new Program(gl, {
       vertex: vertexShader,
       fragment: fragmentShader,
       uniforms: {
@@ -234,6 +232,7 @@ export default function SoftAurora({
         uEnableMouse: { value: enableMouseInteraction }
       }
     });
+    resize();
 
     const mesh = new Mesh(gl, { geometry, program });
     container.appendChild(gl.canvas);

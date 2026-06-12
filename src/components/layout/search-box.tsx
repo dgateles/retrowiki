@@ -30,16 +30,14 @@ export function SearchBox({ className }: { className?: string }) {
   const boxRef = useRef<HTMLDivElement>(null);
 
   const q = value.trim();
+  const visibleOptions = q.length >= 2 ? options : [];
 
   // busca ao vivo com debounce, considerando o escopo
   useEffect(() => {
-    if (q.length < 2) {
-      setOptions([]);
-      return;
-    }
-    setLoading(true);
+    if (q.length < 2) return;
     const ctrl = new AbortController();
     const t = setTimeout(async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&escopo=${scope}`, { signal: ctrl.signal });
         const data: Results = await res.json();
@@ -52,7 +50,7 @@ export function SearchBox({ className }: { className?: string }) {
       } catch {
         /* abortado */
       } finally {
-        setLoading(false);
+        if (!ctrl.signal.aborted) setLoading(false);
       }
     }, 200);
     return () => {
@@ -87,13 +85,13 @@ export function SearchBox({ className }: { className?: string }) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setOpen(true);
-      setActive((i) => Math.min(i + 1, options.length - 1));
+      setActive((i) => Math.min(i + 1, visibleOptions.length - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (active >= 0 && options[active]) go(options[active]);
+      if (active >= 0 && visibleOptions[active]) go(visibleOptions[active]);
       else submitSearch();
     } else if (e.key === "Escape") {
       setOpen(false);
@@ -107,7 +105,8 @@ export function SearchBox({ className }: { className?: string }) {
         type="text"
         role="combobox"
         aria-expanded={open ? "true" : "false"}
-        aria-controls={listId}
+        aria-controls={open && visibleOptions.length > 0 ? listId : undefined}
+        aria-activedescendant={active >= 0 && visibleOptions[active] ? `${listId}-option-${active}` : undefined}
         aria-autocomplete="list"
         aria-label="Buscar consoles e guias"
         autoComplete="off"
@@ -136,29 +135,28 @@ export function SearchBox({ className }: { className?: string }) {
           </div>
 
           {q.length < 2 ? (
-            <p className="search__hint">Digite ao menos duas letras para buscar.</p>
+            <p className="search__hint" role="status">Digite ao menos duas letras para buscar.</p>
+          ) : visibleOptions.length === 0 ? (
+            <p className="search__empty" role="status">{loading ? "Buscando…" : "Nada encontrado."}</p>
           ) : (
-            <div id={listId} role="listbox" aria-label="Resultados" className="search__results">
-              {options.length === 0 ? (
-                <p className="search__empty">{loading ? "Buscando…" : "Nada encontrado."}</p>
-              ) : (
-                options.map((opt, i) => (
-                  <div
-                    key={opt.href}
-                    role="option"
-                    aria-selected={i === active ? "true" : "false"}
-                    onMouseEnter={() => setActive(i)}
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      go(opt);
-                    }}
-                    className={cn("search__option", i === active && "search__option--active")}
-                  >
-                    <span>{opt.label}</span>
-                    <span className="search__option-sub">{opt.sublabel}</span>
-                  </div>
-                ))
-              )}
+            <div id={listId} role="listbox" aria-label="Resultados" aria-busy={loading} className="search__results">
+              {visibleOptions.map((opt, i) => (
+                <div
+                  key={opt.href}
+                  id={`${listId}-option-${i}`}
+                  role="option"
+                  aria-selected={i === active ? "true" : "false"}
+                  onMouseEnter={() => setActive(i)}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    go(opt);
+                  }}
+                  className={cn("search__option", i === active && "search__option--active")}
+                >
+                  <span>{opt.label}</span>
+                  <span className="search__option-sub">{opt.sublabel}</span>
+                </div>
+              ))}
             </div>
           )}
 

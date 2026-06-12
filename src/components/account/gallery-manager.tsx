@@ -72,12 +72,12 @@ export function GalleryManager({ photos, albums, max }: { photos: MemberPhoto[];
         {albums.map((a) => (
           <span key={a.id} className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 text-sm">
             {a.title}
-            <button type="button" className="text-muted-foreground hover:text-foreground" title="Renomear" onClick={() => rename(a)}><Pencil className="size-3" /></button>
-            <button type="button" className="text-muted-foreground hover:text-destructive" title="Excluir álbum" onClick={() => removeAlbum(a)}><Trash2 className="size-3" /></button>
+            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label={`Renomear álbum ${a.title}`} onClick={() => rename(a)}><Pencil className="size-3" aria-hidden="true" /></button>
+            <button type="button" className="text-muted-foreground hover:text-destructive" aria-label={`Excluir álbum ${a.title}`} onClick={() => removeAlbum(a)}><Trash2 className="size-3" aria-hidden="true" /></button>
           </span>
         ))}
         <span className="inline-flex items-center gap-1">
-          <Input value={newAlbum} onChange={(e) => setNewAlbum(e.target.value)} placeholder="Novo álbum" maxLength={120} className="h-8 w-36" />
+          <Input value={newAlbum} onChange={(e) => setNewAlbum(e.target.value)} aria-label="Nome do novo álbum" placeholder="Novo álbum" maxLength={120} className="h-8 w-36" />
           <Button type="button" variant="outline" size="sm" onClick={addAlbum} disabled={!newAlbum.trim()}><FolderPlus className="size-4" /> Criar</Button>
         </span>
       </div>
@@ -90,7 +90,7 @@ export function GalleryManager({ photos, albums, max }: { photos: MemberPhoto[];
               <img src={p.url} alt={p.caption} className="gallery-grid__img" loading="lazy" />
               {p.caption && <span className="gallery-grid__cap">{p.caption}</span>}
               {p.hidden && <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded bg-destructive/90 px-1.5 py-0.5 text-[10px] font-medium text-white"><EyeOff className="size-3" /> Oculta</span>}
-              <button type="button" className="gallery-grid__del" title="Remover" onClick={() => remove(p.id)}><X className="size-4" aria-hidden="true" /></button>
+              <button type="button" className="gallery-grid__del" aria-label={`Remover foto${p.caption ? `: ${p.caption}` : ""}`} onClick={() => remove(p.id)}><X className="size-4" aria-hidden="true" /></button>
               {albums.length > 0 && (
                 <div className="mt-1 px-1">
                   <Select value={p.albumId ? String(p.albumId) : NONE} onValueChange={(v) => move(p.id, v)}>

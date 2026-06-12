@@ -17,6 +17,7 @@ export default async function HomePage() {
       const flushTop = layout.sections[0]?.full;
       return (
         <main id="main" className={`page${flushTop ? " page--flush-top" : ""}`}>
+          <h1 className="sr-only">{home.title}</h1>
           <PageRenderer layout={layout} />
         </main>
       );

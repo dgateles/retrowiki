@@ -14,12 +14,15 @@ export function AnnouncementBanner({ items }: { items: Announcement[] }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      setDismissed(JSON.parse(localStorage.getItem(KEY) ?? "[]"));
-    } catch {
-      setDismissed([]);
-    }
-    setReady(true);
+    const timeout = window.setTimeout(() => {
+      try {
+        setDismissed(JSON.parse(localStorage.getItem(KEY) ?? "[]"));
+      } catch {
+        setDismissed([]);
+      }
+      setReady(true);
+    }, 0);
+    return () => window.clearTimeout(timeout);
   }, []);
 
   function dismiss(id: number) {

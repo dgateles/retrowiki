@@ -304,9 +304,11 @@ export const Particles: React.FC<ParticlesProps> = ({
     rafID.current = window.requestAnimationFrame(animateRef.current)
   }
 
-  initCanvasRef.current = initCanvas
-  onMouseMoveRef.current = onMouseMove
-  animateRef.current = animate
+  useEffect(() => {
+    initCanvasRef.current = initCanvas
+    onMouseMoveRef.current = onMouseMove
+    animateRef.current = animate
+  })
 
   return (
     <div

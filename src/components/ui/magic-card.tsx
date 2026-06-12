@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react"
 import {
   motion,
   useMotionTemplate,
@@ -49,6 +49,9 @@ interface MagicCardOrbProps extends MagicCardBaseProps {
 
 type MagicCardProps = MagicCardGradientProps | MagicCardOrbProps
 type ResetReason = "enter" | "leave" | "global" | "init"
+const subscribe = () => () => {}
+const getClientSnapshot = () => true
+const getServerSnapshot = () => false
 
 function isOrbMode(props: MagicCardProps): props is MagicCardOrbProps {
   return props.mode === "orb"
@@ -73,9 +76,7 @@ export function MagicCard(props: MagicCardProps) {
   const glowBlur = isOrbMode(props) ? (props.glowBlur ?? 60) : 60
   const glowOpacity = isOrbMode(props) ? (props.glowOpacity ?? 0.9) : 0.9
   const { theme, systemTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
+  const mounted = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot)
 
   const isDarkTheme = useMemo(() => {
     if (!mounted) return true

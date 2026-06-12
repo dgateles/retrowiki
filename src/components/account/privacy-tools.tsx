@@ -55,7 +55,7 @@ export function PrivacyTools({ hasOpenRequest }: { hasOpenRequest: boolean }) {
       <div className="settings-row">
         <div>
           <p className="settings-row__label">Excluir minha conta</p>
-          <p className="settings-row__value muted">Seus dados pessoais são removidos. O conteúdo público fica como "Usuário removido".</p>
+          <p className="settings-row__value muted">Seus dados pessoais são removidos. O conteúdo público fica como &quot;Usuário removido&quot;.</p>
         </div>
         {requested ? (
           <span className="muted text-sm">Pedido em análise</span>

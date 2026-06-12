@@ -12,7 +12,6 @@ import { verifyCaptcha, type Solution } from "@/lib/captcha";
 import { sendEmail } from "@/lib/email/mailer";
 import { verifyEmail, resetPassword as resetTpl, passwordChanged, emailChange as emailChangeTpl } from "@/lib/email/templates";
 import { requireUser } from "@/lib/auth-helpers";
-import { slugify } from "@/lib/utils";
 import { validateRegistrationValues, saveRegistrationValues } from "@/lib/profile-fields";
 import { isBanned } from "@/lib/admin/ban-filters";
 import { hasQuestions, checkAnswer, geoActionForCountry } from "@/lib/spam";

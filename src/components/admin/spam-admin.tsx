@@ -201,11 +201,11 @@ function QuestionDialog({ question, onClose, onSaved }: { question: SpamQuestion
             {answers.map((a, i) => (
               <div key={i} className="pf-inline mt-1">
                 <Input value={a} onChange={(e) => setAns(i, e.target.value)} placeholder="Resposta" />
-                {answers.length > 1 && <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => removeAns(i)} title="Remover"><X className="size-4" aria-hidden="true" /></Button>}
+                {answers.length > 1 && <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => removeAns(i)} aria-label="Remover resposta" title="Remover"><X className="size-4" aria-hidden="true" /></Button>}
               </div>
             ))}
             <Button type="button" variant="ghost" size="sm" className="mt-1" onClick={addAns}><Plus className="size-4" aria-hidden="true" /> Adicionar resposta</Button>
-            <p className="field__hint">Considere variações e erros comuns (ex.: "azul", "Azul").</p>
+            <p className="field__hint">Considere variações e erros comuns (ex.: &quot;azul&quot;, &quot;Azul&quot;).</p>
           </div>
         </div>
         <div className="modal-actions">

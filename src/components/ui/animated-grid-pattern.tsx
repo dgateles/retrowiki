@@ -87,7 +87,8 @@ export function AnimatedGridPattern({
 
   useEffect(() => {
     if (dimensions.width && dimensions.height) {
-      setSquares(generateSquares(numSquares))
+      const timeout = window.setTimeout(() => setSquares(generateSquares(numSquares)), 0)
+      return () => window.clearTimeout(timeout)
     }
   }, [dimensions.width, dimensions.height, generateSquares, numSquares])
 
