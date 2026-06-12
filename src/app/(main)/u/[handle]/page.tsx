@@ -13,6 +13,7 @@ import { getReputationSettings } from "@/lib/settings";
 import { levelForReputation } from "@/lib/reputation-levels";
 import { ProfileFieldsDisplay } from "@/components/profile/profile-fields-display";
 import { ProfileGallery } from "@/components/profile/profile-gallery";
+import { Paginated } from "@/components/ui/paginated";
 import { typeLabel } from "@/lib/articles";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
@@ -79,7 +80,7 @@ export default async function ProfilePage({
   const { getGallerySettings } = await import("@/lib/settings");
   const gallerySettings = await getGallerySettings();
   const { getUserActivity } = await import("@/lib/activity");
-  const activity = await getUserActivity(profile.id, 15);
+  const activity = await getUserActivity(profile.id, 60);
   const userBadges = gami.enabled ? await getUserBadges(profile.id) : [];
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
@@ -249,7 +250,7 @@ export default async function ProfilePage({
           {profile.articles.length === 0 ? (
             <p className="empty mt-4">Nenhuma publicação ainda.</p>
           ) : (
-            <ul className="link-list">
+            <Paginated className="link-list" pageSize={10} label="publicações">
               {profile.articles.map((a) => (
                 <li key={a.id}>
                   <Link href={`/guias/${a.slug}`} className="link-card">
@@ -258,7 +259,7 @@ export default async function ProfilePage({
                   </Link>
                 </li>
               ))}
-            </ul>
+            </Paginated>
           )}
           </section>
 
@@ -267,7 +268,7 @@ export default async function ProfilePage({
             {activity.length === 0 ? (
               <p className="empty mt-4">Sem atividade recente.</p>
             ) : (
-              <ul className="activity mt-4">
+              <Paginated className="activity mt-4" pageSize={10} label="atividade">
                 {activity.map((a, i) => (
                   <li key={i} className="activity__item">
                     <span className="activity__icon" aria-hidden="true">
@@ -281,7 +282,7 @@ export default async function ProfilePage({
                     <span className="activity__date muted">{relDate(a.date)}</span>
                   </li>
                 ))}
-              </ul>
+              </Paginated>
             )}
           </section>
         </div>
