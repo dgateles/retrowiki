@@ -110,15 +110,22 @@ export function WidgetView({ w }: { w: Widget }) {
           ))}
         </div>
       );
-    case "image":
+    case "image": {
       if (!w.url) return null;
+      /* eslint-disable-next-line @next/next/no-img-element */
+      const imgEl = <img src={w.url} alt={w.alt} className="page-w__img" loading="lazy" />;
+      const imgHref = w.href ? safeHref(w.href) : null;
       return (
         <figure className="page-w__figure">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={w.url} alt={w.alt} className="page-w__img" loading="lazy" />
+          {imgHref
+            ? (imgHref.startsWith("/")
+                ? <Link href={imgHref} className="page-w__img-link">{imgEl}</Link>
+                : <a href={imgHref} className="page-w__img-link" rel="nofollow noopener noreferrer" target="_blank">{imgEl}</a>)
+            : imgEl}
           {w.caption && <figcaption className="page-w__caption">{w.caption}</figcaption>}
         </figure>
       );
+    }
     case "button": {
       const href = safeHref(w.href);
       if (!href) return null;
@@ -187,12 +194,20 @@ export function WidgetView({ w }: { w: Widget }) {
     case "gallery":
       return (
         <ul className={`page-w__gallery page-w__gallery--c${w.columns}`}>
-          {w.images.filter((im) => im.url).map((im, i) => (
-            <li key={i} className="page-w__gallery-item">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={im.url} alt={im.alt} className="page-w__gallery-img" loading="lazy" />
-            </li>
-          ))}
+          {w.images.filter((im) => im.url).map((im, i) => {
+            /* eslint-disable-next-line @next/next/no-img-element */
+            const gimg = <img src={im.url} alt={im.alt} className="page-w__gallery-img" loading="lazy" />;
+            const gh = im.href ? safeHref(im.href) : null;
+            return (
+              <li key={i} className="page-w__gallery-item">
+                {gh
+                  ? (gh.startsWith("/")
+                      ? <Link href={gh} className="page-w__img-link">{gimg}</Link>
+                      : <a href={gh} className="page-w__img-link" rel="nofollow noopener noreferrer" target="_blank">{gimg}</a>)
+                  : gimg}
+              </li>
+            );
+          })}
         </ul>
       );
     case "card": {
@@ -235,10 +250,19 @@ export function WidgetView({ w }: { w: Widget }) {
     }
     case "logoCloud": {
       const logos = w.items.filter((it) => it.image);
-      const Logo = ({ it }: { it: { image: string; alt: string; href?: string } }) => {
+      const Logo = ({ it }: { it: { image: string; imageDark?: string; alt: string; href?: string } }) => {
         const cls = cn("page-w__logo", w.grayscale && "page-w__logo--gray");
-        /* eslint-disable-next-line @next/next/no-img-element */
-        const img = <img src={it.image} alt={it.alt} className={cls} loading="lazy" />;
+        const img = it.imageDark ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={it.image} alt={it.alt} className={cn(cls, "dark:hidden")} loading="lazy" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={it.imageDark} alt={it.alt} className={cn(cls, "hidden dark:block")} loading="lazy" />
+          </>
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={it.image} alt={it.alt} className={cls} loading="lazy" />
+        );
         const href = it.href ? safeHref(it.href) : null;
         return href
           ? <a href={href} rel="nofollow noopener noreferrer" target="_blank" className="page-w__logo-link">{img}</a>

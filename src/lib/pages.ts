@@ -25,7 +25,7 @@ const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default
 const WidgetSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]).default("none").catch("none") }),
   z.object({ type: z.literal("text"), text: z.string().max(5000), align: ALIGN, color: COLOR }),
-  z.object({ type: z.literal("image"), url: imageUrl, alt: z.string().max(200).default(""), caption: z.string().max(200).default("") }),
+  z.object({ type: z.literal("image"), url: imageUrl, alt: z.string().max(200).default(""), caption: z.string().max(200).default(""), href: url.optional().default("") }),
   z.object({ type: z.literal("button"), label: z.string().trim().min(1).max(80), href: url, variant: z.enum(["primary", "outline", "rainbow"]).default("primary"), align: ALIGN }),
   z.object({ type: z.literal("divider") }),
   z.object({ type: z.literal("spacer"), size: z.enum(["sm", "md", "lg"]).default("md") }),
@@ -38,7 +38,7 @@ const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("gallery"),
     columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(3),
-    images: z.array(z.object({ url: imageUrl, alt: z.string().max(200).default("") })).min(1).max(24),
+    images: z.array(z.object({ url: imageUrl, alt: z.string().max(200).default(""), href: url.optional().default("") })).min(1).max(24),
   }),
   z.object({
     type: z.literal("card"),
@@ -107,6 +107,7 @@ const WidgetSchema = z.discriminatedUnion("type", [
     grayscale: z.boolean().default(true),
     items: z.array(z.object({
       image: imageUrl,
+      imageDark: imageUrl.optional().default(""), // logo para tema escuro (opcional)
       alt: z.string().max(120).default(""),
       href: url.optional().default(""),
     })).min(1).max(24),

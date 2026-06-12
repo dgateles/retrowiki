@@ -58,14 +58,14 @@ function newWidget(type: WidgetType): Widget {
     case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left", color: "default", fx: "none" };
     case "text": return { type: "text", text: "Escreva aqui o texto…", align: "left", color: "default" };
     case "richtext": return { type: "richtext", doc: { type: "doc", content: [{ type: "paragraph" }] } };
-    case "image": return { type: "image", url: "", alt: "", caption: "" };
+    case "image": return { type: "image", url: "", alt: "", caption: "", href: "" };
     case "button": return { type: "button", label: "Saiba mais", href: "/", variant: "primary", align: "left" };
     case "divider": return { type: "divider" };
     case "spacer": return { type: "spacer", size: "md" };
     case "video": return { type: "video", url: "" };
     case "callout": return { type: "callout", tone: "info", text: "Texto em destaque." };
     case "accordion": return { type: "accordion", items: [{ title: "Pergunta", body: "Resposta." }] };
-    case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "" }] };
+    case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "", href: "" }] };
     case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "", effect: "none" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
     case "deviceGrid": return { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true };
@@ -73,7 +73,7 @@ function newWidget(type: WidgetType): Widget {
     case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
     case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
     case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
-    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", grayscale: true, items: [{ image: "", alt: "", href: "" }] };
+    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -819,6 +819,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <div className="field"><Label>Imagem</Label><ImageUpload value={w.url} onChange={(url) => onChange({ url })} folder="pages" /></div>
           <div className="field"><Label>Texto alternativo</Label><Input value={w.alt} onChange={(e) => onChange({ alt: e.target.value })} maxLength={200} /></div>
           <div className="field"><Label>Legenda</Label><Input value={w.caption} onChange={(e) => onChange({ caption: e.target.value })} maxLength={200} /></div>
+          <div className="field"><Label>Link (opcional)</Label><Input value={w.href ?? ""} onChange={(e) => onChange({ href: e.target.value })} placeholder="/guias ou https://…" maxLength={500} /></div>
         </>
       )}
       {w.type === "button" && (
@@ -889,10 +890,11 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
               </div>
               <ImageUpload value={im.url} onChange={(url) => onChange({ images: w.images.map((x, j) => j === i ? { ...x, url } : x) })} folder="pages" />
               <Input className="mt-1" value={im.alt} onChange={(e) => onChange({ images: w.images.map((x, j) => j === i ? { ...x, alt: e.target.value } : x) })} placeholder="Texto alternativo" maxLength={200} />
+              <Input className="mt-1" value={(im as { href?: string }).href ?? ""} onChange={(e) => onChange({ images: w.images.map((x, j) => j === i ? { ...x, href: e.target.value } : x) })} placeholder="Link (opcional)" maxLength={500} />
             </div>
           ))}
           {w.images.length < 24 && (
-            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ images: [...w.images, { url: "", alt: "" }] })}><Plus className="size-3.5" /> Adicionar imagem</button>
+            <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ images: [...w.images, { url: "", alt: "", href: "" }] })}><Plus className="size-3.5" /> Adicionar imagem</button>
           )}
         </>
       )}
@@ -1006,12 +1008,15 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                   <span className="text-xs text-muted-foreground">Logo {i + 1}</span>
                   {w.items.length > 1 && <button type="button" className="pb-icon pb-icon--danger" title="Remover" onClick={() => onChange({ items: w.items.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></button>}
                 </div>
+                <span className="text-[11px] text-muted-foreground">Logo (tema claro)</span>
                 <ImageUpload value={it.image} onChange={(image) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, image } : x) })} folder="pages" />
+                <span className="text-[11px] text-muted-foreground">Logo (tema escuro, opcional)</span>
+                <ImageUpload value={it.imageDark ?? ""} onChange={(imageDark) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, imageDark } : x) })} folder="pages" />
                 <Input value={it.alt} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, alt: e.target.value } : x) })} placeholder="Nome / alt" maxLength={120} />
                 <Input value={it.href} onChange={(e) => onChange({ items: w.items.map((x, j) => j === i ? { ...x, href: e.target.value } : x) })} placeholder="Link (opcional)" maxLength={500} />
               </div>
             ))}
-            {w.items.length < 24 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { image: "", alt: "", href: "" }] })}><Plus className="size-3.5" /> Adicionar logo</button>}
+            {w.items.length < 24 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ items: [...w.items, { image: "", imageDark: "", alt: "", href: "" }] })}><Plus className="size-3.5" /> Adicionar logo</button>}
           </div>
         </>
       )}

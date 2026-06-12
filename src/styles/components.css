@@ -922,6 +922,7 @@
   .page-w__text { @apply space-y-3 leading-relaxed text-foreground/90; }
   .page-w__figure { @apply m-0; }
   .page-w__img { @apply w-full rounded-lg border border-border object-cover; }
+  .page-w__img-link { @apply block transition-opacity hover:opacity-90; }
   .page-w__caption { @apply mt-2 text-center text-sm text-muted-foreground; }
   .page-w__btnwrap { @apply flex; }
   .page-w__btnwrap.text-center { @apply justify-center; }
