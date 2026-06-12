@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { FX_EFFECTS, fxVal, type FxParams, type FxParamValue } from "@/lib/fx-effects";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { useConfirm } from "@/components/admin/confirm-dialog";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
@@ -102,6 +103,7 @@ type Sel = { si: number; ci: number; wi: number };
 
 export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: SavedBlock[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [title, setTitle] = useState(page.title);
   const [slug, setSlug] = useState(page.slug);
   const [metaDescription, setMeta] = useState(page.metaDescription);
@@ -301,7 +303,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   }
 
   async function remove() {
-    if (!confirm("Excluir esta página? Esta ação não pode ser desfeita.")) return;
+    if (!(await confirm({ title: "Excluir página", description: "Excluir esta página? Esta ação não pode ser desfeita.", confirmLabel: "Excluir", destructive: true }))) return;
     const res = await deletePageAction(page.id);
     if (res.ok) { toast.success("Página excluída."); router.push("/admin/paginas"); }
     else toast.error(res.error ?? "Falha.");
