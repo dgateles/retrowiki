@@ -52,7 +52,7 @@ export function DeviceSpecCard({ detail }: { detail: DeviceDetail }) {
       {/* Hero */}
       <Card>
         <CardContent className="flex flex-col gap-6 pt-6 sm:flex-row sm:items-center">
-          <div className="crt-screen flex h-40 w-44 shrink-0 items-center justify-center self-center rounded-xl p-3">
+          <div className="relative flex h-40 w-44 shrink-0 items-center justify-center self-center p-3">
             {front ? (
               <Image src={front.url} alt={front.alt} fill sizes="176px" className="object-contain" priority />
             ) : (
