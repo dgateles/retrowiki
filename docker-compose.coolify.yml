@@ -2,8 +2,10 @@
 # depois serve na porta 3000. Arquivos enviados persistem no volume `storage`.
 #
 # DOIS DOMÍNIOS:
-#   Defina DOMAIN_PRIMARY e DOMAIN_SECONDARY nas variáveis do Coolify. As labels
-#   do Traefik abaixo roteiam os dois para o app (TLS + redireciono http→https).
+#   As labels do Traefik abaixo roteiam retro.wiki.br e retrowiki.com.br para o
+#   app (TLS + redireciono http→https). Os domínios têm DEFAULT embutido, então
+#   funcionam mesmo sem DOMAIN_PRIMARY/DOMAIN_SECONDARY definidos no Coolify;
+#   defina essas variáveis só se quiser sobrescrever os domínios padrão.
 #   - APP_URL deve ser o domínio canônico (usado em links absolutos/e-mails/OG).
 #   - Como auth usa trustHost, os cookies/callbacks seguem o domínio acessado.
 #   - No Google Cloud, cadastre o callback dos DOIS domínios:
@@ -24,7 +26,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       # Domínio canônico (um dos dois) — usado em URLs absolutas.
-      APP_URL: ${APP_URL}
+      APP_URL: ${APP_URL:-https://retro.wiki.br}
       # Deploy opcional em subdiretório; vazio para subdomínio.
       BASE_PATH: ${BASE_PATH:-}
       DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
@@ -53,15 +55,16 @@ services:
       - "3000"
     labels:
       - "traefik.enable=true"
-      # Roteador HTTPS para os DOIS domínios.
-      - "traefik.http.routers.retrowiki.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_SECONDARY}`)"
+      # Roteador HTTPS para os DOIS domínios. Defaults garantem que o secundário
+      # seja roteado mesmo que DOMAIN_SECONDARY não esteja definido no Coolify.
+      - "traefik.http.routers.retrowiki.rule=Host(`${DOMAIN_PRIMARY:-retro.wiki.br}`) || Host(`${DOMAIN_SECONDARY:-retrowiki.com.br}`)"
       - "traefik.http.routers.retrowiki.entrypoints=https"
       - "traefik.http.routers.retrowiki.tls=true"
       - "traefik.http.routers.retrowiki.tls.certresolver=letsencrypt"
       - "traefik.http.routers.retrowiki.service=retrowiki"
       - "traefik.http.services.retrowiki.loadbalancer.server.port=3000"
       # Roteador HTTP → redireciona para HTTPS (os dois domínios).
-      - "traefik.http.routers.retrowiki-http.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_SECONDARY}`)"
+      - "traefik.http.routers.retrowiki-http.rule=Host(`${DOMAIN_PRIMARY:-retro.wiki.br}`) || Host(`${DOMAIN_SECONDARY:-retrowiki.com.br}`)"
       - "traefik.http.routers.retrowiki-http.entrypoints=http"
       - "traefik.http.routers.retrowiki-http.middlewares=retrowiki-redirect"
       - "traefik.http.middlewares.retrowiki-redirect.redirectscheme.scheme=https"
