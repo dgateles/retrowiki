@@ -36,8 +36,9 @@ function FlyoutItem({ item }: { item: MenuChild }) {
 
 export function MainNav({ items }: { items: MenuNode[] }) {
   return (
-    <NavigationMenu className="site-header__nav" aria-label="Principal">
-      <NavigationMenuList>
+    <div className="site-header__nav">
+      <NavigationMenu aria-label="Principal">
+        <NavigationMenuList>
         {items.map((item) => {
           // Link simples (ou flyout/dropdown sem filhos com href).
           if (item.type === "link" || item.children.length === 0) {
@@ -85,7 +86,8 @@ export function MainNav({ items }: { items: MenuNode[] }) {
             </NavigationMenuItem>
           );
         })}
-      </NavigationMenuList>
-    </NavigationMenu>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
   );
 }
