@@ -1,5 +1,16 @@
 # Deploy containerizado completo (Coolify). O app roda migrações + seed no start,
 # depois serve na porta 3000. Arquivos enviados persistem no volume `storage`.
+#
+# DOIS DOMÍNIOS:
+#   Defina DOMAIN_PRIMARY e DOMAIN_SECONDARY nas variáveis do Coolify. As labels
+#   do Traefik abaixo roteiam os dois para o app (TLS + redireciono http→https).
+#   - APP_URL deve ser o domínio canônico (usado em links absolutos/e-mails/OG).
+#   - Como auth usa trustHost, os cookies/callbacks seguem o domínio acessado.
+#   - No Google Cloud, cadastre o callback dos DOIS domínios:
+#       https://DOMAIN_PRIMARY/api/auth/callback/google
+#       https://DOMAIN_SECONDARY/api/auth/callback/google
+#   (No Coolify, deixe o campo "Domains" do recurso vazio para não duplicar as
+#    labels — o roteamento é feito por estas labels do compose.)
 services:
   app:
     build:
@@ -12,6 +23,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      # Domínio canônico (um dos dois) — usado em URLs absolutas.
       APP_URL: ${APP_URL}
       # Deploy opcional em subdiretório; vazio para subdomínio.
       BASE_PATH: ${BASE_PATH:-}
@@ -25,10 +37,34 @@ services:
       EMAIL_FROM: ${EMAIL_FROM:-RetroWiki <noreply@localhost>}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      # Login com Google (OAuth) — opcional.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      # BunnyCDN (uploads de imagem) — opcional; sem isso usa o storage local.
+      BUNNY_STORAGE_KEY: ${BUNNY_STORAGE_KEY:-}
+      BUNNY_STORAGE_KEY_READONLY: ${BUNNY_STORAGE_KEY_READONLY:-}
+      BUNNY_STORAGE_REGION: ${BUNNY_STORAGE_REGION:-}
+      BUNNY_PULL_ZONE: ${BUNNY_PULL_ZONE:-}
+      BUNNY_CDN_TOKEN: ${BUNNY_CDN_TOKEN:-}
+      BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
     volumes:
       - storage:/app/storage
     expose:
       - "3000"
+    labels:
+      - "traefik.enable=true"
+      # Roteador HTTPS para os DOIS domínios.
+      - "traefik.http.routers.retrowiki.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_SECONDARY}`)"
+      - "traefik.http.routers.retrowiki.entrypoints=https"
+      - "traefik.http.routers.retrowiki.tls=true"
+      - "traefik.http.routers.retrowiki.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.retrowiki.service=retrowiki"
+      - "traefik.http.services.retrowiki.loadbalancer.server.port=3000"
+      # Roteador HTTP → redireciona para HTTPS (os dois domínios).
+      - "traefik.http.routers.retrowiki-http.rule=Host(`${DOMAIN_PRIMARY}`) || Host(`${DOMAIN_SECONDARY}`)"
+      - "traefik.http.routers.retrowiki-http.entrypoints=http"
+      - "traefik.http.routers.retrowiki-http.middlewares=retrowiki-redirect"
+      - "traefik.http.middlewares.retrowiki-redirect.redirectscheme.scheme=https"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/health"]
       interval: 15s
