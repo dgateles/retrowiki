@@ -30,7 +30,7 @@ const WidgetSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("button"), label: z.string().trim().min(1).max(80), href: url, variant: z.enum(["primary", "outline", "rainbow"]).default("primary"), align: ALIGN }),
   z.object({ type: z.literal("divider") }),
   z.object({ type: z.literal("spacer"), size: z.enum(["sm", "md", "lg"]).default("md") }),
-  z.object({ type: z.literal("video"), url: z.string().trim().max(500).refine((u) => parseVideoEmbed(u) !== null, "Use uma URL do YouTube ou Vimeo.") }),
+  z.object({ type: z.literal("video"), url: z.string().trim().max(500).refine((u) => parseVideoEmbed(u) !== null, "Use uma URL do YouTube, Vimeo ou Twitch.") }),
   z.object({ type: z.literal("callout"), tone: z.enum(["info", "warn", "success"]).default("info"), text: z.string().trim().min(1).max(2000) }),
   z.object({
     type: z.literal("accordion"),

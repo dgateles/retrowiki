@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { highlightCode } from "@/lib/prism";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { CalloutBlock, StepsBlock } from "@/components/blocks/static-blocks";
+import { parseVideoEmbed } from "@/lib/video-embed";
 
 // Renderizador do bloco de releases do GitHub. É injetado pelo render server-only
 // (render.tsx) porque depende do banco; aqui (módulo compartilhado com o cliente)
@@ -222,6 +223,22 @@ function renderBlock(node: Node, key: number, gh?: GhRenderer): React.ReactNode 
       return gh
         ? <Fragment key={key}>{gh({ owner: node.attrs?.owner, repo: node.attrs?.repo, limit: node.attrs?.limit })}</Fragment>
         : ghPlaceholder(node.attrs ?? {}, key);
+    case "videoEmbed": {
+      const v = parseVideoEmbed(node.attrs?.url ?? "");
+      if (!v) return null;
+      return (
+        <div key={key} className="blk-video">
+          <iframe
+            src={v.src}
+            title={`Vídeo (${v.provider})`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      );
+    }
     default:
       return null;
   }

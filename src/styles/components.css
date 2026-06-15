@@ -2506,6 +2506,27 @@
   .rte-wgt__gh-fields {
     @apply flex flex-wrap items-center gap-2;
   }
+  .rte-wgt__input--wide {
+    @apply w-full;
+  }
+  .rte-wgt__badge {
+    @apply rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary;
+  }
+  .rte-wgt__hint {
+    @apply mt-1 text-sm text-destructive;
+  }
+  .rte-wgt__video {
+    @apply mt-2;
+  }
+
+  /* Embed de vídeo responsivo (16:9) no conteúdo publicado. */
+  .blk-video {
+    @apply relative my-4 aspect-video overflow-hidden rounded-lg border border-border bg-black;
+  }
+  .blk-video iframe {
+    @apply absolute inset-0 h-full w-full;
+    border: 0;
+  }
   .blk-spoiler {
     @apply my-5 overflow-hidden rounded-lg border border-border;
   }

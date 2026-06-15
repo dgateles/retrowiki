@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { HEX_COLOR, FONT_SIZES, ALIGNMENTS } from "@/lib/editor/options";
 import { isSafeHref } from "@/lib/safe-url";
+import { parseVideoEmbed } from "@/lib/video-embed";
 
 // Validação por allowlist do documento do editor rico (formato ProseMirror/TipTap).
 // Só os nós, marcas e atributos abaixo são aceitos; o resto é rejeitado no
@@ -98,7 +99,8 @@ export type RichNode =
   // dados nos attrs, sem conteúdo aninhado.
   | { type: "callout"; attrs: { variant: "info" | "success" | "warning" | "danger"; text: string } }
   | { type: "steps"; attrs: { items: { title: string; text: string }[] } }
-  | { type: "githubReleases"; attrs: { owner: string; repo: string; limit: number } };
+  | { type: "githubReleases"; attrs: { owner: string; repo: string; limit: number } }
+  | { type: "videoEmbed"; attrs: { url: string } };
 
 const arr = () => z.array(Node).max(400).optional();
 
@@ -155,6 +157,12 @@ const Node = z.lazy(() =>
         owner: z.string().regex(/^[A-Za-z0-9-]{1,39}$/),
         repo: z.string().regex(/^[A-Za-z0-9._-]{1,100}$/),
         limit: z.coerce.number().int().min(1).max(5).catch(3),
+      }),
+    }),
+    z.object({
+      type: z.literal("videoEmbed"),
+      attrs: z.object({
+        url: z.string().trim().max(500).refine((u) => parseVideoEmbed(u) !== null, "URL de vídeo não suportada (YouTube, Vimeo ou Twitch)."),
       }),
     }),
   ]),

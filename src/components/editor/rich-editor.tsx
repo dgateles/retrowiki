@@ -23,7 +23,7 @@ import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Code, Subscript as SubIcon, Superscript as SupIcon,
   Type, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link as LinkIcon, Smile, RemoveFormatting,
   Rows3, Columns3, Grid2x2, Trash2, Pilcrow, ChevronDown, Search as SearchIcon,
-  AlertTriangle, ListChecks, Github,
+  AlertTriangle, ListChecks, Github, Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,8 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Box, Spoiler } from "@/components/editor/box-node";
-import { Callout, Steps, GithubReleases } from "@/components/editor/widget-nodes";
+import { Callout, Steps, GithubReleases, VideoEmbed } from "@/components/editor/widget-nodes";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, EMOJIS, CODE_LANGS } from "@/lib/editor/options";
 
 function TBtn({ onClick, active, label, children }: { onClick: () => void; active?: boolean; label: string; children: React.ReactNode }) {
@@ -238,6 +239,7 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
         {full && <DropdownMenuItem onSelect={() => run(() => chain().setHorizontalRule().run())}><Minus aria-hidden="true" /> Régua horizontal</DropdownMenuItem>}
         {full && <DropdownMenuItem onSelect={() => run(() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())}><TableIcon aria-hidden="true" /> Tabela</DropdownMenuItem>}
         {full && <DropdownMenuItem onSelect={() => setImgOpen(true)}><ImageIcon aria-hidden="true" /> Imagem</DropdownMenuItem>}
+        {full && <DropdownMenuItem onSelect={() => run(() => chain().insertContent({ type: "videoEmbed", attrs: { url: "" } }).run())}><Video aria-hidden="true" /> Vídeo</DropdownMenuItem>}
       </Menu>
 
       <span className="rte__sep" aria-hidden="true" />
@@ -313,8 +315,12 @@ function Toolbar({ editor, variant = "full" }: { editor: Editor; variant?: "full
           <DialogTitle>Inserir imagem</DialogTitle>
           <form className="form mt-4" onSubmit={(e) => { e.preventDefault(); applyImage(); }}>
             <div className="field">
-              <Label htmlFor="img-url">URL da imagem</Label>
-              <Input id="img-url" value={imgUrl} onChange={(e) => setImgUrl(e.target.value)} placeholder="https://…" autoFocus />
+              <Label>Enviar do dispositivo</Label>
+              <ImageUpload value={imgUrl} onChange={setImgUrl} folder="gallery" layout="dropzone" hint="PNG, JPG, WEBP ou GIF (máx. 5 MB)" />
+            </div>
+            <div className="field">
+              <Label htmlFor="img-url">…ou cole uma URL</Label>
+              <Input id="img-url" value={imgUrl} onChange={(e) => setImgUrl(e.target.value)} placeholder="https://…" />
             </div>
             <div className="field">
               <Label htmlFor="img-alt">Texto alternativo</Label>
@@ -411,6 +417,7 @@ export function RichEditor({ value, onChange, variant = "full", placeholder = "E
       Callout,
       Steps,
       GithubReleases,
+      VideoEmbed,
     ],
     content: value ?? "",
     onUpdate: ({ editor: e }) => onChange(e.getJSON()),

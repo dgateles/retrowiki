@@ -56,8 +56,8 @@ const nextConfig: NextConfig = {
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
-      // Embeds de vídeo do construtor de páginas (allowlist de provedores).
-      "frame-src https://www.youtube-nocookie.com https://player.vimeo.com",
+      // Embeds de vídeo (construtor de páginas e editor rico): allowlist de provedores.
+      "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://clips.twitch.tv",
       "upgrade-insecure-requests",
     ].join("; ");
 

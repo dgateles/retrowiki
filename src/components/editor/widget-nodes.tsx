@@ -2,7 +2,8 @@
 
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
-import { Info, CheckCircle2, AlertTriangle, OctagonAlert, Plus, Trash2, Github } from "lucide-react";
+import { Info, CheckCircle2, AlertTriangle, OctagonAlert, Plus, Trash2, Github, Video } from "lucide-react";
+import { parseVideoEmbed, VIDEO_PROVIDER_LABEL } from "@/lib/video-embed";
 
 // Nós-widget atômicos do editor rico. Espelham os blocos antigos (callout,
 // steps, github-releases): guardam dados simples nos attrs e exibem um
@@ -259,5 +260,67 @@ export const GithubReleases = Node.create({
   },
   addNodeView() {
     return ReactNodeViewRenderer(GithubReleasesView);
+  },
+});
+
+// ── Vídeo (YouTube / Vimeo / Twitch) ─────────────────────────────────────────
+function VideoEmbedView({ node, updateAttributes }: ReactNodeViewProps) {
+  const url = (node.attrs.url as string) || "";
+  const v = parseVideoEmbed(url);
+  return (
+    <NodeViewWrapper className="rte-wgt rte-wgt--video" contentEditable={false}>
+      <div className="rte-wgt__head">
+        <Video className="size-4" aria-hidden="true" />
+        <label className="rte-wgt__label">Vídeo</label>
+        {v && <span className="rte-wgt__badge">{VIDEO_PROVIDER_LABEL[v.provider]}</span>}
+      </div>
+      <input
+        className="rte-wgt__input rte-wgt__input--wide"
+        value={url}
+        placeholder="Cole o link do YouTube, Vimeo ou Twitch"
+        aria-label="Link do vídeo"
+        onMouseDown={stop}
+        onKeyDown={stop}
+        onChange={(e) => updateAttributes({ url: e.target.value })}
+      />
+      {url && !v && <p className="rte-wgt__hint">URL não suportada. Use YouTube, Vimeo ou Twitch.</p>}
+      {v && (
+        <div className="blk-video rte-wgt__video">
+          <iframe
+            src={v.src}
+            title={`Vídeo (${v.provider})`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      )}
+    </NodeViewWrapper>
+  );
+}
+
+export const VideoEmbed = Node.create({
+  name: "videoEmbed",
+  group: "block",
+  atom: true,
+  selectable: true,
+  addAttributes() {
+    return {
+      url: {
+        default: "",
+        parseHTML: (el: HTMLElement) => el.getAttribute("data-url") || "",
+        renderHTML: (a: { url?: string }) => ({ "data-url": a.url || "" }),
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: "div[data-video-embed]" }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ["div", mergeAttributes(HTMLAttributes, { "data-video-embed": "" })];
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(VideoEmbedView);
   },
 });
