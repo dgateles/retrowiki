@@ -2527,6 +2527,23 @@
     @apply absolute inset-0 h-full w-full;
     border: 0;
   }
+
+  /* Reações (curtir/deslike) por comentário. */
+  .cmt-react {
+    @apply inline-flex items-center gap-1;
+  }
+  .cmt-react__btn {
+    @apply inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .cmt-react__btn--on {
+    @apply border-primary/40 bg-primary/10 text-primary;
+  }
+  .cmt-react__btn--down.cmt-react__btn--on {
+    @apply border-destructive/40 bg-destructive/10 text-destructive;
+  }
+  .cmt-react__n {
+    @apply font-medium tabular-nums;
+  }
   .blk-spoiler {
     @apply my-5 overflow-hidden rounded-lg border border-border;
   }

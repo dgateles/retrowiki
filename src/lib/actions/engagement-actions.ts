@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, ne, sql, count, gte } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, votes, articles, auditLog, articleFollows, users } from "@/db/schema";
+import { comments, votes, articles, auditLog, articleFollows, users, commentReactions } from "@/db/schema";
 import { requireUser, requireRole } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -325,4 +325,60 @@ export async function reactAction(articleId: number, reactionId: number): Promis
     }
   }
   return { ok: true, data: { reactionId: current } };
+}
+
+/** Curtir (+1) ou deslike (-1) num comentário. Uma reação por usuário; clicar a
+ * mesma desfaz. Afeta a reputação do autor do comentário em ±1 (mínimo). */
+export async function reactCommentAction(commentId: number, value: number): Promise<Result<{ value: number }>> {
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    return { ok: false, error: "Faça login para reagir." };
+  }
+  await checkRateLimit(`creact:${user.id}`, 40, 60_000);
+  const userId = Number(user.id);
+  const v = value > 0 ? 1 : value < 0 ? -1 : 0;
+  if (v === 0) return { ok: false, error: "Reação inválida." };
+
+  const [c] = await db
+    .select({ authorId: comments.authorId, articleId: comments.articleId, status: comments.status })
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  if (!c || c.status !== "visible") return { ok: false, error: "Comentário não encontrado." };
+  if (c.authorId === userId) return { ok: false, error: "Você não pode reagir ao próprio comentário." };
+
+  const [existing] = await db
+    .select({ id: commentReactions.id, value: commentReactions.value })
+    .from(commentReactions)
+    .where(and(eq(commentReactions.commentId, commentId), eq(commentReactions.userId, userId)))
+    .limit(1);
+
+  let current = 0; // reação resultante do usuário
+  let delta = 0; // variação de reputação do autor do comentário
+  if (existing) {
+    if (existing.value === v) {
+      await db.delete(commentReactions).where(eq(commentReactions.id, existing.id));
+      delta = -existing.value;
+      current = 0;
+    } else {
+      await db.update(commentReactions).set({ value: v }).where(eq(commentReactions.id, existing.id));
+      delta = v - existing.value;
+      current = v;
+    }
+  } else {
+    await db.insert(commentReactions).values({ userId, commentId, value: v }).catch(() => {});
+    delta = v;
+    current = v;
+  }
+
+  if (delta !== 0) {
+    await db.update(users).set({ reputation: sql`${users.reputation} + ${delta}` }).where(eq(users.id, c.authorId));
+  }
+
+  const [a] = await db.select({ slug: articles.slug, kind: articles.kind }).from(articles).where(eq(articles.id, c.articleId)).limit(1);
+  if (a) revalidatePath(`/${a.kind === "blog" ? "blog" : "guias"}/${a.slug}`);
+
+  return { ok: true, data: { value: current } };
 }

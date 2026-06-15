@@ -10,7 +10,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ReactionBar } from "@/components/engagement/reaction-bar";
-import { listEnabledReactions, getReactionCounts, getUserReaction, getRecentReactors } from "@/lib/reactions";
+import { listEnabledReactions, getReactionCounts, getUserReaction, getRecentReactors, getCommentReactionCounts, getUserCommentReactions } from "@/lib/reactions";
 import { getReputationSettings, getReportingSettings, getAssignmentSettings, getStaffSettings } from "@/lib/settings";
 import { listReportTypes } from "@/lib/reports";
 import { ReportButton } from "@/components/moderation/report-button";
@@ -25,6 +25,7 @@ import { CommentReplyButton } from "@/components/engagement/comment-reply-button
 import { CommentHighlighter } from "@/components/engagement/comment-highlighter";
 import { FollowButton } from "@/components/engagement/follow-button";
 import { HideCommentButton } from "@/components/engagement/hide-comment-button";
+import { CommentReactions } from "@/components/engagement/comment-reactions";
 import { auth } from "@/auth";
 import { can } from "@/lib/auth-helpers";
 
@@ -65,6 +66,13 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
     getStaffSettings(),
   ]);
   const reportTypeOpts = reportTypes.map((t) => ({ id: t.id, title: t.title }));
+
+  // Reações de comentário (curtir/deslike) carregadas em lote.
+  const commentIds = comments.map((c) => c.id);
+  const [commentReactionCounts, myCommentReactions] = await Promise.all([
+    getCommentReactionCounts(commentIds),
+    getUserCommentReactions(userId, commentIds),
+  ]);
 
   const assignSettings = isMod ? await getAssignmentSettings() : { enabled: false, autoCloseDays: 0 };
   const assigneeOptions = isMod && assignSettings.enabled ? await getAssigneeOptions() : { users: [], teams: [] };
@@ -237,6 +245,13 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
                     </div>
                     <CommentBody body={c.body} />
                     <div className="comment__foot">
+                      <CommentReactions
+                        commentId={c.id}
+                        up={commentReactionCounts.get(c.id)?.up ?? 0}
+                        down={commentReactionCounts.get(c.id)?.down ?? 0}
+                        mine={myCommentReactions.get(c.id) ?? 0}
+                        canReact={!!userId && !owner}
+                      />
                       {userId && (
                         <CommentReplyButton
                           quotedDoc={commentDocFromBody(c.body) as never}

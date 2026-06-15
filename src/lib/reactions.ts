@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, count, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { reactions, votes } from "@/db/schema";
+import { reactions, votes, commentReactions } from "@/db/schema";
 
 export type Reaction = {
   id: number;
@@ -108,6 +108,47 @@ export async function getUserReaction(userId: number, articleId: number, fallbac
   } catch {
     return null;
   }
+}
+
+// ── Reações de comentário (curtir/deslike) ─────────────────────────────────
+
+export type CommentReactionCount = { up: number; down: number };
+
+/** Contagens curtir/deslike por comentário, em lote (evita N+1). */
+export async function getCommentReactionCounts(commentIds: number[]): Promise<Map<number, CommentReactionCount>> {
+  const map = new Map<number, CommentReactionCount>();
+  if (!commentIds.length) return map;
+  try {
+    const rows = await db
+      .select({ commentId: commentReactions.commentId, value: commentReactions.value })
+      .from(commentReactions)
+      .where(inArray(commentReactions.commentId, commentIds));
+    for (const r of rows) {
+      const e = map.get(r.commentId) ?? { up: 0, down: 0 };
+      if (r.value > 0) e.up++;
+      else e.down++;
+      map.set(r.commentId, e);
+    }
+  } catch {
+    /* tabela ausente / erro → sem contagens */
+  }
+  return map;
+}
+
+/** Reação do usuário (+1/-1) por comentário, em lote. */
+export async function getUserCommentReactions(userId: number | null, commentIds: number[]): Promise<Map<number, number>> {
+  const map = new Map<number, number>();
+  if (!userId || !commentIds.length) return map;
+  try {
+    const rows = await db
+      .select({ commentId: commentReactions.commentId, value: commentReactions.value })
+      .from(commentReactions)
+      .where(and(eq(commentReactions.userId, userId), inArray(commentReactions.commentId, commentIds)));
+    for (const r of rows) map.set(r.commentId, r.value);
+  } catch {
+    /* ignora */
+  }
+  return map;
 }
 
 // ── CRUD admin ────────────────────────────────────────────────────────────

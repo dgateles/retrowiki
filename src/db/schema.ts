@@ -296,6 +296,19 @@ export const votes = mysqlTable("votes", {
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("votes_user_article_idx").on(t.userId, t.articleId)]);
 
+// Reações simples em comentários: curtir (+1) ou deslike (-1). Uma por usuário
+// por comentário. Afeta a reputação do autor do comentário em ±1.
+export const commentReactions = mysqlTable("comment_reactions", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  commentId: bigint("comment_id", { mode: "number" }).notNull(),
+  value: int("value").notNull(), // +1 curtir, -1 deslike
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("comment_reactions_user_comment_idx").on(t.userId, t.commentId),
+  index("comment_reactions_comment_idx").on(t.commentId),
+]);
+
 // Tipos de reação configuráveis (Curtir, Valeu, Haha…). Peso ajusta a reputação.
 export const reactions = mysqlTable("reactions", {
   id: pk(),
