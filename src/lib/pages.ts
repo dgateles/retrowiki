@@ -173,6 +173,7 @@ export type Column = {
   span: number;
   valign: "top" | "center" | "bottom";
   bg: "none" | "muted" | "card";
+  dir: "col" | "row";
   widgets: Widget[];
 };
 
@@ -203,6 +204,8 @@ const ColumnSchema: z.ZodType<Column> = z.preprocess(
     span: z.number().int().min(1).max(12).catch(12).default(12),
     valign: z.enum(["top", "center", "bottom"]).default("top").catch("top"),
     bg: z.enum(["none", "muted", "card"]).default("none").catch("none"),
+    // Direção dos widgets: empilhados (col) ou lado a lado (row).
+    dir: z.enum(["col", "row"]).default("col").catch("col"),
     widgets: z.array(WidgetSchema).max(30),
   }),
 ) as z.ZodType<Column>;

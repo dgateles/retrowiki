@@ -30,6 +30,7 @@ function defaultHomeLayout(): Layout {
             span: 12,
             valign: "center",
             bg: "none",
+            dir: "col",
             widgets: [
               { type: "heading", level: 2, text: "O catálogo e os guias de emulação portátil, feitos pela comunidade", align: "center", color: "default", fx: "gradient" },
               { type: "text", text: "Fichas técnicas, comparador, tutoriais e firmware num só lugar, com curadoria.", align: "center", color: "muted" },
@@ -54,6 +55,7 @@ function defaultHomeLayout(): Layout {
             span: 12,
             valign: "top",
             bg: "none",
+            dir: "col",
             widgets: [
               { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", limit: 0, showAll: true },
             ],

@@ -477,7 +477,7 @@ export function WidgetView({ w }: { w: Widget }) {
         <Tag className={cn("page-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4", w.full && "page-container--full")}>
           <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
             {w.columns.map((c) => (
-              <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
+              <div key={c.id} className={cn("page-col flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
                 {c.widgets.map((cw, i) => (
                   <div key={i} className="page-w"><WidgetView w={cw} /></div>
                 ))}
@@ -506,7 +506,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
           <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} params={s.fxParams} /></div>
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (
-              <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
+              <div key={c.id} className={cn("page-col flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
                 {c.widgets.map((w, i) => (
                   <div key={i} className="page-w">
                     <WidgetView w={w} />
