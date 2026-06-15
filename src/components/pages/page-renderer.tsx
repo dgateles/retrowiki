@@ -9,13 +9,7 @@ import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { Reveal } from "@/components/pages/reveal";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
-import { AuroraText } from "@/components/ui/aurora-text";
-import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import { TextAnimate } from "@/components/ui/text-animate";
-import { TypingAnimation } from "@/components/ui/typing-animation";
-import { LineShadowText } from "@/components/ui/line-shadow-text";
-import { HyperText } from "@/components/ui/hyper-text";
+import { WidgetTitle, fxText } from "@/components/pages/widget-title";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { Marquee } from "@/components/ui/marquee";
 import { LogoMarquee } from "@/components/pages/logo-marquee";
@@ -75,6 +69,13 @@ const TEXT_COLOR: Record<string, string> = {
 export const COL_VALIGN: Record<string, string> = { top: "justify-start", center: "justify-center", bottom: "justify-end" };
 export const COL_BG: Record<string, string> = { none: "", muted: "rounded-lg bg-muted/40 p-4", card: "rounded-lg border border-border bg-card p-4" };
 
+// Container recursivo: fundo, espaçamento vertical e gap entre colunas.
+const CONTAINER_BG: Record<string, string> = {
+  none: "", muted: "bg-muted/50", card: "bg-card", primary: "bg-primary/10", dark: "bg-foreground/90 text-background",
+};
+const CONTAINER_PADY: Record<string, string> = { none: "", sm: "py-4", md: "py-8", lg: "py-12" };
+const CONTAINER_GAP: Record<string, string> = { none: "gap-0", sm: "gap-3", md: "gap-6", lg: "gap-10" };
+
 function safeHref(href: string): string | null {
   return isSafeHref(href) ? href : null;
 }
@@ -86,16 +87,7 @@ export function WidgetView({ w }: { w: Widget }) {
       const cls = `page-w__heading ${ALIGN[w.align] ?? ""} ${fx === "none" ? TEXT_COLOR[w.color] ?? "" : ""}`;
       const Tag = w.level === 3 ? "h3" : w.level === 4 ? "h4" : "h2";
       // O efeito sempre fica DENTRO do heading (Tag de bloco) para herdar o alinhamento.
-      const inner =
-        fx === "gradient" ? <AnimatedGradientText colorFrom="#10b981" colorTo="#6366f1" speed={1.2}>{w.text}</AnimatedGradientText> :
-        fx === "aurora" ? <AuroraText colors={["#10b981", "#6366f1", "#22d3ee"]}>{w.text}</AuroraText> :
-        fx === "shiny" ? <AnimatedShinyText className="inline">{w.text}</AnimatedShinyText> :
-        fx === "textanimate" ? <TextAnimate as="span" animation="blurInUp" by="word" className="inline-block">{w.text}</TextAnimate> :
-        fx === "typing" ? <TypingAnimation as="span" className="inline">{w.text}</TypingAnimation> :
-        fx === "lineshadow" ? <LineShadowText shadowColor="#10b981">{w.text}</LineShadowText> :
-        fx === "hyper" ? <HyperText as="span" className="inline-block">{w.text}</HyperText> :
-        w.text;
-      return <Tag className={cls}>{inner}</Tag>;
+      return <Tag className={cls}>{fxText(fx, w.text)}</Tag>;
     }
     case "text":
       return (
@@ -273,7 +265,7 @@ export function WidgetView({ w }: { w: Widget }) {
       };
       return (
         <div className="page-w__logos">
-          {w.title && <p className="page-w__logos-title">{w.title}</p>}
+          <WidgetTitle text={w.title} level={w.titleLevel} color={w.titleColor} fx={w.titleFx} className="page-w__logos-title" />
           {w.display === "marquee" ? (
             <LogoMarquee>
               {logos.map((it, i) => <span key={i} className="inline-flex shrink-0 items-center">{<Logo it={it} />}</span>)}
@@ -289,7 +281,7 @@ export function WidgetView({ w }: { w: Widget }) {
     case "richtext":
       return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
     case "deviceGrid":
-      return <DeviceGridWidget title={w.title} limit={w.limit} showAll={w.showAll} />;
+      return <DeviceGridWidget title={w.title} titleLevel={w.titleLevel} titleColor={w.titleColor} titleFx={w.titleFx} limit={w.limit} showAll={w.showAll} />;
     case "numberTicker":
       return (
         <div className={`page-w__ticker ${ALIGN[w.align] ?? ""}`}>
@@ -478,6 +470,23 @@ export function WidgetView({ w }: { w: Widget }) {
           })}
         </ul>
       );
+    case "container": {
+      const Tag = w.tag;
+      const boxed = w.bg !== "none";
+      return (
+        <Tag className={cn("page-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4", w.full && "page-container--full")}>
+          <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
+            {w.columns.map((c) => (
+              <div key={c.id} className={cn("page-col flex flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
+                {c.widgets.map((cw, i) => (
+                  <div key={i} className="page-w"><WidgetView w={cw} /></div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </Tag>
+      );
+    }
     default:
       return null;
   }

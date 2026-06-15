@@ -1018,7 +1018,19 @@
 
   /* Logo Clouds (faixa de logos de parceiros/marcas). */
   .page-w__logos { @apply w-full; }
-  .page-w__logos-title { @apply mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground; }
+  .page-w__logos-title { @apply mb-6 text-center; }
+
+  /* Título de widget customizável (nível semântico controla o tamanho). */
+  .page-w__title--p { @apply text-sm font-medium uppercase tracking-wider text-muted-foreground; }
+  .page-w__title--h2 { @apply text-2xl font-bold tracking-tight; }
+  .page-w__title--h3 { @apply text-xl font-bold; }
+  .page-w__title--h4 { @apply text-lg font-semibold; }
+  .page-w__title--h5 { @apply text-base font-semibold; }
+  .page-w__title--h6 { @apply text-sm font-semibold uppercase tracking-wide; }
+
+  /* Container estrutural recursivo. */
+  .page-container__grid { @apply grid grid-cols-1 sm:grid-cols-12; }
+  .page-container--full { @apply w-screen relative left-1/2 right-1/2 -mx-[50vw]; }
   .page-w__logos-grid { @apply flex flex-wrap items-center justify-center gap-x-10 gap-y-6; }
   .page-w__logo { @apply w-auto object-contain; }
   /* Tamanhos configuráveis dos logos. */

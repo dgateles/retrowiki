@@ -55,7 +55,7 @@ function defaultHomeLayout(): Layout {
             valign: "top",
             bg: "none",
             widgets: [
-              { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true },
+              { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", limit: 0, showAll: true },
             ],
           },
         ],

@@ -6,12 +6,22 @@ import { Gamepad2, ArrowRight } from "lucide-react";
 import { DeviceCard } from "@/components/catalog/device-card";
 import { DeviceGridSkeleton } from "@/components/skeletons";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import { WidgetTitle, type TitleLevel, type TitleColor } from "@/components/pages/widget-title";
 
 type DeviceItem = { slug: string; name: string; manufacturer: string; frontImage: string | null };
 
 /** Widget dinâmico: grade de consoles puxada do catálogo publicado em tempo real.
  *  Busca no cliente para funcionar igual na página publicada e na prévia do editor. */
-export function DeviceGridWidget({ title, limit, showAll }: { title: string; limit: number; showAll: boolean }) {
+export function DeviceGridWidget({
+  title, titleLevel = "h2", titleColor = "default", titleFx = "none", limit, showAll,
+}: {
+  title: string;
+  titleLevel?: TitleLevel;
+  titleColor?: TitleColor;
+  titleFx?: string;
+  limit: number;
+  showAll: boolean;
+}) {
   const [devices, setDevices] = useState<DeviceItem[] | null>(null);
 
   useEffect(() => {
@@ -26,9 +36,9 @@ export function DeviceGridWidget({ title, limit, showAll }: { title: string; lim
   const shown = devices && limit > 0 ? devices.slice(0, limit) : devices;
 
   return (
-    <section aria-labelledby="dg-title" className="w-full">
+    <section aria-label={title || "Consoles"} className="w-full">
       <div className="page__head">
-        <h2 id="dg-title" className="section-title">{title}</h2>
+        <WidgetTitle text={title} level={titleLevel} color={titleColor} fx={titleFx} />
         {showAll && (
           <Link href="/consoles" className="section-link">
             Ver todos <ArrowRight className="size-4" aria-hidden="true" />

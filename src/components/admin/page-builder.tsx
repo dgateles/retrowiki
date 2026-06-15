@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2, Boxes } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ import { RichEditor } from "@/components/editor/rich-editor";
 import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
-import type { Layout, Widget, WidgetType, Section } from "@/lib/pages";
+import type { Layout, Widget, WidgetType, Section, Column } from "@/lib/pages";
 
 type SavedBlock = { id: number; name: string; layout: unknown };
 
@@ -52,7 +52,11 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "buyingGuide", label: "Guia de compra", icon: ShoppingCart },
   { type: "divider", label: "Divisor", icon: Minus },
   { type: "spacer", label: "Espaçador", icon: MoveVertical },
+  { type: "container", label: "Container (estrutura)", icon: Boxes },
 ];
+
+// Rótulo de um tipo de widget (para o editor aninhado do container).
+const WIDGET_LABEL: Record<string, string> = Object.fromEntries(WIDGETS.map((x) => [x.type, x.label]));
 
 function newWidget(type: WidgetType): Widget {
   switch (type) {
@@ -69,15 +73,16 @@ function newWidget(type: WidgetType): Widget {
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "", href: "" }] };
     case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "", effect: "none" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
-    case "deviceGrid": return { type: "deviceGrid", title: "Consoles", limit: 0, showAll: true };
+    case "deviceGrid": return { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", limit: 0, showAll: true };
     case "numberTicker": return { type: "numberTicker", value: 100, prefix: "", suffix: "+", label: "Membros", align: "center" };
     case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
     case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
     case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
-    case "logoCloud": return { type: "logoCloud", title: "", display: "grid", size: "lg", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
+    case "logoCloud": return { type: "logoCloud", title: "", titleLevel: "p", titleColor: "default", titleFx: "none", display: "grid", size: "lg", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
+    case "container": return { type: "container", tag: "div", bg: "none", padY: "none", gap: "md", full: false, columns: [{ id: uid(), span: 12, valign: "top", bg: "none", widgets: [] }] };
   }
 }
 
@@ -772,6 +777,51 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       </Select>
     </div>
   );
+  // Controles do título de um widget (nível semântico, cor, animação).
+  const titleControls = (
+    <>
+      <div className="field"><Label>Nível do título</Label>
+        <Select value={(w as { titleLevel?: string }).titleLevel ?? "p"} onValueChange={(val) => onChange({ titleLevel: val } as Partial<Widget>)}>
+          <SelectTrigger aria-label="Nível do título" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="p">Parágrafo</SelectItem>
+            <SelectItem value="h2">Título (H2)</SelectItem>
+            <SelectItem value="h3">Subtítulo (H3)</SelectItem>
+            <SelectItem value="h4">H4</SelectItem>
+            <SelectItem value="h5">H5</SelectItem>
+            <SelectItem value="h6">H6</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="field"><Label>Cor do título</Label>
+        <Select value={(w as { titleColor?: string }).titleColor ?? "default"} onValueChange={(val) => onChange({ titleColor: val } as Partial<Widget>)}>
+          <SelectTrigger aria-label="Cor do título" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="default">Padrão</SelectItem>
+            <SelectItem value="muted">Suave</SelectItem>
+            <SelectItem value="primary">Primária</SelectItem>
+            <SelectItem value="success">Verde</SelectItem>
+            <SelectItem value="warn">Âmbar</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="field"><Label>Animação do título</Label>
+        <Select value={(w as { titleFx?: string }).titleFx ?? "none"} onValueChange={(val) => onChange({ titleFx: val } as Partial<Widget>)}>
+          <SelectTrigger aria-label="Animação do título" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Nenhuma</SelectItem>
+            <SelectItem value="gradient">Gradiente animado</SelectItem>
+            <SelectItem value="aurora">Aurora</SelectItem>
+            <SelectItem value="shiny">Brilho</SelectItem>
+            <SelectItem value="textanimate">Revelar</SelectItem>
+            <SelectItem value="typing">Digitando</SelectItem>
+            <SelectItem value="lineshadow">Sombra</SelectItem>
+            <SelectItem value="hyper">Hyper</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  );
 
   return (
     <div className="pb-form">
@@ -991,6 +1041,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
       {w.type === "logoCloud" && (
         <>
           <div className="field"><Label>Título (opcional)</Label><Input value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={120} placeholder="Parceiros" /></div>
+          {titleControls}
           <div className="field">
             <Label>Exibição</Label>
             <Select value={w.display} onValueChange={(val) => onChange({ display: val as "grid" | "marquee" })}>
@@ -1060,6 +1111,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             <Label htmlFor="dg-title">Título da seção</Label>
             <Input id="dg-title" value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={120} placeholder="Consoles" />
           </div>
+          {titleControls}
           <div className="field">
             <Label htmlFor="dg-limit">Limite de consoles</Label>
             <Input id="dg-limit" type="number" min={0} max={48} value={w.limit} onChange={(e) => onChange({ limit: Math.max(0, Math.min(48, Number(e.target.value) || 0)) })} className="w-28" />
@@ -1190,6 +1242,102 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           </div>
         </>
       )}
+      {w.type === "container" && (() => {
+        const setCols = (cols: Column[]) => onChange({ columns: cols } as Partial<Widget>);
+        const rebalance = (cols: Column[]): Column[] => {
+          const sp = evenSpans(Math.max(1, cols.length));
+          return cols.map((col, idx) => ({ ...col, span: sp[idx] ?? 12 }));
+        };
+        return (
+          <>
+            <div className="field"><Label>Tag (semântica)</Label>
+              <Select value={w.tag} onValueChange={(val) => onChange({ tag: val } as Partial<Widget>)}>
+                <SelectTrigger aria-label="Tag" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="div">Container (div)</SelectItem>
+                  <SelectItem value="section">Seção (section)</SelectItem>
+                  <SelectItem value="article">Artigo (article)</SelectItem>
+                  <SelectItem value="aside">Lateral (aside)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="field"><Label>Fundo</Label>
+              <Select value={w.bg} onValueChange={(val) => onChange({ bg: val } as Partial<Widget>)}>
+                <SelectTrigger aria-label="Fundo" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  <SelectItem value="muted">Cinza suave</SelectItem>
+                  <SelectItem value="card">Cartão</SelectItem>
+                  <SelectItem value="primary">Destaque</SelectItem>
+                  <SelectItem value="dark">Escuro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="field"><Label>Espaço vertical</Label>
+                <Select value={w.padY} onValueChange={(val) => onChange({ padY: val } as Partial<Widget>)}>
+                  <SelectTrigger aria-label="Espaço vertical" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="none">Nenhum</SelectItem><SelectItem value="sm">Pequeno</SelectItem><SelectItem value="md">Médio</SelectItem><SelectItem value="lg">Grande</SelectItem></SelectContent>
+                </Select>
+              </div>
+              <div className="field"><Label>Gap colunas</Label>
+                <Select value={w.gap} onValueChange={(val) => onChange({ gap: val } as Partial<Widget>)}>
+                  <SelectTrigger aria-label="Gap colunas" className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="none">Nenhum</SelectItem><SelectItem value="sm">Pequeno</SelectItem><SelectItem value="md">Médio</SelectItem><SelectItem value="lg">Grande</SelectItem></SelectContent>
+                </Select>
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm"><Checkbox checked={w.full} onCheckedChange={(c) => onChange({ full: c === true } as Partial<Widget>)} /> Largura total (full-bleed)</label>
+
+            <div className="field"><Label>Colunas ({w.columns.length})</Label>
+              {w.columns.map((c, ci) => {
+                const updWidget = (wi: number, patch: Partial<Widget>) =>
+                  setCols(w.columns.map((cc, i) => i === ci ? { ...cc, widgets: cc.widgets.map((sw, j) => j === wi ? ({ ...sw, ...patch } as Widget) : sw) } : cc));
+                const addWidget = (type: WidgetType) =>
+                  setCols(w.columns.map((cc, i) => i === ci ? { ...cc, widgets: [...cc.widgets, newWidget(type)] } : cc));
+                const delWidget = (wi: number) =>
+                  setCols(w.columns.map((cc, i) => i === ci ? { ...cc, widgets: cc.widgets.filter((_, j) => j !== wi) } : cc));
+                const moveWidget = (wi: number, dir: number) => {
+                  const j = wi + dir;
+                  if (j < 0 || j >= c.widgets.length) return;
+                  const ws = [...c.widgets];
+                  [ws[wi], ws[j]] = [ws[j], ws[wi]];
+                  setCols(w.columns.map((cc, i) => i === ci ? { ...cc, widgets: ws } : cc));
+                };
+                return (
+                  <div key={c.id} className="mt-2 rounded-lg border border-border p-2">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-muted-foreground">Coluna {ci + 1} · {c.span}/12</span>
+                      {w.columns.length > 1 && <button type="button" aria-label={`Remover coluna ${ci + 1}`} onClick={() => setCols(rebalance(w.columns.filter((_, i) => i !== ci)))} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-3.5" /></button>}
+                    </div>
+                    <input type="range" min={1} max={12} value={c.span} aria-label={`Largura da coluna ${ci + 1}`} onChange={(e) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, span: Number(e.target.value) } : cc))} className="mb-2 w-full" />
+                    {c.widgets.map((sw, wi) => (
+                      <details key={wi} className="mt-1 rounded-md border border-border">
+                        <summary className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm">
+                          <span>{WIDGET_LABEL[sw.type] ?? sw.type}</span>
+                          <span className="flex items-center gap-1">
+                            <button type="button" aria-label="Mover para cima" onClick={(e) => { e.preventDefault(); moveWidget(wi, -1); }} className="text-muted-foreground hover:text-foreground"><ArrowUp className="size-3.5" /></button>
+                            <button type="button" aria-label="Mover para baixo" onClick={(e) => { e.preventDefault(); moveWidget(wi, 1); }} className="text-muted-foreground hover:text-foreground"><ArrowDown className="size-3.5" /></button>
+                            <button type="button" aria-label="Remover widget" onClick={(e) => { e.preventDefault(); delWidget(wi); }} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-3.5" /></button>
+                          </span>
+                        </summary>
+                        <div className="border-t border-border p-2">
+                          <WidgetForm w={sw} onChange={(patch) => updWidget(wi, patch)} />
+                        </div>
+                      </details>
+                    ))}
+                    <Select value="" onValueChange={(type) => addWidget(type as WidgetType)}>
+                      <SelectTrigger aria-label="Adicionar widget" className="mt-2 w-full"><SelectValue placeholder="+ Adicionar widget" /></SelectTrigger>
+                      <SelectContent>{WIDGETS.map((x) => <SelectItem key={x.type} value={x.type}>{x.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                );
+              })}
+              {w.columns.length < 6 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ columns: rebalance([...w.columns, { id: uid(), span: 6, valign: "top", bg: "none", widgets: [] }]) } as Partial<Widget>)}><Plus className="size-3.5" /> Adicionar coluna</button>}
+            </div>
+          </>
+        );
+      })()}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
     </div>
   );

@@ -23,7 +23,12 @@ const imageUrl = z.string().trim().max(500).refine(
 const ALIGN = z.enum(["left", "center", "right"]).default("left");
 const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default("default").catch("default");
 
-const WidgetSchema = z.discriminatedUnion("type", [
+// Customização de título reusável (widgets com título próprio): nível semântico,
+// cor e animação — os mesmos 8 efeitos do widget Heading.
+const TITLE_LEVEL = z.enum(["p", "h2", "h3", "h4", "h5", "h6"]);
+const TITLE_FX = z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]);
+
+const BaseWidgetSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]).default("none").catch("none") }),
   z.object({ type: z.literal("text"), text: z.string().max(5000), align: ALIGN, color: COLOR }),
   z.object({ type: z.literal("image"), url: imageUrl, alt: z.string().max(200).default(""), caption: z.string().max(200).default(""), href: url.optional().default("") }),
@@ -61,6 +66,9 @@ const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("deviceGrid"),
     title: z.string().max(120).default("Consoles"),
+    titleLevel: TITLE_LEVEL.default("h2").catch("h2"),
+    titleColor: COLOR,
+    titleFx: TITLE_FX.default("none").catch("none"),
     limit: z.number().int().min(0).max(48).default(0),
     showAll: z.boolean().default(true),
   }),
@@ -104,6 +112,9 @@ const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("logoCloud"),
     title: z.string().max(120).default(""),
+    titleLevel: TITLE_LEVEL.default("p").catch("p"),
+    titleColor: COLOR,
+    titleFx: TITLE_FX.default("none").catch("none"),
     display: z.enum(["grid", "marquee"]).default("grid"),
     size: z.enum(["sm", "md", "lg", "xl"]).default("lg").catch("lg"),
     grayscale: z.boolean().default(true),
@@ -149,12 +160,37 @@ const WidgetSchema = z.discriminatedUnion("type", [
     tips: z.array(z.object({ title: z.string().trim().min(1).max(120), description: z.string().max(400).default(""), type: z.enum(["tip", "warning"]).default("tip") })).max(15).default([]),
   }),
 ]);
-export type Widget = z.infer<typeof WidgetSchema>;
+
+// ── Estrutura recursiva ─────────────────────────────────────────────────────
+// O widget "container" tem tag semântica (div/section/article/aside) e contém
+// colunas com widgets — inclusive outros containers, em profundidade arbitrária.
+// Tipos manuais + z.lazy quebram a recursão (Zod não infere recursão sozinho).
+export type Widget = z.infer<typeof BaseWidgetSchema> | ContainerWidget;
 export type WidgetType = Widget["type"];
+
+export type Column = {
+  id: string;
+  span: number;
+  valign: "top" | "center" | "bottom";
+  bg: "none" | "muted" | "card";
+  widgets: Widget[];
+};
+
+export type ContainerWidget = {
+  type: "container";
+  tag: "div" | "section" | "article" | "aside";
+  bg: "none" | "muted" | "card" | "primary" | "dark";
+  padY: "none" | "sm" | "md" | "lg";
+  gap: "none" | "sm" | "md" | "lg";
+  full: boolean;
+  columns: Column[];
+};
+
+const WidgetSchema: z.ZodType<Widget> = z.lazy(() => z.union([BaseWidgetSchema, ContainerWidgetSchema]));
 
 // Largura da coluna numa grade de 12. Compat: aceita o antigo enum `width`.
 const WIDTH_TO_SPAN: Record<string, number> = { full: 12, "1/2": 6, "1/3": 4, "2/3": 8, "1/4": 3, "3/4": 9 };
-const ColumnSchema = z.preprocess(
+const ColumnSchema: z.ZodType<Column> = z.preprocess(
   (c) => {
     if (c && typeof c === "object" && !("span" in c) && "width" in c) {
       const w = (c as { width?: string }).width;
@@ -169,8 +205,18 @@ const ColumnSchema = z.preprocess(
     bg: z.enum(["none", "muted", "card"]).default("none").catch("none"),
     widgets: z.array(WidgetSchema).max(30),
   }),
-);
-export type Column = z.infer<typeof ColumnSchema>;
+) as z.ZodType<Column>;
+
+// Container recursivo (definido após ColumnSchema; WidgetSchema o referencia via z.lazy).
+const ContainerWidgetSchema: z.ZodType<ContainerWidget> = z.object({
+  type: z.literal("container"),
+  tag: z.enum(["div", "section", "article", "aside"]).default("div").catch("div"),
+  bg: z.enum(["none", "muted", "card", "primary", "dark"]).default("none").catch("none"),
+  padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
+  gap: z.enum(["none", "sm", "md", "lg"]).default("md").catch("md"),
+  full: z.boolean().default(false).catch(false),
+  columns: z.array(ColumnSchema).min(1).max(6),
+});
 
 const SectionSchema = z.object({
   id: z.string().max(40),
