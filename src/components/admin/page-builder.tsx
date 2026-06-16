@@ -796,7 +796,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 </div>
 
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
-                <SectionFx bg={s.bg} params={s.fxParams} />
+                <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} params={s.fxParams} /></div>
                 <div className="page-section">
                   {s.columns.map((c, ci) => (
                     <div
@@ -1611,6 +1611,10 @@ function SxControls({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
   const sx: WidgetSx = (w as { sx?: WidgetSx }).sx ?? {};
   const set = (patch: WidgetSx) => onChange({ sx: { ...sx, ...patch } } as Partial<Widget>);
   const hasStyle = Object.values(sx).some((v) => v !== undefined && v !== "none" && v !== "auto" && v !== false);
+  // Abertura controlada por estado local (sincroniza o toggle do usuário). Não
+  // pode derivar de `hasStyle` no `open`, senão o <details> "salta" a cada
+  // re-render (fechava sozinho ao tentar abrir / ao limpar o estilo).
+  const [open, setOpen] = useState(hasStyle);
   const spaceSel = (key: "mt" | "mb" | "px" | "py", label: string) => (
     <div>
       <Label className="text-[10px] uppercase text-muted-foreground">{label}</Label>
@@ -1621,7 +1625,7 @@ function SxControls({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
     </div>
   );
   return (
-    <details className="mt-2 rounded-md border border-border" open={hasStyle}>
+    <details className="mt-2 rounded-md border border-border" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary className="flex cursor-pointer items-center gap-1.5 px-2 py-1.5 text-sm font-medium hover:bg-accent/50">
         <Palette className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" /> Estilo do elemento
       </summary>
