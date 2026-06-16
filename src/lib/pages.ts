@@ -174,6 +174,12 @@ export type Column = {
   valign: "top" | "center" | "bottom";
   bg: "none" | "muted" | "card";
   dir: "col" | "row";
+  // Controles flexbox (estilo Elementor): eixo principal (justify), eixo
+  // cruzado (align), espaço entre widgets (gap) e quebra de linha (wrap).
+  justify: "start" | "center" | "end" | "between" | "around";
+  align: "start" | "center" | "end" | "stretch";
+  gap: "none" | "sm" | "md" | "lg";
+  wrap: boolean;
   widgets: Widget[];
 };
 
@@ -193,9 +199,14 @@ const WidgetSchema: z.ZodType<Widget> = z.lazy(() => z.union([BaseWidgetSchema, 
 const WIDTH_TO_SPAN: Record<string, number> = { full: 12, "1/2": 6, "1/3": 4, "2/3": 8, "1/4": 3, "3/4": 9 };
 const ColumnSchema: z.ZodType<Column> = z.preprocess(
   (c) => {
-    if (c && typeof c === "object" && !("span" in c) && "width" in c) {
-      const w = (c as { width?: string }).width;
-      return { ...(c as object), span: (w && WIDTH_TO_SPAN[w]) || 12 };
+    if (c && typeof c === "object") {
+      const o = c as Record<string, unknown>;
+      // compat: enum `width` antigo → span numérico.
+      if (!("span" in o) && "width" in o) o.span = (typeof o.width === "string" && WIDTH_TO_SPAN[o.width]) || 12;
+      // compat: `valign` antigo → `justify` (eixo principal).
+      if (!("justify" in o) && typeof o.valign === "string") {
+        o.justify = ({ top: "start", center: "center", bottom: "end" } as Record<string, string>)[o.valign] ?? "start";
+      }
     }
     return c;
   },
@@ -206,6 +217,10 @@ const ColumnSchema: z.ZodType<Column> = z.preprocess(
     bg: z.enum(["none", "muted", "card"]).default("none").catch("none"),
     // Direção dos widgets: empilhados (col) ou lado a lado (row).
     dir: z.enum(["col", "row"]).default("col").catch("col"),
+    justify: z.enum(["start", "center", "end", "between", "around"]).default("start").catch("start"),
+    align: z.enum(["start", "center", "end", "stretch"]).default("stretch").catch("stretch"),
+    gap: z.enum(["none", "sm", "md", "lg"]).default("sm").catch("sm"),
+    wrap: z.boolean().default(true).catch(true),
     widgets: z.array(WidgetSchema).max(30),
   }),
 ) as z.ZodType<Column>;

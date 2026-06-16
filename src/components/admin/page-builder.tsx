@@ -20,7 +20,7 @@ import { FX_EFFECTS, fxVal, type FxParams, type FxParamValue } from "@/lib/fx-ef
 import { ImageUpload } from "@/components/admin/image-upload";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG, CONTAINER_BG, CONTAINER_PADY, CONTAINER_GAP } from "@/components/pages/page-renderer";
+import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_BG, CONTAINER_BG, CONTAINER_PADY, CONTAINER_GAP, colFlex } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
 import type { Layout, Widget, WidgetType, Section, Column, ContainerWidget } from "@/lib/pages";
@@ -82,7 +82,7 @@ function newWidget(type: WidgetType): Widget {
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
-    case "container": return { type: "container", tag: "div", bg: "none", padY: "none", gap: "md", full: false, columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", widgets: [] }] };
+    case "container": return { type: "container", tag: "div", bg: "none", padY: "none", gap: "md", full: false, columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }] };
   }
 }
 
@@ -255,7 +255,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
           {w.columns.map((c, k) => (
             <div
               key={c.id}
-              className={cn("page-col pb-subcol flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span], COL_VALIGN[c.valign], COL_BG[c.bg])}
+              className={cn("page-col pb-subcol", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}
               onDragOver={(e) => { if (libDragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
               onDrop={(e) => {
                 if (!libDragRef.current) return;
@@ -373,7 +373,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       setPast((p) => [...p, prev].slice(-100));
       setFuture([]);
       const ss = structuredClone(prev) as Section[];
-      if (ss.length === 0) ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", widgets: [] }] });
+      if (ss.length === 0) ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }] });
       const si = selected && ss[selected.si] ? selected.si : ss.length - 1;
       const ci = selected && ss[si].columns[selected.ci] ? selected.ci : ss[si].columns.length - 1;
       const wi = ss[si].columns[ci].widgets.length;
@@ -551,6 +551,45 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="field">
+                    <Label>Distribuição (eixo)</Label>
+                    <Select value={sections[selCol.si].columns[selCol.ci].justify} onValueChange={(val) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].justify = val as Section["columns"][number]["justify"]; })}>
+                      <SelectTrigger aria-label="Distribuição" className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="start">Início</SelectItem>
+                        <SelectItem value="center">Centro</SelectItem>
+                        <SelectItem value="end">Fim</SelectItem>
+                        <SelectItem value="between">Espaçar (between)</SelectItem>
+                        <SelectItem value="around">Ao redor (around)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="field">
+                    <Label>Alinhamento (cruz.)</Label>
+                    <Select value={sections[selCol.si].columns[selCol.ci].align} onValueChange={(val) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].align = val as Section["columns"][number]["align"]; })}>
+                      <SelectTrigger aria-label="Alinhamento cruzado" className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="stretch">Esticar</SelectItem>
+                        <SelectItem value="start">Início</SelectItem>
+                        <SelectItem value="center">Centro</SelectItem>
+                        <SelectItem value="end">Fim</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 items-end gap-2">
+                  <div className="field">
+                    <Label>Espaço (gap)</Label>
+                    <Select value={sections[selCol.si].columns[selCol.ci].gap} onValueChange={(val) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].gap = val as Section["columns"][number]["gap"]; })}>
+                      <SelectTrigger aria-label="Gap" className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="none">Nenhum</SelectItem><SelectItem value="sm">Pequeno</SelectItem><SelectItem value="md">Médio</SelectItem><SelectItem value="lg">Grande</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                  <label className="flex items-center gap-2 pb-2 text-sm">
+                    <Checkbox checked={sections[selCol.si].columns[selCol.ci].wrap} onCheckedChange={(c) => mutate((ss) => { ss[selCol.si].columns[selCol.ci].wrap = c === true; })} /> Quebrar linha
+                  </label>
+                </div>
                 {sections[selCol.si].columns.length > 1 && (
                   <Button type="button" variant="ghost" size="sm" className="mt-3 w-full text-destructive" onClick={() => { mutate((ss) => { ss[selCol.si].columns.splice(selCol.ci, 1); const sp = evenSpans(ss[selCol.si].columns.length); ss[selCol.si].columns.forEach((c, idx) => { c.span = sp[idx]; }); }); deselect(); }}>
                     <Trash2 className="size-4" /> Excluir coluna
@@ -642,7 +681,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 <div className="pb-sec__bar">
                   <span className="pb-sec__handle pb-handle" title="Arrastar seção" draggable onDragStart={(e) => { secDragRef.current = si; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); }}><GripVertical className="size-3.5" /></span>
                   <button type="button" className="pb-mini" title="Configurar seção" onClick={(e) => { e.stopPropagation(); selectSection(si); }}><SlidersHorizontal className="size-3.5" /></button>
-                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, valign: "top", bg: "none", dir: "col", widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
+                  {s.columns.length < 4 && <button type="button" className="pb-mini" title="Adicionar coluna" onClick={() => mutate((ss) => { ss[si].columns.push({ id: uid(), span: 6, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }); const sp = evenSpans(ss[si].columns.length); ss[si].columns.forEach((col, idx) => { col.span = sp[idx]; }); })}><Plus className="size-3.5" /></button>}
                   <button type="button" className="pb-mini" title="Duplicar seção" onClick={() => dupSection(si)}><Copy className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover acima" disabled={si === 0} onClick={() => mutate((ss) => { [ss[si - 1], ss[si]] = [ss[si], ss[si - 1]]; })}><ArrowUp className="size-3.5" /></button>
                   <button type="button" className="pb-mini" title="Mover abaixo" disabled={si === sections.length - 1} onClick={() => mutate((ss) => { [ss[si + 1], ss[si]] = [ss[si], ss[si + 1]]; })}><ArrowDown className="size-3.5" /></button>
@@ -655,7 +694,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                   {s.columns.map((c, ci) => (
                     <div
                       key={c.id}
-                      className={cn("page-col pb-colwrap flex flex-col", COL_SPAN[c.span], COL_VALIGN[c.valign], COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected")}
+                      className={cn("page-col pb-colwrap", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected")}
                       onDragOver={(e) => { if (dragRef.current || libDragRef.current || colDragRef.current) e.preventDefault(); }}
                       onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, ci, wi: c.widgets.length }); } }}
                     >
@@ -698,7 +737,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
               </div>
             ))}
 
-            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", widgets: [] }] }); })}>
+            <button type="button" className="pb-addsec" onClick={() => mutate((ss) => { ss.push({ id: uid(), bg: "none", fxParams: {}, full: false, padY: "none", anim: "none", gradFrom: "#10b981", gradTo: "#6366f1", columns: [{ id: uid(), span: 12, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }] }); })}>
               <Plus className="size-4" aria-hidden="true" /> Adicionar seção
             </button>
           </div>
@@ -1379,6 +1418,29 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                         <SelectContent><SelectItem value="col">Empilhado (↓)</SelectItem><SelectItem value="row">Lado a lado (→)</SelectItem></SelectContent>
                       </Select>
                     </div>
+                    <div className="mb-2 grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-[10px] uppercase text-muted-foreground">Distribuição</Label>
+                        <Select value={c.justify} onValueChange={(val) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, justify: val as Column["justify"] } : cc))}>
+                          <SelectTrigger aria-label="Distribuição" className="h-7 w-full"><SelectValue /></SelectTrigger>
+                          <SelectContent><SelectItem value="start">Início</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="end">Fim</SelectItem><SelectItem value="between">Espaçar</SelectItem><SelectItem value="around">Ao redor</SelectItem></SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-[10px] uppercase text-muted-foreground">Alinhamento</Label>
+                        <Select value={c.align} onValueChange={(val) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, align: val as Column["align"] } : cc))}>
+                          <SelectTrigger aria-label="Alinhamento" className="h-7 w-full"><SelectValue /></SelectTrigger>
+                          <SelectContent><SelectItem value="stretch">Esticar</SelectItem><SelectItem value="start">Início</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="end">Fim</SelectItem></SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Select value={c.gap} onValueChange={(val) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, gap: val as Column["gap"] } : cc))}>
+                        <SelectTrigger aria-label="Espaço entre widgets" className="h-7 flex-1"><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="none">Gap: nenhum</SelectItem><SelectItem value="sm">Gap: pequeno</SelectItem><SelectItem value="md">Gap: médio</SelectItem><SelectItem value="lg">Gap: grande</SelectItem></SelectContent>
+                      </Select>
+                      <label className="flex shrink-0 items-center gap-1 text-xs"><Checkbox checked={c.wrap} onCheckedChange={(v) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, wrap: v === true } : cc))} /> Quebra</label>
+                    </div>
                     {c.widgets.map((sw, wi) => (
                       <details key={wi} className="mt-1 rounded-md border border-border">
                         <summary className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-accent/50">
@@ -1401,7 +1463,7 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                   </div>
                 );
               })}
-              {w.columns.length < 6 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ columns: rebalance([...w.columns, { id: uid(), span: 6, valign: "top", bg: "none", dir: "col", widgets: [] }]) } as Partial<Widget>)}><Plus className="size-3.5" /> Adicionar coluna</button>}
+              {w.columns.length < 6 && <button type="button" className="pb-addwidget__btn mt-2" onClick={() => onChange({ columns: rebalance([...w.columns, { id: uid(), span: 6, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }]) } as Partial<Widget>)}><Plus className="size-3.5" /> Adicionar coluna</button>}
             </div>
           </>
         );

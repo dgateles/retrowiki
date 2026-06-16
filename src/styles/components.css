@@ -1028,8 +1028,8 @@
   .page-w__title--h5 { @apply text-base font-semibold; }
   .page-w__title--h6 { @apply text-sm font-semibold uppercase tracking-wide; }
 
-  /* Coluna com widgets lado a lado (direção horizontal). */
-  .page-col--row { @apply flex-row flex-wrap items-center gap-3; }
+  /* Coluna horizontal: os filhos dimensionam pelo conteúdo (a direção/justify/
+     align/gap vêm de colFlex). */
   .page-col--row > .page-w { @apply w-auto shrink-0; }
   .page-col--row > .page-w .page-w__btnwrap { @apply inline-flex; }
 

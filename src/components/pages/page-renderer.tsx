@@ -76,6 +76,24 @@ export const CONTAINER_BG: Record<string, string> = {
 export const CONTAINER_PADY: Record<string, string> = { none: "", sm: "py-4", md: "py-8", lg: "py-12" };
 export const CONTAINER_GAP: Record<string, string> = { none: "gap-0", sm: "gap-3", md: "gap-6", lg: "gap-10" };
 
+// Controles flexbox da coluna (eixo principal, cruzado, gap, wrap).
+const COL_JUSTIFY: Record<string, string> = { start: "justify-start", center: "justify-center", end: "justify-end", between: "justify-between", around: "justify-around" };
+const COL_ALIGN: Record<string, string> = { start: "items-start", center: "items-center", end: "items-end", stretch: "items-stretch" };
+const COL_GAP: Record<string, string> = { none: "gap-0", sm: "gap-2", md: "gap-4", lg: "gap-8" };
+
+/** Classes flexbox de uma coluna a partir de dir/justify/align/gap/wrap. */
+export function colFlex(c: { dir?: string; justify?: string; align?: string; gap?: string; wrap?: boolean }): string {
+  const row = c.dir === "row";
+  return cn(
+    "flex",
+    row ? "flex-row" : "flex-col",
+    row && (c.wrap === false ? "flex-nowrap" : "flex-wrap"),
+    COL_JUSTIFY[c.justify ?? "start"] ?? "justify-start",
+    COL_ALIGN[c.align ?? "stretch"] ?? "items-stretch",
+    COL_GAP[c.gap ?? "sm"] ?? "gap-2",
+  );
+}
+
 function safeHref(href: string): string | null {
   return isSafeHref(href) ? href : null;
 }
@@ -477,7 +495,7 @@ export function WidgetView({ w }: { w: Widget }) {
         <Tag className={cn("page-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4", w.full && "page-container--full")}>
           <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
             {w.columns.map((c) => (
-              <div key={c.id} className={cn("page-col flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
+              <div key={c.id} className={cn("page-col", COL_SPAN[c.span] ?? "sm:col-span-12", colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}>
                 {c.widgets.map((cw, i) => (
                   <div key={i} className="page-w"><WidgetView w={cw} /></div>
                 ))}
@@ -506,7 +524,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
           <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} params={s.fxParams} /></div>
           <Reveal anim={s.anim ?? "none"} className="page-section">
             {s.columns.map((c) => (
-              <div key={c.id} className={cn("page-col flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span] ?? "sm:col-span-12", COL_VALIGN[c.valign], COL_BG[c.bg])}>
+              <div key={c.id} className={cn("page-col", COL_SPAN[c.span] ?? "sm:col-span-12", colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}>
                 {c.widgets.map((w, i) => (
                   <div key={i} className="page-w">
                     <WidgetView w={w} />

@@ -31,6 +31,10 @@ function defaultHomeLayout(): Layout {
             valign: "center",
             bg: "none",
             dir: "col",
+            justify: "start",
+            align: "stretch",
+            gap: "sm",
+            wrap: true,
             widgets: [
               { type: "heading", level: 2, text: "O catálogo e os guias de emulação portátil, feitos pela comunidade", align: "center", color: "default", fx: "gradient" },
               { type: "text", text: "Fichas técnicas, comparador, tutoriais e firmware num só lugar, com curadoria.", align: "center", color: "muted" },
@@ -56,6 +60,10 @@ function defaultHomeLayout(): Layout {
             valign: "top",
             bg: "none",
             dir: "col",
+            justify: "start",
+            align: "stretch",
+            gap: "sm",
+            wrap: true,
             widgets: [
               { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", limit: 0, showAll: true },
             ],
