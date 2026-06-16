@@ -58,6 +58,16 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
 // Rótulo de um tipo de widget (para o editor aninhado do container).
 const WIDGET_LABEL: Record<string, string> = Object.fromEntries(WIDGETS.map((x) => [x.type, x.label]));
 
+// Presets de estrutura (colunas) — como o "Selecione sua estrutura" do Elementor.
+const STRUCTURE_PRESETS: { key: string; label: string; spans: number[] }[] = [
+  { key: "1", label: "1 coluna", spans: [12] },
+  { key: "2", label: "2 colunas (50/50)", spans: [6, 6] },
+  { key: "37", label: "1/3 + 2/3", spans: [4, 8] },
+  { key: "73", label: "2/3 + 1/3", spans: [8, 4] },
+  { key: "3", label: "3 colunas", spans: [4, 4, 4] },
+  { key: "4", label: "4 colunas", spans: [3, 3, 3, 3] },
+];
+
 function newWidget(type: WidgetType): Widget {
   switch (type) {
     case "heading": return { type: "heading", level: 2, text: "Novo título", align: "left", color: "default", fx: "none" };
@@ -482,6 +492,25 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       <SelectItem value="lg">Grande</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="field">
+                  <Label>Estrutura (colunas)</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {STRUCTURE_PRESETS.map((p) => (
+                      <button
+                        key={p.key}
+                        type="button"
+                        title={p.label}
+                        aria-label={p.label}
+                        className="rounded-md border border-border p-1.5 transition-colors hover:border-primary hover:bg-accent"
+                        onClick={() => mutate((ss) => { const cur = ss[selSection].columns; ss[selSection].columns = p.spans.map((span, i) => cur[i] ? { ...cur[i], span } : { id: uid(), span, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }); })}
+                      >
+                        <div className="flex h-6 gap-0.5">
+                          {p.spans.map((s, i) => <div key={i} className="rounded-sm bg-muted-foreground/40" style={{ flexGrow: s }} />)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <Checkbox checked={sections[selSection].full ?? false} onCheckedChange={(c) => mutate((ss) => { ss[selSection].full = c === true; })} /> Largura total (fundo ocupa a tela inteira)
@@ -1388,6 +1417,26 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
               </div>
             </div>
             <label className="flex items-center gap-2 text-sm"><Checkbox checked={w.full} onCheckedChange={(c) => onChange({ full: c === true } as Partial<Widget>)} /> Largura total (full-bleed)</label>
+
+            <div className="field">
+              <Label>Estrutura</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {STRUCTURE_PRESETS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    title={p.label}
+                    aria-label={p.label}
+                    className="rounded-md border border-border p-1.5 transition-colors hover:border-primary hover:bg-accent"
+                    onClick={() => setCols(p.spans.map((span, i) => w.columns[i] ? { ...w.columns[i], span } : { id: uid(), span, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }))}
+                  >
+                    <div className="flex h-6 gap-0.5">
+                      {p.spans.map((s, i) => <div key={i} className="rounded-sm bg-muted-foreground/40" style={{ flexGrow: s }} />)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="field"><Label>Colunas ({w.columns.length})</Label>
               {w.columns.map((c, ci) => {
