@@ -1604,8 +1604,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
 
 // Estilo por elemento (estilo Elementor): espaçamento, tamanho, aparência —
 // disponível para todo widget. Tudo em escala fechada (enums seguros).
+// Valores em px (legíveis) — espelham as classes Tailwind do renderer
+// (mt-0/1/2/4/8/12 = 0/4/8/16/32/48px).
 const SX_SPACE_OPTS: Array<{ v: string; l: string }> = [
-  { v: "none", l: "0" }, { v: "xs", l: "XS" }, { v: "sm", l: "P" }, { v: "md", l: "M" }, { v: "lg", l: "G" }, { v: "xl", l: "XL" },
+  { v: "none", l: "0" }, { v: "xs", l: "4px" }, { v: "sm", l: "8px" }, { v: "md", l: "16px" }, { v: "lg", l: "32px" }, { v: "xl", l: "48px" },
 ];
 function SxControls({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widget>) => void }) {
   const sx: WidgetSx = (w as { sx?: WidgetSx }).sx ?? {};
@@ -1666,7 +1668,7 @@ function SxControls({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             </Select>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <Label className="text-[10px] uppercase text-muted-foreground">Fundo</Label>
             <Select value={sx.bg ?? "none"} onValueChange={(val) => set({ bg: val as WidgetSx["bg"] })}>

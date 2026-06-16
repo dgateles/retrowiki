@@ -1354,8 +1354,14 @@
   .pb-subcol:hover, .pb-subcol:has(.pb-subel:hover) {
     @apply border-primary/50 bg-primary/5;
   }
+  /* Rótulo "COL · x/12": discreto, só no hover (como o badge das colunas de
+     topo) para não poluir o preview. */
   .pb-subcol__tag {
-    @apply mb-1 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70;
+    @apply pointer-events-none absolute right-1.5 top-1.5 z-10 hidden rounded bg-popover/90 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground shadow-sm;
+  }
+  .pb-subcol:hover > .pb-subcol__tag,
+  .pb-subcol:has(.pb-subel:hover) > .pb-subcol__tag {
+    @apply block;
   }
   .pb-subel {
     @apply rounded;
