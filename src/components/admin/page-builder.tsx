@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -99,6 +99,12 @@ function newWidget(type: WidgetType): Widget {
   }
 }
 
+// Linha de inserção do arraste: mostra onde o widget vai encaixar antes de
+// soltar. Horizontal em colunas empilhadas; vertical quando lado a lado.
+function DropLine({ row }: { row?: boolean }) {
+  return <div className={cn("pb-dropline", row && "pb-dropline--v")} aria-hidden="true" />;
+}
+
 type PageInput = {
   id: number; title: string; slug: string; metaDescription: string;
   status: "draft" | "published"; showInMenu: boolean; menuOrder: number; noindex: boolean; isHome: boolean; layout: Layout;
@@ -180,8 +186,28 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const colDragRef = useRef<{ si: number; ci: number } | null>(null);
   const blockDragRef = useRef<unknown | null>(null);
 
+  // Feedback visual do arraste: onde o widget vai encaixar (coluna + índice).
+  // `dropHint` desenha a linha de inserção e realça a coluna alvo antes de soltar.
+  const [dropHint, setDropHint] = useState<WLoc | null>(null);
+  const hintRef = useRef<WLoc | null>(null);
+  function setHint(loc: WLoc) {
+    // só re-renderiza quando o alvo muda (dragover dispara continuamente).
+    const h = hintRef.current;
+    if (h && h.si === loc.si && h.ci === loc.ci && h.wi === loc.wi && stepsEq(h.steps, loc.steps)) return;
+    hintRef.current = loc;
+    setDropHint(loc);
+  }
+  function clearHint() { hintRef.current = null; setDropHint(null); }
+  // Há um arraste de widget em curso (da biblioteca ou movendo um existente)?
+  const widgetDragActive = () => !!(libDragRef.current || dragRef.current);
+  function hintAt(loc: WLoc): boolean {
+    const h = dropHint;
+    return !!h && h.si === loc.si && h.ci === loc.ci && h.wi === loc.wi && stepsEq(h.steps, loc.steps);
+  }
+
   // Drop numa posição: tile da biblioteca → novo widget; senão → move/reordena.
   function handleDrop(to: WLoc) {
+    clearHint();
     if (libDragRef.current) {
       const type = libDragRef.current;
       libDragRef.current = null;
@@ -237,7 +263,17 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       const fromCols = colsAt(ss, from.si, from.steps);
       const w = fromCols?.[from.ci]?.widgets.splice(from.wi, 1)[0];
       if (!w) return;
-      const toCols = colsAt(ss, to.si, to.steps);
+      // A remoção desloca os índices > from.wi na coluna de origem. Se o destino
+      // passa por essa mesma coluna num índice posterior (ex.: mover um widget
+      // para dentro de um container que está logo ABAIXO dele na coluna), o
+      // caminho `to.steps` precisa ser corrigido — senão aponta pro lugar errado
+      // e o widget some.
+      const steps = to.steps.map((s) => ({ ...s }));
+      if (to.si === from.si && to.steps.length > from.steps.length && stepsEq(to.steps.slice(0, from.steps.length), from.steps)) {
+        const lvl = from.steps.length;
+        if (steps[lvl].ci === from.ci && steps[lvl].wi > from.wi) steps[lvl].wi -= 1;
+      }
+      const toCols = colsAt(ss, to.si, steps);
       if (!toCols?.[to.ci]) return;
       let ti = to.wi;
       if (sameColumn(from, to) && from.wi < to.wi) ti -= 1;
@@ -283,30 +319,36 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     return (
       <Tag className={cn("page-container pb-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4")}>
         <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
-          {w.columns.map((c, k) => (
+          {w.columns.map((c, k) => {
+            const colActive = !!dropHint && dropHint.si === si && dropHint.ci === k && stepsEq(dropHint.steps, myPath);
+            return (
             <div
               key={c.id}
-              className={cn("page-col pb-subcol", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}
-              onDragOver={(e) => { if (libDragRef.current || dragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
-              onDrop={(e) => { if (!libDragRef.current && !dragRef.current) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: c.widgets.length }); }}
+              className={cn("page-col pb-subcol", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg], colActive && "pb-subcol--drop")}
+              onDragOver={(e) => { if (widgetDragActive()) { e.preventDefault(); e.stopPropagation(); setHint({ si, steps: myPath, ci: k, wi: c.widgets.length }); } }}
+              onDrop={(e) => { if (!widgetDragActive()) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: c.widgets.length }); }}
             >
               <span className="pb-subcol__tag" aria-hidden="true">col {k + 1} · {c.span}/12</span>
-              {c.widgets.length === 0 && <div className="pb-drop pb-drop--sm">Arraste um elemento aqui</div>}
+              {c.widgets.length === 0 && <div className={cn("pb-drop pb-drop--sm", colActive && "pb-drop--active")}>Arraste um elemento aqui</div>}
               {c.widgets.map((cw, cwi) => (
-                <div
-                  key={cwi}
-                  className={cn("pb-subel pb-subel--draggable", sxClass(cw.sx))}
-                  draggable
-                  onDragStart={(e) => { dragRef.current = { si, steps: myPath, ci: k, wi: cwi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); e.stopPropagation(); }}
-                  onDragEnd={() => { dragRef.current = null; }}
-                  onDragOver={(e) => { if (libDragRef.current || dragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
-                  onDrop={(e) => { if (!libDragRef.current && !dragRef.current) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: cwi }); }}
-                >
-                  {cw.type === "container" ? renderContainerCanvas(cw, si, myPath, k, cwi) : <WidgetView w={cw} />}
-                </div>
+                <Fragment key={cwi}>
+                  {hintAt({ si, steps: myPath, ci: k, wi: cwi }) && <DropLine row={c.dir === "row"} />}
+                  <div
+                    className={cn("pb-subel pb-subel--draggable", sxClass(cw.sx))}
+                    draggable
+                    onDragStart={(e) => { dragRef.current = { si, steps: myPath, ci: k, wi: cwi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); e.stopPropagation(); }}
+                    onDragEnd={clearHint}
+                    onDragOver={(e) => { if (widgetDragActive()) { e.preventDefault(); e.stopPropagation(); setHint({ si, steps: myPath, ci: k, wi: cwi }); } }}
+                    onDrop={(e) => { if (!widgetDragActive()) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: cwi }); }}
+                  >
+                    {cw.type === "container" ? renderContainerCanvas(cw, si, myPath, k, cwi) : <WidgetView w={cw} />}
+                  </div>
+                </Fragment>
               ))}
+              {c.widgets.length > 0 && hintAt({ si, steps: myPath, ci: k, wi: c.widgets.length }) && <DropLine row={c.dir === "row"} />}
             </div>
-          ))}
+            );
+          })}
         </div>
       </Tag>
     );
@@ -712,7 +754,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                         title={`Clique ou arraste para adicionar ${wt.label}`}
                         draggable
                         onDragStart={(e) => { libDragRef.current = wt.type; e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", wt.type); }}
-                        onDragEnd={() => { libDragRef.current = null; }}
+                        onDragEnd={() => { libDragRef.current = null; clearHint(); }}
                         onClick={() => addWidget(wt.type)}
                       >
                         <wt.icon className="size-5" aria-hidden="true" />
@@ -805,11 +847,13 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 <div className={cn(SEC_BG[s.bg], SEC_PADY[s.padY])} style={s.bg === "gradient" ? { backgroundImage: `linear-gradient(120deg, ${s.gradFrom ?? "#10b981"}, ${s.gradTo ?? "#6366f1"})` } : undefined}>
                 <div className="page-sec__fx" aria-hidden="true"><SectionFx bg={s.bg} params={s.fxParams} /></div>
                 <div className="page-section">
-                  {s.columns.map((c, ci) => (
+                  {s.columns.map((c, ci) => {
+                    const colActive = !!dropHint && dropHint.si === si && dropHint.ci === ci && dropHint.steps.length === 0;
+                    return (
                     <div
                       key={c.id}
-                      className={cn("page-col pb-colwrap", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected")}
-                      onDragOver={(e) => { if (dragRef.current || libDragRef.current || colDragRef.current) e.preventDefault(); }}
+                      className={cn("page-col pb-colwrap", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected", colActive && "pb-colwrap--drop")}
+                      onDragOver={(e) => { if (colDragRef.current) { e.preventDefault(); } else if (widgetDragActive()) { e.preventDefault(); setHint({ si, steps: [], ci, wi: c.widgets.length }); } }}
                       onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, steps: [], ci, wi: c.widgets.length }); } }}
                     >
                       <div className="pb-colwrap__bar">
@@ -822,30 +866,35 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       {c.widgets.map((w, wi) => {
                         const isSel = selected?.si === si && selected?.ci === ci && selected?.wi === wi;
                         return (
-                          <div
-                            key={wi}
-                            className={cn("pb-el", isSel && "pb-el--selected")}
-                            onClick={(e) => { e.stopPropagation(); selectWidget({ si, ci, wi }); }}
-                            onDragOver={(e) => { if (dragRef.current || libDragRef.current) e.preventDefault(); }}
-                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: [], ci, wi }); }}
-                          >
-                            <span className="pb-el__bar">
-                              <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, steps: [], ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
-                              <button type="button" className="pb-mini" title="Duplicar" onClick={(e) => { e.stopPropagation(); dupWidget(si, ci, wi); }}><Copy className="size-3" /></button>
-                              <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) deselect(); }}><Trash2 className="size-3" /></button>
-                            </span>
-                            <div className={cn("pb-el__content", sxClass(w.sx))}>{w.type === "container" ? renderContainerCanvas(w, si, [], ci, wi) : <WidgetView w={w} />}</div>
-                          </div>
+                          <Fragment key={wi}>
+                            {hintAt({ si, steps: [], ci, wi }) && <DropLine row={c.dir === "row"} />}
+                            <div
+                              className={cn("pb-el", isSel && "pb-el--selected")}
+                              onClick={(e) => { e.stopPropagation(); selectWidget({ si, ci, wi }); }}
+                              onDragOver={(e) => { if (widgetDragActive()) { e.preventDefault(); e.stopPropagation(); setHint({ si, steps: [], ci, wi }); } }}
+                              onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: [], ci, wi }); }}
+                            >
+                              <span className="pb-el__bar">
+                                <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, steps: [], ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }} onDragEnd={clearHint}><GripVertical className="size-3" /></span>
+                                <button type="button" className="pb-mini" title="Duplicar" onClick={(e) => { e.stopPropagation(); dupWidget(si, ci, wi); }}><Copy className="size-3" /></button>
+                                <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) deselect(); }}><Trash2 className="size-3" /></button>
+                              </span>
+                              <div className={cn("pb-el__content", sxClass(w.sx))}>{w.type === "container" ? renderContainerCanvas(w, si, [], ci, wi) : <WidgetView w={w} />}</div>
+                            </div>
+                          </Fragment>
                         );
                       })}
 
-                      {c.widgets.length === 0 && <div className="pb-drop">Solte um elemento aqui</div>}
+                      {c.widgets.length > 0 && hintAt({ si, steps: [], ci, wi: c.widgets.length }) && <DropLine row={c.dir === "row"} />}
+
+                      {c.widgets.length === 0 && <div className={cn("pb-drop", colActive && "pb-drop--active")}>Solte um elemento aqui</div>}
 
                       {ci < s.columns.length - 1 && (
                         <span className="pb-resize" title="Arraste para redimensionar" onPointerDown={(e) => startResize(si, ci, e)} onClick={(e) => e.stopPropagation()} />
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 </div>
               </div>

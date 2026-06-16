@@ -1341,10 +1341,29 @@
     @apply hover:bg-destructive/10 hover:text-destructive;
   }
   .pb-drop {
-    @apply rounded border border-dashed border-border p-5 text-center text-xs text-muted-foreground;
+    @apply rounded border border-dashed border-border p-5 text-center text-xs text-muted-foreground transition-colors;
   }
   .pb-drop--sm {
     @apply w-full p-3 text-[11px];
+  }
+  /* Drop ativo: realça a área-alvo enquanto o item é arrastado por cima. */
+  .pb-drop--active {
+    @apply border-primary bg-primary/10 text-primary;
+  }
+  /* Linha de inserção: mostra a posição exata onde o widget vai encaixar. */
+  .pb-dropline {
+    @apply pointer-events-none my-0.5 h-[3px] w-full shrink-0 rounded-full bg-primary;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 70%, transparent);
+  }
+  .pb-dropline--v {
+    @apply my-0 mx-0.5 h-full w-[3px];
+  }
+  /* Coluna-alvo realçada durante o arraste. */
+  .pb-colwrap--drop {
+    @apply outline outline-2 outline-primary;
+  }
+  .pb-subcol--drop {
+    @apply border-primary bg-primary/5;
   }
   /* Colunas do container no canvas do construtor: drop-zones visíveis. */
   .pb-container { @apply relative; }
