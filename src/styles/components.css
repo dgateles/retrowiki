@@ -2014,7 +2014,9 @@
   .comments__list {
     @apply mt-4 space-y-4;
   }
-  .comment {
+  /* `:not(.token)` evita colidir com o token `comment` do Prism nos blocos de
+     código (que também tem a classe "comment"). */
+  .comment:not(.token) {
     @apply flex gap-3 rounded-lg border border-border bg-card p-4 scroll-mt-20;
   }
   .comment--flash {
@@ -2048,10 +2050,10 @@
     @apply italic;
   }
   .comment__foot {
-    @apply mt-2 flex items-center gap-3;
+    @apply mt-2 flex flex-wrap items-center gap-x-3 gap-y-2;
   }
   .comment__actions {
-    @apply flex items-center gap-3;
+    @apply flex flex-wrap items-center gap-x-3 gap-y-2;
   }
   .comment__action {
     @apply inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground;
@@ -2806,10 +2808,16 @@
     @apply mt-2 space-y-1;
   }
   .release__asset {
-    @apply inline-flex items-center gap-2 text-sm text-primary hover:underline focus-visible:outline-2;
+    @apply flex items-start gap-2 text-sm text-primary hover:underline focus-visible:outline-2;
+  }
+  .release__asset-icon {
+    @apply mt-0.5 size-4 shrink-0;
+  }
+  .release__asset-name {
+    @apply min-w-0 break-words;
   }
   .release__size {
-    @apply text-muted-foreground;
+    @apply whitespace-nowrap text-muted-foreground;
   }
 
   /* Lojas. */
@@ -3686,7 +3694,14 @@
 .code-block__pre .token.attr-value,
 .code-block__pre .token.function,
 .code-block__pre .token.class-name {
-  color: hsl(265 70% 65%);
+  /* roxo escurecido para passar contraste AA também no fundo claro do bloco */
+  color: hsl(265 60% 52%);
+}
+.dark .code-block__pre .token.atrule,
+.dark .code-block__pre .token.attr-value,
+.dark .code-block__pre .token.function,
+.dark .code-block__pre .token.class-name {
+  color: hsl(265 75% 72%);
 }
 .code-block__pre .token.keyword {
   color: hsl(330 70% 60%);

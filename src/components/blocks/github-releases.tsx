@@ -34,9 +34,10 @@ export async function GithubReleasesBlock({
             {r.assets.slice(0, 4).map((a) => (
               <li key={a.name}>
                 <a href={a.browser_download_url} rel="nofollow noopener noreferrer" className="release__asset">
-                  <Download className="size-4" aria-hidden="true" />
-                  {a.name}
-                  <span className="release__size">({(a.size / 1e6).toFixed(0)} MB)</span>
+                  <Download className="release__asset-icon" aria-hidden="true" />
+                  <span className="release__asset-name">
+                    {a.name} <span className="release__size">({(a.size / 1e6).toFixed(0)} MB)</span>
+                  </span>
                 </a>
               </li>
             ))}
