@@ -70,11 +70,11 @@ export const COL_VALIGN: Record<string, string> = { top: "justify-start", center
 export const COL_BG: Record<string, string> = { none: "", muted: "rounded-lg bg-muted/40 p-4", card: "rounded-lg border border-border bg-card p-4" };
 
 // Container recursivo: fundo, espaçamento vertical e gap entre colunas.
-const CONTAINER_BG: Record<string, string> = {
+export const CONTAINER_BG: Record<string, string> = {
   none: "", muted: "bg-muted/50", card: "bg-card", primary: "bg-primary/10", dark: "bg-foreground/90 text-background",
 };
-const CONTAINER_PADY: Record<string, string> = { none: "", sm: "py-4", md: "py-8", lg: "py-12" };
-const CONTAINER_GAP: Record<string, string> = { none: "gap-0", sm: "gap-3", md: "gap-6", lg: "gap-10" };
+export const CONTAINER_PADY: Record<string, string> = { none: "", sm: "py-4", md: "py-8", lg: "py-12" };
+export const CONTAINER_GAP: Record<string, string> = { none: "gap-0", sm: "gap-3", md: "gap-6", lg: "gap-10" };
 
 function safeHref(href: string): string | null {
   return isSafeHref(href) ? href : null;

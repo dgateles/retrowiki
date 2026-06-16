@@ -1311,6 +1311,29 @@
   .pb-drop {
     @apply rounded border border-dashed border-border p-5 text-center text-xs text-muted-foreground;
   }
+  .pb-drop--sm {
+    @apply w-full p-3 text-[11px];
+  }
+  /* Colunas do container no canvas do construtor: drop-zones visíveis. */
+  .pb-container { @apply relative; }
+  .pb-subcol {
+    @apply relative min-h-16 rounded-md border border-dashed border-border/70 p-2 transition-colors;
+  }
+  .pb-subcol:hover, .pb-subcol:has(.pb-subel:hover) {
+    @apply border-primary/50 bg-primary/5;
+  }
+  .pb-subcol__tag {
+    @apply mb-1 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70;
+  }
+  .pb-subel {
+    @apply rounded;
+  }
+  .page-col--row > .pb-subel {
+    @apply w-auto shrink-0;
+  }
+  .page-col--row > .pb-subel .page-w__btnwrap {
+    @apply inline-flex;
+  }
   .pb-addsec {
     @apply mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border py-3 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
   }

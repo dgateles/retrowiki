@@ -20,10 +20,10 @@ import { FX_EFFECTS, fxVal, type FxParams, type FxParamValue } from "@/lib/fx-ef
 import { ImageUpload } from "@/components/admin/image-upload";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG } from "@/components/pages/page-renderer";
+import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_VALIGN, COL_BG, CONTAINER_BG, CONTAINER_PADY, CONTAINER_GAP } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
-import type { Layout, Widget, WidgetType, Section, Column } from "@/lib/pages";
+import type { Layout, Widget, WidgetType, Section, Column, ContainerWidget } from "@/lib/pages";
 
 type SavedBlock = { id: number; name: string; layout: unknown };
 
@@ -105,6 +105,19 @@ function evenSpans(n: number): number[] {
 }
 
 type Sel = { si: number; ci: number; wi: number };
+
+// Caminho de "steps" que entra em containers aninhados. Resolve o array de
+// colunas naquele ponto da árvore (para drop-into-container recursivo).
+type Step = { ci: number; wi: number };
+function colsAt(ss: Section[], si: number, steps: Step[]): Column[] | undefined {
+  let cols: Column[] | undefined = ss[si]?.columns;
+  for (const st of steps) {
+    const w: Widget | undefined = cols?.[st.ci]?.widgets[st.wi];
+    if (!w || w.type !== "container") return undefined;
+    cols = w.columns;
+  }
+  return cols;
+}
 
 export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: SavedBlock[] }) {
   const router = useRouter();
@@ -227,6 +240,44 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       const w = structuredClone(ss[si].columns[ci].widgets[wi]);
       ss[si].columns[ci].widgets.splice(wi + 1, 0, w);
     });
+  }
+
+  // Render do CONTAINER no canvas: cada coluna é uma drop-zone que aceita
+  // widgets arrastados da paleta (em qualquer profundidade). Os widgets já
+  // dentro renderizam via WidgetView; containers aninhados recursam.
+  function renderContainerCanvas(w: ContainerWidget, si: number, steps: Step[], ci: number, wi: number): React.ReactNode {
+    const myPath = [...steps, { ci, wi }];
+    const Tag = w.tag;
+    const boxed = w.bg !== "none";
+    return (
+      <Tag className={cn("page-container pb-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4")}>
+        <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
+          {w.columns.map((c, k) => (
+            <div
+              key={c.id}
+              className={cn("page-col pb-subcol flex", c.dir === "row" ? "page-col--row" : "flex-col", COL_SPAN[c.span], COL_VALIGN[c.valign], COL_BG[c.bg])}
+              onDragOver={(e) => { if (libDragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
+              onDrop={(e) => {
+                if (!libDragRef.current) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const type = libDragRef.current;
+                libDragRef.current = null;
+                mutate((ss) => { colsAt(ss, si, myPath)?.[k]?.widgets.push(newWidget(type)); });
+              }}
+            >
+              <span className="pb-subcol__tag" aria-hidden="true">col {k + 1} · {c.span}/12</span>
+              {c.widgets.length === 0 && <div className="pb-drop pb-drop--sm">Arraste um elemento aqui</div>}
+              {c.widgets.map((cw, cwi) =>
+                cw.type === "container"
+                  ? <div key={cwi} className="pb-subel">{renderContainerCanvas(cw, si, myPath, k, cwi)}</div>
+                  : <div key={cwi} className="pb-subel"><WidgetView w={cw} /></div>,
+              )}
+            </div>
+          ))}
+        </div>
+      </Tag>
+    );
   }
 
   function dupSection(si: number) {
@@ -630,7 +681,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                               <button type="button" className="pb-mini" title="Duplicar" onClick={(e) => { e.stopPropagation(); dupWidget(si, ci, wi); }}><Copy className="size-3" /></button>
                               <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) deselect(); }}><Trash2 className="size-3" /></button>
                             </span>
-                            <div className="pb-el__content"><WidgetView w={w} /></div>
+                            <div className="pb-el__content">{w.type === "container" ? renderContainerCanvas(w, si, [], ci, wi) : <WidgetView w={w} />}</div>
                           </div>
                         );
                       })}
