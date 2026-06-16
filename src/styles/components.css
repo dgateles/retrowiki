@@ -1240,7 +1240,7 @@
     @apply border-primary text-primary;
   }
   .pb-panel__scroll {
-    @apply flex flex-1 flex-col gap-4 overflow-y-auto p-4;
+    @apply flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4;
   }
   .pb-lib {
     @apply grid grid-cols-2 gap-2;
@@ -1255,7 +1255,7 @@
     @apply flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border border-border bg-background p-3 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground;
   }
   .pb-panel__edit {
-    @apply flex max-h-[78vh] flex-col;
+    @apply flex min-h-0 flex-1 flex-col;
   }
   .pb-panel__head {
     @apply flex items-center gap-2 border-b border-border p-3;

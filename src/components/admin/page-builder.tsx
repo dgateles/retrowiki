@@ -59,6 +59,9 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
 const WIDGET_LABEL: Record<string, string> = Object.fromEntries(WIDGETS.map((x) => [x.type, x.label]));
 
 // Presets de estrutura (colunas) — como o "Selecione sua estrutura" do Elementor.
+// Qual preset bate com a distribuição de colunas atual (para destacar o ativo).
+const spansEqual = (a: number[], b: number[]) => a.length === b.length && a.every((v, i) => v === b[i]);
+
 const STRUCTURE_PRESETS: { key: string; label: string; spans: number[] }[] = [
   { key: "1", label: "1 coluna", spans: [12] },
   { key: "2", label: "2 colunas (50/50)", spans: [6, 6] },
@@ -542,20 +545,24 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                 <div className="field">
                   <Label>Estrutura (colunas)</Label>
                   <div className="grid grid-cols-3 gap-2">
-                    {STRUCTURE_PRESETS.map((p) => (
+                    {STRUCTURE_PRESETS.map((p) => {
+                      const active = spansEqual(p.spans, sections[selSection].columns.map((c) => c.span));
+                      return (
                       <button
                         key={p.key}
                         type="button"
                         title={p.label}
                         aria-label={p.label}
-                        className="rounded-md border border-border p-1.5 transition-colors hover:border-primary hover:bg-accent"
+                        aria-pressed={active}
+                        className={cn("rounded-md border p-1.5 transition-colors hover:border-primary hover:bg-accent", active ? "border-primary bg-primary/10" : "border-border")}
                         onClick={() => mutate((ss) => { const cur = ss[selSection].columns; ss[selSection].columns = p.spans.map((span, i) => cur[i] ? { ...cur[i], span } : { id: uid(), span, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }); })}
                       >
                         <div className="flex h-6 gap-0.5">
-                          {p.spans.map((s, i) => <div key={i} className="rounded-sm bg-muted-foreground/40" style={{ flexGrow: s }} />)}
+                          {p.spans.map((s, i) => <div key={i} className={cn("rounded-sm", active ? "bg-primary/60" : "bg-muted-foreground/40")} style={{ flexGrow: s }} />)}
                         </div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
@@ -1500,20 +1507,24 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
             <div className="field">
               <Label>Estrutura</Label>
               <div className="grid grid-cols-3 gap-2">
-                {STRUCTURE_PRESETS.map((p) => (
+                {STRUCTURE_PRESETS.map((p) => {
+                  const active = spansEqual(p.spans, w.columns.map((c) => c.span));
+                  return (
                   <button
                     key={p.key}
                     type="button"
                     title={p.label}
                     aria-label={p.label}
-                    className="rounded-md border border-border p-1.5 transition-colors hover:border-primary hover:bg-accent"
+                    aria-pressed={active}
+                    className={cn("rounded-md border p-1.5 transition-colors hover:border-primary hover:bg-accent", active ? "border-primary bg-primary/10" : "border-border")}
                     onClick={() => setCols(p.spans.map((span, i) => w.columns[i] ? { ...w.columns[i], span } : { id: uid(), span, valign: "top", bg: "none", dir: "col", justify: "start", align: "stretch", gap: "sm", wrap: true, widgets: [] }))}
                   >
                     <div className="flex h-6 gap-0.5">
-                      {p.spans.map((s, i) => <div key={i} className="rounded-sm bg-muted-foreground/40" style={{ flexGrow: s }} />)}
+                      {p.spans.map((s, i) => <div key={i} className={cn("rounded-sm", active ? "bg-primary/60" : "bg-muted-foreground/40")} style={{ flexGrow: s }} />)}
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -1539,10 +1550,10 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
                       {w.columns.length > 1 && <button type="button" aria-label={`Remover coluna ${ci + 1}`} onClick={() => setCols(rebalance(w.columns.filter((_, i) => i !== ci)))} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-3.5" /></button>}
                     </div>
                     <input type="range" min={1} max={12} value={c.span} aria-label={`Largura da coluna ${ci + 1}`} onChange={(e) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, span: Number(e.target.value) } : cc))} className="mb-2 w-full" />
-                    <div className="mb-2 flex items-center gap-2">
-                      <Label className="shrink-0 text-xs">Direção dos widgets</Label>
+                    <div className="mb-2">
+                      <Label className="text-[10px] uppercase text-muted-foreground">Direção dos widgets</Label>
                       <Select value={c.dir} onValueChange={(val) => setCols(w.columns.map((cc, i) => i === ci ? { ...cc, dir: val as "col" | "row" } : cc))}>
-                        <SelectTrigger aria-label="Direção dos widgets" className="h-7 flex-1"><SelectValue /></SelectTrigger>
+                        <SelectTrigger aria-label="Direção dos widgets" className="h-7 w-full"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="col">Empilhado (↓)</SelectItem><SelectItem value="row">Lado a lado (→)</SelectItem></SelectContent>
                       </Select>
                     </div>
