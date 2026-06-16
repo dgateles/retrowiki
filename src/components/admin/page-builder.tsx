@@ -317,7 +317,10 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     const Tag = w.tag;
     const boxed = w.bg !== "none";
     return (
-      <Tag className={cn("page-container pb-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4")}>
+      <Tag
+        className={cn("page-container pb-container", CONTAINER_BG[w.bg], CONTAINER_PADY[w.padY], boxed && "rounded-lg px-4")}
+        onClick={steps.length === 0 ? (e: React.MouseEvent) => { e.stopPropagation(); selectWidget({ si, ci, wi }); } : undefined}
+      >
         <div className={cn("page-container__grid", CONTAINER_GAP[w.gap])}>
           {w.columns.map((c, k) => {
             const colActive = !!dropHint && dropHint.si === si && dropHint.ci === k && stepsEq(dropHint.steps, myPath);
@@ -341,7 +344,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                     onDragOver={(e) => { if (widgetDragActive()) { e.preventDefault(); e.stopPropagation(); setHint({ si, steps: myPath, ci: k, wi: cwi }); } }}
                     onDrop={(e) => { if (!widgetDragActive()) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: cwi }); }}
                   >
-                    {cw.type === "container" ? renderContainerCanvas(cw, si, myPath, k, cwi) : <WidgetView w={cw} />}
+                    {cw.type === "container" ? renderContainerCanvas(cw, si, myPath, k, cwi) : <div className="pointer-events-none"><WidgetView w={cw} /></div>}
                   </div>
                 </Fragment>
               ))}

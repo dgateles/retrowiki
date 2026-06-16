@@ -1368,7 +1368,10 @@
   /* Colunas do container no canvas do construtor: drop-zones visíveis. */
   .pb-container { @apply relative; }
   .pb-subcol {
-    @apply relative min-h-16 rounded-md border border-dashed border-border/70 p-2 transition-colors;
+    /* pointer-events-auto reabilita as zonas de drop do container — o pai
+       .pb-el__content é pointer-events-none (pra clicar e selecionar o widget),
+       o que senão faz o drop real atravessar pro pb-el de topo. */
+    @apply pointer-events-auto relative min-h-16 rounded-md border border-dashed border-border/70 p-2 transition-colors;
   }
   .pb-subcol:hover, .pb-subcol:has(.pb-subel:hover) {
     @apply border-primary/50 bg-primary/5;
