@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Check, Star, Zap, Shield, Heart, Gamepad2, Download, Settings, Info, Trophy, Sparkles, Rocket, FileCheck, ExternalLink, BadgeCheck, AlertTriangle, Lightbulb, HardDrive, Wifi, Package } from "lucide-react";
-import type { Layout, Widget } from "@/lib/pages";
+import type { Layout, Widget, WidgetSx } from "@/lib/pages";
 import type { IconKey } from "@/lib/page-icons";
 import { parseVideoEmbed } from "@/lib/video-embed";
 import { isSafeHref } from "@/lib/safe-url";
@@ -91,6 +91,32 @@ export function colFlex(c: { dir?: string; justify?: string; align?: string; gap
     COL_JUSTIFY[c.justify ?? "start"] ?? "justify-start",
     COL_ALIGN[c.align ?? "stretch"] ?? "items-stretch",
     COL_GAP[c.gap ?? "sm"] ?? "gap-2",
+  );
+}
+
+// ── Estilo por elemento (sx) ────────────────────────────────────────────────
+// Mapas estáticos (allowlist) → classes Tailwind. Tudo precisa existir literal
+// no fonte para o Tailwind gerar; nada de classes dinâmicas/CSS livre.
+const SX_MT: Record<string, string> = { none: "mt-0", xs: "mt-1", sm: "mt-2", md: "mt-4", lg: "mt-8", xl: "mt-12" };
+const SX_MB: Record<string, string> = { none: "mb-0", xs: "mb-1", sm: "mb-2", md: "mb-4", lg: "mb-8", xl: "mb-12" };
+const SX_PX: Record<string, string> = { none: "px-0", xs: "px-1", sm: "px-2", md: "px-4", lg: "px-8", xl: "px-12" };
+const SX_PY: Record<string, string> = { none: "py-0", xs: "py-1", sm: "py-2", md: "py-4", lg: "py-8", xl: "py-12" };
+const SX_W: Record<string, string> = { auto: "", full: "w-full", "1/2": "w-1/2", "1/3": "w-1/3", "2/3": "w-2/3", "1/4": "w-1/4", "3/4": "w-3/4" };
+const SX_SELF: Record<string, string> = { auto: "self-auto", start: "self-start", center: "self-center", end: "self-end", stretch: "self-stretch" };
+const SX_BG: Record<string, string> = { none: "", muted: "bg-muted/50", card: "bg-card", primary: "bg-primary/10", dark: "bg-foreground/90 text-background" };
+const SX_RADIUS: Record<string, string> = { none: "rounded-none", sm: "rounded-sm", md: "rounded-md", lg: "rounded-lg", full: "rounded-full" };
+const SX_SHADOW: Record<string, string> = { none: "", sm: "shadow-sm", md: "shadow-md", lg: "shadow-lg" };
+
+/** Classes Tailwind para o wrapper de um widget a partir do seu `sx`. */
+export function sxClass(sx?: WidgetSx): string {
+  if (!sx) return "";
+  return cn(
+    sx.mt && SX_MT[sx.mt], sx.mb && SX_MB[sx.mb],
+    sx.px && SX_PX[sx.px], sx.py && SX_PY[sx.py],
+    sx.w && SX_W[sx.w], sx.self && SX_SELF[sx.self],
+    sx.bg && SX_BG[sx.bg], sx.radius && SX_RADIUS[sx.radius],
+    sx.shadow && SX_SHADOW[sx.shadow],
+    sx.border && "border border-border",
   );
 }
 
@@ -497,7 +523,7 @@ export function WidgetView({ w }: { w: Widget }) {
             {w.columns.map((c) => (
               <div key={c.id} className={cn("page-col", COL_SPAN[c.span] ?? "sm:col-span-12", colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}>
                 {c.widgets.map((cw, i) => (
-                  <div key={i} className="page-w"><WidgetView w={cw} /></div>
+                  <div key={i} className={cn("page-w", sxClass(cw.sx))}><WidgetView w={cw} /></div>
                 ))}
               </div>
             ))}
@@ -526,7 +552,7 @@ export function PageRenderer({ layout }: { layout: Layout }) {
             {s.columns.map((c) => (
               <div key={c.id} className={cn("page-col", COL_SPAN[c.span] ?? "sm:col-span-12", colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}>
                 {c.widgets.map((w, i) => (
-                  <div key={i} className="page-w">
+                  <div key={i} className={cn("page-w", sxClass(w.sx))}>
                     <WidgetView w={w} />
                   </div>
                 ))}

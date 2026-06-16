@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2, Boxes, ChevronDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2, Boxes, ChevronDown, Palette, ListTree } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -20,10 +20,10 @@ import { FX_EFFECTS, fxVal, type FxParams, type FxParamValue } from "@/lib/fx-ef
 import { ImageUpload } from "@/components/admin/image-upload";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { RichEditor } from "@/components/editor/rich-editor";
-import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_BG, CONTAINER_BG, CONTAINER_PADY, CONTAINER_GAP, colFlex } from "@/components/pages/page-renderer";
+import { WidgetView, PageRenderer, SEC_BG, SEC_PADY, COL_BG, CONTAINER_BG, CONTAINER_PADY, CONTAINER_GAP, colFlex, sxClass } from "@/components/pages/page-renderer";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { savePageAction, deletePageAction, saveBlockAction, deleteBlockAction } from "@/lib/actions/page-actions";
-import type { Layout, Widget, WidgetType, Section, Column, ContainerWidget } from "@/lib/pages";
+import type { Layout, Widget, WidgetType, Section, Column, ContainerWidget, WidgetSx } from "@/lib/pages";
 
 type SavedBlock = { id: number; name: string; layout: unknown };
 
@@ -129,6 +129,18 @@ function colsAt(ss: Section[], si: number, steps: Step[]): Column[] | undefined 
   return cols;
 }
 
+// Localização completa de um widget (section + caminho de containers + col/wi).
+type WLoc = { si: number; steps: Step[]; ci: number; wi: number };
+const stepsEq = (a: Step[], b: Step[]) => a.length === b.length && a.every((s, i) => s.ci === b[i].ci && s.wi === b[i].wi);
+const sameWLoc = (a: WLoc, b: WLoc) => a.si === b.si && a.ci === b.ci && a.wi === b.wi && stepsEq(a.steps, b.steps);
+const sameColumn = (a: WLoc, b: WLoc) => a.si === b.si && a.ci === b.ci && stepsEq(a.steps, b.steps);
+// `to` está dentro do subtree de `from`? (impede mover um container pra dentro de si mesmo)
+function isWithin(from: WLoc, to: WLoc): boolean {
+  if (to.si !== from.si) return false;
+  const prefix = [...from.steps, { ci: from.ci, wi: from.wi }];
+  return to.steps.length >= prefix.length && prefix.every((s, i) => s.ci === to.steps[i].ci && s.wi === to.steps[i].wi);
+}
+
 export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: SavedBlock[] }) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -146,6 +158,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   const [leftTab, setLeftTab] = useState<"elements" | "blocks" | "page">("elements");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [preview, setPreview] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [blockList, setBlockList] = useState<SavedBlock[]>(blocks);
@@ -158,19 +171,19 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   function selectSection(si: number) { setSelSection(si); setSelected(null); setSelCol(null); }
   function selectCol(si: number, ci: number) { setSelCol({ si, ci }); setSelected(null); setSelSection(null); }
   function deselect() { setSelected(null); setSelSection(null); setSelCol(null); }
-  const dragRef = useRef<Sel | null>(null);
+  const dragRef = useRef<WLoc | null>(null);
   const secDragRef = useRef<number | null>(null);
   const libDragRef = useRef<WidgetType | null>(null);
   const colDragRef = useRef<{ si: number; ci: number } | null>(null);
   const blockDragRef = useRef<unknown | null>(null);
 
-  // Drop numa coluna: tile da biblioteca → novo widget; senão → reordena.
-  function handleDrop(to: Sel) {
+  // Drop numa posição: tile da biblioteca → novo widget; senão → move/reordena.
+  function handleDrop(to: WLoc) {
     if (libDragRef.current) {
       const type = libDragRef.current;
       libDragRef.current = null;
-      mutate((ss) => { ss[to.si].columns[to.ci].widgets.splice(to.wi, 0, newWidget(type)); });
-      selectWidget(to);
+      mutate((ss) => { colsAt(ss, to.si, to.steps)?.[to.ci]?.widgets.splice(to.wi, 0, newWidget(type)); });
+      if (to.steps.length === 0) selectWidget({ si: to.si, ci: to.ci, wi: to.wi });
       return;
     }
     dropWidget(to);
@@ -210,17 +223,22 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
     deselect();
   }
 
-  // Arrastar-e-soltar de widgets (entre colunas e seções).
-  function dropWidget(to: { si: number; ci: number; wi: number }) {
+  // Arrastar-e-soltar de widgets: entre colunas, seções e containers (recursivo).
+  function dropWidget(to: WLoc) {
     const from = dragRef.current;
     dragRef.current = null;
     if (!from) return;
-    if (from.si === to.si && from.ci === to.ci && from.wi === to.wi) return;
+    if (sameWLoc(from, to)) return;
+    if (isWithin(from, to)) return; // não mover um container pra dentro de si mesmo
     mutate((ss) => {
-      const w = ss[from.si].columns[from.ci].widgets.splice(from.wi, 1)[0];
+      const fromCols = colsAt(ss, from.si, from.steps);
+      const w = fromCols?.[from.ci]?.widgets.splice(from.wi, 1)[0];
+      if (!w) return;
+      const toCols = colsAt(ss, to.si, to.steps);
+      if (!toCols?.[to.ci]) return;
       let ti = to.wi;
-      if (from.si === to.si && from.ci === to.ci && from.wi < to.wi) ti -= 1;
-      ss[to.si].columns[to.ci].widgets.splice(ti, 0, w);
+      if (sameColumn(from, to) && from.wi < to.wi) ti -= 1;
+      toCols[to.ci].widgets.splice(ti, 0, w);
     });
   }
 
@@ -266,23 +284,24 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
             <div
               key={c.id}
               className={cn("page-col pb-subcol", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg])}
-              onDragOver={(e) => { if (libDragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
-              onDrop={(e) => {
-                if (!libDragRef.current) return;
-                e.preventDefault();
-                e.stopPropagation();
-                const type = libDragRef.current;
-                libDragRef.current = null;
-                mutate((ss) => { colsAt(ss, si, myPath)?.[k]?.widgets.push(newWidget(type)); });
-              }}
+              onDragOver={(e) => { if (libDragRef.current || dragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
+              onDrop={(e) => { if (!libDragRef.current && !dragRef.current) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: c.widgets.length }); }}
             >
               <span className="pb-subcol__tag" aria-hidden="true">col {k + 1} · {c.span}/12</span>
               {c.widgets.length === 0 && <div className="pb-drop pb-drop--sm">Arraste um elemento aqui</div>}
-              {c.widgets.map((cw, cwi) =>
-                cw.type === "container"
-                  ? <div key={cwi} className="pb-subel">{renderContainerCanvas(cw, si, myPath, k, cwi)}</div>
-                  : <div key={cwi} className="pb-subel"><WidgetView w={cw} /></div>,
-              )}
+              {c.widgets.map((cw, cwi) => (
+                <div
+                  key={cwi}
+                  className={cn("pb-subel pb-subel--draggable", sxClass(cw.sx))}
+                  draggable
+                  onDragStart={(e) => { dragRef.current = { si, steps: myPath, ci: k, wi: cwi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); e.stopPropagation(); }}
+                  onDragEnd={() => { dragRef.current = null; }}
+                  onDragOver={(e) => { if (libDragRef.current || dragRef.current) { e.preventDefault(); e.stopPropagation(); } }}
+                  onDrop={(e) => { if (!libDragRef.current && !dragRef.current) return; e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: myPath, ci: k, wi: cwi }); }}
+                >
+                  {cw.type === "container" ? renderContainerCanvas(cw, si, myPath, k, cwi) : <WidgetView w={cw} />}
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -410,6 +429,33 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
   }, [past, future, preview]);
 
   const selWidget = selected && sections[selected.si]?.columns[selected.ci]?.widgets[selected.wi];
+
+  // Navegador de estrutura (estilo Elementor): árvore seção → coluna → widget,
+  // recursando em containers. Clicar seleciona o nó (nós aninhados selecionam o
+  // container de nível superior, onde o editor inline daquele widget vive).
+  function renderNavWidget(w: Widget, si: number, top: Sel, depth: number): ReactNode {
+    const Icon = WIDGETS.find((x) => x.type === w.type)?.icon ?? Boxes;
+    const isSel = depth === 0 && !!selected && selected.si === top.si && selected.ci === top.ci && selected.wi === top.wi;
+    const label = w.type === "heading" || w.type === "text" ? (w as { text?: string }).text?.slice(0, 24) || WIDGET_LABEL[w.type] : WIDGET_LABEL[w.type] ?? w.type;
+    return (
+      <li key={`${depth}-${top.wi}-${w.type}`}>
+        <button type="button" className={cn("pb-nav__item", isSel && "pb-nav__item--sel")} style={{ paddingLeft: depth * 14 + 10 }} onClick={() => selectWidget(top)}>
+          <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <span className="truncate">{label}</span>
+        </button>
+        {w.type === "container" && (
+          <ul className="pb-nav__sub">
+            {w.columns.map((col, cci) => (
+              <li key={col.id}>
+                <span className="pb-nav__collabel" style={{ paddingLeft: (depth + 1) * 14 + 10 }}>Coluna {cci + 1} · {col.span}/12</span>
+                <ul>{col.widgets.map((cw) => renderNavWidget(cw, si, top, depth + 1))}</ul>
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    );
+  }
 
   return (
     <div className={cn("pb-fs", resizing && "pb-fs--resizing")}>
@@ -686,6 +732,38 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
           )}
         </aside>
 
+        {/* Navegador de estrutura (painel flutuante, alternável) */}
+        {navOpen && (
+          <aside className="pb-fs__nav" aria-label="Navegador de estrutura">
+            <div className="pb-fs__nav-head">
+              <span className="flex items-center gap-1.5 text-sm font-semibold"><ListTree className="size-4" aria-hidden="true" /> Navegador</span>
+              <button type="button" className="pb-mini" title="Fechar navegador" onClick={() => setNavOpen(false)}><X className="size-3.5" /></button>
+            </div>
+            <div className="pb-fs__nav-body">
+              {sections.length === 0 && <p className="muted p-3 text-sm">Sem elementos ainda.</p>}
+              <ul className="pb-nav__tree">
+                {sections.map((s, si) => (
+                  <li key={s.id}>
+                    <button type="button" className={cn("pb-nav__item pb-nav__item--sec", selSection === si && "pb-nav__item--sel")} onClick={() => selectSection(si)}>
+                      <Boxes className="size-3.5 shrink-0" aria-hidden="true" /> <span className="truncate">Seção {si + 1}</span>
+                    </button>
+                    <ul className="pb-nav__sub">
+                      {s.columns.map((c, ci) => (
+                        <li key={c.id}>
+                          <button type="button" className={cn("pb-nav__item pb-nav__item--col", selCol?.si === si && selCol?.ci === ci && "pb-nav__item--sel")} style={{ paddingLeft: 24 }} onClick={() => selectCol(si, ci)}>
+                            <LayoutGrid className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" /> <span className="truncate">Coluna {ci + 1} · {c.span}/12</span>
+                          </button>
+                          <ul>{c.widgets.map((w, wi) => renderNavWidget(w, si, { si, ci, wi }, 0))}</ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        )}
+
         {/* Canvas (backdrop tela cheia) */}
         <div className="pb-fs__stage" onClick={deselect}>
           <div
@@ -725,7 +803,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                       key={c.id}
                       className={cn("page-col pb-colwrap", COL_SPAN[c.span], colFlex(c), c.dir === "row" && "page-col--row", COL_BG[c.bg], selCol?.si === si && selCol?.ci === ci && "pb-colwrap--selected")}
                       onDragOver={(e) => { if (dragRef.current || libDragRef.current || colDragRef.current) e.preventDefault(); }}
-                      onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, ci, wi: c.widgets.length }); } }}
+                      onDrop={(e) => { e.preventDefault(); if (colDragRef.current) { dropColumn(si, ci); } else { handleDrop({ si, steps: [], ci, wi: c.widgets.length }); } }}
                     >
                       <div className="pb-colwrap__bar">
                         {s.columns.length > 1 && <span className="pb-handle pb-colwrap__drag" title="Arrastar coluna" draggable onDragStart={(e) => { colDragRef.current = { si, ci }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "c"); }} onDragEnd={() => { colDragRef.current = null; }}><GripVertical className="size-3" /></span>}
@@ -742,14 +820,14 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
                             className={cn("pb-el", isSel && "pb-el--selected")}
                             onClick={(e) => { e.stopPropagation(); selectWidget({ si, ci, wi }); }}
                             onDragOver={(e) => { if (dragRef.current || libDragRef.current) e.preventDefault(); }}
-                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop({ si, ci, wi }); }}
+                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop({ si, steps: [], ci, wi }); }}
                           >
                             <span className="pb-el__bar">
-                              <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
+                              <span className="pb-el__handle pb-handle" title="Arrastar" draggable onDragStart={(e) => { dragRef.current = { si, steps: [], ci, wi }; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "w"); }}><GripVertical className="size-3" /></span>
                               <button type="button" className="pb-mini" title="Duplicar" onClick={(e) => { e.stopPropagation(); dupWidget(si, ci, wi); }}><Copy className="size-3" /></button>
                               <button type="button" className="pb-mini pb-mini--danger" title="Excluir" onClick={(e) => { e.stopPropagation(); mutate((ss) => { ss[si].columns[ci].widgets.splice(wi, 1); }); if (isSel) deselect(); }}><Trash2 className="size-3" /></button>
                             </span>
-                            <div className="pb-el__content">{w.type === "container" ? renderContainerCanvas(w, si, [], ci, wi) : <WidgetView w={w} />}</div>
+                            <div className={cn("pb-el__content", sxClass(w.sx))}>{w.type === "container" ? renderContainerCanvas(w, si, [], ci, wi) : <WidgetView w={w} />}</div>
                           </div>
                         );
                       })}
@@ -779,6 +857,7 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
             <button type="button" className="pb-mini" title="Desfazer (Ctrl+Z)" disabled={past.length === 0} onClick={undo}><Undo2 className="size-4" /></button>
             <button type="button" className="pb-mini" title="Refazer (Ctrl+Shift+Z)" disabled={future.length === 0} onClick={redo}><Redo2 className="size-4" /></button>
           </span>
+          <button type="button" className={cn("pb-mini", navOpen && "pb-mini--on")} title="Navegador de estrutura" aria-pressed={navOpen} onClick={() => setNavOpen((v) => !v)}><ListTree className="size-4" /></button>
           <span className="pb-fs__bartitle">{title || "Sem título"}</span>
           <span className="pb-dev-toggle" role="group" aria-label="Pré-visualização responsiva">
             <button type="button" className={cn("pb-mini", device === "desktop" && "pb-mini--on")} title="Desktop" onClick={() => setDevice("desktop")}><Monitor className="size-4" /></button>
@@ -1518,6 +1597,116 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
         );
       })()}
       {w.type === "divider" && <p className="muted text-sm">Sem opções.</p>}
+      <SxControls w={w} onChange={onChange} />
     </div>
+  );
+}
+
+// Estilo por elemento (estilo Elementor): espaçamento, tamanho, aparência —
+// disponível para todo widget. Tudo em escala fechada (enums seguros).
+const SX_SPACE_OPTS: Array<{ v: string; l: string }> = [
+  { v: "none", l: "0" }, { v: "xs", l: "XS" }, { v: "sm", l: "P" }, { v: "md", l: "M" }, { v: "lg", l: "G" }, { v: "xl", l: "XL" },
+];
+function SxControls({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widget>) => void }) {
+  const sx: WidgetSx = (w as { sx?: WidgetSx }).sx ?? {};
+  const set = (patch: WidgetSx) => onChange({ sx: { ...sx, ...patch } } as Partial<Widget>);
+  const hasStyle = Object.values(sx).some((v) => v !== undefined && v !== "none" && v !== "auto" && v !== false);
+  const spaceSel = (key: "mt" | "mb" | "px" | "py", label: string) => (
+    <div>
+      <Label className="text-[10px] uppercase text-muted-foreground">{label}</Label>
+      <Select value={sx[key] ?? "none"} onValueChange={(val) => set({ [key]: val } as WidgetSx)}>
+        <SelectTrigger aria-label={label} className="h-7 w-full"><SelectValue /></SelectTrigger>
+        <SelectContent>{SX_SPACE_OPTS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}</SelectContent>
+      </Select>
+    </div>
+  );
+  return (
+    <details className="mt-2 rounded-md border border-border" open={hasStyle}>
+      <summary className="flex cursor-pointer items-center gap-1.5 px-2 py-1.5 text-sm font-medium hover:bg-accent/50">
+        <Palette className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" /> Estilo do elemento
+      </summary>
+      <div className="space-y-2 border-t border-border p-2">
+        <div className="grid grid-cols-4 gap-2">
+          {spaceSel("mt", "Margem ↑")}
+          {spaceSel("mb", "Margem ↓")}
+          {spaceSel("px", "Pad. X")}
+          {spaceSel("py", "Pad. Y")}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground">Largura</Label>
+            <Select value={sx.w ?? "auto"} onValueChange={(val) => set({ w: val as WidgetSx["w"] })}>
+              <SelectTrigger aria-label="Largura" className="h-7 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Automática</SelectItem>
+                <SelectItem value="full">Cheia (100%)</SelectItem>
+                <SelectItem value="3/4">75%</SelectItem>
+                <SelectItem value="2/3">66%</SelectItem>
+                <SelectItem value="1/2">50%</SelectItem>
+                <SelectItem value="1/3">33%</SelectItem>
+                <SelectItem value="1/4">25%</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground">Alinhar-se</Label>
+            <Select value={sx.self ?? "auto"} onValueChange={(val) => set({ self: val as WidgetSx["self"] })}>
+              <SelectTrigger aria-label="Alinhar-se" className="h-7 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Padrão</SelectItem>
+                <SelectItem value="start">Início</SelectItem>
+                <SelectItem value="center">Centro</SelectItem>
+                <SelectItem value="end">Fim</SelectItem>
+                <SelectItem value="stretch">Esticar</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground">Fundo</Label>
+            <Select value={sx.bg ?? "none"} onValueChange={(val) => set({ bg: val as WidgetSx["bg"] })}>
+              <SelectTrigger aria-label="Fundo" className="h-7 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="muted">Suave</SelectItem>
+                <SelectItem value="card">Cartão</SelectItem>
+                <SelectItem value="primary">Destaque</SelectItem>
+                <SelectItem value="dark">Escuro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground">Arredondar</Label>
+            <Select value={sx.radius ?? "none"} onValueChange={(val) => set({ radius: val as WidgetSx["radius"] })}>
+              <SelectTrigger aria-label="Arredondar" className="h-7 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="sm">Pequeno</SelectItem>
+                <SelectItem value="md">Médio</SelectItem>
+                <SelectItem value="lg">Grande</SelectItem>
+                <SelectItem value="full">Total</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-[10px] uppercase text-muted-foreground">Sombra</Label>
+            <Select value={sx.shadow ?? "none"} onValueChange={(val) => set({ shadow: val as WidgetSx["shadow"] })}>
+              <SelectTrigger aria-label="Sombra" className="h-7 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nenhuma</SelectItem>
+                <SelectItem value="sm">Leve</SelectItem>
+                <SelectItem value="md">Média</SelectItem>
+                <SelectItem value="lg">Forte</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm"><Checkbox checked={sx.border ?? false} onCheckedChange={(c) => set({ border: c === true })} /> Borda</label>
+        {hasStyle && (
+          <button type="button" className="text-xs text-muted-foreground underline hover:text-foreground" onClick={() => onChange({ sx: undefined } as Partial<Widget>)}>Limpar estilo</button>
+        )}
+      </div>
+    </details>
   );
 }

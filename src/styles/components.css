@@ -1128,6 +1128,38 @@
   .pb-fs__panel {
     @apply absolute bottom-4 left-4 top-4 z-20 flex w-80 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl;
   }
+  /* Navegador de estrutura: painel flutuante à direita, abaixo da barra. */
+  .pb-fs__nav {
+    @apply absolute bottom-4 right-4 z-20 flex w-72 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl;
+    top: 5.25rem;
+  }
+  .pb-fs__nav-head {
+    @apply flex items-center justify-between border-b border-border px-3 py-2;
+  }
+  .pb-fs__nav-body {
+    @apply flex-1 overflow-auto py-1;
+  }
+  .pb-nav__tree {
+    @apply text-sm;
+  }
+  .pb-nav__sub {
+    @apply border-l border-border/60;
+  }
+  .pb-nav__item {
+    @apply flex w-full items-center gap-1.5 py-1 pr-2 text-left transition-colors hover:bg-accent/60;
+  }
+  .pb-nav__item--sec {
+    @apply px-2.5 font-semibold;
+  }
+  .pb-nav__item--col {
+    @apply text-xs text-muted-foreground;
+  }
+  .pb-nav__item--sel {
+    @apply bg-primary/15 text-primary;
+  }
+  .pb-nav__collabel {
+    @apply block py-1 text-[11px] uppercase tracking-wide text-muted-foreground/70;
+  }
   .pb-fs__stage {
     @apply absolute inset-0 overflow-auto;
     padding: 5.5rem 1.5rem 1.5rem 22.5rem;
@@ -1327,6 +1359,9 @@
   }
   .pb-subel {
     @apply rounded;
+  }
+  .pb-subel--draggable {
+    @apply cursor-move transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-primary)];
   }
   .page-col--row > .pb-subel {
     @apply w-auto shrink-0;

@@ -28,6 +28,25 @@ const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default
 const TITLE_LEVEL = z.enum(["p", "h2", "h3", "h4", "h5", "h6"]);
 const TITLE_FX = z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]);
 
+// ── Estilo por elemento (estilo Elementor) ──────────────────────────────────
+// Controles de espaçamento/tamanho/aparência por widget, em ESCALA FECHADA
+// (enums) — nunca CSS livre. Mapeados para classes Tailwind no renderer.
+const SX_SPACE = z.enum(["none", "xs", "sm", "md", "lg", "xl"]);
+const SxSchema = z.object({
+  mt: SX_SPACE,                                              // margem superior
+  mb: SX_SPACE,                                              // margem inferior
+  px: SX_SPACE,                                              // padding horizontal
+  py: SX_SPACE,                                              // padding vertical
+  w: z.enum(["auto", "full", "1/2", "1/3", "2/3", "1/4", "3/4"]), // largura
+  self: z.enum(["auto", "start", "center", "end", "stretch"]),     // align-self
+  bg: z.enum(["none", "muted", "card", "primary", "dark"]),        // fundo
+  radius: z.enum(["none", "sm", "md", "lg", "full"]),              // arredondamento
+  shadow: z.enum(["none", "sm", "md", "lg"]),                      // sombra
+  border: z.boolean(),                                            // borda 1px
+}).partial();
+export type WidgetSx = z.infer<typeof SxSchema>;
+const SX = SxSchema.optional().catch(undefined);
+
 const BaseWidgetSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("heading"), level: z.union([z.literal(2), z.literal(3), z.literal(4)]).default(2), text: z.string().trim().min(1).max(200), align: ALIGN, color: COLOR, fx: z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]).default("none").catch("none") }),
   z.object({ type: z.literal("text"), text: z.string().max(5000), align: ALIGN, color: COLOR }),
@@ -161,11 +180,16 @@ const BaseWidgetSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
+// Anexa `sx` (estilo por elemento) a toda variante sem reescrever as 22 defs:
+// intersecta a união discriminada com `{ sx }`. A narrowing por `type` continua
+// funcionando e o `sx` passa a ser validado/preservado no parse.
+const BaseWidgetWithSx = z.intersection(BaseWidgetSchema, z.object({ sx: SX }));
+
 // ── Estrutura recursiva ─────────────────────────────────────────────────────
 // O widget "container" tem tag semântica (div/section/article/aside) e contém
 // colunas com widgets — inclusive outros containers, em profundidade arbitrária.
 // Tipos manuais + z.lazy quebram a recursão (Zod não infere recursão sozinho).
-export type Widget = z.infer<typeof BaseWidgetSchema> | ContainerWidget;
+export type Widget = z.infer<typeof BaseWidgetWithSx> | ContainerWidget;
 export type WidgetType = Widget["type"];
 
 export type Column = {
@@ -190,10 +214,11 @@ export type ContainerWidget = {
   padY: "none" | "sm" | "md" | "lg";
   gap: "none" | "sm" | "md" | "lg";
   full: boolean;
+  sx?: WidgetSx;
   columns: Column[];
 };
 
-const WidgetSchema: z.ZodType<Widget> = z.lazy(() => z.union([BaseWidgetSchema, ContainerWidgetSchema]));
+const WidgetSchema: z.ZodType<Widget> = z.lazy(() => z.union([BaseWidgetWithSx, ContainerWidgetSchema]));
 
 // Largura da coluna numa grade de 12. Compat: aceita o antigo enum `width`.
 const WIDTH_TO_SPAN: Record<string, number> = { full: 12, "1/2": 6, "1/3": 4, "2/3": 8, "1/4": 3, "3/4": 9 };
@@ -233,6 +258,7 @@ const ContainerWidgetSchema: z.ZodType<ContainerWidget> = z.object({
   padY: z.enum(["none", "sm", "md", "lg"]).default("none").catch("none"),
   gap: z.enum(["none", "sm", "md", "lg"]).default("md").catch("md"),
   full: z.boolean().default(false).catch(false),
+  sx: SX,
   columns: z.array(ColumnSchema).min(1).max(6),
 });
 
