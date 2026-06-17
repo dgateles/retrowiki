@@ -55,6 +55,29 @@ services:
       - storage:/app/storage
     expose:
       - "3000"
+    labels:
+      - "traefik.enable=true"
+      # Compressão, seguindo o padrão que seu Coolify já usa
+      - "traefik.http.middlewares.gzip.compress=true"
+      # Redirect HTTP -> HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # Router HTTP para os dois domínios
+      - "traefik.http.routers.http-retrowiki.entryPoints=http"
+      - "traefik.http.routers.http-retrowiki.middlewares=redirect-to-https"
+      - "traefik.http.routers.http-retrowiki.rule=(Host(`retro.wiki.br`) || Host(`retrowiki.com.br`)) && PathPrefix(`/`)"
+      - "traefik.http.routers.http-retrowiki.service=http-retrowiki"
+      # Router HTTPS para os dois domínios
+      - "traefik.http.routers.https-retrowiki.entryPoints=https"
+      - "traefik.http.routers.https-retrowiki.middlewares=gzip"
+      - "traefik.http.routers.https-retrowiki.rule=(Host(`retro.wiki.br`) || Host(`retrowiki.com.br`)) && PathPrefix(`/`)"
+      - "traefik.http.routers.https-retrowiki.service=https-retrowiki"
+      - "traefik.http.routers.https-retrowiki.tls=true"
+      - "traefik.http.routers.https-retrowiki.tls.certresolver=letsencrypt"
+      # Porta interna do app
+      - "traefik.http.services.http-retrowiki.loadbalancer.server.port=3000"
+      - "traefik.http.services.https-retrowiki.loadbalancer.server.port=3000"
+      # Rede usada pelo proxy do Coolify
+      - "caddy_ingress_network=coolify"
     # Sem labels de Traefik aqui — o roteamento dos dois domínios e os certs são
     # gerenciados pelo Coolify (campo Domains do serviço `app`). Labels manuais
     # criavam um roteador concorrente que deixava o secundário com cert default
