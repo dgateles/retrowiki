@@ -27,6 +27,12 @@ services:
       PORT: 3000
       # Domínio canônico (um dos dois) — usado em URLs absolutas.
       APP_URL: ${APP_URL:-https://retro.wiki.br}
+      # URL base do Auth.js (OAuth redirect_uri, callbacks). Fixar é OBRIGATÓRIO
+      # atrás do proxy: sem isso o NextAuth inferia o host pelos headers e, quando
+      # não chegavam certos, montava `https://0.0.0.0:3000/...` (host de bind),
+      # que o Google bloqueia. Amarrado ao domínio canônico (= APP_URL).
+      AUTH_URL: ${APP_URL:-https://retro.wiki.br}
+      AUTH_TRUST_HOST: "true"
       # Deploy opcional em subdiretório; vazio para subdomínio.
       BASE_PATH: ${BASE_PATH:-}
       DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
