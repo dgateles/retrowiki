@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import { LogOut, PenLine, ShieldCheck, UserRound, Cog, LayoutDashboard } from "lucide-react";
+import { appSignOut } from "@/lib/auth-logout";
 import { Button } from "@/components/ui/button";
 import type { Rank } from "@/lib/ranks";
 import {
@@ -91,7 +91,7 @@ export function UserMenu({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => signOut({ callbackUrl: "/" })}>
+        <DropdownMenuItem onSelect={() => appSignOut()}>
           <LogOut aria-hidden="true" /> Sair
         </DropdownMenuItem>
       </DropdownMenuContent>
