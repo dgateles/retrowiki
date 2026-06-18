@@ -3006,6 +3006,25 @@
   .settings-section__desc {
     @apply mt-1 text-sm text-muted-foreground;
   }
+  /* Painel "Contas conectadas". */
+  .conn-list {
+    @apply space-y-3;
+  }
+  .conn-item {
+    @apply flex items-center gap-3 rounded-lg border border-border bg-card p-4;
+  }
+  .conn-item__icon {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-background;
+  }
+  .conn-item__body {
+    @apply flex min-w-0 flex-1 flex-col;
+  }
+  .conn-item__name {
+    @apply text-sm font-semibold;
+  }
+  .conn-item__meta {
+    @apply truncate text-xs text-muted-foreground;
+  }
   .settings-row {
     @apply flex flex-wrap items-center justify-between gap-3 border-b border-border py-5 first:pt-2 last:border-b-0 last:pb-0;
   }

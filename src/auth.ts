@@ -9,7 +9,7 @@ import { verifyPassword } from "@/lib/password";
 import { recordMemberIp, getClientIp } from "@/lib/ip";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { isBanned } from "@/lib/admin/ban-filters";
-import { getOrCreateOAuthUser } from "@/lib/oauth";
+import { resolveOAuthUser } from "@/lib/oauth";
 import { env } from "@/lib/env";
 import type { UserRole } from "@/db/schema";
 
@@ -26,9 +26,8 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      // O vínculo é feito manualmente em getOrCreateOAuthUser, que recusa contas
-      // com senha + e-mail não verificado (anti-account-takeover). Não usar
-      // allowDangerousEmailAccountLinking.
+      // O vínculo é feito em resolveOAuthUser (exige email_verified do Google e
+      // aplica "verificado vence"). Não usar allowDangerousEmailAccountLinking.
     }),
   );
 }
@@ -89,36 +88,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    // Login social: cria/vincula o usuário e bloqueia banidos/suspensos.
-    async signIn({ user, account }) {
+    // Login social: resolve/cria/vincula a conta UMA vez aqui (onde o `account`
+    // com o `sub` existe), bloqueia banidos/suspensos contra a conta RESOLVIDA,
+    // e grava nossos campos no `user` para o `jwt` apenas copiar (sem 2ª query).
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
-        const email = user.email?.toLowerCase();
-        if (!email) return false;
-        if (await isBanned({ email, ip: await getClientIp() })) return false;
-        const u = await getOrCreateOAuthUser(email, user.name, user.image);
+        const sub = account.providerAccountId;
+        const email = (user.email ?? (profile?.email as string | undefined) ?? "").toLowerCase();
+        const emailVerified = profile?.email_verified === true;
+        const u = await resolveOAuthUser({ sub, email, emailVerified, name: user.name, image: user.image });
         if (!u || u.isSuspended) return false;
+        // Ban/suspensão contra o e-mail da CONTA resolvida (não o do Google, que
+        // pode diferir num vínculo de e-mail diferente).
+        if (await isBanned({ email: u.email, ip: await getClientIp() })) return false;
         await recordMemberIp(u.id);
+        // Plumbing para o jwt: substitui o id do provedor (sub) pelos nossos campos.
+        user.id = String(u.id);
+        (user as { role?: UserRole }).role = u.role as UserRole;
+        (user as { handle?: string }).handle = u.handle;
+        (user as { sv?: number }).sv = u.sessionVersion;
       }
       return true;
     },
     async jwt({ token, user }) {
-      if (user) {
-        if ((user as { role?: UserRole }).role) {
-          // Credentials: o usuário já traz os nossos campos.
-          token.uid = user.id;
-          token.role = (user as { role: UserRole }).role;
-          token.handle = (user as { handle: string }).handle;
-          token.sv = (user as { sv?: number }).sv ?? 0;
-        } else if (user.email) {
-          // OAuth: resolve o nosso usuário pelo e-mail.
-          const u = await getOrCreateOAuthUser(user.email, user.name, user.image);
-          if (u) {
-            token.uid = String(u.id);
-            token.role = u.role as UserRole;
-            token.handle = u.handle;
-            token.sv = u.sessionVersion;
-          }
-        }
+      // Credentials e OAuth chegam aqui com os mesmos campos (OAuth preenchidos
+      // no signIn). Cópia pura, sem escrita no banco.
+      if (user && (user as { role?: UserRole }).role) {
+        token.uid = user.id;
+        token.role = (user as { role: UserRole }).role;
+        token.handle = (user as { handle: string }).handle;
+        token.sv = (user as { sv?: number }).sv ?? 0;
       }
       return token;
     },

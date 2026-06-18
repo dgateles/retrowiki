@@ -10,6 +10,7 @@ export const SETTINGS_SECTIONS = [
   { key: "nome", label: "Nome de exibição" },
   { key: "senha", label: "Senha" },
   { key: "email", label: "E-mail" },
+  { key: "contas", label: "Contas conectadas" },
   { key: "seguranca", label: "Segurança" },
 ] as const;
 

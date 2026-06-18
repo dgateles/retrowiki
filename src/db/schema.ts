@@ -78,6 +78,31 @@ export const verificationTokens = mysqlTable("verification_tokens", {
   index("vt_email_purpose_idx").on(t.email, t.purpose),
 ]);
 
+// Identidades sociais vinculadas (login Google). Um `sub` por conta (único),
+// permitindo vincular um Google de e-mail diferente do cadastrado.
+export const oauthAccounts = mysqlTable("oauth_accounts", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  provider: varchar("provider", { length: 32 }).notNull().default("google"),
+  providerAccountId: varchar("provider_account_id", { length: 255 }).notNull(), // o `sub`
+  email: varchar("email", { length: 255 }), // e-mail do Google (pode diferir do da conta)
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("oauth_provider_account_idx").on(t.provider, t.providerAccountId),
+  index("oauth_user_idx").on(t.userId),
+]);
+
+// Estado efêmero do fluxo de vínculo manual (OAuth próprio): guarda o
+// code_verifier (PKCE) e amarra o id (cookie) ao usuário reautenticado. Uso
+// único: a linha é apagada ao consumir no callback. Expira em ~10 min.
+export const oauthLinkStates = mysqlTable("oauth_link_states", {
+  id: varchar("id", { length: 64 }).primaryKey(), // token aleatório (também no cookie)
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  codeVerifier: varchar("code_verifier", { length: 128 }).notNull(),
+  expiresAt: datetime("expires_at").notNull(),
+  createdAt: createdAt(),
+});
+
 // ── Catálogo: devices, specs, emulação, categorias, imagens ──────────────
 export const devices = mysqlTable(
   "devices",

@@ -21,6 +21,8 @@ import { ChangeEmailForm } from "@/components/account/change-email-form";
 import { GalleryManager } from "@/components/account/gallery-manager";
 import { listPhotosManage, listAlbums } from "@/lib/gallery";
 import { getGallerySettings } from "@/lib/settings";
+import { ConnectedAccounts } from "@/components/account/connected-accounts";
+import { getLinkedGoogle } from "@/lib/oauth-link";
 import {
   SettingsNav,
   SETTINGS_SECTIONS,
@@ -37,7 +39,7 @@ function isSection(v: string | undefined): v is SettingsSection {
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ secao?: string }>;
+  searchParams: Promise<{ secao?: string; vinculo?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/entrar");
@@ -55,6 +57,7 @@ export default async function AccountPage({
   const warnPoints = active === "avisos" && warnSettings?.membersCanSee ? await activePoints(Number(user.id)) : 0;
   const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
   const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
+  const linkedGoogle = active === "contas" ? await getLinkedGoogle(Number(user.id)) : null;
   const gallerySettings = active === "galeria" ? await getGallerySettings() : null;
   const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotosManage(Number(user.id)) : [];
   const albums = active === "galeria" && gallerySettings?.enabled ? await listAlbums(Number(user.id)) : [];
@@ -221,6 +224,21 @@ export default async function AccountPage({
               <p className="settings-section__desc">Altere o e-mail da conta com confirmação no novo endereço.</p>
               <div className="mt-4">
                 <ChangeEmailForm current={user.email} />
+              </div>
+            </section>
+          )}
+
+          {active === "contas" && (
+            <section aria-labelledby="s-contas" className="settings-section">
+              <h2 id="s-contas" className="settings-section__title">Contas conectadas</h2>
+              <p className="settings-section__desc">Conecte um login social à sua conta. Pedimos sua senha para confirmar.</p>
+              <div className="mt-4">
+                <ConnectedAccounts
+                  connected={linkedGoogle !== null}
+                  linkedEmail={linkedGoogle?.email ?? null}
+                  hasPassword={user.passwordHash !== ""}
+                  status={sp.vinculo}
+                />
               </div>
             </section>
           )}
