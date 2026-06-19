@@ -67,7 +67,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
   const userId = Number(user.id);
 
   const [article] = await db
-    .select({ slug: articles.slug, authorId: articles.authorId, title: articles.title, status: articles.status })
+    .select({ slug: articles.slug, kind: articles.kind, authorId: articles.authorId, title: articles.title, status: articles.status })
     .from(articles)
     .where(eq(articles.id, articleId))
     .limit(1);
@@ -98,6 +98,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     .limit(1);
   const payload = {
     slug: article.slug,
+    kind: article.kind,
     title: article.title,
     commentId,
     actorName: me?.name ?? "Alguém",
@@ -123,7 +124,7 @@ export async function addCommentAction(input: unknown): Promise<Result> {
     await createNotification(rid, "comment.reply", payload);
   }
 
-  revalidatePath(`/guias/${article.slug}`);
+  revalidatePath(`/${article.kind === "blog" ? "blog" : "guias"}/${article.slug}`);
   return { ok: true };
 }
 
@@ -151,8 +152,8 @@ export async function editCommentAction(commentId: number, body: unknown): Promi
 
   await db.update(comments).set({ body: valid.json, editedAt: new Date() }).where(eq(comments.id, commentId));
 
-  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
-  if (a) revalidatePath(`/guias/${a.slug}`);
+  const [a] = await db.select({ slug: articles.slug, kind: articles.kind }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/${a.kind === "blog" ? "blog" : "guias"}/${a.slug}`);
   return { ok: true };
 }
 
@@ -191,8 +192,8 @@ export async function deleteCommentAction(commentId: number): Promise<Result> {
     await db.insert(auditLog).values({ actorId: userId, action: "delete_comment", target: `comment:${commentId}` });
   }
 
-  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
-  if (a) revalidatePath(`/guias/${a.slug}`);
+  const [a] = await db.select({ slug: articles.slug, kind: articles.kind }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/${a.kind === "blog" ? "blog" : "guias"}/${a.slug}`);
   return { ok: true };
 }
 
@@ -244,8 +245,8 @@ export async function hideCommentAction(commentId: number): Promise<Result> {
     target: `comment:${commentId}`,
   });
 
-  const [a] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
-  if (a) revalidatePath(`/guias/${a.slug}`);
+  const [a] = await db.select({ slug: articles.slug, kind: articles.kind }).from(articles).where(eq(articles.id, row.articleId)).limit(1);
+  if (a) revalidatePath(`/${a.kind === "blog" ? "blog" : "guias"}/${a.slug}`);
   return { ok: true };
 }
 
@@ -265,7 +266,7 @@ export async function reactAction(articleId: number, reactionId: number): Promis
   const reaction = await getReaction(reactionId);
   if (!reaction || !reaction.enabled) return { ok: false, error: "Reação inválida." };
 
-  const [a] = await db.select({ slug: articles.slug, authorId: articles.authorId }).from(articles).where(eq(articles.id, articleId)).limit(1);
+  const [a] = await db.select({ slug: articles.slug, kind: articles.kind, authorId: articles.authorId }).from(articles).where(eq(articles.id, articleId)).limit(1);
   if (!a) return { ok: false, error: "Conteúdo não encontrado." };
 
   if (a.authorId === userId && !settings.reactToOwn) {
@@ -313,7 +314,7 @@ export async function reactAction(articleId: number, reactionId: number): Promis
     isNew = true;
   }
 
-  revalidatePath(`/guias/${a.slug}`);
+  revalidatePath(`/${a.kind === "blog" ? "blog" : "guias"}/${a.slug}`);
 
   // Reputação só na primeira reação (não reverte ao desfazer/trocar), pelo peso:
   // positiva concede via regra (badges/quests/rank-up); negativa subtrai 1.

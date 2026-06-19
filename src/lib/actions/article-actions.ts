@@ -205,6 +205,7 @@ export async function proposeEditAction(articleId: number, input: unknown): Prom
     await createNotification(article.authorId, "article.edit_proposed", {
       articleId: article.id,
       slug: article.slug,
+      kind: article.kind,
       title: article.title,
     });
   }
@@ -253,8 +254,8 @@ export async function submitForReviewAction(articleId: number): Promise<Result> 
       .where(eq(articles.id, articleId));
     await evaluateBadges(article.authorId);
     await runTrigger("guide.published", { actorId: article.authorId });
-    revalidatePath("/guias");
-    revalidatePath(`/guias/${article.slug}`);
+    revalidatePath(article.kind === "blog" ? "/blog" : "/guias");
+    revalidatePath(`/${article.kind === "blog" ? "blog" : "guias"}/${article.slug}`);
     return { ok: true };
   }
 
@@ -330,6 +331,7 @@ export async function moderateAction(input: unknown): Promise<Result> {
   await createNotification(article.authorId, `article.${decision}`, {
     articleId: article.id,
     slug: article.slug,
+    kind: article.kind,
     title: article.title,
     reason,
   });
@@ -337,8 +339,8 @@ export async function moderateAction(input: unknown): Promise<Result> {
   if (decision === "approved") {
     await evaluateBadges(article.authorId);
     await runTrigger("guide.published", { actorId: article.authorId });
-    revalidatePath("/guias");
-    revalidatePath(`/guias/${article.slug}`);
+    revalidatePath(article.kind === "blog" ? "/blog" : "/guias");
+    revalidatePath(`/${article.kind === "blog" ? "blog" : "guias"}/${article.slug}`);
   }
   return { ok: true };
 }
@@ -367,8 +369,8 @@ export async function setArticleStatusAction(articleId: number, status: string):
   const { logModAction } = await import("@/lib/panel");
   await logModAction(Number(actor.id), `article_set_${status}`, `article:${articleId}`);
   revalidatePath("/admin/artigos");
-  revalidatePath("/guias");
-  revalidatePath(`/guias/${article.slug}`);
+  revalidatePath(article.kind === "blog" ? "/blog" : "/guias");
+  revalidatePath(`/${article.kind === "blog" ? "blog" : "guias"}/${article.slug}`);
   return { ok: true };
 }
 
@@ -379,13 +381,13 @@ export async function deleteArticleAction(articleId: number): Promise<Result> {
   } catch {
     return { ok: false, error: "Acesso restrito." };
   }
-  const [article] = await db.select({ slug: articles.slug }).from(articles).where(eq(articles.id, articleId)).limit(1);
+  const [article] = await db.select({ slug: articles.slug, kind: articles.kind }).from(articles).where(eq(articles.id, articleId)).limit(1);
   if (!article) return { ok: false, error: "Artigo não encontrado." };
   const { deleteArticleCompletely } = await import("@/lib/admin/articles");
   if (!(await deleteArticleCompletely(articleId))) return { ok: false, error: "Falha ao excluir." };
   const { logModAction } = await import("@/lib/panel");
   await logModAction(Number(actor.id), "article_delete", `article:${articleId}`);
   revalidatePath("/admin/artigos");
-  revalidatePath("/guias");
+  revalidatePath(article.kind === "blog" ? "/blog" : "/guias");
   return { ok: true };
 }

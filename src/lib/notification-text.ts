@@ -1,5 +1,6 @@
 type Payload = {
   slug?: string;
+  kind?: "guide" | "blog"; // rota do artigo: guia (/guias) ou post de blog (/blog)
   title?: string;
   reason?: string;
   commentId?: number;
@@ -21,9 +22,11 @@ export type NotificationView = { text: string; href?: string; image?: string | n
 export function describeNotification(type: string, payloadRaw: unknown): NotificationView {
   const p = asPayload(payloadRaw);
   const title = p.title ?? "seu conteúdo";
-  const articleHref = p.slug ? `/guias/${p.slug}` : undefined;
-  const commentHref = p.slug
-    ? `/guias/${p.slug}${p.commentId ? `#comentario-${p.commentId}` : ""}`
+  // Rota conforme o tipo do artigo; sem `kind` (notificações antigas) assume guia.
+  const base = p.slug ? `/${p.kind === "blog" ? "blog" : "guias"}/${p.slug}` : undefined;
+  const articleHref = base;
+  const commentHref = base
+    ? `${base}${p.commentId ? `#comentario-${p.commentId}` : ""}`
     : undefined;
   const actor = p.actorName ?? "Alguém";
 
