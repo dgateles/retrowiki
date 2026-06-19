@@ -13,7 +13,7 @@ export type Profile = {
   reputation: number;
   createdAt: Date;
   lastSeenAt: Date | null;
-  articles: { id: number; slug: string; title: string; type: string }[];
+  articles: { id: number; slug: string; title: string; type: string; kind: "guide" | "blog" }[];
 };
 
 export async function getProfile(handle: string): Promise<Profile | null> {
@@ -36,7 +36,7 @@ export async function getProfile(handle: string): Promise<Profile | null> {
     if (!user) return null;
 
     const arts = await db
-      .select({ id: articles.id, slug: articles.slug, title: articles.title, type: articles.type })
+      .select({ id: articles.id, slug: articles.slug, title: articles.title, type: articles.type, kind: articles.kind })
       .from(articles)
       .where(and(eq(articles.authorId, user.id), eq(articles.status, "published")))
       .orderBy(desc(articles.publishedAt))

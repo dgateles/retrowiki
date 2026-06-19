@@ -12,6 +12,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Blog",
   description: "Novidades, bastidores e artigos da equipe e da comunidade RetroWiki.",
   path: "/blog",
+  feed: "/blog/feed.xml",
 });
 export const dynamic = "force-dynamic";
 

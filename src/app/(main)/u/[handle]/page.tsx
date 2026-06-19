@@ -15,9 +15,13 @@ import { ProfileFieldsDisplay } from "@/components/profile/profile-fields-displa
 import { ProfileGallery } from "@/components/profile/profile-gallery";
 import { Paginated } from "@/components/ui/paginated";
 import { typeLabel } from "@/lib/articles";
+import { articleHref, commentHref } from "@/lib/article-url";
+import { JsonLd } from "@/components/seo/json-ld";
 import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { evaluateBadges, getUserBadges } from "@/lib/badges";
+
+const SEO_BASE = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 import { getAchievementSettings, getWarningSettings } from "@/lib/settings";
 import { activePoints, isPostingRestricted } from "@/lib/warnings";
 import { BadgeList } from "@/components/badges/badge-list";
@@ -118,6 +122,17 @@ export default async function ProfilePage({
 
   return (
     <main id="main" className="page">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "@id": `${SEO_BASE}/u/${profile.handle}`,
+          name: profile.displayName,
+          url: `${SEO_BASE}/u/${profile.handle}`,
+          ...(profile.avatarUrl ? { image: profile.avatarUrl } : {}),
+          memberOf: { "@type": "Organization", "@id": `${SEO_BASE}/#organization` },
+        }}
+      />
       <div className="profile-cover scanlines">
         {profile.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -253,7 +268,7 @@ export default async function ProfilePage({
             <Paginated className="link-list" pageSize={10} label="publicações">
               {profile.articles.map((a) => (
                 <li key={a.id}>
-                  <Link href={`/guias/${a.slug}`} className="link-card">
+                  <Link href={articleHref(a.kind, a.slug)} className="link-card">
                     <span className="link-card__title">{a.title}</span>
                     <span className="link-card__meta">{typeLabel(a.type)}</span>
                   </Link>
@@ -275,8 +290,8 @@ export default async function ProfilePage({
                       {a.kind === "guide" ? <BookOpen className="size-4" /> : a.kind === "comment" ? <MessageCircle className="size-4" /> : <Award className="size-4" />}
                     </span>
                     <span className="activity__text">
-                      {a.kind === "guide" && <>Publicou o guia <Link href={`/guias/${a.slug}`} className="link-inline">{a.title}</Link></>}
-                      {a.kind === "comment" && <>Comentou em <Link href={`/guias/${a.articleSlug}#comentario-${a.commentId}`} className="link-inline">{a.articleTitle}</Link></>}
+                      {a.kind === "guide" && <>Publicou {a.articleKind === "blog" ? "o post" : "o guia"} <Link href={articleHref(a.articleKind, a.slug)} className="link-inline">{a.title}</Link></>}
+                      {a.kind === "comment" && <>Comentou em <Link href={commentHref(a.articleKind, a.articleSlug, a.commentId)} className="link-inline">{a.articleTitle}</Link></>}
                       {a.kind === "badge" && <>Conquistou a badge <strong>{a.name}</strong></>}
                     </span>
                     <span className="activity__date muted">{relDate(a.date)}</span>

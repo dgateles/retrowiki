@@ -39,13 +39,16 @@ export function articleMetadata(a: ArticleSeo): Metadata {
   };
 }
 
-/** Metadata de uma página de listagem/estática (canonical + OG website). */
-export function pageMetadata(opts: { title: string; description?: string; path: string }): Metadata {
-  const { title, description, path } = opts;
+/** Metadata de uma página de listagem/estática (canonical + OG website + feed). */
+export function pageMetadata(opts: { title: string; description?: string; path: string; feed?: string }): Metadata {
+  const { title, description, path, feed } = opts;
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      ...(feed ? { types: { "application/rss+xml": feed } } : {}),
+    },
     openGraph: { type: "website", title, description, url: path },
     twitter: { card: "summary_large_image", title, description },
   };

@@ -4,8 +4,8 @@ import { db } from "@/db";
 import { articles, comments, userBadges, badges } from "@/db/schema";
 
 export type ActivityItem =
-  | { kind: "guide"; date: Date; title: string; slug: string }
-  | { kind: "comment"; date: Date; articleTitle: string; articleSlug: string; commentId: number }
+  | { kind: "guide"; date: Date; title: string; slug: string; articleKind: "guide" | "blog" }
+  | { kind: "comment"; date: Date; articleTitle: string; articleSlug: string; articleKind: "guide" | "blog"; commentId: number }
   | { kind: "badge"; date: Date; name: string; icon: string };
 
 /** Feed de atividade pública do membro: guias publicados, comentários e badges,
@@ -14,7 +14,7 @@ export async function getUserActivity(userId: number, limit = 20): Promise<Activ
   try {
     const [guides, cms, earned] = await Promise.all([
       db
-        .select({ title: articles.title, slug: articles.slug, date: articles.publishedAt })
+        .select({ title: articles.title, slug: articles.slug, kind: articles.kind, date: articles.publishedAt })
         .from(articles)
         .where(and(eq(articles.authorId, userId), eq(articles.status, "published")))
         .orderBy(desc(articles.publishedAt))
@@ -36,17 +36,17 @@ export async function getUserActivity(userId: number, limit = 20): Promise<Activ
 
     // Títulos/slugs dos artigos comentados.
     const artIds = [...new Set(cms.map((c) => c.articleId))];
-    const artMap = new Map<number, { title: string; slug: string }>();
+    const artMap = new Map<number, { title: string; slug: string; kind: "guide" | "blog" }>();
     if (artIds.length) {
-      const arts = await db.select({ id: articles.id, title: articles.title, slug: articles.slug }).from(articles).where(inArray(articles.id, artIds));
-      for (const a of arts) artMap.set(a.id, { title: a.title, slug: a.slug });
+      const arts = await db.select({ id: articles.id, title: articles.title, slug: articles.slug, kind: articles.kind }).from(articles).where(inArray(articles.id, artIds));
+      for (const a of arts) artMap.set(a.id, { title: a.title, slug: a.slug, kind: a.kind });
     }
 
     const items: ActivityItem[] = [];
-    for (const g of guides) if (g.date) items.push({ kind: "guide", date: g.date, title: g.title, slug: g.slug });
+    for (const g of guides) if (g.date) items.push({ kind: "guide", date: g.date, title: g.title, slug: g.slug, articleKind: g.kind });
     for (const c of cms) {
       const a = artMap.get(c.articleId);
-      if (a) items.push({ kind: "comment", date: c.date, articleTitle: a.title, articleSlug: a.slug, commentId: c.id });
+      if (a) items.push({ kind: "comment", date: c.date, articleTitle: a.title, articleSlug: a.slug, articleKind: a.kind, commentId: c.id });
     }
     for (const b of earned) items.push({ kind: "badge", date: b.date, name: b.name, icon: b.icon });
 

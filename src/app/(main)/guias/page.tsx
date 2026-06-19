@@ -15,6 +15,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Guias e tutoriais",
   description: "Tutoriais, guias de compra e soluções de problemas escritos pela comunidade.",
   path: "/guias",
+  feed: "/guias/feed.xml",
 });
 export const dynamic = "force-dynamic";
 

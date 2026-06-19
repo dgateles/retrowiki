@@ -2,6 +2,7 @@ import "server-only";
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { reportTypes, contentReports, articles, comments, users, memberPhotos } from "@/db/schema";
+import { articleHref, commentHref } from "@/lib/article-url";
 import { getReportingSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
 
@@ -219,26 +220,26 @@ export async function getReportQueue(): Promise<ReportGroup[]> {
       }
     }
     if (articleIds.length) {
-      const arts = await db.select({ id: articles.id, slug: articles.slug, title: articles.title, authorId: articles.authorId }).from(articles).where(inArray(articles.id, articleIds));
+      const arts = await db.select({ id: articles.id, slug: articles.slug, title: articles.title, kind: articles.kind, authorId: articles.authorId }).from(articles).where(inArray(articles.id, articleIds));
       for (const a of arts) {
         const g = groups.get(`article:${a.id}`);
-        if (g) { g.title = a.title; g.link = `/guias/${a.slug}`; g.authorId = a.authorId; }
+        if (g) { g.title = a.title; g.link = articleHref(a.kind, a.slug); g.authorId = a.authorId; }
       }
     }
     if (commentIds.length) {
       const cms = await db.select({ id: comments.id, body: comments.body, userId: comments.authorId, articleId: comments.articleId }).from(comments).where(inArray(comments.id, commentIds));
-      const artMap = new Map<number, string>();
+      const artMap = new Map<number, { slug: string; kind: "guide" | "blog" }>();
       const aIds = [...new Set(cms.map((c) => c.articleId))];
       if (aIds.length) {
-        const arts = await db.select({ id: articles.id, slug: articles.slug }).from(articles).where(inArray(articles.id, aIds));
-        for (const a of arts) artMap.set(a.id, a.slug);
+        const arts = await db.select({ id: articles.id, slug: articles.slug, kind: articles.kind }).from(articles).where(inArray(articles.id, aIds));
+        for (const a of arts) artMap.set(a.id, { slug: a.slug, kind: a.kind });
       }
       for (const c of cms) {
         const g = groups.get(`comment:${c.id}`);
         if (g) {
           g.title = `Comentário: ${String(c.body ?? "").slice(0, 80)}`;
-          const slug = artMap.get(c.articleId);
-          g.link = slug ? `/guias/${slug}#comentario-${c.id}` : null;
+          const art = artMap.get(c.articleId);
+          g.link = art ? commentHref(art.kind, art.slug, c.id) : null;
           g.authorId = c.userId;
         }
       }

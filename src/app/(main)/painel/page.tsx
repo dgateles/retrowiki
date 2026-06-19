@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { articleHref } from "@/lib/article-url";
 import { ReferralCard } from "@/components/account/referral-card";
 import { VerifyEmailBanner } from "@/components/account/verify-email-banner";
 import type { Metadata } from "next";
@@ -141,7 +142,7 @@ export default async function PanelPage() {
             <ul className="link-list">
               {recent.map((a) => {
                 const st = DRAFT_STATUS[a.status] ?? { label: a.status, mod: "status--muted" };
-                const href = a.status === "published" ? `/guias/${a.slug}` : `/estudio/${a.id}`;
+                const href = a.status === "published" ? articleHref(a.kind, a.slug) : `/estudio/${a.id}`;
                 return (
                   <li key={a.id}>
                     <Link href={href} className="link-card">

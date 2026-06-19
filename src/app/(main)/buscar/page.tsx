@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Search, Gamepad2, BookOpen } from "lucide-react";
 import { searchAll, type SearchScope } from "@/lib/search";
+import { articleHref } from "@/lib/article-url";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Buscar" };
@@ -86,7 +87,7 @@ export default async function SearchPage({
           <ul className="results__list">
             {results.articles.map((a) => (
               <li key={a.slug}>
-                <Link href={`/guias/${a.slug}`} className="results__item">
+                <Link href={articleHref(a.kind, a.slug)} className="results__item">
                   <span className="results__item-title">{a.title}</span>
                   {a.summary && <p className="results__item-sub">{a.summary}</p>}
                 </Link>

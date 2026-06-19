@@ -7,7 +7,7 @@ export type SearchScope = "tudo" | "consoles" | "guias";
 
 export type SearchResults = {
   devices: { slug: string; name: string; manufacturer: string }[];
-  articles: { slug: string; title: string; summary: string | null; authorHandle: string }[];
+  articles: { slug: string; title: string; summary: string | null; kind: "guide" | "blog"; authorHandle: string }[];
 };
 
 const MAX_QUERY_LENGTH = 100;
@@ -33,7 +33,7 @@ async function searchDevicesLike(term: string) {
 
 async function searchArticlesLike(term: string) {
   return db
-    .select({ slug: articles.slug, title: articles.title, summary: articles.summary, authorHandle: users.handle })
+    .select({ slug: articles.slug, title: articles.title, summary: articles.summary, kind: articles.kind, authorHandle: users.handle })
     .from(articles)
     .innerJoin(users, eq(users.id, articles.authorId))
     .where(and(eq(articles.status, "published"), or(like(articles.title, term), like(articles.summary, term), like(articles.searchText, term))))
@@ -63,7 +63,7 @@ export async function searchAll(query: string, scope: SearchScope = "tudo"): Pro
         : Promise.resolve([] as SearchResults["devices"]),
       wantArticles && boolean
         ? db
-            .select({ slug: articles.slug, title: articles.title, summary: articles.summary, authorHandle: users.handle })
+            .select({ slug: articles.slug, title: articles.title, summary: articles.summary, kind: articles.kind, authorHandle: users.handle })
             .from(articles)
             .innerJoin(users, eq(users.id, articles.authorId))
             .where(and(eq(articles.status, "published"), artMatch))

@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { getLeaderboardData, type LeaderMember } from "@/lib/leaderboard";
+import { articleHref } from "@/lib/article-url";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = { title: "Leaderboard", description: "Os membros e guias em destaque na comunidade RetroWiki." };
+export const metadata: Metadata = pageMetadata({ title: "Leaderboard", description: "Os membros e guias em destaque na comunidade RetroWiki.", path: "/leaderboard" });
 export const dynamic = "force-dynamic";
 
 function initials(name: string) {
@@ -69,7 +71,7 @@ export default async function LeaderboardPage() {
               {data.todayContent.map((c, i) => (
                 <li key={c.id} className="lb-row">
                   <span className={cn("lb-row__rank tabular-nums", i === 0 && "glow-text")}>{i + 1}</span>
-                  <Link href={`/guias/${c.slug}`} className="lb-row__name link-inline">{c.title}</Link>
+                  <Link href={articleHref(c.kind, c.slug)} className="lb-row__name link-inline">{c.title}</Link>
                   <span className="lb-row__metric tabular-nums">{c.reactions} {c.reactions === 1 ? "reação" : "reações"}</span>
                 </li>
               ))}

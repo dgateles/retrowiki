@@ -4,12 +4,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { articleHref } from "@/lib/article-url";
 
 type Scope = "tudo" | "consoles" | "guias";
 type Option = { label: string; sublabel: string; href: string };
 type Results = {
   devices: { slug: string; name: string; manufacturer: string }[];
-  articles: { slug: string; title: string; summary: string | null }[];
+  articles: { slug: string; title: string; summary: string | null; kind: "guide" | "blog" }[];
 };
 
 const SCOPES: { key: Scope; label: string }[] = [
@@ -43,7 +44,7 @@ export function SearchBox({ className }: { className?: string }) {
         const data: Results = await res.json();
         const opts: Option[] = [
           ...data.devices.map((d) => ({ label: d.name, sublabel: d.manufacturer, href: `/consoles/${d.slug}` })),
-          ...data.articles.map((a) => ({ label: a.title, sublabel: a.summary ?? "Guia", href: `/guias/${a.slug}` })),
+          ...data.articles.map((a) => ({ label: a.title, sublabel: a.summary ?? (a.kind === "blog" ? "Blog" : "Guia"), href: articleHref(a.kind, a.slug) })),
         ];
         setOptions(opts);
         setActive(-1);

@@ -5,7 +5,7 @@ import { votes, articles, users } from "@/db/schema";
 import { getReputationSettings } from "@/lib/settings";
 
 export type LeaderMember = { id: number; handle: string; displayName: string; avatarUrl: string | null; reputation: number; gained?: number };
-export type LeaderContent = { id: number; slug: string; title: string; reactions: number };
+export type LeaderContent = { id: number; slug: string; title: string; kind: "guide" | "blog"; reactions: number };
 
 /** Instante UTC da meia-noite de hoje no fuso informado. */
 function startOfTodayInTz(tz: string): Date {
@@ -59,11 +59,11 @@ export async function getLeaderboardData(limit = 10): Promise<LeaderboardData> {
 
     // Top conteúdo por número de reações hoje.
     const todayContent = await db
-      .select({ id: articles.id, slug: articles.slug, title: articles.title, reactions: sql<number>`COUNT(*)` })
+      .select({ id: articles.id, slug: articles.slug, title: articles.title, kind: articles.kind, reactions: sql<number>`COUNT(*)` })
       .from(votes)
       .innerJoin(articles, eq(articles.id, votes.articleId))
       .where(gte(votes.createdAt, since))
-      .groupBy(articles.id, articles.slug, articles.title)
+      .groupBy(articles.id, articles.slug, articles.title, articles.kind)
       .orderBy(desc(sql`COUNT(*)`))
       .limit(limit);
 
