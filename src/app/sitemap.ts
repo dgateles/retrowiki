@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { devices, articles, users } from "@/db/schema";
+import { devices, articles, users, pages } from "@/db/schema";
+import { articleHref } from "@/lib/article-url";
 
 export const dynamic = "force-dynamic";
 
@@ -12,18 +13,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/`, changeFrequency: "daily", priority: 1 },
     { url: `${BASE}/consoles`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/guias`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE}/consoles/comparar`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE}/blog`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE}/consoles/comparar`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/leaderboard`, changeFrequency: "weekly", priority: 0.4 },
+    { url: `${BASE}/equipe`, changeFrequency: "monthly", priority: 0.4 },
   ];
 
   try {
-    const [devs, arts, authors] = await Promise.all([
+    const [devs, arts, authors, customPages] = await Promise.all([
       db.select({ slug: devices.slug, updatedAt: devices.updatedAt }).from(devices).where(eq(devices.status, "published")),
-      db.select({ slug: articles.slug, updatedAt: articles.updatedAt }).from(articles).where(eq(articles.status, "published")),
+      db.select({ slug: articles.slug, kind: articles.kind, updatedAt: articles.updatedAt }).from(articles).where(eq(articles.status, "published")),
       db.selectDistinct({ handle: users.handle }).from(users),
+      // Páginas do construtor publicadas e indexáveis.
+      db.select({ slug: pages.slug, updatedAt: pages.updatedAt, isHome: pages.isHome, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
     ]);
 
     for (const d of devs) routes.push({ url: `${BASE}/consoles/${d.slug}`, lastModified: d.updatedAt, changeFrequency: "weekly", priority: 0.8 });
-    for (const a of arts) routes.push({ url: `${BASE}/guias/${a.slug}`, lastModified: a.updatedAt, changeFrequency: "weekly", priority: 0.7 });
+    // Artigos roteados por tipo (blog → /blog, guia → /guias).
+    for (const a of arts) routes.push({ url: `${BASE}${articleHref(a.kind, a.slug)}`, lastModified: a.updatedAt, changeFrequency: a.kind === "blog" ? "monthly" : "weekly", priority: 0.7 });
+    for (const p of customPages) { if (!p.isHome && !p.noindex) routes.push({ url: `${BASE}/p/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "monthly", priority: 0.5 }); }
     for (const u of authors) routes.push({ url: `${BASE}/u/${u.handle}`, changeFrequency: "monthly", priority: 0.4 });
   } catch {
     // banco indisponível (ex.: build estático) — retorna só as rotas fixas

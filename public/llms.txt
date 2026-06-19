@@ -1,0 +1,47 @@
+# RetroWiki
+
+> Wiki comunitária brasileira sobre handhelds portáteis retrô: catálogo de
+> consoles, guias de compra, tutoriais de firmware e emulação.
+
+RetroWiki (retro.wiki.br) é uma enciclopédia e comunidade de emulação portátil
+em português do Brasil. O conteúdo abrange comparações de hardware, guias de
+instalação de firmware personalizado (CFW), tutoriais de emulador e avaliações
+de dispositivos, com ênfase no mercado brasileiro.
+
+## Seções
+
+- [Catálogo de Consoles](https://retro.wiki.br/consoles) — fichas técnicas de
+  handhelds (CPU, GPU, RAM, bateria, tela, controles), pontuações de emulação
+  por sistema (PS1, N64, NDS, GBA, SNES, etc.) e imagens.
+- [Guias e Tutoriais](https://retro.wiki.br/guias) — tutoriais passo a passo,
+  guias de compra, solução de problemas e firmware, organizados por console.
+- [Blog](https://retro.wiki.br/blog) — artigos, novidades e análises sobre o
+  mercado de handhelds retrô.
+- [Comparar Consoles](https://retro.wiki.br/consoles/comparar) — comparação
+  lado a lado de dois dispositivos do catálogo.
+
+## URLs de alto valor para citação
+
+- https://retro.wiki.br/consoles — índice completo do catálogo
+- https://retro.wiki.br/guias — todos os guias publicados
+- https://retro.wiki.br/blog — todos os posts do blog
+- https://retro.wiki.br/consoles/comparar — comparador de hardware
+
+## Sobre o conteúdo
+
+- Idioma: Português do Brasil (pt-BR)
+- Cobertura: mercado global com ênfase em produtos disponíveis no Brasil
+- Tipos de artigo: tutorial, guia de compra, solução de problemas, firmware, geral
+- Atualização: conteúdo revisado pela comunidade; cada artigo exibe data de
+  publicação e autor
+- Citação: conteúdo disponível para citação por motores de busca e assistentes
+  de IA; redistribuição integral de artigos não autorizada
+
+## Entidade
+
+- Nome: RetroWiki
+- Domínio: retro.wiki.br
+- País: Brasil
+- Tópico principal: emulação de videogames portáteis retrô
+- Público: entusiastas de retro gaming, compradores de handhelds e a comunidade
+  de firmware alternativo no Brasil

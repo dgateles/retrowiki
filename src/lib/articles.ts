@@ -81,6 +81,7 @@ export type PublishedArticle = {
   kind: "guide" | "blog";
   coverImage: string | null;
   publishedAt: Date | null;
+  updatedAt: Date | null;
   authorId: number;
   authorHandle: string;
   authorName: string;
@@ -103,6 +104,7 @@ export async function getPublishedArticle(slug: string): Promise<PublishedArticl
         kind: articles.kind,
         coverImage: articles.coverImage,
         publishedAt: articles.publishedAt,
+        updatedAt: articles.updatedAt,
         currentRevisionId: articles.currentRevisionId,
         authorId: articles.authorId,
         authorHandle: users.handle,
@@ -236,6 +238,7 @@ export async function getUserDrafts(userId: number) {
         slug: articles.slug,
         title: articles.title,
         type: articles.type,
+        kind: articles.kind,
         status: articles.status,
         updatedAt: articles.updatedAt,
       })

@@ -7,6 +7,8 @@ import { roleLabel } from "@/lib/ranks";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { ArticleBody } from "@/lib/blocks/render";
 import { JsonLd } from "@/components/seo/json-ld";
+import { articleSchema, breadcrumbSchema } from "@/lib/seo/builders";
+import { articleHref } from "@/lib/article-url";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ReactionBar } from "@/components/engagement/reaction-bar";
@@ -28,6 +30,8 @@ import { HideCommentButton } from "@/components/engagement/hide-comment-button";
 import { CommentReactions } from "@/components/engagement/comment-reactions";
 import { auth } from "@/auth";
 import { can } from "@/lib/auth-helpers";
+
+const SEO_BASE = process.env.APP_URL ?? "http://localhost:3000";
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -90,16 +94,26 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
   return (
     <main id="main" className="page">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": isBlog ? "BlogPosting" : "TechArticle",
-          headline: a.title,
-          inLanguage: "pt-BR",
-          author: { "@type": "Person", name: a.authorName },
-          ...(a.summary ? { description: a.summary } : {}),
-          ...(a.coverImage ? { image: a.coverImage } : {}),
-          ...(a.publishedAt ? { datePublished: new Date(a.publishedAt).toISOString() } : {}),
-        }}
+        data={articleSchema({
+          base: SEO_BASE,
+          canonicalPath: articleHref(a.kind, a.slug),
+          title: a.title,
+          summary: a.summary,
+          kind: a.kind,
+          type: a.type,
+          coverImage: a.coverImage,
+          publishedAt: a.publishedAt ? new Date(a.publishedAt) : null,
+          updatedAt: a.updatedAt ? new Date(a.updatedAt) : null,
+          authorName: a.authorName,
+          authorHandle: a.authorHandle,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema(SEO_BASE, [
+          { name: "Início", path: "/" },
+          { name: section.label, path: section.href },
+          { name: a.title, path: articleHref(a.kind, a.slug) },
+        ])}
       />
 
       <nav aria-label="Trilha" className="crumbs">
@@ -114,7 +128,7 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
         <header className="blog-head">
           {a.coverImage && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={a.coverImage} alt="" className="blog-head__cover" />
+            <img src={a.coverImage} alt={a.title} className="blog-head__cover" />
           )}
           <div className="blog-head__bar">
             <h1 className="blog-head__title">{a.title}</h1>
@@ -176,6 +190,7 @@ export async function ArticleView({ a }: { a: PublishedArticle }) {
         )}
 
         <div className="post__body">
+          {a.summary && <p className="post__summary">{a.summary}</p>}
           <ArticleBody body={a.body} />
         </div>
 

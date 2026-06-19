@@ -6,6 +6,7 @@ import { getDeviceBySlug } from "@/lib/devices";
 import { listArticlesByDevice, typeLabel } from "@/lib/articles";
 import { DeviceSpecCard } from "@/components/catalog/device-spec-card";
 import { JsonLd } from "@/components/seo/json-ld";
+import { productSchema, breadcrumbSchema } from "@/lib/seo/builders";
 import { Button } from "@/components/ui/button";
 
 const BASE = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -19,9 +20,14 @@ export async function generateMetadata({
   const detail = await getDeviceBySlug(slug);
   if (!detail) return {};
   const extra = (detail.device.extra ?? {}) as { description?: string };
+  const description = extra.description?.slice(0, 160);
+  const path = `/consoles/${slug}`;
   return {
     title: detail.device.name,
-    description: extra.description?.slice(0, 160),
+    description,
+    alternates: { canonical: path },
+    openGraph: { type: "website", title: detail.device.name, description, url: path },
+    twitter: { card: "summary_large_image", title: detail.device.name, description },
   };
 }
 
@@ -40,15 +46,23 @@ export default async function DevicePage({
   return (
     <main id="main" className="page">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Product",
+        data={productSchema({
+          base: BASE,
+          slug: detail.device.slug,
           name: detail.device.name,
-          brand: { "@type": "Brand", name: detail.device.manufacturer },
-          category: "Handheld game console",
-          ...(extra.description ? { description: extra.description } : {}),
-          ...(detail.images[0] ? { image: `${BASE}${detail.images[0].url}` } : {}),
-        }}
+          manufacturer: detail.device.manufacturer,
+          releaseYear: detail.device.releaseYear,
+          priceUsd: detail.device.priceUsd,
+          description: extra.description ?? null,
+          images: detail.images,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema(BASE, [
+          { name: "Início", path: "/" },
+          { name: "Consoles", path: "/consoles" },
+          { name: detail.device.name, path: `/consoles/${detail.device.slug}` },
+        ])}
       />
       <div className="page__head mb-4">
         <Button asChild variant="ghost" size="sm">

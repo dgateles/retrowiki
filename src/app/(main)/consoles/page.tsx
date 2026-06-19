@@ -7,11 +7,13 @@ import { Pager } from "@/components/ui/pager";
 import { FilterBar } from "@/components/catalog/filter-bar";
 import { DeviceCard } from "@/components/catalog/device-card";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Consoles",
   description: "Catálogo de handhelds retrô com fichas técnicas e scores de emulação por sistema.",
-};
+  path: "/consoles",
+});
 
 const FORM_FACTORS = [
   { value: "vertical", label: "Vertical" },

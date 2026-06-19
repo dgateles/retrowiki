@@ -5,11 +5,13 @@ import { GitCompare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { listDevices, getDeviceBySlug, type DeviceDetail } from "@/lib/devices";
 import { FilterBar } from "@/components/catalog/filter-bar";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Comparar consoles",
   description: "Compare specs e capacidade de emulação de handhelds retrô lado a lado.",
-};
+  path: "/consoles/comparar",
+});
 
 function emuLevel(score: number): { label: string; mod: string } {
   if (score >= 95) return { label: "Excelente", mod: "emu-pill--excellent" };

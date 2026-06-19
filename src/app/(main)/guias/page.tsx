@@ -9,11 +9,13 @@ import { FilterBar } from "@/components/catalog/filter-bar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Guias e tutoriais",
   description: "Tutoriais, guias de compra e soluções de problemas escritos pela comunidade.",
-};
+  path: "/guias",
+});
 export const dynamic = "force-dynamic";
 
 const TYPES = [

@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { auth } from "@/auth";
 import { can } from "@/lib/auth-helpers";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Blog",
   description: "Novidades, bastidores e artigos da equipe e da comunidade RetroWiki.",
-};
+  path: "/blog",
+});
 export const dynamic = "force-dynamic";
 
 function fmtDate(d: Date) {

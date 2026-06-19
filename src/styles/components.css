@@ -3182,6 +3182,11 @@
   .post__body {
     @apply p-5 text-[15px];
   }
+  /* Resumo "answer-first": as primeiras palavras após o H1 — alta citabilidade
+     por motores de IA, além de melhorar a leitura. */
+  .post__summary {
+    @apply mb-5 border-l-2 border-primary pl-4 text-base font-medium leading-relaxed text-muted-foreground;
+  }
   .post__footer {
     @apply flex flex-wrap items-center gap-3 border-t border-border p-4;
   }
