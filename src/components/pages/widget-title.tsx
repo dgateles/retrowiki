@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
+// Efeitos puramente CSS (leves, sem motion/react) — import estático ok.
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import { TextAnimate } from "@/components/ui/text-animate";
-import { TypingAnimation } from "@/components/ui/typing-animation";
-import { LineShadowText } from "@/components/ui/line-shadow-text";
-import { HyperText } from "@/components/ui/hyper-text";
+// Efeitos com motion/react (pesados) ficam fora do bundle crítico (carga lazy).
+import { FxTextMotion } from "@/components/pages/fx-text-motion";
 
 export type TitleLevel = "p" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type TitleColor = "default" | "muted" | "primary" | "success" | "warn";
@@ -23,10 +22,8 @@ export function fxText(fx: string, text: string): React.ReactNode {
   return fx === "gradient" ? <AnimatedGradientText colorFrom="#10b981" colorTo="#6366f1" speed={1.2}>{text}</AnimatedGradientText> :
     fx === "aurora" ? <AuroraText colors={["#10b981", "#6366f1", "#22d3ee"]}>{text}</AuroraText> :
     fx === "shiny" ? <AnimatedShinyText className="inline">{text}</AnimatedShinyText> :
-    fx === "textanimate" ? <TextAnimate as="span" animation="blurInUp" by="word" className="inline-block">{text}</TextAnimate> :
-    fx === "typing" ? <TypingAnimation as="span" className="inline">{text}</TypingAnimation> :
-    fx === "lineshadow" ? <LineShadowText shadowColor="#10b981">{text}</LineShadowText> :
-    fx === "hyper" ? <HyperText as="span" className="inline-block">{text}</HyperText> :
+    (fx === "textanimate" || fx === "typing" || fx === "lineshadow" || fx === "hyper")
+      ? <FxTextMotion fx={fx} text={text} /> :
     text;
 }
 

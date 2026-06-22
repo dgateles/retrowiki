@@ -33,7 +33,9 @@ export function NotificationsBell({ unread: initialUnread, items: initial }: { u
   }
 
   return (
-    <DropdownMenu>
+    // modal=false: sem scroll-lock do Radix → a barra de rolagem não some ao abrir
+    // e a página não "pula" para a direita (mesmo motivo do menu de conta).
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

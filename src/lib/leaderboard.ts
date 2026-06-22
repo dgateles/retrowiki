@@ -39,41 +39,44 @@ export async function getLeaderboardData(limit = 10): Promise<LeaderboardData> {
   const since = startOfTodayInTz(settings.leaderboardTimezone);
 
   try {
-    // Top membros por reputação recebida hoje (soma dos pesos das reações no conteúdo deles).
-    const todayMembers = await db
-      .select({
-        id: users.id,
-        handle: users.handle,
-        displayName: users.displayName,
-        avatarUrl: users.avatarUrl,
-        reputation: users.reputation,
-        gained: sql<number>`SUM(${votes.value})`,
-      })
-      .from(votes)
-      .innerJoin(articles, eq(articles.id, votes.articleId))
-      .innerJoin(users, eq(users.id, articles.authorId))
-      .where(and(gte(votes.createdAt, since), excluded.length ? notInArray(users.role, excluded) : undefined))
-      .groupBy(users.id, users.handle, users.displayName, users.avatarUrl, users.reputation)
-      .orderBy(desc(sql`SUM(${votes.value})`))
-      .limit(limit);
+    // As três consultas são independentes — rodam em paralelo (≈1/3 da latência).
+    const [todayMembers, todayContent, topMembers] = await Promise.all([
+      // Top membros por reputação recebida hoje (soma dos pesos das reações no conteúdo deles).
+      db
+        .select({
+          id: users.id,
+          handle: users.handle,
+          displayName: users.displayName,
+          avatarUrl: users.avatarUrl,
+          reputation: users.reputation,
+          gained: sql<number>`SUM(${votes.value})`,
+        })
+        .from(votes)
+        .innerJoin(articles, eq(articles.id, votes.articleId))
+        .innerJoin(users, eq(users.id, articles.authorId))
+        .where(and(gte(votes.createdAt, since), excluded.length ? notInArray(users.role, excluded) : undefined))
+        .groupBy(users.id, users.handle, users.displayName, users.avatarUrl, users.reputation)
+        .orderBy(desc(sql`SUM(${votes.value})`))
+        .limit(limit),
 
-    // Top conteúdo por número de reações hoje.
-    const todayContent = await db
-      .select({ id: articles.id, slug: articles.slug, title: articles.title, kind: articles.kind, reactions: sql<number>`COUNT(*)` })
-      .from(votes)
-      .innerJoin(articles, eq(articles.id, votes.articleId))
-      .where(gte(votes.createdAt, since))
-      .groupBy(articles.id, articles.slug, articles.title, articles.kind)
-      .orderBy(desc(sql`COUNT(*)`))
-      .limit(limit);
+      // Top conteúdo por número de reações hoje.
+      db
+        .select({ id: articles.id, slug: articles.slug, title: articles.title, kind: articles.kind, reactions: sql<number>`COUNT(*)` })
+        .from(votes)
+        .innerJoin(articles, eq(articles.id, votes.articleId))
+        .where(gte(votes.createdAt, since))
+        .groupBy(articles.id, articles.slug, articles.title, articles.kind)
+        .orderBy(desc(sql`COUNT(*)`))
+        .limit(limit),
 
-    // Top membros por reputação total.
-    const topMembers = await db
-      .select({ id: users.id, handle: users.handle, displayName: users.displayName, avatarUrl: users.avatarUrl, reputation: users.reputation })
-      .from(users)
-      .where(excluded.length ? notInArray(users.role, excluded) : undefined)
-      .orderBy(desc(users.reputation))
-      .limit(limit);
+      // Top membros por reputação total.
+      db
+        .select({ id: users.id, handle: users.handle, displayName: users.displayName, avatarUrl: users.avatarUrl, reputation: users.reputation })
+        .from(users)
+        .where(excluded.length ? notInArray(users.role, excluded) : undefined)
+        .orderBy(desc(users.reputation))
+        .limit(limit),
+    ]);
 
     return {
       enabled: true,

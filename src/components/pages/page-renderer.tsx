@@ -10,15 +10,22 @@ import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { Reveal } from "@/components/pages/reveal";
 import { SectionFx } from "@/components/pages/fx-backgrounds";
 import { WidgetTitle, fxText } from "@/components/pages/widget-title";
-import { NumberTicker } from "@/components/ui/number-ticker";
+import dynamic from "next/dynamic";
 import { Marquee } from "@/components/ui/marquee";
 import { LogoMarquee } from "@/components/pages/logo-marquee";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
-import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-list";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { MagicCard } from "@/components/ui/magic-card";
-import { BorderBeam } from "@/components/ui/border-beam";
 import { ShineBorder } from "@/components/ui/shine-border";
+
+// Widgets que dependem de `motion/react` (Framer Motion) e raramente estão acima
+// da dobra: carregados via next/dynamic para sair do bundle crítico. ssr fica
+// ligado (default) → o conteúdo continua no HTML do servidor; só o JS de animação
+// vira chunk separado, reduzindo o tempo de avaliação inicial (TBT/LCP).
+const NumberTicker = dynamic(() => import("@/components/ui/number-ticker").then((m) => m.NumberTicker));
+const MagicCard = dynamic(() => import("@/components/ui/magic-card").then((m) => m.MagicCard));
+const BorderBeam = dynamic(() => import("@/components/ui/border-beam").then((m) => m.BorderBeam));
+const AnimatedList = dynamic(() => import("@/components/ui/animated-list").then((m) => m.AnimatedList));
+const AnimatedListItem = dynamic(() => import("@/components/ui/animated-list").then((m) => m.AnimatedListItem));
 import GlareHover from "@/components/GlareHover";
 import { DeviceGridWidget } from "@/components/pages/device-grid-widget";
 import { DtbVaultWidget } from "@/components/pages/dtb-vault-widget";

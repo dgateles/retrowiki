@@ -26,7 +26,10 @@ export function UserMenu({
   isAdmin: boolean;
 }) {
   return (
-    <DropdownMenu>
+    // modal=false: menu de navbar não precisa travar o scroll. Com o lock do Radix
+    // (modal padrão), a barra de rolagem some ao abrir e a página inteira "pula"
+    // ~15px para a direita. Sem modal, não há scroll-lock nem layout shift.
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full" aria-label="Menu da conta">
           <span className="user-menu__avatar">
