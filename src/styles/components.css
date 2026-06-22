@@ -1018,7 +1018,49 @@
 
   /* Logo Clouds (faixa de logos de parceiros/marcas). */
   .page-w__logos { @apply w-full; }
-  .page-w__logos-title { @apply mb-6 text-center; }
+  .page-w__logos-title { @apply mb-6; }
+
+  /* Widget DTB Vault: últimos arquivos enviados (responsivo). */
+  .dtb-grid {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  .dtb-card {
+    @apply flex h-full min-w-0 flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/60 hover:bg-accent/40;
+  }
+  .dtb-card__head {
+    @apply flex items-center gap-2;
+  }
+  .dtb-card__name {
+    @apply min-w-0 flex-1 truncate font-mono text-sm font-medium;
+  }
+  .dtb-card__ext {
+    @apply text-muted-foreground opacity-0 transition-opacity;
+  }
+  .dtb-card:hover .dtb-card__ext { @apply opacity-100; }
+  .dtb-card__meta {
+    @apply flex flex-wrap items-center gap-x-2 gap-y-1;
+  }
+  .dtb-badge {
+    @apply rounded bg-primary/15 px-1.5 py-0.5 text-[11px] font-semibold text-primary;
+  }
+  .dtb-card__rev {
+    @apply inline-flex min-w-0 items-center gap-1 truncate text-xs text-muted-foreground;
+  }
+  .dtb-card__foot {
+    @apply mt-auto flex items-center justify-between text-xs text-muted-foreground;
+  }
+  .dtb-card__dl {
+    @apply inline-flex items-center gap-1 tabular-nums;
+  }
+  .dtb-card--skeleton {
+    @apply pointer-events-none;
+  }
+  .dtb-skel {
+    @apply animate-pulse rounded bg-muted;
+  }
+  .dtb-skel--name { @apply h-4 w-3/4; }
+  .dtb-skel--meta { @apply h-3 w-1/2; }
+  .dtb-skel--foot { @apply mt-2 h-3 w-2/3; }
 
   /* Título de widget customizável (nível semântico controla o tamanho). */
   .page-w__title--p { @apply text-sm font-medium uppercase tracking-wider text-muted-foreground; }

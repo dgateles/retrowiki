@@ -27,6 +27,7 @@ const COLOR = z.enum(["default", "muted", "primary", "success", "warn"]).default
 // cor e animação — os mesmos 8 efeitos do widget Heading.
 const TITLE_LEVEL = z.enum(["p", "h2", "h3", "h4", "h5", "h6"]);
 const TITLE_FX = z.enum(["none", "gradient", "aurora", "shiny", "textanimate", "typing", "lineshadow", "hyper"]);
+const TITLE_ALIGN = z.enum(["left", "center", "right"]);
 
 // ── Estilo por elemento (estilo Elementor) ──────────────────────────────────
 // Controles de espaçamento/tamanho/aparência por widget, em ESCALA FECHADA
@@ -88,8 +89,19 @@ const BaseWidgetSchema = z.discriminatedUnion("type", [
     titleLevel: TITLE_LEVEL.default("h2").catch("h2"),
     titleColor: COLOR,
     titleFx: TITLE_FX.default("none").catch("none"),
+    titleAlign: TITLE_ALIGN.default("left").catch("left"),
     limit: z.number().int().min(0).max(48).default(0),
     showAll: z.boolean().default(true),
+  }),
+  // DTB Vault — últimos arquivos .dtb enviados (puxado da API do dtbvault.com).
+  z.object({
+    type: z.literal("dtbVault"),
+    title: z.string().max(120).default("DTB Vault"),
+    titleLevel: TITLE_LEVEL.default("h2").catch("h2"),
+    titleColor: COLOR,
+    titleFx: TITLE_FX.default("none").catch("none"),
+    titleAlign: TITLE_ALIGN.default("left").catch("left"),
+    count: z.number().int().min(1).max(10).default(5),
   }),
   // Contador animado (Number Ticker) — números que sobem ao entrar na tela.
   z.object({
@@ -134,6 +146,7 @@ const BaseWidgetSchema = z.discriminatedUnion("type", [
     titleLevel: TITLE_LEVEL.default("p").catch("p"),
     titleColor: COLOR,
     titleFx: TITLE_FX.default("none").catch("none"),
+    titleAlign: TITLE_ALIGN.default("center").catch("center"),
     display: z.enum(["grid", "marquee"]).default("grid"),
     size: z.enum(["sm", "md", "lg", "xl"]).default("lg").catch("lg"),
     grayscale: z.boolean().default(true),

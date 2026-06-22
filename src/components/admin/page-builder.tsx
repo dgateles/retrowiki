@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2, Boxes, ChevronDown, Palette, ListTree } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Heading, Type, ImageIcon, MousePointerClick, Minus, MoveVertical, Video, Megaphone, Rows3, Images, GripVertical, CreditCard, ListChecks, X, Copy, SlidersHorizontal, Monitor, Tablet, Smartphone, FileText, Download, HardDrive, ShoppingCart, Save, LayoutGrid, Undo2, Redo2, Eye, Gamepad2, Hash, ArrowLeftRight, List, Building2, Boxes, ChevronDown, Palette, ListTree, FileCode2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import { ICON_KEYS, ICON_LABELS } from "@/lib/page-icons";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ const WIDGETS: { type: WidgetType; label: string; icon: typeof Heading }[] = [
   { type: "card", label: "Cartão", icon: CreditCard },
   { type: "iconList", label: "Lista de ícones", icon: ListChecks },
   { type: "deviceGrid", label: "Grade de consoles", icon: Gamepad2 },
+  { type: "dtbVault", label: "DTB Vault", icon: FileCode2 },
   { type: "numberTicker", label: "Contador", icon: Hash },
   { type: "marquee", label: "Marquee", icon: ArrowLeftRight },
   { type: "bento", label: "Bento Grid", icon: LayoutGrid },
@@ -86,12 +87,13 @@ function newWidget(type: WidgetType): Widget {
     case "gallery": return { type: "gallery", columns: 3, images: [{ url: "", alt: "", href: "" }] };
     case "card": return { type: "card", image: "", title: "Título do cartão", text: "Descrição do cartão.", href: "", buttonLabel: "", effect: "none" };
     case "iconList": return { type: "iconList", items: [{ icon: "check", text: "Item da lista" }] };
-    case "deviceGrid": return { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", limit: 0, showAll: true };
+    case "deviceGrid": return { type: "deviceGrid", title: "Consoles", titleLevel: "h2", titleColor: "default", titleFx: "none", titleAlign: "left", limit: 0, showAll: true };
+    case "dtbVault": return { type: "dtbVault", title: "DTB Vault", titleLevel: "h2", titleColor: "default", titleFx: "none", titleAlign: "left", count: 5 };
     case "numberTicker": return { type: "numberTicker", value: 100, prefix: "", suffix: "+", label: "Membros", align: "center" };
     case "marquee": return { type: "marquee", items: [{ text: "RetroWiki" }, { text: "Emulação" }, { text: "Handhelds" }], reverse: false, pauseOnHover: true };
     case "bento": return { type: "bento", items: [{ icon: "check", title: "Recurso", description: "Descrição do recurso.", href: "", wide: false }] };
     case "animatedList": return { type: "animatedList", items: [{ icon: "check", title: "Notificação", description: "Detalhe da notificação." }] };
-    case "logoCloud": return { type: "logoCloud", title: "", titleLevel: "p", titleColor: "default", titleFx: "none", display: "grid", size: "lg", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
+    case "logoCloud": return { type: "logoCloud", title: "", titleLevel: "p", titleColor: "default", titleFx: "none", titleAlign: "center", display: "grid", size: "lg", grayscale: true, items: [{ image: "", imageDark: "", alt: "", href: "" }] };
     case "download": return { type: "download", items: [{ name: "ArkOS", version: "1.0", url: "", size: "", date: "", changelogUrl: "", checksum: "" }] };
     case "firmware": return { type: "firmware", items: [{ name: "ArkOS", description: "", owner: "", repo: "", website: "", deprecated: false }] };
     case "buyingGuide": return { type: "buyingGuide", consoleName: "Console", priceRange: "", stores: [{ name: "Loja", description: "", href: "", trustLevel: "trusted", badge: "" }], accessories: [], tips: [] };
@@ -1060,6 +1062,16 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           </SelectContent>
         </Select>
       </div>
+      <div className="field"><Label>Alinhamento do título</Label>
+        <Select value={(w as { titleAlign?: string }).titleAlign ?? "left"} onValueChange={(val) => onChange({ titleAlign: val } as Partial<Widget>)}>
+          <SelectTrigger aria-label="Alinhamento do título" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="left">Esquerda</SelectItem>
+            <SelectItem value="center">Centro</SelectItem>
+            <SelectItem value="right">Direita</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="field"><Label>Cor do título</Label>
         <Select value={(w as { titleColor?: string }).titleColor ?? "default"} onValueChange={(val) => onChange({ titleColor: val } as Partial<Widget>)}>
           <SelectTrigger aria-label="Cor do título" className="w-full"><SelectValue /></SelectTrigger>
@@ -1387,6 +1399,20 @@ function WidgetForm({ w, onChange }: { w: Widget; onChange: (patch: Partial<Widg
           <label className="flex items-center gap-2 text-sm">
             <Checkbox checked={w.showAll} onCheckedChange={(c) => onChange({ showAll: c === true })} /> Mostrar link &quot;Ver todos&quot;
           </label>
+        </div>
+      )}
+      {w.type === "dtbVault" && (
+        <div className="flex flex-col gap-3">
+          <div className="field">
+            <Label htmlFor="dtb-title">Título da seção</Label>
+            <Input id="dtb-title" value={w.title} onChange={(e) => onChange({ title: e.target.value })} maxLength={120} placeholder="DTB Vault" />
+          </div>
+          {titleControls}
+          <div className="field">
+            <Label htmlFor="dtb-count">Quantos arquivos</Label>
+            <Input id="dtb-count" type="number" min={1} max={10} value={w.count} onChange={(e) => onChange({ count: Math.max(1, Math.min(10, Number(e.target.value) || 5)) })} className="w-28" />
+            <p className="muted text-xs">Os últimos enviados ao DTB Vault (1–10).</p>
+          </div>
         </div>
       )}
       {w.type === "download" && (

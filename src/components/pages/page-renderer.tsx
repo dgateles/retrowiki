@@ -21,6 +21,7 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { ShineBorder } from "@/components/ui/shine-border";
 import GlareHover from "@/components/GlareHover";
 import { DeviceGridWidget } from "@/components/pages/device-grid-widget";
+import { DtbVaultWidget } from "@/components/pages/dtb-vault-widget";
 
 const FX_BG = "page-sec--bg page-sec--fx-host";
 export const SEC_BG: Record<string, string> = {
@@ -309,7 +310,7 @@ export function WidgetView({ w }: { w: Widget }) {
       };
       return (
         <div className="page-w__logos">
-          <WidgetTitle text={w.title} level={w.titleLevel} color={w.titleColor} fx={w.titleFx} className="page-w__logos-title" />
+          <WidgetTitle text={w.title} level={w.titleLevel} color={w.titleColor} fx={w.titleFx} align={w.titleAlign} className="page-w__logos-title" />
           {w.display === "marquee" ? (
             <LogoMarquee>
               {logos.map((it, i) => <span key={i} className="inline-flex shrink-0 items-center">{<Logo it={it} />}</span>)}
@@ -325,7 +326,9 @@ export function WidgetView({ w }: { w: Widget }) {
     case "richtext":
       return <div className="page-w__rich"><RichContent doc={w.doc as RichDoc} /></div>;
     case "deviceGrid":
-      return <DeviceGridWidget title={w.title} titleLevel={w.titleLevel} titleColor={w.titleColor} titleFx={w.titleFx} limit={w.limit} showAll={w.showAll} />;
+      return <DeviceGridWidget title={w.title} titleLevel={w.titleLevel} titleColor={w.titleColor} titleFx={w.titleFx} titleAlign={w.titleAlign} limit={w.limit} showAll={w.showAll} />;
+    case "dtbVault":
+      return <DtbVaultWidget title={w.title} titleLevel={w.titleLevel} titleColor={w.titleColor} titleFx={w.titleFx} titleAlign={w.titleAlign} count={w.count} />;
     case "numberTicker":
       return (
         <div className={`page-w__ticker ${ALIGN[w.align] ?? ""}`}>

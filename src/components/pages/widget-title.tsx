@@ -9,11 +9,13 @@ import { HyperText } from "@/components/ui/hyper-text";
 
 export type TitleLevel = "p" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type TitleColor = "default" | "muted" | "primary" | "success" | "warn";
+export type TitleAlign = "left" | "center" | "right";
 
 const TEXT_COLOR: Record<string, string> = {
   default: "", muted: "text-muted-foreground", primary: "text-primary",
   success: "text-emerald-600", warn: "text-amber-600",
 };
+const TITLE_ALIGN_CLASS: Record<string, string> = { left: "text-left", center: "text-center", right: "text-right" };
 
 /** Aplica um dos 8 efeitos de animação ao texto (compartilhado por Heading e
  * pelos títulos de widget). */
@@ -28,20 +30,21 @@ export function fxText(fx: string, text: string): React.ReactNode {
     text;
 }
 
-/** Título de widget com nível semântico (p/h2–h6), cor e animação. */
+/** Título de widget com nível semântico (p/h2–h6), cor, animação e alinhamento. */
 export function WidgetTitle({
-  text, level, color, fx, className,
+  text, level, color, fx, align = "left", className,
 }: {
   text: string;
   level: TitleLevel;
   color: TitleColor;
   fx: string;
+  align?: TitleAlign;
   className?: string;
 }) {
   if (!text) return null;
   const Tag = level;
   return (
-    <Tag className={cn("page-w__title", `page-w__title--${level}`, fx === "none" && TEXT_COLOR[color], className)}>
+    <Tag className={cn("page-w__title", `page-w__title--${level}`, TITLE_ALIGN_CLASS[align], fx === "none" && TEXT_COLOR[color], className)}>
       {fxText(fx, text)}
     </Tag>
   );

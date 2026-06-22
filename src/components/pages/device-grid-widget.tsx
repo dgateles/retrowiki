@@ -6,19 +6,20 @@ import { Gamepad2, ArrowRight } from "lucide-react";
 import { DeviceCard } from "@/components/catalog/device-card";
 import { DeviceGridSkeleton } from "@/components/skeletons";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
-import { WidgetTitle, type TitleLevel, type TitleColor } from "@/components/pages/widget-title";
+import { WidgetTitle, type TitleLevel, type TitleColor, type TitleAlign } from "@/components/pages/widget-title";
 
 type DeviceItem = { slug: string; name: string; manufacturer: string; frontImage: string | null };
 
 /** Widget dinâmico: grade de consoles puxada do catálogo publicado em tempo real.
  *  Busca no cliente para funcionar igual na página publicada e na prévia do editor. */
 export function DeviceGridWidget({
-  title, titleLevel = "h2", titleColor = "default", titleFx = "none", limit, showAll,
+  title, titleLevel = "h2", titleColor = "default", titleFx = "none", titleAlign = "left", limit, showAll,
 }: {
   title: string;
   titleLevel?: TitleLevel;
   titleColor?: TitleColor;
   titleFx?: string;
+  titleAlign?: TitleAlign;
   limit: number;
   showAll: boolean;
 }) {
@@ -38,7 +39,7 @@ export function DeviceGridWidget({
   return (
     <section aria-label={title || "Consoles"} className="w-full">
       <div className="page__head">
-        <WidgetTitle text={title} level={titleLevel} color={titleColor} fx={titleFx} />
+        <WidgetTitle text={title} level={titleLevel} color={titleColor} fx={titleFx} align={titleAlign} className="flex-1" />
         {showAll && (
           <Link href="/consoles" className="section-link">
             Ver todos <ArrowRight className="size-4" aria-hidden="true" />
