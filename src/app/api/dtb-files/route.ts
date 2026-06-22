@@ -7,6 +7,15 @@ const API = process.env.DTBVAULT_API_URL ?? "https://dtbvault.com/api/files";
 
 export const revalidate = 60;
 
+function isHttpUrl(u: string): boolean {
+  try {
+    const p = new URL(u).protocol;
+    return p === "https:" || p === "http:";
+  } catch {
+    return false;
+  }
+}
+
 type DtbFile = {
   filename: string;
   console: string;
@@ -42,7 +51,9 @@ export async function GET(req: NextRequest) {
         totalDownloads: Number(f.totalDownloads ?? 0),
         url: String(f.url ?? ""),
       }))
-      .filter((f) => f.filename && f.url)
+      // Só http(s): o `url` vem de API externa; descarta esquemas perigosos
+      // (javascript:, data:) antes de virar href no cliente (anti-XSS).
+      .filter((f) => f.filename && isHttpUrl(f.url))
       // Garante "últimos enviados" independentemente da ordenação da API.
       .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
       .slice(0, count);
