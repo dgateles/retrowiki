@@ -427,13 +427,21 @@ export function PageBuilder({ page, blocks = [] }: { page: PageInput; blocks?: S
       showInMenu, menuOrder, noindex, isHome,
       layout: { sections },
     };
-    const res = await savePageAction(page.id, JSON.stringify(payload));
-    setPending(false);
-    if (res.ok) {
-      toast.success(publish ? "Página publicada." : "Página salva.");
-      router.refresh();
-    } else {
-      toast.error(res.error ?? "Falha ao salvar.");
+    try {
+      const res = await savePageAction(page.id, JSON.stringify(payload));
+      if (res.ok) {
+        toast.success(publish ? "Página publicada." : "Página salva.");
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Falha ao salvar.");
+      }
+    } catch (e) {
+      // Server Action não encontrada = bundle antigo após um novo deploy. O
+      // await lançava e o botão ficava preso em "salvando". Avisa e destrava.
+      const stale = String((e as Error)?.message ?? "").includes("Server Action");
+      toast.error(stale ? "Uma nova versão foi publicada. Recarregue a página e salve de novo." : "Falha ao salvar. Tente novamente.");
+    } finally {
+      setPending(false);
     }
   }
 

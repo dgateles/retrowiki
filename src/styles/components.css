@@ -1020,9 +1020,13 @@
   .page-w__logos { @apply w-full; }
   .page-w__logos-title { @apply mb-6; }
 
-  /* Widget DTB Vault: últimos arquivos enviados (responsivo). */
+  /* Widget DTB Vault: últimos arquivos enviados. O grid se adapta à largura do
+     CONTAINER (não do viewport) — auto-fill com mínimo de ~14rem por card —
+     então funciona igual numa coluna estreita do construtor ou em largura total.
+     O `min(14rem, 100%)` evita estourar quando o container é menor que 14rem. */
   .dtb-grid {
-    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3;
+    @apply grid gap-3;
+    grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
   }
   .dtb-card {
     @apply flex h-full min-w-0 flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/60 hover:bg-accent/40;
