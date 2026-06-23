@@ -37,7 +37,11 @@ function FlyoutItem({ item }: { item: MenuChild }) {
 export function MainNav({ items }: { items: MenuNode[] }) {
   return (
     <div className="site-header__nav">
-      <NavigationMenu aria-label="Principal">
+      {/* viewport={false}: cada flyout vira um popover absoluto simples em vez do
+          "viewport" compartilhado do Radix, que mede a altura do conteúdo e anima
+          tamanho/posição a cada hover (origem do travamento). Também troca as
+          animações pesadas de slide (208px) por um fade+zoom leve. */}
+      <NavigationMenu aria-label="Principal" viewport={false}>
         <NavigationMenuList>
         {items.map((item) => {
           // Link simples (ou flyout/dropdown sem filhos com href).
