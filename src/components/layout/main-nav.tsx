@@ -18,7 +18,11 @@ function FlyoutItem({ item }: { item: MenuChild }) {
   return (
     <li>
       <NavigationMenuLink asChild>
-        <Link href={item.href ?? "#"} className="group/fly flex flex-row items-start gap-3 rounded-lg p-3">
+        {/* prefetch={false}: os destinos do flyout (leaderboard/missões/equipe) são
+            páginas force-dynamic com consultas pesadas. Com prefetch (padrão), abrir
+            o flyout disparava 6 renders RSC no servidor + download/parse dos payloads
+            no cliente a cada hover — a causa real do travamento. */}
+        <Link href={item.href ?? "#"} prefetch={false} className="group/fly flex flex-row items-start gap-3 rounded-lg p-3">
           {item.icon && (
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 transition-colors group-hover/fly:border-primary/50 group-hover/fly:bg-primary/10">
               <MenuIcon name={item.icon} className="size-5 text-primary" />
@@ -78,7 +82,7 @@ export function MainNav({ items }: { items: MenuNode[] }) {
                   {item.children.map((c) => (
                     <li key={c.id}>
                       <NavigationMenuLink asChild>
-                        <Link href={c.href ?? "#"} className="flex flex-row items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground">
+                        <Link href={c.href ?? "#"} prefetch={false} className="flex flex-row items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground">
                           <MenuIcon name={c.icon} className="size-4 text-muted-foreground" />
                           {c.label}
                         </Link>
