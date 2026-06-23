@@ -1850,6 +1850,13 @@
     @apply fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background/95 backdrop-blur;
     padding-bottom: env(safe-area-inset-bottom);
   }
+  /* Reserva o espaço da barra fixa (≈ min-h-14 + safe-area) só no mobile e só em
+     páginas que têm a barra — senão a barra tampa o rodapé. */
+  @media (max-width: 639px) {
+    body:has(.mobile-bar) {
+      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+    }
+  }
   .mobile-bar__item {
     @apply flex min-h-14 flex-col items-center justify-center gap-0.5 text-muted-foreground transition-colors active:bg-accent;
   }
