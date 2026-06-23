@@ -122,13 +122,16 @@ export function HyperText({
 
   return (
     <Tag
-      aria-label={children}
       className={cn("overflow-hidden py-2 text-4xl font-bold", className)}
       onMouseEnter={animateOnHover ? scramble : undefined}
       {...props}
     >
-      {/* Ref no span interno (tipagem limpa); o scramble muta o textContent dele. */}
-      <span ref={elementRef} className="font-mono" aria-hidden="true">
+      {/* Texto real (case natural) para leitores de tela — garante o nome
+          acessível do título mesmo enquanto o texto visível embaralha. */}
+      <span className="sr-only">{children}</span>
+      {/* Texto visível (mono/maiúsculo) que embaralha; oculto da AT via aria-hidden.
+          O ref permite mutar o textContent direto, sem re-render. */}
+      <span ref={elementRef} aria-hidden="true" className="font-mono">
         {finalText}
       </span>
     </Tag>
