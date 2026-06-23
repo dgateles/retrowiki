@@ -1082,6 +1082,11 @@
 
   /* Coluna horizontal: os filhos dimensionam pelo conteúdo (a direção/justify/
      align/gap vêm de colFlex). */
+  /* Em linha (row), o espaçamento vem do gap/justify — o space-y-4 vertical do
+     .page-col empurraria os itens para fora da mesma linha. Era o que desalinhava
+     os botões (1 acima, outro abaixo): a margem vertical do 1º item somava ao
+     align cruzado. Zerar deixa o ALINHAMENTO mandar de fato. */
+  .page-col--row { @apply space-y-0; }
   .page-col--row > .page-w { @apply w-auto shrink-0; }
   .page-col--row > .page-w .page-w__btnwrap { @apply inline-flex; }
 
