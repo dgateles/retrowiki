@@ -3797,3 +3797,15 @@
     box-shadow: 0 0 0 0 transparent;
   }
 }
+
+/* DotPattern com glow: 1 pulso de opacidade na camada inteira (GPU), em vez de
+   animar milhares de pontos individualmente. Respeita prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .dot-pattern--glow {
+    animation: dot-pattern-pulse 5s ease-in-out infinite;
+  }
+}
+@keyframes dot-pattern-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

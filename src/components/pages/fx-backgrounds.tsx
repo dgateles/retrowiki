@@ -199,7 +199,8 @@ export function SectionFx({ bg, params }: { bg: string; params?: FxParams }) {
         <DotPattern
           glow
           className={cn(
-            "absolute inset-0 fill-primary/35",
+            // text-* controla a cor dos pontos (currentColor), não fill-*.
+            "absolute inset-0 text-primary/35",
             "[mask-image:radial-gradient(ellipse_at_center,white,transparent_72%)]",
           )}
         />
