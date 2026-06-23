@@ -1,48 +1,14 @@
 "use client"
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ComponentType,
-  type RefAttributes,
-} from "react"
-import {
-  AnimatePresence,
-  motion,
-  type DOMMotionComponents,
-  type HTMLMotionProps,
-  type MotionProps,
-} from "motion/react"
+import { useEffect, useRef } from "react"
 
 import { cn } from "@/lib/utils"
 
 type CharacterSet = string[] | readonly string[]
 
-const motionElements = {
-  article: motion.article,
-  div: motion.div,
-  h1: motion.h1,
-  h2: motion.h2,
-  h3: motion.h3,
-  h4: motion.h4,
-  h5: motion.h5,
-  h6: motion.h6,
-  li: motion.li,
-  p: motion.p,
-  section: motion.section,
-  span: motion.span,
-} as const
+type HyperTextTag = "div" | "span" | "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-type MotionElementType = Extract<
-  keyof DOMMotionComponents,
-  keyof typeof motionElements
->
-type HyperTextMotionComponent = ComponentType<
-  Omit<HTMLMotionProps<"div">, "ref"> & RefAttributes<HTMLElement>
->
-
-interface HyperTextProps extends Omit<MotionProps, "children"> {
+interface HyperTextProps extends React.HTMLAttributes<HTMLElement> {
   /** The text content to be animated */
   children: string
   /** Optional className for styling */
@@ -51,8 +17,8 @@ interface HyperTextProps extends Omit<MotionProps, "children"> {
   duration?: number
   /** Delay before animation starts in milliseconds */
   delay?: number
-  /** Component to render as - defaults to div */
-  as?: MotionElementType
+  /** Element to render as — defaults to span (usado inline pelo construtor) */
+  as?: HyperTextTag
   /** Whether to start animation when element comes into view */
   startOnView?: boolean
   /** Whether to trigger animation on hover */
@@ -62,124 +28,109 @@ interface HyperTextProps extends Omit<MotionProps, "children"> {
 }
 
 const DEFAULT_CHARACTER_SET = Object.freeze(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
 ) as readonly string[]
 
 const getRandomInt = (max: number): number => Math.floor(Math.random() * max)
 
+/**
+ * Efeito "scramble": revela o texto da esquerda p/ direita embaralhando letras.
+ *
+ * Performance: NÃO usa motion/react (os elementos animados não tinham nenhuma
+ * prop de animação — eram peso morto) e NÃO re-renderiza o React a cada frame.
+ * O texto real é renderizado de cara (SSR + primeiro paint = caminho do LCP) e o
+ * embaralhamento muta `textContent` direto via ref (mesmo padrão do NumberTicker),
+ * sem disparar reconciliação. Acessível: `aria-label` mantém o texto real para
+ * leitores de tela mesmo durante o embaralhamento.
+ */
 export function HyperText({
   children,
   className,
   duration = 800,
   delay = 0,
-  as: Component = "div",
-  startOnView = false,
+  as: Component = "span",
+  startOnView = true,
   animateOnHover = true,
   characterSet = DEFAULT_CHARACTER_SET,
   ...props
 }: HyperTextProps) {
-  const MotionComponent = motionElements[Component] as HyperTextMotionComponent
+  const elementRef = useRef<HTMLSpanElement | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const runningRef = useRef(false)
 
-  const [displayText, setDisplayText] = useState<string[]>(() =>
-    children.split("")
-  )
-  const [isAnimating, setIsAnimating] = useState(false)
-  const iterationCount = useRef(0)
-  const elementRef = useRef<HTMLElement | null>(null)
+  const finalText = children.toUpperCase()
 
-  const handleAnimationTrigger = () => {
-    if (animateOnHover && !isAnimating) {
-      iterationCount.current = 0
-      setIsAnimating(true)
+  const scramble = () => {
+    const el = elementRef.current
+    if (!el || runningRef.current) return
+    runningRef.current = true
+    const startTime = performance.now()
+    const max = children.length
+
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1)
+      const revealed = progress * max
+      let out = ""
+      for (let i = 0; i < children.length; i++) {
+        out +=
+          children[i] === " "
+            ? " "
+            : i <= revealed
+              ? children[i]
+              : characterSet[getRandomInt(characterSet.length)]
+      }
+      // Muta o DOM diretamente — sem setState, sem re-render.
+      el.textContent = out.toUpperCase()
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step)
+      } else {
+        el.textContent = finalText
+        runningRef.current = false
+      }
     }
+    rafRef.current = requestAnimationFrame(step)
   }
 
-  // Handle animation start based on view or delay
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout> | null = null
+    let observer: IntersectionObserver | null = null
+
     if (!startOnView) {
-      const startTimeout = setTimeout(() => {
-        setIsAnimating(true)
-      }, delay)
-      return () => clearTimeout(startTimeout)
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsAnimating(true)
-          }, delay)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.1, rootMargin: "-30% 0px -30% 0px" }
-    )
-
-    if (elementRef.current) {
-      observer.observe(elementRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [delay, startOnView])
-
-  // Handle scramble animation
-  useEffect(() => {
-    let animationFrameId: number | null = null
-
-    if (isAnimating) {
-      const maxIterations = children.length
-      const startTime = performance.now()
-
-      const animate = (currentTime: number) => {
-        const elapsed = currentTime - startTime
-        const progress = Math.min(elapsed / duration, 1)
-
-        iterationCount.current = progress * maxIterations
-
-        setDisplayText((currentText) =>
-          currentText.map((letter, index) =>
-            letter === " "
-              ? letter
-              : index <= iterationCount.current
-                ? children[index]
-                : characterSet[getRandomInt(characterSet.length)]
-          )
-        )
-
-        if (progress < 1) {
-          animationFrameId = requestAnimationFrame(animate)
-        } else {
-          setIsAnimating(false)
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(animate)
+      timeout = setTimeout(scramble, delay)
+    } else {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            timeout = setTimeout(scramble, delay)
+            observer?.disconnect()
+          }
+        },
+        { threshold: 0.1, rootMargin: "-20% 0px -20% 0px" },
+      )
+      if (elementRef.current) observer.observe(elementRef.current)
     }
 
     return () => {
-      if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId)
-      }
+      if (timeout) clearTimeout(timeout)
+      if (observer) observer.disconnect()
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [children, duration, isAnimating, characterSet])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startOnView, delay])
+
+  const Tag = Component
 
   return (
-    <MotionComponent
-      ref={elementRef}
+    <Tag
+      aria-label={children}
       className={cn("overflow-hidden py-2 text-4xl font-bold", className)}
-      onMouseEnter={handleAnimationTrigger}
+      onMouseEnter={animateOnHover ? scramble : undefined}
       {...props}
     >
-      <AnimatePresence>
-        {displayText.map((letter, index) => (
-          <motion.span
-            key={index}
-            className={cn("font-mono", letter === " " ? "w-3" : "")}
-          >
-            {letter.toUpperCase()}
-          </motion.span>
-        ))}
-      </AnimatePresence>
-    </MotionComponent>
+      {/* Ref no span interno (tipagem limpa); o scramble muta o textContent dele. */}
+      <span ref={elementRef} className="font-mono" aria-hidden="true">
+        {finalText}
+      </span>
+    </Tag>
   )
 }

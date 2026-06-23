@@ -31,6 +31,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "6mb",
     },
+    // Tree-shake barris grandes (ícones e motion) → menos JS por rota.
+    optimizePackageImports: ["motion", "lucide-react"],
   },
   images: {
     // Imagens vêm do nosso storage/CDN. Só o Pull Zone do Bunny é permitido.

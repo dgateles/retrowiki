@@ -17,10 +17,9 @@ import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ShineBorder } from "@/components/ui/shine-border";
 
-// Widgets que dependem de `motion/react` (Framer Motion) e raramente estão acima
-// da dobra: carregados via next/dynamic para sair do bundle crítico. ssr fica
-// ligado (default) → o conteúdo continua no HTML do servidor; só o JS de animação
-// vira chunk separado, reduzindo o tempo de avaliação inicial (TBT/LCP).
+// Widgets que dependem de motion/react (Framer Motion). dynamic(ssr:true) os tira
+// do bundle inicial sem alterar o HTML do servidor (sem remount): páginas que não
+// usam esses widgets — como a home — não baixam o motion/react.
 const NumberTicker = dynamic(() => import("@/components/ui/number-ticker").then((m) => m.NumberTicker));
 const MagicCard = dynamic(() => import("@/components/ui/magic-card").then((m) => m.MagicCard));
 const BorderBeam = dynamic(() => import("@/components/ui/border-beam").then((m) => m.BorderBeam));

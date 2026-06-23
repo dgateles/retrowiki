@@ -1,17 +1,22 @@
 "use client";
 
-import { RetroGrid } from "@/components/ui/retro-grid";
-import { Meteors } from "@/components/ui/meteors";
-import { Particles } from "@/components/ui/particles";
-import { DotPattern } from "@/components/ui/dot-pattern";
-import { Ripple } from "@/components/ui/ripple";
-import { FlickeringGrid } from "@/components/ui/flickering-grid";
-import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
-import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
-import LightRays from "@/components/LightRays";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { type FxParams, fxColor, fxNum, fxBool, fxStr } from "@/lib/fx-effects";
+
+// Fundos decorativos (canvas/SVG; alguns usam motion/react). São puramente
+// decorativos, absolutos atrás do conteúdo e não afetam o LCP — então carregam
+// via dynamic(ssr:false): só a chunk do fundo escolhido baixa, depois do paint,
+// tirando motion/react + o código de todos os outros fundos do bundle crítico.
+const RetroGrid = dynamic(() => import("@/components/ui/retro-grid").then((m) => m.RetroGrid), { ssr: false });
+const Meteors = dynamic(() => import("@/components/ui/meteors").then((m) => m.Meteors), { ssr: false });
+const Particles = dynamic(() => import("@/components/ui/particles").then((m) => m.Particles), { ssr: false });
+const DotPattern = dynamic(() => import("@/components/ui/dot-pattern").then((m) => m.DotPattern), { ssr: false });
+const Ripple = dynamic(() => import("@/components/ui/ripple").then((m) => m.Ripple), { ssr: false });
+const FlickeringGrid = dynamic(() => import("@/components/ui/flickering-grid").then((m) => m.FlickeringGrid), { ssr: false });
+const AnimatedGridPattern = dynamic(() => import("@/components/ui/animated-grid-pattern").then((m) => m.AnimatedGridPattern), { ssr: false });
+const InteractiveGridPattern = dynamic(() => import("@/components/ui/interactive-grid-pattern").then((m) => m.InteractiveGridPattern), { ssr: false });
+const LightRays = dynamic(() => import("@/components/LightRays"), { ssr: false });
 
 // Efeitos shader (Three/OGL) — carregados só no cliente para evitar SSR/WebGL.
 const Lightfall = dynamic(() => import("@/components/Lightfall"), { ssr: false });

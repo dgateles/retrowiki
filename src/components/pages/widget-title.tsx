@@ -1,10 +1,16 @@
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-// Efeitos puramente CSS (leves, sem motion/react) — import estático ok.
+// Efeitos sem motion/react (CSS puro ou DOM-mutation) — import estático, baratos.
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-// Efeitos com motion/react (pesados) ficam fora do bundle crítico (carga lazy).
-import { FxTextMotion } from "@/components/pages/fx-text-motion";
+import { HyperText } from "@/components/ui/hyper-text";
+// Efeitos que dependem de motion/react: carga sob demanda. ssr:true mantém o texto
+// no HTML do servidor (LCP-safe) e hidrata a MESMA árvore — sem remount. Páginas
+// que não usam esses efeitos (ex.: home) não baixam o motion/react.
+const TextAnimate = dynamic(() => import("@/components/ui/text-animate").then((m) => m.TextAnimate));
+const TypingAnimation = dynamic(() => import("@/components/ui/typing-animation").then((m) => m.TypingAnimation));
+const LineShadowText = dynamic(() => import("@/components/ui/line-shadow-text").then((m) => m.LineShadowText));
 
 export type TitleLevel = "p" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type TitleColor = "default" | "muted" | "primary" | "success" | "warn";
@@ -22,8 +28,10 @@ export function fxText(fx: string, text: string): React.ReactNode {
   return fx === "gradient" ? <AnimatedGradientText colorFrom="#10b981" colorTo="#6366f1" speed={1.2}>{text}</AnimatedGradientText> :
     fx === "aurora" ? <AuroraText colors={["#10b981", "#6366f1", "#22d3ee"]}>{text}</AuroraText> :
     fx === "shiny" ? <AnimatedShinyText className="inline">{text}</AnimatedShinyText> :
-    (fx === "textanimate" || fx === "typing" || fx === "lineshadow" || fx === "hyper")
-      ? <FxTextMotion fx={fx} text={text} /> :
+    fx === "textanimate" ? <TextAnimate as="span" animation="blurInUp" by="word" className="inline-block">{text}</TextAnimate> :
+    fx === "typing" ? <TypingAnimation as="span" className="inline">{text}</TypingAnimation> :
+    fx === "lineshadow" ? <LineShadowText shadowColor="#10b981">{text}</LineShadowText> :
+    fx === "hyper" ? <HyperText as="span" className="inline-block">{text}</HyperText> :
     text;
 }
 
