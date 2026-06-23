@@ -965,8 +965,14 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Host comum dos efeitos de fundo Magic UI (conteúdo acima do efeito). */
-  .page-sec--fx-host { @apply relative overflow-hidden; }
+  /* Host comum dos efeitos de fundo Magic UI (conteúdo acima do efeito). Pinta a
+     base ESCURA (a classe `dark` da seção redefine --background) para o efeito
+     brilhar sobre escuro e o texto ter contraste — em ambos os temas do site. */
+  .page-sec--fx-host {
+    @apply relative overflow-hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
   .page-sec--fx-host > .page-section { @apply relative z-10; }
   /* Camada do efeito de fundo: ocupa a seção e dissolve nas bordas (sem corte
      retangular duro). O conteúdo (.page-section, z-10) não é afetado. */

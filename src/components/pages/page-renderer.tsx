@@ -29,7 +29,11 @@ import GlareHover from "@/components/GlareHover";
 import { DeviceGridWidget } from "@/components/pages/device-grid-widget";
 import { DtbVaultWidget } from "@/components/pages/dtb-vault-widget";
 
-const FX_BG = "page-sec--bg page-sec--fx-host";
+// Seções com efeito de fundo (aurora/shaders/canvas Magic UI) são feitas para
+// fundo ESCURO — no claro o efeito fica lavado e o texto perde contraste. A classe
+// `dark` aplica a paleta escura só nesta seção (em ambos os temas): o efeito brilha,
+// o texto fica legível e assets dark (ex.: logos `dark:block`) trocam corretamente.
+const FX_BG = "page-sec--bg page-sec--fx-host dark";
 export const SEC_BG: Record<string, string> = {
   none: "", muted: "page-sec--bg bg-muted/50", card: "page-sec--bg bg-card",
   primary: "page-sec--bg bg-primary/10", dark: "page-sec--bg bg-foreground/90 text-background",
