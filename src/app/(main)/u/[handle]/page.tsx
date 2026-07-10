@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProfile } from "@/lib/profiles";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
+import { isIgnoring } from "@/lib/ignore";
+import { IgnoreButton } from "@/components/social/ignore-button";
 import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -94,6 +96,9 @@ export default async function ProfilePage({
   // Relação do visitante: dono do perfil ou membro da equipe.
   const isOwner = Boolean(viewer && Number(viewer.id) === profile.id);
   const isStaff = can.moderate(viewer);
+  const targetIsStaff = profile.role === "moderator" || profile.role === "admin";
+  const canIgnore = Boolean(viewer && !isOwner && !targetIsStaff);
+  const ignoringProfile = canIgnore ? await isIgnoring(Number(viewer!.id), profile.id) : false;
   const canSeePrivate = isOwner || isStaff;
 
   // Galeria: staff vê as ocultas (para moderar); demais veem só as visíveis.
@@ -161,11 +166,13 @@ export default async function ProfilePage({
             <p className="profile-id__meta">Na comunidade desde {joined}</p>
             {lastSeen && <p className="profile-id__meta">{lastSeen}</p>}
           </div>
-          {isOwner && (
+          {isOwner ? (
             <Button asChild size="sm" className="profile-id__activity">
               <Link href="#atividade"><FileText className="size-4" aria-hidden="true" /> Ver minha atividade</Link>
             </Button>
-          )}
+          ) : canIgnore ? (
+            <div className="profile-id__activity"><IgnoreButton targetId={profile.id} initialIgnoring={ignoringProfile} /></div>
+          ) : null}
         </div>
       </header>
 

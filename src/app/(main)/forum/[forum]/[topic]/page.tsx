@@ -12,6 +12,8 @@ import { BestAnswerButton } from "@/components/forum/best-answer-button";
 import { QuoteButton } from "@/components/forum/quote-button";
 import { ForumPoll } from "@/components/forum/forum-poll";
 import { getTopicPoll } from "@/lib/forum-polls";
+import { getIgnoredUserIds } from "@/lib/ignore";
+import { IgnoredPostGate } from "@/components/social/ignored-post-gate";
 import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
 import { ReplyForm } from "@/components/forum/reply-form";
 import { TopicFollowButton } from "@/components/forum/topic-follow-button";
@@ -54,6 +56,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const { items, hasMore } = await listPosts(t.id, page);
   const poll = page === 1 ? await getTopicPoll(t.id, user ? Number(user.id) : null) : null;
   const topicTags = await getTopicTags(t.id);
+  const ignoredIds = await getIgnoredUserIds(user ? Number(user.id) : null);
   const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
@@ -168,7 +171,10 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               permalink={postHref(t.forumSlug, t.slug, post.id)}
             />
           ) : undefined;
-          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} quoteControl={quoteControl} />;
+          const card = <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} quoteControl={quoteControl} />;
+          return ignoredIds.includes(post.authorId)
+            ? <IgnoredPostGate key={post.id} authorName={post.authorName}>{card}</IgnoredPostGate>
+            : card;
         })}
       </div>
 

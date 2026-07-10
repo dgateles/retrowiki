@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { listIgnored } from "@/lib/ignore";
+import { IgnoreButton } from "@/components/social/ignore-button";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-helpers";
@@ -51,6 +53,7 @@ export default async function AccountPage({
   );
   const profileFieldGroups = active === "perfil" ? await getEditableFields(Number(user.id)) : [];
   const notifPrefs = active === "notificacoes" ? await getMemberPrefs(Number(user.id)) : [];
+  const ignoredList = active === "ignorados" ? await listIgnored(Number(user.id)) : [];
 
   const warnSettings = active === "avisos" ? await getWarningSettings() : null;
   const warnings = active === "avisos" && warnSettings?.membersCanSee ? await listUserWarnings(Number(user.id)) : [];
@@ -150,6 +153,34 @@ export default async function AccountPage({
               <div className="mt-4 border-t border-border/60 pt-4">
                 <BulkMailOptOut initial={Boolean((user as { bulkMailOptOut?: boolean }).bulkMailOptOut)} />
               </div>
+            </section>
+          )}
+
+          {active === "ignorados" && (
+            <section aria-labelledby="s-ign" className="settings-section">
+              <h2 id="s-ign" className="settings-section__title">Usuários ignorados</h2>
+              <p className="settings-section__desc">O conteúdo de quem você ignora fica recolhido no fórum. A equipe não pode ser ignorada.</p>
+              {ignoredList.length === 0 ? (
+                <p className="empty mt-4">Você não ignora ninguém.</p>
+              ) : (
+                <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {ignoredList.map((u) => (
+                    <li key={u.id} className="flex items-center gap-3 bg-card p-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-muted-foreground" aria-hidden="true">
+                        {u.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={u.avatarUrl} alt="" className="size-full object-cover" />
+                        ) : (u.displayName[0] ?? "?").toUpperCase()}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <Link href={`/u/${u.handle}`} className="font-medium link-inline">{u.displayName}</Link>
+                        <p className="text-xs text-muted-foreground">@{u.handle}</p>
+                      </div>
+                      <IgnoreButton targetId={u.id} initialIgnoring />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           )}
 

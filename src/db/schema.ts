@@ -1044,6 +1044,17 @@ export const forumTopicTags = mysqlTable("forum_topic_tags", {
   index("forum_topic_tags_tag_idx").on(t.tagId),
 ]);
 
+// Usuários ignorados (esconde conteúdo/PM de alguém).
+export const userIgnores = mysqlTable("user_ignores", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(), // quem ignora
+  ignoredId: bigint("ignored_id", { mode: "number" }).notNull(), // quem é ignorado
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("user_ignores_pair_idx").on(t.userId, t.ignoredId),
+  index("user_ignores_user_idx").on(t.userId),
+]);
+
 // Tipos exportados --------------------------------------------------------
 export type MenuItem = typeof menuItems.$inferSelect;
 export type UserRole = (typeof users.$inferSelect)["role"];
