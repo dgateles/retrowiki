@@ -3888,3 +3888,10 @@
   .fmod { @apply mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-2; }
   .fmod__label { @apply flex items-center gap-1 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground; }
 }
+
+@layer components {
+  .ftopic-form { @apply mt-4 overflow-hidden rounded-lg border border-border bg-card; }
+  .ftopic-form__section { @apply border-b border-border p-5; }
+  .ftopic-form__labelrow { @apply mb-2 flex items-center justify-between; }
+  .ftopic-form__foot { @apply flex flex-wrap items-center justify-between gap-4 p-5; }
+}
