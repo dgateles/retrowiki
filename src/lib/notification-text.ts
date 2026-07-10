@@ -14,6 +14,8 @@ type Payload = {
   topicSlug?: string;
   topicTitle?: string;
   postId?: number;
+  conversationId?: number; // mensagens privadas
+  subject?: string;
 };
 
 function asPayload(p: unknown): Payload {
@@ -44,6 +46,10 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `Sua resposta foi marcada como solução em "${p.topicTitle ?? "uma pergunta"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
     case "forum.mention":
       return { text: `${actor} mencionou você em "${p.topicTitle ?? "um tópico"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
+    case "pm.received":
+      return { text: `${actor} enviou uma mensagem${p.subject ? `: "${p.subject}"` : ""}.`, href: p.conversationId ? `/mensagens/${p.conversationId}` : "/mensagens", actor };
+    case "pm.reply":
+      return { text: `${actor} respondeu em "${p.subject ?? "uma conversa"}".`, href: p.conversationId ? `/mensagens/${p.conversationId}` : "/mensagens", actor };
     case "article.approved":
       return { text: `"${title}" foi aprovado e publicado.`, href: articleHref };
     case "article.changes_requested":

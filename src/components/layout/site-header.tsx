@@ -4,6 +4,8 @@ import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { getRankForReputation } from "@/lib/admin/ranks-db";
 import { getAchievementSettings } from "@/lib/settings";
 import { getUnreadCount, listNotifications } from "@/lib/notifications";
+import { getUnreadConversationCount } from "@/lib/messenger";
+import { Mail } from "lucide-react";
 import { describeNotification } from "@/lib/notification-text";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -25,6 +27,7 @@ export async function SiteHeader() {
   const menu = headerTree.length ? headerTree : seedToTree(DEFAULT_HEADER);
 
   let unread = 0;
+  const pmUnread = user ? await getUnreadConversationCount(user.id) : 0;
   let notifItems: NotifItem[] = [];
   if (user) {
     // O popup mostra só as não lidas; ao clicar, somem do popup (mas continuam
@@ -65,6 +68,10 @@ export async function SiteHeader() {
           <ThemeToggle />
           {user ? (
             <>
+              <Link href="/mensagens" className="pm-navbtn" aria-label={pmUnread > 0 ? `Mensagens (${pmUnread} não lidas)` : "Mensagens"}>
+                <Mail className="size-5" aria-hidden="true" />
+                {pmUnread > 0 && <span className="pm-navbtn__badge" aria-hidden="true">{pmUnread > 9 ? "9+" : pmUnread}</span>}
+              </Link>
               <NotificationsBell unread={unread} items={notifItems} />
               <UserMenu
                 handle={user.handle}

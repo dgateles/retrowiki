@@ -3915,6 +3915,32 @@
 @layer components {
   .fmod { @apply inline-flex; }
   .ftopic-actions { @apply flex shrink-0 items-center gap-2; }
+
+  /* Mensagens privadas */
+  .pm-navbtn { @apply relative inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground; }
+  .pm-navbtn__badge { @apply absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground; }
+  .pm-list { @apply mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border; }
+  .pm-row { @apply bg-card transition-colors hover:bg-accent/40; }
+  .pm-row--unread { @apply bg-primary/5; }
+  .pm-row__link { @apply flex items-center gap-3 p-4; }
+  .pm-row__avatar { @apply flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-muted-foreground; }
+  .pm-row__main { @apply flex min-w-0 flex-1 flex-col; }
+  .pm-row__subject { @apply truncate font-semibold; }
+  .pm-row--unread .pm-row__subject { @apply text-foreground; }
+  .pm-row__people { @apply truncate text-xs text-muted-foreground; }
+  .pm-row__preview { @apply mt-0.5 truncate text-sm text-muted-foreground; }
+  .pm-row__meta { @apply flex shrink-0 flex-col items-end gap-1 text-xs text-muted-foreground; }
+  .pm-dot { @apply size-2 rounded-full bg-primary; }
+  .pm-compose { @apply flex flex-col gap-4; }
+  .pm-reply { @apply flex flex-col; }
+  .pm-thread { @apply mt-2 flex flex-col gap-4; }
+  .pm-msg { @apply grid grid-cols-[2.5rem_1fr] gap-3 rounded-lg border border-border bg-card p-4; }
+  .pm-msg--mine { @apply border-primary/30 bg-primary/5; }
+  .pm-msg__avatar { @apply flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-muted-foreground; }
+  .pm-msg__body { @apply min-w-0; }
+  .pm-msg__head { @apply mb-2 flex items-center justify-between gap-2 text-sm; }
+  .pm-msg__author { @apply font-semibold hover:text-primary; }
+  .pm-msg__head time { @apply text-xs text-muted-foreground; }
   .fignored { @apply flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground; }
 
   /* Tags de tópico */

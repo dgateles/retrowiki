@@ -170,8 +170,13 @@ export default async function ProfilePage({
             <Button asChild size="sm" className="profile-id__activity">
               <Link href="#atividade"><FileText className="size-4" aria-hidden="true" /> Ver minha atividade</Link>
             </Button>
-          ) : canIgnore ? (
-            <div className="profile-id__activity"><IgnoreButton targetId={profile.id} initialIgnoring={ignoringProfile} /></div>
+          ) : viewer ? (
+            <div className="profile-id__activity flex flex-wrap gap-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/mensagens/nova?para=${profile.handle}`}><Mail className="size-4" aria-hidden="true" /> Mensagem</Link>
+              </Button>
+              {canIgnore && <IgnoreButton targetId={profile.id} initialIgnoring={ignoringProfile} />}
+            </div>
           ) : null}
         </div>
       </header>

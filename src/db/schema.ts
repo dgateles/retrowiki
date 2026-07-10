@@ -1044,6 +1044,35 @@ export const forumTopicTags = mysqlTable("forum_topic_tags", {
   index("forum_topic_tags_tag_idx").on(t.tagId),
 ]);
 
+// Mensagens privadas (messenger): conversa → participantes → mensagens.
+export const conversations = mysqlTable("conversations", {
+  id: pk(),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  starterId: bigint("starter_id", { mode: "number" }).notNull(),
+  lastMessageAt: datetime("last_message_at"),
+  createdAt: createdAt(),
+}, (t) => [index("conversations_last_idx").on(t.lastMessageAt)]);
+
+export const conversationParticipants = mysqlTable("conversation_participants", {
+  id: pk(),
+  conversationId: bigint("conversation_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  lastReadAt: datetime("last_read_at"),
+  leftAt: datetime("left_at"), // saiu da conversa
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("conv_part_idx").on(t.conversationId, t.userId),
+  index("conv_part_user_idx").on(t.userId),
+]);
+
+export const conversationMessages = mysqlTable("conversation_messages", {
+  id: pk(),
+  conversationId: bigint("conversation_id", { mode: "number" }).notNull(),
+  senderId: bigint("sender_id", { mode: "number" }).notNull(),
+  body: text("body").notNull(),
+  createdAt: createdAt(),
+}, (t) => [index("conv_msg_idx").on(t.conversationId, t.createdAt)]);
+
 // Usuários ignorados (esconde conteúdo/PM de alguém).
 export const userIgnores = mysqlTable("user_ignores", {
   id: pk(),
@@ -1071,3 +1100,5 @@ export type ForumPoll = typeof forumPolls.$inferSelect;
 export type ForumPollQuestion = typeof forumPollQuestions.$inferSelect;
 export type ForumPollChoice = typeof forumPollChoices.$inferSelect;
 export type ForumTag = typeof forumTags.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type ConversationMessage = typeof conversationMessages.$inferSelect;
