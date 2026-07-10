@@ -1,0 +1,96 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { MessageSquarePlus, Pin, Lock, MessagesSquare } from "lucide-react";
+import { getForumBySlug, listTopics, canReadForumPublic, canPostForum } from "@/lib/forum";
+import { topicHref } from "@/lib/forum-url";
+import { getCurrentUser } from "@/lib/auth-helpers";
+import { Button } from "@/components/ui/button";
+import { Pager } from "@/components/ui/pager";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
+import { pageMetadata } from "@/lib/seo/metadata";
+
+export const dynamic = "force-dynamic";
+
+const fmt = (d: Date | null) => (d ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(d) : "—");
+
+export async function generateMetadata({ params }: { params: Promise<{ forum: string }> }): Promise<Metadata> {
+  const { forum } = await params;
+  const f = await getForumBySlug(forum);
+  if (!f) return {};
+  return pageMetadata({ title: f.title, description: f.description ?? `Tópicos do fórum ${f.title}.`, path: `/forum/${f.slug}` });
+}
+
+export default async function ForumPage({ params, searchParams }: { params: Promise<{ forum: string }>; searchParams: Promise<{ page?: string }> }) {
+  const { forum } = await params;
+  const { page: pageStr } = await searchParams;
+  const page = Math.max(1, Number(pageStr) || 1);
+
+  const user = await getCurrentUser();
+  const f = await getForumBySlug(forum);
+  if (!f || !canReadForumPublic(f, user?.role ?? null)) notFound();
+
+  const { items, hasMore } = await listTopics(f.id, page);
+  const canPost = !!user && canPostForum(f, user.role);
+
+  return (
+    <main id="main" className="page">
+      <nav className="forum-crumbs" aria-label="Trilha">
+        <Link href="/forum" className="link-inline">Fórum</Link>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">{f.title}</span>
+      </nav>
+
+      <div className="page__head">
+        <div>
+          <h1 className="page__title">{f.title}</h1>
+          {f.description && <p className="page__note">{f.description}</p>}
+        </div>
+        {canPost && (
+          <Button asChild size="sm">
+            <Link href={`/forum/${f.slug}/novo`}><MessageSquarePlus className="size-4" aria-hidden="true" /> Novo tópico</Link>
+          </Button>
+        )}
+      </div>
+
+      {items.length === 0 ? (
+        <Empty className="mt-6">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><MessagesSquare aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>Nenhum tópico ainda</EmptyTitle>
+            <EmptyDescription>Seja o primeiro a começar uma conversa aqui.</EmptyDescription>
+          </EmptyHeader>
+          {canPost && (
+            <EmptyContent>
+              <Button asChild size="sm"><Link href={`/forum/${f.slug}/novo`}><MessageSquarePlus className="size-4" aria-hidden="true" /> Novo tópico</Link></Button>
+            </EmptyContent>
+          )}
+        </Empty>
+      ) : (
+        <ul className="topic-list">
+          {items.map((t) => (
+            <li key={t.id} className="topic-row">
+              <span className="topic-row__icon" aria-hidden="true">
+                {t.pinned ? <Pin className="size-4 text-primary" /> : t.status === "locked" ? <Lock className="size-4 text-muted-foreground" /> : <MessagesSquare className="size-4 text-muted-foreground" />}
+              </span>
+              <div className="topic-row__main">
+                <Link href={topicHref(f.slug, t.slug)} className="topic-row__title link-inline">{t.title}</Link>
+                <p className="topic-row__meta">por {t.authorName} · {t.postsCount} resposta(s) · {t.views} visualização(ões)</p>
+              </div>
+              <div className="topic-row__last tabular-nums">
+                {t.lastPosterName ? (
+                  <>
+                    <span className="topic-row__last-name">{t.lastPosterName}</span>
+                    <span className="topic-row__last-date">{fmt(t.lastPostAt)}</span>
+                  </>
+                ) : <span className="text-muted-foreground">{fmt(t.createdAt)}</span>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Pager path={`/forum/${f.slug}`} page={page} hasMore={hasMore} />
+    </main>
+  );
+}

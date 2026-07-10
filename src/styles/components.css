@@ -3827,3 +3827,49 @@
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
+
+/* ── Fórum (estilo IPB) ──────────────────────────────────────────────────── */
+@layer components {
+  .forum-crumbs { @apply mb-3 text-sm text-muted-foreground; }
+  .forum-cats { @apply flex flex-col gap-8; }
+  .forum-cat__title { @apply text-lg font-bold tracking-tight; }
+  .forum-cat__desc { @apply mb-3 text-sm text-muted-foreground; }
+  .forum-list { @apply divide-y divide-border overflow-hidden rounded-lg border border-border; }
+  .forum-row { @apply flex items-center gap-4 bg-card p-4 transition-colors hover:bg-accent/40; }
+  .forum-row__icon { @apply flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary; }
+  .forum-row__main { @apply min-w-0 flex-1; }
+  .forum-row__title { @apply font-semibold; }
+  .forum-row__desc { @apply mt-0.5 line-clamp-2 text-sm text-muted-foreground; }
+  .forum-row__stats { @apply hidden w-28 shrink-0 flex-col gap-0.5 text-right text-xs text-muted-foreground sm:flex; }
+  .forum-row__last { @apply hidden w-32 shrink-0 flex-col text-right text-xs md:flex; }
+  .forum-row__last-name { @apply truncate font-medium text-foreground; }
+  .forum-row__last-date { @apply text-muted-foreground; }
+
+  .topic-list { @apply divide-y divide-border overflow-hidden rounded-lg border border-border; }
+  .topic-row { @apply flex items-center gap-3 bg-card p-4 transition-colors hover:bg-accent/40; }
+  .topic-row__icon { @apply flex size-8 shrink-0 items-center justify-center; }
+  .topic-row__main { @apply min-w-0 flex-1; }
+  .topic-row__title { @apply font-semibold; }
+  .topic-row__meta { @apply mt-0.5 text-xs text-muted-foreground; }
+  .topic-row__last { @apply hidden w-32 shrink-0 flex-col text-right text-xs sm:flex; }
+  .topic-row__last-name { @apply truncate font-medium text-foreground; }
+  .topic-row__last-date { @apply text-muted-foreground; }
+
+  .fpost-list { @apply flex flex-col gap-4; }
+  .fpost { @apply grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-[12rem_1fr]; }
+  .fpost__bit { @apply flex flex-row flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-muted/30 p-4 sm:flex-col sm:items-start sm:border-b-0 sm:border-r; }
+  .fpost__avatar { @apply flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-sm font-semibold text-primary; }
+  .fpost__avatar-img { @apply size-full object-cover; }
+  .fpost__author { @apply font-semibold; }
+  .fpost__role { @apply rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground; }
+  .fpost__role--staff { @apply bg-primary/15 text-primary; }
+  .fpost__stats { @apply hidden w-full grid-cols-3 gap-2 pt-2 text-center sm:grid; }
+  .fpost__stats dt { @apply text-[10px] uppercase tracking-wide text-muted-foreground; }
+  .fpost__stats dd { @apply text-sm font-medium; }
+  .fpost__main { @apply flex min-w-0 flex-col p-4; }
+  .fpost__head { @apply mb-3 flex items-center gap-2 text-xs text-muted-foreground; }
+  .fpost__badge { @apply rounded-full bg-primary/10 px-2 py-0.5 text-primary; }
+  .fpost__edited { @apply italic; }
+  .fpost__content { @apply min-w-0; }
+  .fpost__foot { @apply mt-4 flex items-center gap-2 border-t border-border pt-3; }
+}
