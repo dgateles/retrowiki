@@ -3855,19 +3855,23 @@
   .topic-row__last-name { @apply truncate font-medium text-foreground; }
   .topic-row__last-date { @apply text-muted-foreground; }
 
-  .fpost-list { @apply flex flex-col gap-4; }
-  .fpost { @apply grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-[12rem_1fr]; }
-  .fpost__bit { @apply flex flex-row flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-muted/30 p-4 sm:flex-col sm:items-start sm:border-b-0 sm:border-r; }
-  .fpost__avatar { @apply flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-sm font-semibold text-primary; }
+  /* Um container só, posts separados por divisórias (não caixas soltas). */
+  .fpost-list { @apply divide-y divide-border overflow-hidden rounded-lg border border-border bg-card; }
+  .fpost { @apply grid grid-cols-1 sm:grid-cols-[13rem_1fr]; }
+  /* Postbit: coluna do autor, tudo CENTRADO (estilo IPB), com divisória à direita. */
+  .fpost__bit { @apply flex flex-row items-center gap-3 border-b border-border bg-muted/20 p-4 sm:flex-col sm:items-center sm:gap-1.5 sm:border-b-0 sm:border-r sm:py-6 sm:text-center; }
+  .fpost__avatar { @apply flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-base font-semibold text-primary sm:size-16; }
   .fpost__avatar-img { @apply size-full object-cover; }
-  .fpost__author { @apply font-semibold; }
+  .fpost__author { @apply font-semibold text-foreground transition-colors hover:text-primary; }
   .fpost__role { @apply rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground; }
   .fpost__role--staff { @apply bg-primary/15 text-primary; }
-  .fpost__stats { @apply hidden w-full grid-cols-3 gap-2 pt-2 text-center sm:grid; }
+  .fpost__stats { @apply mt-1 hidden items-start justify-center gap-5 sm:flex; }
+  .fpost__stats div { @apply flex flex-col items-center leading-tight; }
+  .fpost__stats dd { @apply text-sm font-semibold; }
   .fpost__stats dt { @apply text-[10px] uppercase tracking-wide text-muted-foreground; }
-  .fpost__stats dd { @apply text-sm font-medium; }
-  .fpost__main { @apply flex min-w-0 flex-col p-4; }
-  .fpost__head { @apply mb-3 flex items-center gap-2 text-xs text-muted-foreground; }
+  .fpost__since { @apply hidden text-xs text-muted-foreground sm:block; }
+  .fpost__main { @apply flex min-w-0 flex-col p-4 sm:p-5; }
+  .fpost__head { @apply mb-3 flex items-center gap-2 border-b border-border/60 pb-3 text-xs text-muted-foreground; }
   .fpost__badge { @apply rounded-full bg-primary/10 px-2 py-0.5 text-primary; }
   .fpost__edited { @apply italic; }
   .fpost__content { @apply min-w-0; }

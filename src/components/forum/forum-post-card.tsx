@@ -26,13 +26,13 @@ export function ForumPostCard({ post, footer }: { post: ForumPostItem; footer?: 
             initials(post.authorName)
           )}
         </span>
-        <Link href={`/u/${post.authorHandle}`} className="fpost__author link-inline">{post.authorName}</Link>
+        <Link href={`/u/${post.authorHandle}`} className="fpost__author">{post.authorName}</Link>
         <span className={cn("fpost__role", isStaff && "fpost__role--staff")}>{roleLabel(post.authorRole)}</span>
         <dl className="fpost__stats">
-          <div><dt>Rep.</dt><dd className="tabular-nums">{post.authorReputation}</dd></div>
-          <div><dt>Posts</dt><dd className="tabular-nums">{post.authorPostCount}</dd></div>
-          <div><dt>Desde</dt><dd>{joined(post.authorJoinedAt)}</dd></div>
+          <div><dd className="tabular-nums">{post.authorPostCount}</dd><dt>posts</dt></div>
+          <div><dd className="tabular-nums">{post.authorReputation}</dd><dt>rep.</dt></div>
         </dl>
+        <span className="fpost__since">Desde {joined(post.authorJoinedAt)}</span>
       </div>
 
       <div className="fpost__main">
