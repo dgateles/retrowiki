@@ -762,7 +762,7 @@ export const reportTypes = mysqlTable("report_types", {
 export const contentReports = mysqlTable("content_reports", {
   id: pk(),
   reporterId: bigint("reporter_id", { mode: "number" }).notNull(),
-  targetType: mysqlEnum("target_type", ["article", "comment", "photo"]).notNull(),
+  targetType: mysqlEnum("target_type", ["article", "comment", "photo", "forum_topic", "forum_post"]).notNull(),
   targetId: bigint("target_id", { mode: "number" }).notNull(),
   reportTypeId: bigint("report_type_id", { mode: "number" }).notNull(),
   message: varchar("message", { length: 1000 }).notNull().default(""),

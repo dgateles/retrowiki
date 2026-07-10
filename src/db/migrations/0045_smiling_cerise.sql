@@ -1,0 +1,1 @@
+ALTER TABLE `content_reports` MODIFY COLUMN `target_type` enum('article','comment','photo','forum_topic','forum_post') NOT NULL;

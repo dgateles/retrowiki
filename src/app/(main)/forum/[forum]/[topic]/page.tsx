@@ -10,6 +10,9 @@ import { ReplyForm } from "@/components/forum/reply-form";
 import { TopicFollowButton } from "@/components/forum/topic-follow-button";
 import { TopicModToolbar } from "@/components/forum/topic-mod-toolbar";
 import { PostModActions } from "@/components/forum/post-mod-actions";
+import { ReportButton } from "@/components/moderation/report-button";
+import { listReportTypes } from "@/lib/reports";
+import { getReportingSettings } from "@/lib/settings";
 import { Pager } from "@/components/ui/pager";
 import { richDocToText } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody } from "@/lib/forum";
@@ -41,6 +44,9 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
+  const userId = user ? Number(user.id) : null;
+  const [reportTypes, reportingSettings] = await Promise.all([listReportTypes(), getReportingSettings()]);
+  const reportTypeOpts = reportTypes.map((r) => ({ id: r.id, title: r.title }));
 
   return (
     <main id="main" className="page">
@@ -61,9 +67,17 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
       {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}
 
       <div className="fpost-list">
-        {items.map((post) => (
-          <ForumPostCard key={post.id} post={post} footer={isMod && !post.isFirst ? <PostModActions postId={post.id} /> : undefined} />
-        ))}
+        {items.map((post) => {
+          const canReport = userId && post.authorId !== userId && reportTypeOpts.length > 0;
+          const canModPost = isMod && !post.isFirst;
+          const footer = (canReport || canModPost) ? (
+            <>
+              {canReport && <ReportButton targetType="forum_post" targetId={post.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} variant="icon" />}
+              {canModPost && <PostModActions postId={post.id} />}
+            </>
+          ) : undefined;
+          return <ForumPostCard key={post.id} post={post} footer={footer} />;
+        })}
       </div>
 
       <Pager path={`/forum/${t.forumSlug}/${t.slug}`} page={page} hasMore={hasMore} />

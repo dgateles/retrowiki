@@ -1,12 +1,13 @@
 import "server-only";
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { reportTypes, contentReports, articles, comments, users, memberPhotos } from "@/db/schema";
+import { reportTypes, contentReports, articles, comments, users, memberPhotos, forumTopics, forumPosts, forums } from "@/db/schema";
 import { articleHref, commentHref } from "@/lib/article-url";
+import { topicHref, postHref } from "@/lib/forum-url";
 import { getReportingSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
 
-export type TargetType = "article" | "comment" | "photo";
+export type TargetType = "article" | "comment" | "photo" | "forum_topic" | "forum_post";
 export type ReportType = { id: number; title: string; completedNotification: string; rejectedNotification: string; sortOrder: number };
 
 const DEFAULT_TYPES = [
@@ -94,6 +95,14 @@ async function contentAuthorId(targetType: TargetType, targetId: number): Promis
       const [p] = await db.select({ id: memberPhotos.userId }).from(memberPhotos).where(eq(memberPhotos.id, targetId)).limit(1);
       return p?.id ?? null;
     }
+    if (targetType === "forum_topic") {
+      const [t] = await db.select({ id: forumTopics.authorId }).from(forumTopics).where(eq(forumTopics.id, targetId)).limit(1);
+      return t?.id ?? null;
+    }
+    if (targetType === "forum_post") {
+      const [fp] = await db.select({ id: forumPosts.authorId }).from(forumPosts).where(eq(forumPosts.id, targetId)).limit(1);
+      return fp?.id ?? null;
+    }
     const [c] = await db.select({ id: comments.authorId }).from(comments).where(eq(comments.id, targetId)).limit(1);
     return c?.id ?? null;
   } catch {
@@ -106,6 +115,10 @@ async function hideContent(targetType: TargetType, targetId: number): Promise<vo
     await db.update(articles).set({ status: "archived" }).where(eq(articles.id, targetId));
   } else if (targetType === "photo") {
     await db.update(memberPhotos).set({ hidden: true }).where(eq(memberPhotos.id, targetId));
+  } else if (targetType === "forum_topic") {
+    await db.update(forumTopics).set({ status: "hidden" }).where(eq(forumTopics.id, targetId));
+  } else if (targetType === "forum_post") {
+    await db.update(forumPosts).set({ status: "hidden" }).where(eq(forumPosts.id, targetId));
   } else {
     await db.update(comments).set({ status: "hidden" }).where(eq(comments.id, targetId));
   }
@@ -242,6 +255,24 @@ export async function getReportQueue(): Promise<ReportGroup[]> {
           g.link = art ? commentHref(art.kind, art.slug, c.id) : null;
           g.authorId = c.userId;
         }
+      }
+    }
+    const forumTopicIds = [...groups.values()].filter((g) => g.targetType === "forum_topic").map((g) => g.targetId);
+    const forumPostIds = [...groups.values()].filter((g) => g.targetType === "forum_post").map((g) => g.targetId);
+    if (forumTopicIds.length) {
+      const ts = await db.select({ id: forumTopics.id, title: forumTopics.title, slug: forumTopics.slug, authorId: forumTopics.authorId, forumSlug: forums.slug })
+        .from(forumTopics).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(inArray(forumTopics.id, forumTopicIds));
+      for (const t of ts) {
+        const g = groups.get(`forum_topic:${t.id}`);
+        if (g) { g.title = `Tópico: ${t.title}`; g.link = topicHref(t.forumSlug, t.slug); g.authorId = t.authorId; }
+      }
+    }
+    if (forumPostIds.length) {
+      const ps = await db.select({ id: forumPosts.id, authorId: forumPosts.authorId, topicSlug: forumTopics.slug, topicTitle: forumTopics.title, forumSlug: forums.slug })
+        .from(forumPosts).innerJoin(forumTopics, eq(forumTopics.id, forumPosts.topicId)).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(inArray(forumPosts.id, forumPostIds));
+      for (const p of ps) {
+        const g = groups.get(`forum_post:${p.id}`);
+        if (g) { g.title = `Post em "${p.topicTitle}"`; g.link = postHref(p.forumSlug, p.topicSlug, p.id); g.authorId = p.authorId; }
       }
     }
     return [...groups.values()].sort((a, b) => b.reportCount - a.reportCount);

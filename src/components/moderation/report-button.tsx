@@ -19,7 +19,7 @@ export function ReportButton({
   messageMandatory = false,
   variant = "link",
 }: {
-  targetType: "article" | "comment" | "photo";
+  targetType: "article" | "comment" | "photo" | "forum_topic" | "forum_post";
   targetId: number;
   reportTypes: ReportTypeOpt[];
   messageMandatory?: boolean;
