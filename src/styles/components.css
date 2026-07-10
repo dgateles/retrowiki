@@ -3855,9 +3855,9 @@
   .topic-row__last-name { @apply truncate font-medium text-foreground; }
   .topic-row__last-date { @apply text-muted-foreground; }
 
-  /* Um container só, posts separados por divisórias (não caixas soltas). */
-  .fpost-list { @apply divide-y divide-border overflow-hidden rounded-lg border border-border bg-card; }
-  .fpost { @apply grid grid-cols-1 sm:grid-cols-[13rem_1fr]; }
+  /* Cada post é um card próprio, com espaço entre eles (estilo IPB). */
+  .fpost-list { @apply flex flex-col gap-3; }
+  .fpost { @apply grid grid-cols-1 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-[13rem_1fr]; }
   /* Postbit: coluna do autor, tudo CENTRADO (estilo IPB), com divisória à direita. */
   .fpost__bit { @apply flex flex-row items-center gap-3 border-b border-border bg-muted/20 p-4 sm:flex-col sm:items-center sm:gap-1.5 sm:border-b-0 sm:border-r sm:py-6 sm:text-center; }
   .fpost__avatar { @apply flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-base font-semibold text-primary sm:size-16; }
