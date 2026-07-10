@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, users } from "@/db/schema";
+import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, forumTopicTags, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -15,7 +15,7 @@ import { getReputationSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
 import { postingGate, isContentModerated } from "@/lib/warnings";
 import { isRichDoc, RichDocSchema, richDocToText, collectMentionHandles } from "@/lib/blocks/rich-schema";
-import { canPostForum, uniqueTopicSlug } from "@/lib/forum";
+import { canPostForum, uniqueTopicSlug, resolveTags } from "@/lib/forum";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
 // O insert do drizzle/mysql2 devolve [ResultSetHeader, ...] — o insertId está no [0].
@@ -78,6 +78,7 @@ const CreateTopicSchema = z.object({
   body: z.string(),
   follow: z.boolean().optional(),
   isQuestion: z.boolean().optional(),
+  tags: z.array(z.string().max(40)).max(10).optional(),
   poll: PollSchema.optional(),
   options: z.object({ lock: z.boolean().optional(), pin: z.boolean().optional(), hide: z.boolean().optional() }).optional(),
 });
@@ -159,6 +160,12 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
     }
     return tId;
   });
+
+  // Tags (registro global reutilizável + associação).
+  if (parsed.data.tags?.length) {
+    const tags = await resolveTags(parsed.data.tags);
+    if (tags.length) await db.insert(forumTopicTags).values(tags.map((t) => ({ topicId, tagId: t.id }))).catch(() => {});
+  }
 
   if (moderated) return { ok: true, data: { forumSlug: forum.slug, topicSlug: slug, pending: true } };
 

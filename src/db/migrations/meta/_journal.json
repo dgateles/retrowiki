@@ -330,6 +330,13 @@
       "when": 1783705106802,
       "tag": "0046_plain_lightspeed",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "5",
+      "when": 1783720991842,
+      "tag": "0047_outgoing_lord_tyger",
+      "breakpoints": true
     }
   ]
 }

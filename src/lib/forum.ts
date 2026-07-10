@@ -2,7 +2,7 @@ import "server-only";
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/mysql-core";
 import { db } from "@/db";
-import { forumCategories, forums, forumTopics, forumPosts, forumTopicFollows, users } from "@/db/schema";
+import { forumCategories, forums, forumTopics, forumPosts, forumTopicFollows, forumTags, forumTopicTags, users } from "@/db/schema";
 import { isRichDoc } from "@/lib/blocks/rich-schema";
 import { slugify } from "@/lib/utils";
 import type { UserRole } from "@/db/schema";
@@ -153,15 +153,23 @@ export async function listSubForums(parentId: number, viewerRole: UserRole | nul
 }
 
 // ── Lista de tópicos de um fórum ───────────────────────────────────────────
+export type TopicTag = { name: string; slug: string };
 export type TopicRow = {
   id: number; title: string; slug: string; status: string; pinned: boolean; isQuestion: boolean; bestPostId: number | null;
   views: number; postsCount: number; createdAt: Date; lastPostAt: Date | null;
   authorHandle: string; authorName: string; lastPosterHandle: string | null; lastPosterName: string | null;
+  tags: TopicTag[];
 };
-export async function listTopics(forumId: number, page: number): Promise<{ items: TopicRow[]; hasMore: boolean }> {
+export async function listTopics(forumId: number, page: number, tagSlug?: string): Promise<{ items: TopicRow[]; hasMore: boolean }> {
   const p = Math.max(1, page);
   const lp = alias(users, "lp"); // segundo join a users: o último a postar
   try {
+    const conds = [eq(forumTopics.forumId, forumId), inArray(forumTopics.status, ["open", "locked", "archived"] as const), isNull(forumTopics.deletedAt)];
+    if (tagSlug) {
+      const [tag] = await db.select({ id: forumTags.id }).from(forumTags).where(eq(forumTags.slug, tagSlug)).limit(1);
+      if (!tag) return { items: [], hasMore: false };
+      conds.push(inArray(forumTopics.id, db.select({ id: forumTopicTags.topicId }).from(forumTopicTags).where(eq(forumTopicTags.tagId, tag.id))));
+    }
     const rows = await db
       .select({
         id: forumTopics.id, title: forumTopics.title, slug: forumTopics.slug, status: forumTopics.status,
@@ -173,14 +181,74 @@ export async function listTopics(forumId: number, page: number): Promise<{ items
       .from(forumTopics)
       .innerJoin(users, eq(users.id, forumTopics.authorId))
       .leftJoin(lp, eq(lp.id, forumTopics.lastPosterId))
-      .where(and(eq(forumTopics.forumId, forumId), inArray(forumTopics.status, ["open", "locked", "archived"]), isNull(forumTopics.deletedAt)))
+      .where(and(...conds))
       .orderBy(desc(forumTopics.pinned), desc(forumTopics.lastPostAt))
       .limit(TOPICS_PER_PAGE + 1)
       .offset((p - 1) * TOPICS_PER_PAGE);
     const hasMore = rows.length > TOPICS_PER_PAGE;
-    return { items: rows.slice(0, TOPICS_PER_PAGE), hasMore };
+    const items = rows.slice(0, TOPICS_PER_PAGE);
+    // Tags de cada tópico, em lote.
+    const ids = items.map((r) => r.id);
+    const byTopic = new Map<number, TopicTag[]>();
+    if (ids.length) {
+      const tagRows = await db
+        .select({ topicId: forumTopicTags.topicId, name: forumTags.name, slug: forumTags.slug })
+        .from(forumTopicTags)
+        .innerJoin(forumTags, eq(forumTags.id, forumTopicTags.tagId))
+        .where(inArray(forumTopicTags.topicId, ids));
+      for (const tr of tagRows) {
+        const arr = byTopic.get(tr.topicId) ?? [];
+        arr.push({ name: tr.name, slug: tr.slug });
+        byTopic.set(tr.topicId, arr);
+      }
+    }
+    return { items: items.map((r) => ({ ...r, tags: byTopic.get(r.id) ?? [] })), hasMore };
   } catch {
     return { items: [], hasMore: false };
+  }
+}
+
+/** Resolve nomes de tags para ids (criando as que faltam). Normaliza e limita. */
+export async function resolveTags(rawNames: string[]): Promise<{ id: number; name: string; slug: string }[]> {
+  const seen = new Set<string>();
+  const wanted: { name: string; slug: string }[] = [];
+  for (const raw of rawNames) {
+    const name = String(raw).trim().replace(/\s+/g, " ").slice(0, 40);
+    const slug = slugify(name).slice(0, 60);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    wanted.push({ name, slug });
+    if (wanted.length >= 6) break;
+  }
+  if (!wanted.length) return [];
+  const slugs = wanted.map((w) => w.slug);
+  const existing = await db.select({ id: forumTags.id, name: forumTags.name, slug: forumTags.slug }).from(forumTags).where(inArray(forumTags.slug, slugs));
+  const bySlug = new Map(existing.map((t) => [t.slug, { id: t.id, name: t.name, slug: t.slug }]));
+  for (const w of wanted) {
+    if (bySlug.has(w.slug)) continue;
+    try {
+      const ins = await db.insert(forumTags).values({ name: w.name, slug: w.slug });
+      const id = (ins as unknown as [{ insertId: number }])[0].insertId;
+      bySlug.set(w.slug, { id, name: w.name, slug: w.slug });
+    } catch {
+      // corrida: outro inseriu — relê
+      const [t] = await db.select({ id: forumTags.id, name: forumTags.name, slug: forumTags.slug }).from(forumTags).where(eq(forumTags.slug, w.slug)).limit(1);
+      if (t) bySlug.set(w.slug, { id: t.id, name: t.name, slug: t.slug });
+    }
+  }
+  return wanted.map((w) => bySlug.get(w.slug)).filter((t): t is { id: number; name: string; slug: string } => !!t);
+}
+
+/** Tags de um tópico (para a página do tópico). */
+export async function getTopicTags(topicId: number): Promise<TopicTag[]> {
+  try {
+    return await db
+      .select({ name: forumTags.name, slug: forumTags.slug })
+      .from(forumTopicTags)
+      .innerJoin(forumTags, eq(forumTags.id, forumTopicTags.tagId))
+      .where(eq(forumTopicTags.topicId, topicId));
+  } catch {
+    return [];
   }
 }
 

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RichEditor } from "@/components/editor/rich-editor";
+import { TagInput } from "@/components/forum/tag-input";
 import { docHasText } from "@/components/engagement/comment-form";
 import { createTopicAction } from "@/lib/actions/forum-actions";
 import { topicHref, forumHref } from "@/lib/forum-url";
@@ -29,6 +30,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
   const [doc, setDoc] = useState<JSONContent>(EMPTY);
   const [follow, setFollow] = useState(true);
   const [isQuestion, setIsQuestion] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
   // Enquete
@@ -82,7 +84,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
     }
     setPending(true);
     const res = await createTopicAction({
-      forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion, poll,
+      forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion, tags, poll,
       options: isStaff ? { lock, pin, hide } : undefined,
     });
     setPending(false);
@@ -127,6 +129,10 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
               <Switch checked={isQuestion} onCheckedChange={setIsQuestion} />
               É uma pergunta <span className="text-muted-foreground">— habilita marcar a “melhor resposta” (Resolvido)</span>
             </label>
+            <div className="ftopic-form__section">
+              <Label className="mb-2 text-sm font-semibold">Tags <span className="font-normal text-muted-foreground">(opcional)</span></Label>
+              <TagInput tags={tags} onChange={setTags} />
+            </div>
           </div>
         ) : (
           <div className="ftopic-form">

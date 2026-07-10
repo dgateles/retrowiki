@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Lock, Check, CircleCheck, CircleHelp } from "lucide-react";
-import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic } from "@/lib/forum";
+import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic, getTopicTags } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
@@ -53,6 +53,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   if (page === 1) await incrementTopicView(t.id);
   const { items, hasMore } = await listPosts(t.id, page);
   const poll = page === 1 ? await getTopicPoll(t.id, user ? Number(user.id) : null) : null;
+  const topicTags = await getTopicTags(t.id);
   const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
@@ -101,6 +102,13 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
             {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
             {t.title}
           </h1>
+          {topicTags.length > 0 && (
+            <div className="ftopic-tags">
+              {topicTags.map((tg) => (
+                <Link key={tg.slug} href={`${forumHref(t.forumSlug)}?tag=${encodeURIComponent(tg.slug)}`} className="ftag-chip ftag-chip--link">#{tg.name}</Link>
+              ))}
+            </div>
+          )}
         </div>
         <div className="ftopic-actions">
           {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}

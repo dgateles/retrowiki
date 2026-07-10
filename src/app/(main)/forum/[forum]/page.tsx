@@ -22,16 +22,17 @@ export async function generateMetadata({ params }: { params: Promise<{ forum: st
   return pageMetadata({ title: f.title, description: f.description ?? `Tópicos do fórum ${f.title}.`, path: `/forum/${f.slug}` });
 }
 
-export default async function ForumPage({ params, searchParams }: { params: Promise<{ forum: string }>; searchParams: Promise<{ page?: string }> }) {
+export default async function ForumPage({ params, searchParams }: { params: Promise<{ forum: string }>; searchParams: Promise<{ page?: string; tag?: string }> }) {
   const { forum } = await params;
-  const { page: pageStr } = await searchParams;
+  const { page: pageStr, tag: tagParam } = await searchParams;
   const page = Math.max(1, Number(pageStr) || 1);
+  const tag = typeof tagParam === "string" && tagParam.trim() ? tagParam.trim().toLowerCase() : undefined;
 
   const user = await getCurrentUser();
   const f = await getForumBySlug(forum);
   if (!f || !canReadForumPublic(f, user?.role ?? null)) notFound();
 
-  const { items, hasMore } = await listTopics(f.id, page);
+  const { items, hasMore } = await listTopics(f.id, page, tag);
   const subForums = await listSubForums(f.id, user?.role ?? null);
   const canPost = !!user && canPostForum(f, user.role);
 
@@ -91,11 +92,18 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
         </section>
       )}
 
+      {tag && (
+        <div className="ftag-filter">
+          <span>Filtrando por <span className="ftag-chip ftag-chip--active">#{tag}</span></span>
+          <Link href={forumHref(f.slug)} className="link-inline">Limpar filtro</Link>
+        </div>
+      )}
+
       {items.length === 0 ? (
         <Empty className="mt-6">
           <EmptyHeader>
             <EmptyMedia variant="icon"><MessagesSquare aria-hidden="true" /></EmptyMedia>
-            <EmptyTitle>Nenhum tópico ainda</EmptyTitle>
+            <EmptyTitle>{tag ? "Nenhum tópico com essa tag" : "Nenhum tópico ainda"}</EmptyTitle>
             <EmptyDescription>Seja o primeiro a começar uma conversa aqui.</EmptyDescription>
           </EmptyHeader>
           {canPost && (
@@ -117,6 +125,13 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
                   {t.isQuestion && t.bestPostId && <span className="topic-row__solved">Resolvido</span>}
                 </Link>
                 <p className="topic-row__meta">por {t.authorName} · {t.postsCount} resposta(s) · {t.views} visualização(ões)</p>
+                {t.tags.length > 0 && (
+                  <div className="topic-row__tags">
+                    {t.tags.map((tg) => (
+                      <Link key={tg.slug} href={`${forumHref(f.slug)}?tag=${encodeURIComponent(tg.slug)}`} className="ftag-chip ftag-chip--link">#{tg.name}</Link>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="topic-row__last tabular-nums">
                 {t.lastPosterName ? (

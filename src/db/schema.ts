@@ -1027,6 +1027,23 @@ export const forumPollVotes = mysqlTable("forum_poll_votes", {
   index("forum_poll_votes_user_poll_idx").on(t.userId, t.pollId),
 ]);
 
+// Tags de tópico (registro global reutilizável + associação N:N).
+export const forumTags = mysqlTable("forum_tags", {
+  id: pk(),
+  name: varchar("name", { length: 60 }).notNull(),
+  slug: varchar("slug", { length: 70 }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("forum_tags_slug_idx").on(t.slug)]);
+
+export const forumTopicTags = mysqlTable("forum_topic_tags", {
+  id: pk(),
+  topicId: bigint("topic_id", { mode: "number" }).notNull(),
+  tagId: bigint("tag_id", { mode: "number" }).notNull(),
+}, (t) => [
+  uniqueIndex("forum_topic_tags_idx").on(t.topicId, t.tagId),
+  index("forum_topic_tags_tag_idx").on(t.tagId),
+]);
+
 // Tipos exportados --------------------------------------------------------
 export type MenuItem = typeof menuItems.$inferSelect;
 export type UserRole = (typeof users.$inferSelect)["role"];
@@ -1042,3 +1059,4 @@ export type ForumTopicStatus = ForumTopic["status"];
 export type ForumPoll = typeof forumPolls.$inferSelect;
 export type ForumPollQuestion = typeof forumPollQuestions.$inferSelect;
 export type ForumPollChoice = typeof forumPollChoices.$inferSelect;
+export type ForumTag = typeof forumTags.$inferSelect;

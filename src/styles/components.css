@@ -3916,6 +3916,18 @@
   .fmod { @apply inline-flex; }
   .ftopic-actions { @apply flex shrink-0 items-center gap-2; }
 
+  /* Tags de tópico */
+  .ftag-chip { @apply inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground; }
+  .ftag-chip--link { @apply transition-colors hover:bg-primary/15 hover:text-primary; }
+  .ftag-chip--active { @apply bg-primary/15 text-primary; }
+  .ftopic-tags { @apply mt-2 flex flex-wrap gap-1.5; }
+  .topic-row__tags { @apply mt-1.5 flex flex-wrap gap-1.5; }
+  .ftag-filter { @apply mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground; }
+  .ftag-input { @apply flex flex-wrap items-center gap-2 rounded-lg border border-input bg-transparent p-2; }
+  .ftag-input .ftag-chip { @apply bg-primary/12 text-foreground; }
+  .ftag-input .ftag-chip button { @apply ml-0.5 rounded-full p-0.5 text-muted-foreground hover:bg-background hover:text-foreground; }
+  .ftag-input__field { @apply min-w-40 flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-muted-foreground; }
+
   /* Q&A / solução */
   .ftopic-qbadge { @apply mb-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs font-semibold text-muted-foreground; }
   .ftopic-qbadge--solved { @apply border-success/40 bg-success/10 text-success; }
