@@ -13,6 +13,7 @@ import { QuoteButton } from "@/components/forum/quote-button";
 import { ForumPoll } from "@/components/forum/forum-poll";
 import { getTopicPoll } from "@/lib/forum-polls";
 import { getIgnoredUserIds } from "@/lib/ignore";
+import { listStockReplies } from "@/lib/stock-replies";
 import { IgnoredPostGate } from "@/components/social/ignored-post-gate";
 import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
 import { ReplyForm } from "@/components/forum/reply-form";
@@ -62,6 +63,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const isMod = can.moderate(user);
   const userId = user ? Number(user.id) : null;
   const isTopicAuthor = userId != null && userId === t.authorId;
+  const stockReplies = isMod ? await listStockReplies() : [];
   const [reportTypes, reportingSettings, enabledReactions, reactionState] = await Promise.all([
     listReportTypes(),
     getReportingSettings(),
@@ -181,7 +183,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
       <Pager path={`/forum/${t.forumSlug}/${t.slug}`} page={page} hasMore={hasMore} />
 
       {canReply ? (
-        <div className="mt-8"><ReplyForm topicId={t.id} /></div>
+        <div className="mt-8"><ReplyForm topicId={t.id} stockReplies={stockReplies} /></div>
       ) : t.status === "locked" ? (
         <p className="mt-8 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">Este tópico está trancado para novas respostas.</p>
       ) : !user ? (

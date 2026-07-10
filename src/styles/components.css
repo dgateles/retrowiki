@@ -3908,7 +3908,8 @@
 
 @layer components {
   .freply { @apply mt-2 scroll-mt-24 rounded-lg border border-border bg-card p-4; }
-  .freply__title { @apply mb-3 text-base font-semibold; }
+  .freply__head { @apply mb-3 flex flex-wrap items-center justify-between gap-3; }
+  .freply__title { @apply text-base font-semibold; }
   .freply__foot { @apply mt-3 flex items-center justify-between gap-4; }
 }
 

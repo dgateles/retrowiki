@@ -1074,6 +1074,15 @@ export const conversationMessages = mysqlTable("conversation_messages", {
   createdAt: createdAt(),
 }, (t) => [index("conv_msg_idx").on(t.conversationId, t.createdAt)]);
 
+// Respostas prontas (canned replies) — modelos reutilizáveis para a equipe.
+export const stockReplies = mysqlTable("stock_replies", {
+  id: pk(),
+  title: varchar("title", { length: 120 }).notNull(),
+  body: text("body").notNull(), // doc rico (JSON)
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("stock_replies_sort_idx").on(t.sortOrder)]);
+
 // Visitantes recentes do perfil (uma linha por visitante, atualiza o horário).
 export const profileVisits = mysqlTable("profile_visits", {
   id: pk(),
@@ -1112,5 +1121,6 @@ export type ForumPoll = typeof forumPolls.$inferSelect;
 export type ForumPollQuestion = typeof forumPollQuestions.$inferSelect;
 export type ForumPollChoice = typeof forumPollChoices.$inferSelect;
 export type ForumTag = typeof forumTags.$inferSelect;
+export type StockReply = typeof stockReplies.$inferSelect;
 export type Conversation = typeof conversations.$inferSelect;
 export type ConversationMessage = typeof conversationMessages.$inferSelect;
