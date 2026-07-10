@@ -3942,6 +3942,16 @@
   .pm-msg__author { @apply font-semibold hover:text-primary; }
   .pm-msg__head time { @apply text-xs text-muted-foreground; }
   .fignored { @apply flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground; }
+  /* Feed de novidades */
+  .stream { @apply divide-y divide-border overflow-hidden rounded-lg border border-border; }
+  .stream__item { @apply flex items-start gap-3 bg-card p-4 transition-colors hover:bg-accent/40; }
+  .stream__icon { @apply flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary; }
+  .stream__main { @apply min-w-0 flex-1; }
+  .stream__line { @apply text-sm text-muted-foreground; }
+  .stream__author { @apply font-medium text-foreground hover:text-primary; }
+  .stream__title { @apply mt-0.5 block truncate font-semibold; }
+  .stream__time { @apply shrink-0 text-xs text-muted-foreground; }
+
   .profile-visitors { @apply flex flex-wrap gap-2; }
   .profile-visitors__avatar { @apply flex size-9 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-muted-foreground ring-1 ring-border transition-transform hover:scale-110; }
 
