@@ -282,6 +282,18 @@
   }
 }
 
+/* iOS Safari dá zoom automático na página ao focar um campo com font-size < 16px,
+   quebrando o layout. Garante ≥16px em todo campo de texto SÓ no mobile (< md);
+   no desktop os text-sm/text-xs continuam valendo. Fica FORA das @layer de
+   propósito: CSS sem layer vence as utilities do Tailwind (text-sm etc.). */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 /* utilitário de acessibilidade: skip link / sr-only */
 .sr-only {
   position: absolute;
