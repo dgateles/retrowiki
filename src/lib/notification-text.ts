@@ -42,6 +42,8 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `${actor} respondeu em "${p.topicTitle ?? "um tópico"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
     case "forum.solution":
       return { text: `Sua resposta foi marcada como solução em "${p.topicTitle ?? "uma pergunta"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
+    case "forum.mention":
+      return { text: `${actor} mencionou você em "${p.topicTitle ?? "um tópico"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
     case "article.approved":
       return { text: `"${title}" foi aprovado e publicado.`, href: articleHref };
     case "article.changes_requested":

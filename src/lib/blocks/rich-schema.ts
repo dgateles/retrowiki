@@ -97,6 +97,7 @@ export type RichNode =
   | { type: "hardBreak" }
   // Blocos-widget atômicos (migrados do formato antigo de blocos): guardam os
   // dados nos attrs, sem conteúdo aninhado.
+  | { type: "mention"; attrs: { id: string; label: string } }
   | { type: "callout"; attrs: { variant: "info" | "success" | "warning" | "danger"; text: string } }
   | { type: "steps"; attrs: { items: { title: string; text: string }[] } }
   | { type: "githubReleases"; attrs: { owner: string; repo: string; limit: number } }
@@ -165,6 +166,13 @@ const Node = z.lazy(() =>
         url: z.string().trim().max(500).refine((u) => parseVideoEmbed(u) !== null, "URL de vídeo não suportada (YouTube, Vimeo ou Twitch)."),
       }),
     }),
+    z.object({
+      type: z.literal("mention"),
+      attrs: z
+        .object({ id: z.string().regex(/^[A-Za-z0-9_-]{1,60}$/), label: z.string().max(120) })
+        .passthrough()
+        .transform((a) => ({ id: a.id, label: a.label })),
+    }),
   ]),
 ) as unknown as z.ZodType<RichNode>;
 
@@ -185,6 +193,7 @@ export function richDocToText(doc: RichDoc): string {
   const walk = (nodes?: RichNode[]) => {
     for (const n of nodes ?? []) {
       if (n.type === "text") parts.push(n.text);
+      else if (n.type === "mention") parts.push("@" + n.attrs.label);
       else if (n.type === "callout") parts.push(n.attrs.text);
       else if (n.type === "steps") n.attrs.items.forEach((it) => parts.push(it.title, it.text));
       else if ("content" in n) walk(n.content);
@@ -192,4 +201,18 @@ export function richDocToText(doc: RichDoc): string {
   };
   walk(doc.content);
   return parts.join(" ").replace(/\s+/g, " ").trim().slice(0, 8000);
+}
+
+/** Coleta os handles (@id) mencionados num doc rico, sem repetição (máx. 20). */
+export function collectMentionHandles(doc: RichDoc): string[] {
+  const found = new Set<string>();
+  const walk = (nodes?: RichNode[]) => {
+    for (const n of nodes ?? []) {
+      if (n.type === "mention") { if (n.attrs.id) found.add(n.attrs.id); }
+      else if ("content" in n) walk(n.content);
+      if (found.size >= 20) return;
+    }
+  };
+  walk(doc.content);
+  return [...found];
 }

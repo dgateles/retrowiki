@@ -35,6 +35,7 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Box, Spoiler } from "@/components/editor/box-node";
+import { MentionExtension } from "@/components/editor/mention-extension";
 import { Callout, Steps, GithubReleases, VideoEmbed } from "@/components/editor/widget-nodes";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, EMOJIS, CODE_LANGS } from "@/lib/editor/options";
@@ -418,6 +419,7 @@ export function RichEditor({ value, onChange, variant = "full", placeholder = "E
       Steps,
       GithubReleases,
       VideoEmbed,
+      MentionExtension,
     ],
     content: value ?? "",
     onUpdate: ({ editor: e }) => onChange(e.getJSON()),

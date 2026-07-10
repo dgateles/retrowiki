@@ -14,7 +14,7 @@ import { getReaction } from "@/lib/reactions";
 import { getReputationSettings } from "@/lib/settings";
 import { createNotification } from "@/lib/notifications";
 import { postingGate, isContentModerated } from "@/lib/warnings";
-import { isRichDoc, RichDocSchema, richDocToText } from "@/lib/blocks/rich-schema";
+import { isRichDoc, RichDocSchema, richDocToText, collectMentionHandles } from "@/lib/blocks/rich-schema";
 import { canPostForum, uniqueTopicSlug } from "@/lib/forum";
 
 type Result<T = unknown> = { ok: boolean; error?: string; data?: T };
@@ -46,6 +46,32 @@ const PollSchema = z.object({
     choices: z.array(z.string().trim().min(1).max(300)).min(2, "Cada pergunta precisa de ao menos 2 opções.").max(30),
   })).min(1).max(10),
 });
+/** Notifica os usuários @mencionados no corpo (exceto o autor e quem já foi
+ * notificado). Best-effort — nunca bloqueia o fluxo. */
+async function notifyForumMentions(
+  bodyJson: string,
+  ctx: { forumSlug: string; topicSlug: string; topicTitle: string; postId: number },
+  actorId: number,
+  exclude: Set<number>,
+): Promise<void> {
+  try {
+    const doc = JSON.parse(bodyJson);
+    if (!isRichDoc(doc)) return;
+    const handles = collectMentionHandles(doc);
+    if (!handles.length) return;
+    const mentioned = await db.select({ id: users.id }).from(users).where(inArray(users.handle, handles));
+    if (!mentioned.length) return;
+    const [me] = await db.select({ name: users.displayName, avatar: users.avatarUrl }).from(users).where(eq(users.id, actorId)).limit(1);
+    const payload = { forumSlug: ctx.forumSlug, topicSlug: ctx.topicSlug, topicTitle: ctx.topicTitle, postId: ctx.postId || undefined, actorName: me?.name ?? "Alguém", actorAvatar: me?.avatar ?? null };
+    for (const u of mentioned) {
+      if (u.id === actorId || exclude.has(u.id)) continue;
+      await createNotification(u.id, "forum.mention", payload);
+    }
+  } catch {
+    // ignora
+  }
+}
+
 const CreateTopicSchema = z.object({
   forumId: z.number().int().positive(),
   title: z.string().trim().min(5, "Título muito curto.").max(200),
@@ -139,6 +165,7 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
   if (parsed.data.follow !== false) await db.insert(forumTopicFollows).values({ userId, topicId }).catch(() => {});
   await evaluateBadges(userId);
   await runTrigger("forum.topic.created", { actorId: userId });
+  await notifyForumMentions(valid.json, { forumSlug: forum.slug, topicSlug: slug, topicTitle: parsed.data.title, postId: 0 }, userId, new Set());
   revalidatePath("/forum");
   revalidatePath(`/forum/${forum.slug}`);
   return { ok: true, data: { forumSlug: forum.slug, topicSlug: slug } };
@@ -193,6 +220,7 @@ export async function replyTopicAction(input: unknown): Promise<Result<{ forumSl
   const recipients = new Set<number>(followers.map((f) => f.userId));
   if (t.authorId !== userId) recipients.add(t.authorId);
   for (const rid of recipients) await createNotification(rid, "forum.reply", payload);
+  await notifyForumMentions(valid.json, { forumSlug: t.forumSlug, topicSlug: t.slug, topicTitle: t.title, postId }, userId, recipients);
 
   revalidatePath(`/forum/${t.forumSlug}/${t.slug}`);
   return { ok: true, data: { forumSlug: t.forumSlug, topicSlug: t.slug, postId } };

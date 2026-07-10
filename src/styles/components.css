@@ -2572,6 +2572,25 @@
   .blk-a {
     @apply text-primary underline underline-offset-2 hover:text-primary/80;
   }
+  .blk-mention {
+    @apply rounded bg-primary/10 px-1 font-medium text-primary no-underline hover:bg-primary/20;
+  }
+  /* Chip de menção dentro do editor */
+  .rte-mention {
+    @apply rounded bg-primary/10 px-1 font-medium text-primary;
+  }
+  /* Popup de autocomplete de @menção */
+  .rte-mention-menu {
+    @apply flex min-w-56 max-w-72 flex-col overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg;
+  }
+  .rte-mention-opt {
+    @apply flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors;
+  }
+  .rte-mention-opt--on {
+    @apply bg-accent text-accent-foreground;
+  }
+  .rte-mention-opt__name { @apply truncate font-medium; }
+  .rte-mention-opt__handle { @apply ml-auto shrink-0 text-xs text-muted-foreground; }
   .blk-quote {
     @apply my-5 border-l-4 border-primary/40 pl-4 italic text-foreground/80;
   }

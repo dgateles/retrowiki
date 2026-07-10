@@ -84,6 +84,15 @@ function renderInline(nodes: Node[] | undefined) {
   return (nodes ?? []).map((n, i) => {
     if (n.type === "text") return applyMarks(n.text, n.marks, i);
     if (n.type === "hardBreak") return <br key={i} />;
+    if (n.type === "mention") {
+      const id = String(n.attrs?.id ?? "");
+      const label = String(n.attrs?.label ?? id);
+      return (
+        <a key={i} href={`/u/${id}`} className="blk-mention" data-mention="">
+          @{label}
+        </a>
+      );
+    }
     return null;
   });
 }
