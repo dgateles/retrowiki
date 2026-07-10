@@ -61,6 +61,7 @@ const GROUPS: NavGroup[] = [
     title: "Conteúdo", icon: FileText, items: [
       { href: "/admin/artigos", label: "Artigos" },
       { href: "/admin/consoles", label: "Consoles" },
+      { href: "/admin/forum", label: "Fórum" },
       { href: "/admin/paginas", label: "Páginas" },
       { href: "/admin/menus", label: "Menus" },
     ],
