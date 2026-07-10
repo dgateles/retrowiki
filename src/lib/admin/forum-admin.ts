@@ -5,7 +5,7 @@ import { forumCategories, forums } from "@/db/schema";
 import type { UserRole } from "@/db/schema";
 
 export type AdminForum = {
-  id: number; categoryId: number; title: string; slug: string; description: string | null; icon: string | null;
+  id: number; categoryId: number; parentId: number | null; title: string; slug: string; description: string | null; icon: string | null;
   visible: boolean; locked: boolean; minReadRole: UserRole; minPostRole: UserRole; sortOrder: number;
   topicsCount: number; postsCount: number;
 };
@@ -20,7 +20,7 @@ export async function getForumAdminData(): Promise<AdminForumCategory[]> {
     return cats.map((c) => ({
       id: c.id, title: c.title, description: c.description, visible: c.visible, sortOrder: c.sortOrder,
       forums: fs.filter((f) => f.categoryId === c.id).map((f) => ({
-        id: f.id, categoryId: f.categoryId, title: f.title, slug: f.slug, description: f.description, icon: f.icon,
+        id: f.id, categoryId: f.categoryId, parentId: f.parentId, title: f.title, slug: f.slug, description: f.description, icon: f.icon,
         visible: f.visible, locked: f.locked, minReadRole: f.minReadRole, minPostRole: f.minPostRole, sortOrder: f.sortOrder,
         topicsCount: f.topicsCount, postsCount: f.postsCount,
       })),

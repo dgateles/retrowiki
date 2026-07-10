@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MessageSquarePlus, Pin, Lock, MessagesSquare } from "lucide-react";
-import { getForumBySlug, listTopics, canReadForumPublic, canPostForum } from "@/lib/forum";
-import { topicHref } from "@/lib/forum-url";
+import { getForumBySlug, listTopics, listSubForums, canReadForumPublic, canPostForum } from "@/lib/forum";
+import { topicHref, forumHref } from "@/lib/forum-url";
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { MenuIcon } from "@/components/layout/menu-icon";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
@@ -31,6 +32,7 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
   if (!f || !canReadForumPublic(f, user?.role ?? null)) notFound();
 
   const { items, hasMore } = await listTopics(f.id, page);
+  const subForums = await listSubForums(f.id, user?.role ?? null);
   const canPost = !!user && canPostForum(f, user.role);
 
   return (
@@ -52,6 +54,42 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
           </Button>
         )}
       </div>
+
+      {subForums.length > 0 && (
+        <section className="forum-subs" aria-label="Sub-fóruns">
+          <h2 className="forum-subs__title">Sub-fóruns</h2>
+          <ul className="forum-list">
+            {subForums.map((s) => (
+              <li key={s.id} className="forum-row">
+                <span className="forum-row__icon" aria-hidden="true">
+                  {s.icon ? <MenuIcon name={s.icon} className="size-5" /> : <MessagesSquare className="size-5" />}
+                </span>
+                <div className="forum-row__main">
+                  <Link href={forumHref(s.slug)} className="forum-row__title link-inline">
+                    {s.title}
+                    {s.locked && <Lock className="ml-1 inline size-3.5 text-muted-foreground" aria-label="Trancado" />}
+                  </Link>
+                  {s.description && <p className="forum-row__desc">{s.description}</p>}
+                </div>
+                <div className="forum-row__stats tabular-nums">
+                  <span>{s.topicsCount} tópico(s)</span>
+                  <span>{s.postsCount} post(s)</span>
+                </div>
+                <div className="forum-row__last">
+                  {s.lastPosterName ? (
+                    <>
+                      <span className="forum-row__last-name">{s.lastPosterName}</span>
+                      <span className="forum-row__last-date">{fmt(s.lastPostAt)}</span>
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground">Sem posts</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {items.length === 0 ? (
         <Empty className="mt-6">

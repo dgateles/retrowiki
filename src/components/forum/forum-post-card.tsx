@@ -13,7 +13,7 @@ const joined = (d: Date) => new Intl.DateTimeFormat("pt-BR", { month: "short", y
 const posted = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Post do fórum com "postbit" (cartão do autor) à esquerda — visual estilo IPB. */
-export function ForumPostCard({ post, footer }: { post: ForumPostItem; footer?: React.ReactNode }) {
+export function ForumPostCard({ post, reactions, footer }: { post: ForumPostItem; reactions?: React.ReactNode; footer?: React.ReactNode }) {
   const isStaff = post.authorRole === "moderator" || post.authorRole === "admin";
   return (
     <article id={`post-${post.id}`} className="fpost">
@@ -44,7 +44,12 @@ export function ForumPostCard({ post, footer }: { post: ForumPostItem; footer?: 
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
-        {footer && <footer className="fpost__foot">{footer}</footer>}
+        {(reactions || footer) && (
+          <footer className="fpost__foot">
+            {reactions}
+            {footer && <div className="fpost__foot-actions">{footer}</div>}
+          </footer>
+        )}
       </div>
     </article>
   );

@@ -6,6 +6,8 @@ import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementT
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
+import { ForumReactionBar } from "@/components/forum/forum-reaction-bar";
+import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
 import { ReplyForm } from "@/components/forum/reply-form";
 import { TopicFollowButton } from "@/components/forum/topic-follow-button";
 import { TopicModToolbar } from "@/components/forum/topic-mod-toolbar";
@@ -49,8 +51,14 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
   const userId = user ? Number(user.id) : null;
-  const [reportTypes, reportingSettings] = await Promise.all([listReportTypes(), getReportingSettings()]);
+  const [reportTypes, reportingSettings, enabledReactions, reactionState] = await Promise.all([
+    listReportTypes(),
+    getReportingSettings(),
+    listEnabledReactions(),
+    getForumPostReactionState(items.map((p) => p.id), userId),
+  ]);
   const reportTypeOpts = reportTypes.map((r) => ({ id: r.id, title: r.title }));
+  const reactionOpts = enabledReactions.map((r) => ({ id: r.id, name: r.name, emoji: r.emoji, weight: r.weight }));
 
   const firstPost = items.find((p) => p.isFirst) ?? items[0];
   const canonicalPath = `/forum/${t.forumSlug}/${t.slug}`;
@@ -95,7 +103,18 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               {canModPost && <PostModActions postId={post.id} />}
             </>
           ) : undefined;
-          return <ForumPostCard key={post.id} post={post} footer={footer} />;
+          const st = reactionState.get(post.id);
+          const reactions = reactionOpts.length > 0 ? (
+            <ForumReactionBar
+              postId={post.id}
+              reactions={reactionOpts}
+              initialCounts={st?.counts ?? {}}
+              initialReaction={st?.mine ?? null}
+              reactorNames={st?.reactorNames ?? []}
+              canReact={!!userId}
+            />
+          ) : undefined;
+          return <ForumPostCard key={post.id} post={post} reactions={reactions} footer={footer} />;
         })}
       </div>
 

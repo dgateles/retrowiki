@@ -1,7 +1,7 @@
 import "server-only";
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { reactions, votes, commentReactions } from "@/db/schema";
+import { reactions, votes, commentReactions, forumPostReactions, users } from "@/db/schema";
 
 export type Reaction = {
   id: number;
@@ -147,6 +147,45 @@ export async function getUserCommentReactions(userId: number | null, commentIds:
     for (const r of rows) map.set(r.commentId, r.value);
   } catch {
     /* ignora */
+  }
+  return map;
+}
+
+// ── Reações de posts do fórum (por reação, estilo artigo) ──────────────────
+
+export type ForumPostReactionState = {
+  counts: Record<number, number>;
+  mine: number | null;
+  reactorNames: string[];
+  total: number;
+};
+
+/** Estado de reações de vários posts de fórum, em lote (evita N+1). Retorna, por
+ * post: contagem por reação, a reação do usuário, nomes recentes e total. */
+export async function getForumPostReactionState(
+  postIds: number[],
+  userId: number | null,
+): Promise<Map<number, ForumPostReactionState>> {
+  const map = new Map<number, ForumPostReactionState>();
+  if (!postIds.length) return map;
+  for (const id of postIds) map.set(id, { counts: {}, mine: null, reactorNames: [], total: 0 });
+  try {
+    const rows = await db
+      .select({ postId: forumPostReactions.postId, reactionId: forumPostReactions.reactionId, userId: forumPostReactions.userId, name: users.displayName })
+      .from(forumPostReactions)
+      .innerJoin(users, eq(users.id, forumPostReactions.userId))
+      .where(inArray(forumPostReactions.postId, postIds))
+      .orderBy(desc(forumPostReactions.id));
+    for (const r of rows) {
+      const st = map.get(r.postId);
+      if (!st || r.reactionId == null) continue;
+      st.counts[r.reactionId] = (st.counts[r.reactionId] ?? 0) + 1;
+      st.total++;
+      if (st.reactorNames.length < 3) st.reactorNames.push(r.name);
+      if (userId && r.userId === userId) st.mine = r.reactionId;
+    }
+  } catch {
+    /* tabela ausente → estado vazio */
   }
   return map;
 }

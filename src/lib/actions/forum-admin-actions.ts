@@ -60,6 +60,7 @@ export async function deleteForumCategoryAction(id: number): Promise<Result> {
 const ForumSchema = z.object({
   id: z.number().int().positive().optional(),
   categoryId: z.number().int().positive(),
+  parentId: z.number().int().positive().nullable().optional(),
   title: z.string().trim().min(2).max(120),
   description: z.string().trim().max(300).optional(),
   icon: z.string().trim().max(40).optional(),
@@ -75,8 +76,20 @@ export async function saveForumAction(input: unknown): Promise<Result<{ id: numb
   const p = ForumSchema.safeParse(input);
   if (!p.success) return { ok: false, error: "Dados inválidos." };
   const v = p.data;
+  // Sub-fórum: só 1 nível (o pai precisa ser um fórum de topo) e não pode ser ele mesmo.
+  const parentId: number | null = v.parentId ?? null;
+  if (parentId != null) {
+    if (parentId === v.id) return { ok: false, error: "Um fórum não pode ser pai de si mesmo." };
+    const [parent] = await db.select({ id: forums.id, parentId: forums.parentId }).from(forums).where(eq(forums.id, parentId)).limit(1);
+    if (!parent) return { ok: false, error: "Fórum pai inválido." };
+    if (parent.parentId != null) return { ok: false, error: "Sub-fóruns só podem ter um nível de profundidade." };
+    if (v.id) {
+      const [child] = await db.select({ id: forums.id }).from(forums).where(eq(forums.parentId, v.id)).limit(1);
+      if (child) return { ok: false, error: "Este fórum já tem sub-fóruns; não pode virar sub-fórum." };
+    }
+  }
   const base = {
-    categoryId: v.categoryId, title: v.title, description: v.description ?? null, icon: v.icon || null,
+    categoryId: v.categoryId, parentId, title: v.title, description: v.description ?? null, icon: v.icon || null,
     visible: v.visible ?? true, locked: v.locked ?? false,
     minReadRole: v.minReadRole ?? "member", minPostRole: v.minPostRole ?? "member", sortOrder: v.sortOrder ?? 0,
   } as const;

@@ -38,7 +38,7 @@ export function ReplyForm({ topicId }: { topicId: number }) {
   return (
     <form onSubmit={onSubmit} className="freply">
       <h2 className="freply__title">Responder</h2>
-      <RichEditor key={editorKey} value={doc} onChange={setDoc} variant="comment" placeholder="Escreva sua resposta…" />
+      <RichEditor key={editorKey} value={doc} onChange={setDoc} variant="full" placeholder="Escreva sua resposta…" />
       <div className="freply__foot">
         <label className="flex items-center gap-2 text-sm">
           <Checkbox checked={follow} onCheckedChange={(c) => setFollow(c === true)} />

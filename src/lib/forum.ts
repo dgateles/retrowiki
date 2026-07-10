@@ -61,10 +61,12 @@ export function uniqueTopicSlug(base: string): Promise<string> {
 }
 
 // ── Índice (categorias → fóruns) ───────────────────────────────────────────
+export type SubForumLink = { id: number; title: string; slug: string; topicsCount: number; locked: boolean };
 export type ForumListItem = {
   id: number; title: string; slug: string; description: string | null; icon: string | null;
   topicsCount: number; postsCount: number; locked: boolean; minReadRole: UserRole; minPostRole: UserRole; visible: boolean;
   lastPostAt: Date | null; lastPosterHandle: string | null; lastPosterName: string | null;
+  subForums?: SubForumLink[];
 };
 export type ForumIndexCategory = { id: number; title: string; description: string | null; forums: ForumListItem[] };
 
@@ -74,7 +76,7 @@ export async function getForumIndex(viewerRole: UserRole | null): Promise<ForumI
     if (cats.length === 0) return [];
     const rows = await db
       .select({
-        id: forums.id, categoryId: forums.categoryId, title: forums.title, slug: forums.slug, description: forums.description,
+        id: forums.id, categoryId: forums.categoryId, parentId: forums.parentId, title: forums.title, slug: forums.slug, description: forums.description,
         icon: forums.icon, topicsCount: forums.topicsCount, postsCount: forums.postsCount, locked: forums.locked,
         minReadRole: forums.minReadRole, minPostRole: forums.minPostRole, visible: forums.visible,
         lastPostAt: forums.lastPostAt, lastPosterHandle: users.handle, lastPosterName: users.displayName, sortOrder: forums.sortOrder,
@@ -82,16 +84,26 @@ export async function getForumIndex(viewerRole: UserRole | null): Promise<ForumI
       .from(forums)
       .leftJoin(users, eq(users.id, forums.lastPosterId))
       .orderBy(asc(forums.sortOrder), asc(forums.id));
+    const readable = rows.filter((r) => canReadForumPublic(r, viewerRole));
+    // Sub-fóruns agrupados pelo pai (só os legíveis).
+    const childrenByParent = new Map<number, SubForumLink[]>();
+    for (const r of readable) {
+      if (r.parentId == null) continue;
+      const arr = childrenByParent.get(r.parentId) ?? [];
+      arr.push({ id: r.id, title: r.title, slug: r.slug, topicsCount: r.topicsCount, locked: r.locked });
+      childrenByParent.set(r.parentId, arr);
+    }
     return cats
       .map((c) => ({
         id: c.id, title: c.title, description: c.description,
-        forums: rows
-          .filter((r) => r.categoryId === c.id && canReadForumPublic(r, viewerRole))
+        forums: readable
+          .filter((r) => r.categoryId === c.id && r.parentId == null)
           .map((r) => ({
             id: r.id, title: r.title, slug: r.slug, description: r.description, icon: r.icon,
             topicsCount: r.topicsCount, postsCount: r.postsCount, locked: r.locked,
             minReadRole: r.minReadRole, minPostRole: r.minPostRole, visible: r.visible,
             lastPostAt: r.lastPostAt, lastPosterHandle: r.lastPosterHandle, lastPosterName: r.lastPosterName,
+            subForums: childrenByParent.get(r.id),
           })),
       }))
       .filter((c) => c.forums.length > 0);
@@ -116,6 +128,27 @@ export async function getForumBySlug(slug: string): Promise<ForumListItem | null
     return r ?? null;
   } catch {
     return null;
+  }
+}
+
+/** Sub-fóruns de um fórum (para a seção "Sub-fóruns" dentro dele), já filtrados
+ * pela leitura do visitante. */
+export async function listSubForums(parentId: number, viewerRole: UserRole | null): Promise<ForumListItem[]> {
+  try {
+    const rows = await db
+      .select({
+        id: forums.id, title: forums.title, slug: forums.slug, description: forums.description, icon: forums.icon,
+        topicsCount: forums.topicsCount, postsCount: forums.postsCount, locked: forums.locked,
+        minReadRole: forums.minReadRole, minPostRole: forums.minPostRole, visible: forums.visible,
+        lastPostAt: forums.lastPostAt, lastPosterHandle: users.handle, lastPosterName: users.displayName,
+      })
+      .from(forums)
+      .leftJoin(users, eq(users.id, forums.lastPosterId))
+      .where(eq(forums.parentId, parentId))
+      .orderBy(asc(forums.sortOrder), asc(forums.id));
+    return rows.filter((r) => canReadForumPublic(r, viewerRole));
+  } catch {
+    return [];
   }
 }
 

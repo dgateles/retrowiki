@@ -19,7 +19,8 @@ type UserRole = "member" | "contributor" | "moderator" | "admin";
 const ROLE_LABEL: Record<UserRole, string> = { member: "Membro", contributor: "Colaborador", moderator: "Moderador", admin: "Admin" };
 
 type CatDraft = { id?: number; title: string; description: string; visible: boolean; sortOrder: number };
-type ForumDraft = { id?: number; categoryId: number; title: string; description: string; icon: string; visible: boolean; locked: boolean; minReadRole: UserRole; minPostRole: UserRole; sortOrder: number };
+type ForumDraft = { id?: number; categoryId: number; parentId: number | null; title: string; description: string; icon: string; visible: boolean; locked: boolean; minReadRole: UserRole; minPostRole: UserRole; sortOrder: number };
+const NO_PARENT = "none";
 
 export function ForumManager({ categories }: { categories: AdminForumCategory[] }) {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function ForumManager({ categories }: { categories: AdminForumCategory[] 
   const [del, setDel] = useState<{ kind: "cat" | "forum"; id: number; name: string } | null>(null);
 
   const newCat = (): CatDraft => ({ title: "", description: "", visible: true, sortOrder: 0 });
-  const newForum = (categoryId: number): ForumDraft => ({ categoryId, title: "", description: "", icon: "", visible: true, locked: false, minReadRole: "member", minPostRole: "member", sortOrder: 0 });
+  const newForum = (categoryId: number): ForumDraft => ({ categoryId, parentId: null, title: "", description: "", icon: "", visible: true, locked: false, minReadRole: "member", minPostRole: "member", sortOrder: 0 });
 
   function saveCat() {
     if (!cat || cat.title.trim().length < 2) return;
@@ -90,16 +91,18 @@ export function ForumManager({ categories }: { categories: AdminForumCategory[] 
               <ul className="divide-y divide-border">
                 {c.forums.length === 0 && <li className="p-3 text-sm text-muted-foreground">Nenhum fórum nesta categoria.</li>}
                 {c.forums.map((f: AdminForum) => (
-                  <li key={f.id} className="flex items-center gap-3 p-3">
+                  <li key={f.id} className={`flex items-center gap-3 p-3${f.parentId != null ? " pl-8" : ""}`}>
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1.5 font-medium">
+                        {f.parentId != null && <span className="text-xs text-muted-foreground" aria-hidden="true">↳</span>}
                         {f.title}
+                        {f.parentId != null && <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-normal text-muted-foreground">sub de {c.forums.find((o) => o.id === f.parentId)?.title ?? "?"}</span>}
                         {!f.visible && <EyeOff className="size-3.5 text-muted-foreground" aria-label="Oculto" />}
                         {f.locked && <Lock className="size-3.5 text-muted-foreground" aria-label="Trancado" />}
                       </p>
                       <p className="text-xs text-muted-foreground">/{f.slug} · {f.topicsCount} tópico(s) · ler: {ROLE_LABEL[f.minReadRole]} · postar: {ROLE_LABEL[f.minPostRole]}</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${f.title}`} onClick={() => setForum({ id: f.id, categoryId: f.categoryId, title: f.title, description: f.description ?? "", icon: f.icon ?? "", visible: f.visible, locked: f.locked, minReadRole: f.minReadRole, minPostRole: f.minPostRole, sortOrder: f.sortOrder })}><Pencil className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${f.title}`} onClick={() => setForum({ id: f.id, categoryId: f.categoryId, parentId: f.parentId, title: f.title, description: f.description ?? "", icon: f.icon ?? "", visible: f.visible, locked: f.locked, minReadRole: f.minReadRole, minPostRole: f.minPostRole, sortOrder: f.sortOrder })}><Pencil className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className="size-8 text-destructive" aria-label={`Excluir ${f.title}`} onClick={() => setDel({ kind: "forum", id: f.id, name: f.title })}><Trash2 className="size-4" /></Button>
                   </li>
                 ))}
@@ -142,6 +145,20 @@ export function ForumManager({ categories }: { categories: AdminForumCategory[] 
               <div className="field"><Label htmlFor="f-title">Título</Label><Input id="f-title" value={forum.title} onChange={(e) => setForum({ ...forum, title: e.target.value })} maxLength={120} /></div>
               <div className="field"><Label htmlFor="f-desc">Descrição</Label><Textarea id="f-desc" value={forum.description} onChange={(e) => setForum({ ...forum, description: e.target.value })} maxLength={300} rows={2} /></div>
               <div className="field"><Label htmlFor="f-icon">Ícone (chave, opcional)</Label><Input id="f-icon" value={forum.icon} onChange={(e) => setForum({ ...forum, icon: e.target.value })} maxLength={40} placeholder="gamepad, info, download…" /></div>
+              {(() => {
+                const parents = categories.find((c) => c.id === forum.categoryId)?.forums.filter((o) => o.parentId == null && o.id !== forum.id) ?? [];
+                return parents.length > 0 ? (
+                  <div className="field"><Label>Fórum pai (sub-fórum)</Label>
+                    <Select value={forum.parentId == null ? NO_PARENT : String(forum.parentId)} onValueChange={(v) => setForum({ ...forum, parentId: v === NO_PARENT ? null : Number(v) })}>
+                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={NO_PARENT}>Nenhum (fórum de topo)</SelectItem>
+                        {parents.map((o) => <SelectItem key={o.id} value={String(o.id)}>{o.title}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : null;
+              })()}
               <div className="grid grid-cols-2 gap-3">
                 <div className="field"><Label>Quem pode ler</Label>
                   <Select value={forum.minReadRole} onValueChange={(v) => setForum({ ...forum, minReadRole: v as UserRole })}>

@@ -56,6 +56,18 @@ export default async function ForumIndexPage() {
                         {f.locked && <Lock className="ml-1 inline size-3.5 text-muted-foreground" aria-label="Trancado" />}
                       </Link>
                       {f.description && <p className="forum-row__desc">{f.description}</p>}
+                      {f.subForums && f.subForums.length > 0 && (
+                        <ul className="forum-row__subs" aria-label={`Sub-fóruns de ${f.title}`}>
+                          {f.subForums.map((s) => (
+                            <li key={s.id}>
+                              <Link href={forumHref(s.slug)} className="forum-row__sub link-inline">
+                                {s.title}
+                                {s.locked && <Lock className="ml-1 inline size-3 text-muted-foreground" aria-label="Trancado" />}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                     <div className="forum-row__stats tabular-nums">
                       <span>{f.topicsCount} tópico(s)</span>
