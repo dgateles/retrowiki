@@ -9,6 +9,7 @@ import { ForumPostCard } from "@/components/forum/forum-post-card";
 import { ForumReactionBar } from "@/components/forum/forum-reaction-bar";
 import { PostActionsMenu } from "@/components/forum/post-actions-menu";
 import { BestAnswerButton } from "@/components/forum/best-answer-button";
+import { QuoteButton } from "@/components/forum/quote-button";
 import { ForumPoll } from "@/components/forum/forum-poll";
 import { getTopicPoll } from "@/lib/forum-polls";
 import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
@@ -152,7 +153,14 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               ? <BestAnswerButton topicId={t.id} postId={post.id} isSolution={isBest} />
               : <span className="fsolution-tag"><Check className="size-4" aria-hidden="true" /> Solução</span>
           ) : undefined;
-          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} />;
+          const quoteControl = canReply ? (
+            <QuoteButton
+              author={post.authorName}
+              text={richDocToText(forumDocFromBody(post.body) as Parameters<typeof richDocToText>[0]).slice(0, 4000)}
+              permalink={postHref(t.forumSlug, t.slug, post.id)}
+            />
+          ) : undefined;
+          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} quoteControl={quoteControl} />;
         })}
       </div>
 

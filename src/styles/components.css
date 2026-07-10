@@ -3888,7 +3888,7 @@
 }
 
 @layer components {
-  .freply { @apply mt-2 rounded-lg border border-border bg-card p-4; }
+  .freply { @apply mt-2 scroll-mt-24 rounded-lg border border-border bg-card p-4; }
   .freply__title { @apply mb-3 text-base font-semibold; }
   .freply__foot { @apply mt-3 flex items-center justify-between gap-4; }
 }
@@ -3904,9 +3904,11 @@
   .ftopic-solved-callout b { @apply font-semibold; }
   .fpost--best { @apply border-success/50 shadow-[0_0_0_1px_var(--color-success)]; }
   .fpost__solution { @apply inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 font-semibold text-success; }
-  .fsolution-btn { @apply mr-auto inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-success/50 hover:text-success; }
+  .fpost__foot-left { @apply mr-auto flex flex-wrap items-center gap-2; }
+  .fquote-btn { @apply inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground; }
+  .fsolution-btn { @apply inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-success/50 hover:text-success; }
   .fsolution-btn--on { @apply border-success/50 bg-success/10 text-success; }
-  .fsolution-tag { @apply mr-auto inline-flex items-center gap-1.5 text-xs font-semibold text-success; }
+  .fsolution-tag { @apply inline-flex items-center gap-1.5 text-xs font-semibold text-success; }
   .topic-row__solved { @apply ml-2 rounded-full bg-success/15 px-1.5 py-0.5 align-middle text-[11px] font-semibold text-success; }
 }
 

@@ -14,7 +14,7 @@ const joined = (d: Date) => new Intl.DateTimeFormat("pt-BR", { month: "short", y
 const posted = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Post do fórum com "postbit" (cartão do autor) à esquerda — visual estilo IPB. */
-export function ForumPostCard({ post, reactions, actions, bestAnswer = false, solutionControl }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode; bestAnswer?: boolean; solutionControl?: React.ReactNode }) {
+export function ForumPostCard({ post, reactions, actions, bestAnswer = false, solutionControl, quoteControl }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode; bestAnswer?: boolean; solutionControl?: React.ReactNode; quoteControl?: React.ReactNode }) {
   const isStaff = post.authorRole === "moderator" || post.authorRole === "admin";
   return (
     <article id={`post-${post.id}`} className={cn("fpost", bestAnswer && "fpost--best")}>
@@ -49,9 +49,14 @@ export function ForumPostCard({ post, reactions, actions, bestAnswer = false, so
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
-        {(reactions || solutionControl) && (
+        {(reactions || solutionControl || quoteControl) && (
           <footer className="fpost__foot">
-            {solutionControl}
+            {(quoteControl || solutionControl) && (
+              <div className="fpost__foot-left">
+                {quoteControl}
+                {solutionControl}
+              </div>
+            )}
             {reactions}
           </footer>
         )}
