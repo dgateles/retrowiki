@@ -31,6 +31,11 @@ transversais de **semântica HTML5**, **acessibilidade (WCAG 2.2 AA)**,
 | 12 | [Autenticação e E-mails (Resend)](./12-autenticacao-e-emails.md) | Cadastro, verificação, login, reset de senha, troca de e-mail, magic link — tudo via Resend |
 | 13 | [Notificações](./13-notificacoes.md) | Canais in-app + e-mail, tipos de evento, preferências, digest, descadastro |
 | 14 | [Captcha Proprietário (RetroGuard)](./14-captcha-proprietario.md) | Defesa própria anti-bot: PoW invisível + sinais + nonce assinado + step-up acessível |
+| 15 | [Gaps Pendentes](./15-gaps-pendentes.md) | Backlog vivo: pendências, decisões e inspirações (IPB) |
+| 16 | [Overhaul UX](./16-overhaul-ux.md) | Reforma de UX/UI por fases; construtor de páginas |
+| 17 | [Crons](./17-crons.md) | Tarefas agendadas (digest, manutenção, sync GitHub) |
+| 18 | [Vínculo Google](./18-vinculo-google.md) | Login e vínculo de conta Google (OAuth, PKCE) |
+| 19 | [Fórum](./19-forum.md) | Estudo/design do fórum estilo IPB: modelo, permissões, moderação, SEO, faseamento |
 
 ## Sumário do estudo do retrocatalog.com
 

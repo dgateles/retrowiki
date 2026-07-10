@@ -292,8 +292,9 @@ Gerenciamento de membros (detalhado a partir do AdminCP do IPB):
   são "Grupos" com permissões editáveis; aqui são os papéis (member, contributor,
   moderator, admin). Hoje os papéis são checados em código; o alvo é um sistema
   de permissões por papel, editável, com lista e formulário em abas. Adaptar (o
-  que não se aplica: Forums, Polls, Blogs/Downloads/Gallery, Messenger, Clubs,
-  Quests).
+  que não se aplica: Polls, Blogs/Downloads/Gallery, Messenger, Clubs, Quests).
+  Nota: **Forums** deixou de estar fora de escopo — o design está em
+  [19-forum.md](./19-forum.md).
   - **Lista de grupos/papéis.** Tabela com Nome do grupo e Nº de membros;
     ordenar/buscar; ações por linha (Editar, Permissões, Copiar, Baixar lista de
     membros) e "Criar novo grupo". Para nós, papéis são fixos no conjunto, mas a
