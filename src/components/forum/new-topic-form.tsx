@@ -28,6 +28,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
   const [title, setTitle] = useState("");
   const [doc, setDoc] = useState<JSONContent>(EMPTY);
   const [follow, setFollow] = useState(true);
+  const [isQuestion, setIsQuestion] = useState(false);
   const [pending, setPending] = useState(false);
 
   // Enquete
@@ -81,7 +82,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
     }
     setPending(true);
     const res = await createTopicAction({
-      forumId, title: title.trim(), body: JSON.stringify(doc), follow, poll,
+      forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion, poll,
       options: isStaff ? { lock, pin, hide } : undefined,
     });
     setPending(false);
@@ -122,6 +123,10 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
               </div>
               <RichEditor variant="full" value={doc} onChange={setDoc} placeholder="Escreva sua mensagem…" />
             </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={isQuestion} onCheckedChange={setIsQuestion} />
+              É uma pergunta <span className="text-muted-foreground">— habilita marcar a “melhor resposta” (Resolvido)</span>
+            </label>
           </div>
         ) : (
           <div className="ftopic-form">

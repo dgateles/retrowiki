@@ -1,13 +1,14 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Lock } from "lucide-react";
+import { Lock, Check, CircleCheck, CircleHelp } from "lucide-react";
 import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
 import { ForumReactionBar } from "@/components/forum/forum-reaction-bar";
 import { PostActionsMenu } from "@/components/forum/post-actions-menu";
+import { BestAnswerButton } from "@/components/forum/best-answer-button";
 import { ForumPoll } from "@/components/forum/forum-poll";
 import { getTopicPoll } from "@/lib/forum-polls";
 import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
@@ -55,6 +56,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
   const userId = user ? Number(user.id) : null;
+  const isTopicAuthor = userId != null && userId === t.authorId;
   const [reportTypes, reportingSettings, enabledReactions, reactionState] = await Promise.all([
     listReportTypes(),
     getReportingSettings(),
@@ -88,15 +90,29 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
       </nav>
 
       <div className="page__head">
-        <h1 className="page__title">
-          {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
-          {t.title}
-        </h1>
+        <div className="min-w-0">
+          {t.isQuestion && (
+            <span className={`ftopic-qbadge ${t.bestPostId ? "ftopic-qbadge--solved" : ""}`}>
+              {t.bestPostId ? <><CircleCheck className="size-3.5" aria-hidden="true" /> Resolvido</> : <><CircleHelp className="size-3.5" aria-hidden="true" /> Pergunta</>}
+            </span>
+          )}
+          <h1 className="page__title">
+            {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
+            {t.title}
+          </h1>
+        </div>
         <div className="ftopic-actions">
           {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}
           {user && <TopicFollowButton topicId={t.id} initialFollowing={following} />}
         </div>
       </div>
+
+      {t.isQuestion && t.bestPostId && (
+        <a href={`#post-${t.bestPostId}`} className="ftopic-solved-callout">
+          <CircleCheck className="size-5 shrink-0" aria-hidden="true" />
+          <span>Esta pergunta foi resolvida. <b>Ver a melhor resposta</b> ↓</span>
+        </a>
+      )}
 
       {poll && <ForumPoll poll={poll} canVote={!!user && !poll.closed && !poll.hasVoted} />}
 
@@ -129,7 +145,14 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               canReact={!!userId}
             />
           ) : undefined;
-          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} />;
+          const isBest = t.bestPostId != null && post.id === t.bestPostId;
+          const canMarkSolution = t.isQuestion && !post.isFirst && (isTopicAuthor || isMod);
+          const solutionControl = (canMarkSolution || isBest) ? (
+            canMarkSolution
+              ? <BestAnswerButton topicId={t.id} postId={post.id} isSolution={isBest} />
+              : <span className="fsolution-tag"><Check className="size-4" aria-hidden="true" /> Solução</span>
+          ) : undefined;
+          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} />;
         })}
       </div>
 

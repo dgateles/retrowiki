@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MessageSquarePlus, Pin, Lock, MessagesSquare } from "lucide-react";
+import { MessageSquarePlus, Pin, Lock, MessagesSquare, CircleCheck } from "lucide-react";
 import { getForumBySlug, listTopics, listSubForums, canReadForumPublic, canPostForum } from "@/lib/forum";
 import { topicHref, forumHref } from "@/lib/forum-url";
 import { getCurrentUser } from "@/lib/auth-helpers";
@@ -109,10 +109,13 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
           {items.map((t) => (
             <li key={t.id} className="topic-row">
               <span className="topic-row__icon" aria-hidden="true">
-                {t.pinned ? <Pin className="size-4 text-primary" /> : t.status === "locked" ? <Lock className="size-4 text-muted-foreground" /> : <MessagesSquare className="size-4 text-muted-foreground" />}
+                {t.isQuestion && t.bestPostId ? <CircleCheck className="size-4 text-success" /> : t.pinned ? <Pin className="size-4 text-primary" /> : t.status === "locked" ? <Lock className="size-4 text-muted-foreground" /> : t.isQuestion ? <MessagesSquare className="size-4 text-muted-foreground" /> : <MessagesSquare className="size-4 text-muted-foreground" />}
               </span>
               <div className="topic-row__main">
-                <Link href={topicHref(f.slug, t.slug)} className="topic-row__title link-inline">{t.title}</Link>
+                <Link href={topicHref(f.slug, t.slug)} className="topic-row__title link-inline">
+                  {t.title}
+                  {t.isQuestion && t.bestPostId && <span className="topic-row__solved">Resolvido</span>}
+                </Link>
                 <p className="topic-row__meta">por {t.authorName} · {t.postsCount} resposta(s) · {t.views} visualização(ões)</p>
               </div>
               <div className="topic-row__last tabular-nums">

@@ -51,6 +51,7 @@ const CreateTopicSchema = z.object({
   title: z.string().trim().min(5, "Título muito curto.").max(200),
   body: z.string(),
   follow: z.boolean().optional(),
+  isQuestion: z.boolean().optional(),
   poll: PollSchema.optional(),
   options: z.object({ lock: z.boolean().optional(), pin: z.boolean().optional(), hide: z.boolean().optional() }).optional(),
 });
@@ -103,7 +104,7 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
   const topicId = await db.transaction(async (tx) => {
     const topicIns = await tx.insert(forumTopics).values({
       forumId: forum.id, authorId: userId, title: parsed.data.title, slug,
-      status, pinned, lastPostAt: now, lastPosterId: userId,
+      status, pinned, isQuestion: parsed.data.isQuestion ?? false, lastPostAt: now, lastPosterId: userId,
     });
     const tId = insertId(topicIns);
     const postIns = await tx.insert(forumPosts).values({
@@ -288,6 +289,57 @@ export async function editForumPostAction(input: unknown): Promise<Result> {
     .from(forumTopics).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(eq(forumTopics.id, post.topicId)).limit(1);
   if (ctx) revalidatePath(`/forum/${ctx.forumSlug}/${ctx.slug}`);
   return { ok: true };
+}
+
+const SOLUTION_REP = 5;
+/** Marca (ou desmarca) uma resposta como a solução de uma pergunta. Autor da
+ * pergunta ou staff. Transfere reputação para o autor da resposta aceita. */
+export async function markSolutionAction(topicId: number, postId: number): Promise<Result<{ solved: boolean }>> {
+  const user = await requireUser().catch(() => null);
+  if (!user) return { ok: false, error: "Faça login." };
+  const userId = Number(user.id);
+  const [topic] = await db.select({
+    id: forumTopics.id, authorId: forumTopics.authorId, isQuestion: forumTopics.isQuestion, bestPostId: forumTopics.bestPostId,
+    title: forumTopics.title, slug: forumTopics.slug, forumSlug: forums.slug,
+  }).from(forumTopics).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(eq(forumTopics.id, topicId)).limit(1);
+  if (!topic) return { ok: false, error: "Tópico não encontrado." };
+  if (!topic.isQuestion) return { ok: false, error: "Este tópico não é uma pergunta." };
+  const isOwner = topic.authorId === userId;
+  if (!isOwner && !isStaff(user.role)) return { ok: false, error: "Só o autor da pergunta ou a moderação podem marcar a solução." };
+
+  const [post] = await db.select({ id: forumPosts.id, authorId: forumPosts.authorId, isFirst: forumPosts.isFirst, status: forumPosts.status, deletedAt: forumPosts.deletedAt })
+    .from(forumPosts).where(and(eq(forumPosts.id, postId), eq(forumPosts.topicId, topicId))).limit(1);
+  if (!post || post.isFirst || post.deletedAt || post.status !== "visible") return { ok: false, error: "Resposta inválida." };
+
+  const toggleOff = topic.bestPostId === postId;
+  const newBest = toggleOff ? null : postId;
+
+  // Autor da resposta que perde o status atual (se houver e mudar).
+  let prevAnswerId: number | null = null;
+  if (topic.bestPostId && topic.bestPostId !== newBest) {
+    const [prev] = await db.select({ authorId: forumPosts.authorId }).from(forumPosts).where(eq(forumPosts.id, topic.bestPostId)).limit(1);
+    prevAnswerId = prev?.authorId ?? null;
+  }
+
+  await db.update(forumTopics).set({ bestPostId: newBest }).where(eq(forumTopics.id, topicId));
+
+  // Reputação: remove do autor anterior (se não for o autor da pergunta) e dá ao novo.
+  if (prevAnswerId && prevAnswerId !== topic.authorId) {
+    await db.update(users).set({ reputation: sql`GREATEST(${users.reputation} - ${SOLUTION_REP}, 0)` }).where(eq(users.id, prevAnswerId));
+  }
+  if (newBest && post.authorId !== topic.authorId) {
+    await db.update(users).set({ reputation: sql`${users.reputation} + ${SOLUTION_REP}` }).where(eq(users.id, post.authorId));
+    if (post.authorId !== userId) {
+      const [me] = await db.select({ name: users.displayName, avatar: users.avatarUrl }).from(users).where(eq(users.id, userId)).limit(1);
+      await createNotification(post.authorId, "forum.solution", {
+        forumSlug: topic.forumSlug, topicSlug: topic.slug, topicTitle: topic.title, postId, actorName: me?.name ?? "Alguém", actorAvatar: me?.avatar ?? null,
+      });
+    }
+  }
+
+  revalidatePath(`/forum/${topic.forumSlug}/${topic.slug}`);
+  revalidatePath(`/forum/${topic.forumSlug}`);
+  return { ok: true, data: { solved: !!newBest } };
 }
 
 export async function reactForumPostAction(postId: number, reactionId: number): Promise<Result<{ reactionId: number | null }>> {

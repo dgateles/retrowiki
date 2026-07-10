@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody, type ForumPostItem } from "@/lib/forum";
@@ -13,10 +14,10 @@ const joined = (d: Date) => new Intl.DateTimeFormat("pt-BR", { month: "short", y
 const posted = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Post do fórum com "postbit" (cartão do autor) à esquerda — visual estilo IPB. */
-export function ForumPostCard({ post, reactions, actions }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode }) {
+export function ForumPostCard({ post, reactions, actions, bestAnswer = false, solutionControl }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode; bestAnswer?: boolean; solutionControl?: React.ReactNode }) {
   const isStaff = post.authorRole === "moderator" || post.authorRole === "admin";
   return (
-    <article id={`post-${post.id}`} className="fpost">
+    <article id={`post-${post.id}`} className={cn("fpost", bestAnswer && "fpost--best")}>
       <div className="fpost__bit">
         <span className="fpost__avatar" aria-hidden="true">
           {post.authorAvatar ? (
@@ -39,6 +40,7 @@ export function ForumPostCard({ post, reactions, actions }: { post: ForumPostIte
         <header className="fpost__head">
           <div className="fpost__head-meta">
             <time dateTime={post.createdAt.toISOString()}>{posted(post.createdAt)}</time>
+            {bestAnswer && <span className="fpost__solution"><Check className="size-3.5" aria-hidden="true" /> Melhor resposta</span>}
             {post.isFirst && <span className="fpost__badge">Autor do tópico</span>}
             {post.editedAt && <span className="fpost__edited">editado</span>}
           </div>
@@ -47,7 +49,12 @@ export function ForumPostCard({ post, reactions, actions }: { post: ForumPostIte
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
-        {reactions && <footer className="fpost__foot">{reactions}</footer>}
+        {(reactions || solutionControl) && (
+          <footer className="fpost__foot">
+            {solutionControl}
+            {reactions}
+          </footer>
+        )}
       </div>
     </article>
   );
