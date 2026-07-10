@@ -3883,3 +3883,8 @@
   .freply__title { @apply mb-3 text-base font-semibold; }
   .freply__foot { @apply mt-3 flex items-center justify-between gap-4; }
 }
+
+@layer components {
+  .fmod { @apply mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-2; }
+  .fmod__label { @apply flex items-center gap-1 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground; }
+}

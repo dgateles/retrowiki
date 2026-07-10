@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
 import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
-import { getCurrentUser } from "@/lib/auth-helpers";
+import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
 import { ReplyForm } from "@/components/forum/reply-form";
 import { TopicFollowButton } from "@/components/forum/topic-follow-button";
+import { TopicModToolbar } from "@/components/forum/topic-mod-toolbar";
+import { PostModActions } from "@/components/forum/post-mod-actions";
 import { Pager } from "@/components/ui/pager";
 import { richDocToText } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody } from "@/lib/forum";
@@ -38,6 +40,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const { items, hasMore } = await listPosts(t.id, page);
   const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
+  const isMod = can.moderate(user);
 
   return (
     <main id="main" className="page">
@@ -55,9 +58,11 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
         {user && <TopicFollowButton topicId={t.id} initialFollowing={following} />}
       </div>
 
+      {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}
+
       <div className="fpost-list">
         {items.map((post) => (
-          <ForumPostCard key={post.id} post={post} />
+          <ForumPostCard key={post.id} post={post} footer={isMod && !post.isFirst ? <PostModActions postId={post.id} /> : undefined} />
         ))}
       </div>
 
