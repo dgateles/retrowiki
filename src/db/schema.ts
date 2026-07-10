@@ -42,6 +42,7 @@ export const users = mysqlTable(
     contentModeratedUntil: datetime("content_moderated_until"), // advertências: conteúdo novo vai à revisão
     referredById: bigint("referred_by_id", { mode: "number" }), // quem indicou no cadastro
     bulkMailOptOut: boolean("bulk_mail_opt_out").notNull().default(false), // e-mail em massa
+    showVisitors: boolean("show_visitors").notNull().default(true), // exibir "visitantes recentes" no perfil
     deletedAt: datetime("deleted_at"), // conta anonimizada (LGPD)
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
@@ -1072,6 +1073,17 @@ export const conversationMessages = mysqlTable("conversation_messages", {
   body: text("body").notNull(),
   createdAt: createdAt(),
 }, (t) => [index("conv_msg_idx").on(t.conversationId, t.createdAt)]);
+
+// Visitantes recentes do perfil (uma linha por visitante, atualiza o horário).
+export const profileVisits = mysqlTable("profile_visits", {
+  id: pk(),
+  profileId: bigint("profile_id", { mode: "number" }).notNull(), // perfil visitado
+  visitorId: bigint("visitor_id", { mode: "number" }).notNull(), // quem visitou
+  lastVisitAt: datetime("last_visit_at").notNull(),
+}, (t) => [
+  uniqueIndex("profile_visits_pair_idx").on(t.profileId, t.visitorId),
+  index("profile_visits_profile_idx").on(t.profileId, t.lastVisitAt),
+]);
 
 // Usuários ignorados (esconde conteúdo/PM de alguém).
 export const userIgnores = mysqlTable("user_ignores", {

@@ -351,6 +351,13 @@
       "when": 1783722138526,
       "tag": "0049_clammy_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "5",
+      "when": 1783723247785,
+      "tag": "0050_striped_purple_man",
+      "breakpoints": true
     }
   ]
 }

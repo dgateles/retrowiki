@@ -3942,6 +3942,8 @@
   .pm-msg__author { @apply font-semibold hover:text-primary; }
   .pm-msg__head time { @apply text-xs text-muted-foreground; }
   .fignored { @apply flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground; }
+  .profile-visitors { @apply flex flex-wrap gap-2; }
+  .profile-visitors__avatar { @apply flex size-9 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-muted-foreground ring-1 ring-border transition-transform hover:scale-110; }
 
   /* Tags de tópico */
   .ftag-chip { @apply inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground; }

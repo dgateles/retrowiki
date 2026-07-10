@@ -5,6 +5,8 @@ import { getProfile } from "@/lib/profiles";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { isIgnoring } from "@/lib/ignore";
 import { IgnoreButton } from "@/components/social/ignore-button";
+import { recordProfileVisit, listRecentVisitors } from "@/lib/profile-visits";
+import { VisitorsToggle } from "@/components/social/visitors-toggle";
 import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -99,6 +101,9 @@ export default async function ProfilePage({
   const targetIsStaff = profile.role === "moderator" || profile.role === "admin";
   const canIgnore = Boolean(viewer && !isOwner && !targetIsStaff);
   const ignoringProfile = canIgnore ? await isIgnoring(Number(viewer!.id), profile.id) : false;
+  if (viewer && !isOwner) await recordProfileVisit(profile.id, Number(viewer.id));
+  const showVisitorsBlock = profile.showVisitors || isOwner;
+  const visitors = showVisitorsBlock ? await listRecentVisitors(profile.id) : [];
   const canSeePrivate = isOwner || isStaff;
 
   // Galeria: staff vê as ocultas (para moderar); demais veem só as visíveis.
@@ -253,6 +258,34 @@ export default async function ProfilePage({
                 <p className="flex items-center gap-1.5 text-sm font-medium"><Mail className="size-4 text-muted-foreground" aria-hidden="true" /> E-mail</p>
                 <p className="mt-1 text-sm">{profileEmail}</p>
                 <p className="mt-1 text-xs text-muted-foreground">Só a equipe vê os endereços de e-mail.</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {showVisitorsBlock && (visitors.length > 0 || isOwner) && (
+            <Card>
+              <CardHeader><h2 className="text-base font-semibold leading-none">Visitantes recentes</h2></CardHeader>
+              <CardContent>
+                {visitors.length > 0 ? (
+                  <ul className="profile-visitors">
+                    {visitors.map((v) => (
+                      <li key={v.id}>
+                        <Link href={`/u/${v.handle}`} title={v.name} className="profile-visitors__item">
+                          <span className="profile-visitors__avatar" aria-hidden="true">
+                            {v.avatar ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={v.avatar} alt="" className="size-full object-cover" />
+                            ) : (v.name.trim()[0] ?? "?").toUpperCase()}
+                          </span>
+                          <span className="sr-only">{v.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Ninguém visitou seu perfil ainda.</p>
+                )}
+                {isOwner && <div className="mt-3 border-t border-border/60 pt-3"><VisitorsToggle initialShow={profile.showVisitors} /></div>}
               </CardContent>
             </Card>
           )}
