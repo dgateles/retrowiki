@@ -84,6 +84,35 @@ export function articleSchema(i: ArticleInput) {
   return s;
 }
 
+export type ForumTopicInput = {
+  base: string; canonicalPath: string; title: string; text?: string;
+  authorName: string; authorHandle: string;
+  publishedAt?: Date | null; updatedAt?: Date | null; replies: number; views: number;
+};
+/** DiscussionForumPosting para um tópico do fórum (rich results de discussão). */
+export function forumTopicSchema(i: ForumTopicInput) {
+  const b = trim(i.base);
+  const url = abs(b, i.canonicalPath);
+  const s: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "DiscussionForumPosting",
+    "@id": url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    headline: i.title,
+    url,
+    author: { "@type": "Person", name: i.authorName, url: `${b}/u/${i.authorHandle}` },
+    publisher: { "@type": "Organization", "@id": `${b}/#organization`, name: "RetroWiki", logo: { "@type": "ImageObject", url: `${b}/icon` } },
+    interactionStatistic: [
+      { "@type": "InteractionCounter", interactionType: "https://schema.org/ReplyAction", userInteractionCount: i.replies },
+      { "@type": "InteractionCounter", interactionType: "https://schema.org/ViewAction", userInteractionCount: i.views },
+    ],
+  };
+  if (i.text) s.text = i.text;
+  if (i.publishedAt) s.datePublished = i.publishedAt.toISOString();
+  if (i.updatedAt) s.dateModified = i.updatedAt.toISOString();
+  return s;
+}
+
 export type Crumb = { name: string; path: string };
 export function breadcrumbSchema(base: string, items: Crumb[]) {
   const b = trim(base);

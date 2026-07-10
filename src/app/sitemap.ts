@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { db } from "@/db";
-import { devices, articles, users, pages } from "@/db/schema";
+import { devices, articles, users, pages, forumTopics, forums } from "@/db/schema";
 import { articleHref } from "@/lib/article-url";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/consoles/comparar`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/leaderboard`, changeFrequency: "weekly", priority: 0.4 },
     { url: `${BASE}/equipe`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE}/forum`, changeFrequency: "daily", priority: 0.7 },
   ];
 
   try {
@@ -33,6 +34,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const a of arts) routes.push({ url: `${BASE}${articleHref(a.kind, a.slug)}`, lastModified: a.updatedAt, changeFrequency: a.kind === "blog" ? "monthly" : "weekly", priority: 0.7 });
     for (const p of customPages) { if (!p.isHome && !p.noindex) routes.push({ url: `${BASE}/p/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "monthly", priority: 0.5 }); }
     for (const u of authors) routes.push({ url: `${BASE}/u/${u.handle}`, changeFrequency: "monthly", priority: 0.4 });
+
+    // Tópicos de fórum públicos (fórum visível + leitura 'member' = público, tópico
+    // não oculto/pendente/excluído).
+    const topics = await db
+      .select({ slug: forumTopics.slug, updatedAt: forumTopics.updatedAt, forumSlug: forums.slug })
+      .from(forumTopics)
+      .innerJoin(forums, eq(forums.id, forumTopics.forumId))
+      .where(and(
+        eq(forums.visible, true), eq(forums.minReadRole, "member"),
+        inArray(forumTopics.status, ["open", "locked", "archived"]), isNull(forumTopics.deletedAt),
+      ));
+    for (const t of topics) routes.push({ url: `${BASE}/forum/${t.forumSlug}/${t.slug}`, lastModified: t.updatedAt, changeFrequency: "weekly", priority: 0.6 });
   } catch {
     // banco indisponível (ex.: build estático) — retorna só as rotas fixas
   }

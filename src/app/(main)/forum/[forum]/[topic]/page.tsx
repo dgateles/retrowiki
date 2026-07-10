@@ -17,6 +17,10 @@ import { Pager } from "@/components/ui/pager";
 import { richDocToText } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody } from "@/lib/forum";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/json-ld";
+import { forumTopicSchema, breadcrumbSchema } from "@/lib/seo/builders";
+
+const SEO_BASE = process.env.APP_URL ?? "http://localhost:3000";
 
 export const dynamic = "force-dynamic";
 
@@ -48,8 +52,23 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
   const [reportTypes, reportingSettings] = await Promise.all([listReportTypes(), getReportingSettings()]);
   const reportTypeOpts = reportTypes.map((r) => ({ id: r.id, title: r.title }));
 
+  const firstPost = items.find((p) => p.isFirst) ?? items[0];
+  const canonicalPath = `/forum/${t.forumSlug}/${t.slug}`;
+
   return (
     <main id="main" className="page">
+      <JsonLd data={forumTopicSchema({
+        base: SEO_BASE, canonicalPath, title: t.title,
+        text: firstPost ? richDocToText(forumDocFromBody(firstPost.body) as Parameters<typeof richDocToText>[0]).slice(0, 300) : undefined,
+        authorName: firstPost?.authorName ?? "RetroWiki", authorHandle: firstPost?.authorHandle ?? "",
+        publishedAt: t.createdAt, replies: t.postsCount, views: t.views,
+      })} />
+      <JsonLd data={breadcrumbSchema(SEO_BASE, [
+        { name: "Fórum", path: "/forum" },
+        { name: t.forumTitle, path: forumHref(t.forumSlug) },
+        { name: t.title, path: canonicalPath },
+      ])} />
+
       <nav className="forum-crumbs" aria-label="Trilha">
         <Link href="/forum" className="link-inline">Fórum</Link>
         <span aria-hidden="true"> / </span>
