@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 import { isInAppAllowed } from "@/lib/notifications-prefs";
@@ -17,12 +17,11 @@ export async function createNotification(recipientId: number, type: string, payl
 
 export async function getUnreadCount(userId: number): Promise<number> {
   try {
-    const rows = await db
-      .select({ id: notifications.id })
+    const [row] = await db
+      .select({ n: count() })
       .from(notifications)
-      .where(and(eq(notifications.recipientId, userId), isNull(notifications.readAt)))
-      .limit(50);
-    return rows.length;
+      .where(and(eq(notifications.recipientId, userId), isNull(notifications.readAt)));
+    return row?.n ?? 0;
   } catch {
     return 0;
   }

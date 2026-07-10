@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { desc, eq, inArray, like, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { memberIps, users } from "@/db/schema";
+import { clientIpFromXff } from "@/lib/client-ip";
 
 export type StaffLogin = { handle: string; displayName: string; role: string; ip: string; lastUsedAt: Date };
 
@@ -23,7 +24,7 @@ export async function getStaffLogins(limit = 20): Promise<StaffLogin[]> {
 
 export async function getClientIp(): Promise<string> {
   const h = await headers();
-  return (h.get("x-forwarded-for")?.split(",")[0] ?? h.get("x-real-ip") ?? "").trim() || "desconhecido";
+  return clientIpFromXff(h.get("x-forwarded-for"), h.get("x-real-ip")) || "desconhecido";
 }
 
 async function getUserAgent(): Promise<string> {

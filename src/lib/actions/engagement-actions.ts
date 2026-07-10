@@ -257,7 +257,8 @@ export async function reactAction(articleId: number, reactionId: number): Promis
   } catch {
     return { ok: false, error: "Faça login para reagir." };
   }
-  await checkRateLimit(`react:${user.id}`, 30, 60_000);
+  const rl = await checkRateLimit(`react:${user.id}`, 30, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas reações em pouco tempo. Aguarde um momento." };
   const userId = Number(user.id);
 
   const settings = await getReputationSettings();
@@ -337,7 +338,8 @@ export async function reactCommentAction(commentId: number, value: number): Prom
   } catch {
     return { ok: false, error: "Faça login para reagir." };
   }
-  await checkRateLimit(`creact:${user.id}`, 40, 60_000);
+  const rl = await checkRateLimit(`creact:${user.id}`, 40, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas reações em pouco tempo. Aguarde um momento." };
   const userId = Number(user.id);
   const v = value > 0 ? 1 : value < 0 ? -1 : 0;
   if (v === 0) return { ok: false, error: "Reação inválida." };

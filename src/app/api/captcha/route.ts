@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { issueChallenge } from "@/lib/captcha";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getSpamSettings } from "@/lib/settings";
+import { clientIpFromXff } from "@/lib/client-ip";
 
 const ALLOWED_ACTIONS = new Set(["register", "submit", "comment", "reset"]);
 
 function clientIp(req: NextRequest): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("x-real-ip") ||
-    "unknown"
-  );
+  return clientIpFromXff(req.headers.get("x-forwarded-for"), req.headers.get("x-real-ip")) || "unknown";
 }
 
 export async function GET(req: NextRequest) {

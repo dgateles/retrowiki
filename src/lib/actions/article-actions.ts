@@ -337,8 +337,14 @@ export async function moderateAction(input: unknown): Promise<Result> {
   });
 
   if (decision === "approved") {
-    await evaluateBadges(article.authorId);
-    await runTrigger("guide.published", { actorId: article.authorId });
+    // Recompensa/badge só quando é uma publicação NOVA (transição para published),
+    // não a cada edição proposta aprovada sobre conteúdo já no ar — senão o autor
+    // ORIGINAL ganharia reputação repetidamente por edições da comunidade.
+    if (article.status !== "published") {
+      await evaluateBadges(article.authorId);
+      await runTrigger("guide.published", { actorId: article.authorId });
+    }
+    // Revalida sempre: mesmo uma edição aprovada sobre conteúdo já no ar mudou a página.
     revalidatePath(article.kind === "blog" ? "/blog" : "/guias");
     revalidatePath(`/${article.kind === "blog" ? "blog" : "guias"}/${article.slug}`);
   }

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchAll, type SearchScope } from "@/lib/search";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { clientIpFromXff } from "@/lib/client-ip";
 
 export const dynamic = "force-dynamic";
 
 function clientIp(req: NextRequest): string {
-  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  return clientIpFromXff(req.headers.get("x-forwarded-for"), req.headers.get("x-real-ip")) || "unknown";
 }
 
 function parseScope(v: string | null): SearchScope {
