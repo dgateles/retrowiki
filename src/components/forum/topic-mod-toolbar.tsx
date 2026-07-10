@@ -26,7 +26,7 @@ export function TopicModToolbar({ topicId, forumSlug, pinned, locked }: { topicI
 
   return (
     <div className="fmod">
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" disabled={pending}>
             <Settings2 className="size-4" aria-hidden="true" /> Ações <ChevronDown className="size-4 opacity-60" aria-hidden="true" />

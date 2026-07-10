@@ -91,7 +91,7 @@ export function PostActionsMenu({
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <button type="button" className="fpost__more" aria-label="Ações da postagem">
             <MoreHorizontal className="size-4" aria-hidden="true" />
