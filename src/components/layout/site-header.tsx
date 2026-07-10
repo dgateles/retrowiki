@@ -65,7 +65,6 @@ export async function SiteHeader() {
         <SearchBox className="site-header__search" />
 
         <div className="site-header__actions">
-          <ThemeToggle />
           {user ? (
             <>
               <Link href="/mensagens" className="pm-navbtn" aria-label={pmUnread > 0 ? `Mensagens (${pmUnread} não lidas)` : "Mensagens"}>
@@ -82,6 +81,7 @@ export async function SiteHeader() {
             </>
           ) : (
             <>
+              <ThemeToggle />
               <Button asChild variant="ghost" size="sm">
                 <Link href="/auth/entrar">Entrar</Link>
               </Button>

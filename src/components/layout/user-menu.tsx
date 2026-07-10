@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, PenLine, ShieldCheck, UserRound, Cog, LayoutDashboard } from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { useTheme } from "next-themes";
+import { LogOut, PenLine, ShieldCheck, UserRound, Cog, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { appSignOut } from "@/lib/auth-logout";
 import { Button } from "@/components/ui/button";
 import type { Rank } from "@/lib/ranks";
@@ -25,6 +27,9 @@ export function UserMenu({
   isStaff: boolean;
   isAdmin: boolean;
 }) {
+  const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const isDark = resolvedTheme === "dark";
   return (
     // modal=false: menu de navbar não precisa travar o scroll. Com o lock do Radix
     // (modal padrão), a barra de rolagem some ao abrir e a página inteira "pula"
@@ -92,6 +97,10 @@ export function UserMenu({
           <Link href="/conta">
             <UserRound aria-hidden="true" /> Conta
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTheme(isDark ? "light" : "dark"); }}>
+          {mounted && isDark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+          {mounted ? (isDark ? "Tema claro" : "Tema escuro") : "Alternar tema"}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => appSignOut()}>
