@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, count, eq, gte, ne, sql } from "drizzle-orm";
+import { and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, users } from "@/db/schema";
+import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -36,11 +36,23 @@ function validateForumBody(raw: unknown): { ok: true; json: string; text: string
   return { ok: true, json: JSON.stringify(parsed.data), text };
 }
 
+const PollSchema = z.object({
+  title: z.string().trim().max(200).optional(),
+  publicVoters: z.boolean().optional(),
+  closesAt: z.string().datetime().nullable().optional(),
+  questions: z.array(z.object({
+    title: z.string().trim().min(1, "Pergunta vazia.").max(300),
+    multiple: z.boolean().optional(),
+    choices: z.array(z.string().trim().min(1).max(300)).min(2, "Cada pergunta precisa de ao menos 2 opções.").max(30),
+  })).min(1).max(10),
+});
 const CreateTopicSchema = z.object({
   forumId: z.number().int().positive(),
   title: z.string().trim().min(5, "Título muito curto.").max(200),
   body: z.string(),
   follow: z.boolean().optional(),
+  poll: PollSchema.optional(),
+  options: z.object({ lock: z.boolean().optional(), pin: z.boolean().optional(), hide: z.boolean().optional() }).optional(),
 });
 const ReplySchema = z.object({ topicId: z.number().int().positive(), body: z.string(), follow: z.boolean().optional() });
 
@@ -64,14 +76,34 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
   if (!canPostForum(forum, user.role)) return { ok: false, error: "Você não pode postar neste fórum." };
 
   const userId = Number(user.id);
+  const staff = isStaff(user.role);
   const moderated = await isContentModerated(userId);
   const slug = await uniqueTopicSlug(parsed.data.title);
   const now = new Date();
 
+  // Opções pós-publicação (só staff, e não sobrescrevem a moderação).
+  const opts = parsed.data.options ?? {};
+  let status: "open" | "locked" | "hidden" | "pending" = moderated ? "pending" : "open";
+  let pinned = false;
+  if (!moderated && staff) {
+    if (opts.hide) status = "hidden";
+    else if (opts.lock) status = "locked";
+    if (opts.pin) pinned = true;
+  }
+  const countsPublic = status === "open" || status === "locked";
+
+  // Enquete (validação leve extra: data de fechamento no futuro).
+  const pollInput = parsed.data.poll;
+  let closesAt: Date | null = null;
+  if (pollInput?.closesAt) {
+    const d = new Date(pollInput.closesAt);
+    if (!Number.isNaN(d.getTime()) && d.getTime() > now.getTime()) closesAt = d;
+  }
+
   const topicId = await db.transaction(async (tx) => {
     const topicIns = await tx.insert(forumTopics).values({
       forumId: forum.id, authorId: userId, title: parsed.data.title, slug,
-      status: moderated ? "pending" : "open", lastPostAt: now, lastPosterId: userId,
+      status, pinned, lastPostAt: now, lastPosterId: userId,
     });
     const tId = insertId(topicIns);
     const postIns = await tx.insert(forumPosts).values({
@@ -79,11 +111,24 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
     });
     const pId = insertId(postIns);
     await tx.update(forumTopics).set({ firstPostId: pId, lastPostId: pId }).where(eq(forumTopics.id, tId));
-    if (!moderated) {
+    if (countsPublic) {
       await tx.update(forums).set({
         topicsCount: sql`${forums.topicsCount} + 1`, postsCount: sql`${forums.postsCount} + 1`,
         lastPostId: pId, lastPostAt: now, lastPosterId: userId,
       }).where(eq(forums.id, forum.id));
+    }
+    // Enquete
+    if (pollInput) {
+      const pollIns = await tx.insert(forumPolls).values({
+        topicId: tId, title: pollInput.title?.trim() || null, publicVoters: pollInput.publicVoters ?? false, closesAt,
+      });
+      const pollId = insertId(pollIns);
+      for (let qi = 0; qi < pollInput.questions.length; qi++) {
+        const q = pollInput.questions[qi];
+        const qIns = await tx.insert(forumPollQuestions).values({ pollId, title: q.title.trim(), multiple: q.multiple ?? false, sortOrder: qi });
+        const qId = insertId(qIns);
+        await tx.insert(forumPollChoices).values(q.choices.map((label, ci) => ({ questionId: qId, label: label.trim(), sortOrder: ci })));
+      }
     }
     return tId;
   });
@@ -168,6 +213,83 @@ export async function toggleFollowTopicAction(topicId: number): Promise<Result<{
 }
 
 // ── Reagir a um post ───────────────────────────────────────────────────────
+const VotePollSchema = z.object({ pollId: z.number().int().positive(), choiceIds: z.array(z.number().int().positive()).min(1).max(200) });
+export async function votePollAction(input: unknown): Promise<Result> {
+  const user = await requireUser().catch(() => null);
+  if (!user) return { ok: false, error: "Faça login para votar." };
+  const parsed = VotePollSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Dados inválidos." };
+  const userId = Number(user.id);
+  const rl = await checkRateLimit(`forum:poll:${userId}`, 20, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas ações. Aguarde." };
+
+  const [poll] = await db.select({ id: forumPolls.id, topicId: forumPolls.topicId, closesAt: forumPolls.closesAt })
+    .from(forumPolls).where(eq(forumPolls.id, parsed.data.pollId)).limit(1);
+  if (!poll) return { ok: false, error: "Enquete não encontrada." };
+  if (poll.closesAt && poll.closesAt.getTime() <= Date.now()) return { ok: false, error: "Enquete encerrada." };
+
+  // Já votou?
+  const [prev] = await db.select({ id: forumPollVotes.id }).from(forumPollVotes)
+    .where(and(eq(forumPollVotes.pollId, poll.id), eq(forumPollVotes.userId, userId))).limit(1);
+  if (prev) return { ok: false, error: "Você já votou nesta enquete." };
+
+  // Perguntas + opções válidas da enquete.
+  const questions = await db.select({ id: forumPollQuestions.id, multiple: forumPollQuestions.multiple }).from(forumPollQuestions).where(eq(forumPollQuestions.pollId, poll.id));
+  const qIds = questions.map((q) => q.id);
+  const choices = qIds.length ? await db.select({ id: forumPollChoices.id, questionId: forumPollChoices.questionId }).from(forumPollChoices).where(inArray(forumPollChoices.questionId, qIds)) : [];
+  const choiceById = new Map(choices.map((c) => [c.id, c]));
+
+  const chosen = [...new Set(parsed.data.choiceIds)];
+  if (chosen.some((id) => !choiceById.has(id))) return { ok: false, error: "Opção inválida." };
+  // Agrupa por pergunta e valida escolha única.
+  const byQuestion = new Map<number, number[]>();
+  for (const id of chosen) {
+    const qid = choiceById.get(id)!.questionId;
+    byQuestion.set(qid, [...(byQuestion.get(qid) ?? []), id]);
+  }
+  for (const q of questions) {
+    const picks = byQuestion.get(q.id) ?? [];
+    if (picks.length === 0) return { ok: false, error: "Responda todas as perguntas." };
+    if (!q.multiple && picks.length > 1) return { ok: false, error: "Escolha apenas uma opção por pergunta." };
+  }
+
+  await db.transaction(async (tx) => {
+    for (const id of chosen) {
+      const c = choiceById.get(id)!;
+      await tx.insert(forumPollVotes).values({ pollId: poll.id, questionId: c.questionId, choiceId: id, userId });
+      await tx.update(forumPollChoices).set({ votesCount: sql`${forumPollChoices.votesCount} + 1` }).where(eq(forumPollChoices.id, id));
+    }
+  });
+
+  const [ctx] = await db.select({ slug: forumTopics.slug, forumSlug: forums.slug })
+    .from(forumTopics).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(eq(forumTopics.id, poll.topicId)).limit(1);
+  if (ctx) revalidatePath(`/forum/${ctx.forumSlug}/${ctx.slug}`);
+  return { ok: true };
+}
+
+const EditPostSchema = z.object({ postId: z.number().int().positive(), body: z.string() });
+export async function editForumPostAction(input: unknown): Promise<Result> {
+  const user = await requireUser().catch(() => null);
+  if (!user) return { ok: false, error: "Faça login." };
+  const parsed = EditPostSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Dados inválidos." };
+  const valid = validateForumBody(parsed.data.body);
+  if (!valid.ok) return { ok: false, error: valid.error };
+  const userId = Number(user.id);
+  const [post] = await db.select({ id: forumPosts.id, authorId: forumPosts.authorId, topicId: forumPosts.topicId, deletedAt: forumPosts.deletedAt })
+    .from(forumPosts).where(eq(forumPosts.id, parsed.data.postId)).limit(1);
+  if (!post || post.deletedAt) return { ok: false, error: "Post não encontrado." };
+  const isOwner = post.authorId === userId;
+  if (!isOwner && !isStaff(user.role)) return { ok: false, error: "Sem permissão para editar." };
+  const rl = await checkRateLimit(`forum:edit:${userId}`, 20, 60_000);
+  if (!rl.ok) return { ok: false, error: "Muitas edições. Aguarde." };
+  await db.update(forumPosts).set({ body: valid.json, editedAt: new Date(), editedById: userId }).where(eq(forumPosts.id, post.id));
+  const [ctx] = await db.select({ slug: forumTopics.slug, forumSlug: forums.slug })
+    .from(forumTopics).innerJoin(forums, eq(forums.id, forumTopics.forumId)).where(eq(forumTopics.id, post.topicId)).limit(1);
+  if (ctx) revalidatePath(`/forum/${ctx.forumSlug}/${ctx.slug}`);
+  return { ok: true };
+}
+
 export async function reactForumPostAction(postId: number, reactionId: number): Promise<Result<{ reactionId: number | null }>> {
   const user = await requireUser().catch(() => null);
   if (!user) return { ok: false, error: "Faça login para reagir." };

@@ -7,17 +7,20 @@ import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
 import { ForumReactionBar } from "@/components/forum/forum-reaction-bar";
+import { PostActionsMenu } from "@/components/forum/post-actions-menu";
+import { ForumPoll } from "@/components/forum/forum-poll";
+import { getTopicPoll } from "@/lib/forum-polls";
 import { listEnabledReactions, getForumPostReactionState } from "@/lib/reactions";
 import { ReplyForm } from "@/components/forum/reply-form";
 import { TopicFollowButton } from "@/components/forum/topic-follow-button";
 import { TopicModToolbar } from "@/components/forum/topic-mod-toolbar";
-import { PostModActions } from "@/components/forum/post-mod-actions";
-import { ReportButton } from "@/components/moderation/report-button";
 import { listReportTypes } from "@/lib/reports";
 import { getReportingSettings } from "@/lib/settings";
 import { Pager } from "@/components/ui/pager";
+import { postHref } from "@/lib/forum-url";
 import { richDocToText } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody } from "@/lib/forum";
+import type { JSONContent } from "@tiptap/react";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/json-ld";
 import { forumTopicSchema, breadcrumbSchema } from "@/lib/seo/builders";
@@ -47,6 +50,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
 
   if (page === 1) await incrementTopicView(t.id);
   const { items, hasMore } = await listPosts(t.id, page);
+  const poll = page === 1 ? await getTopicPoll(t.id, user ? Number(user.id) : null) : null;
   const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
   const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
   const isMod = can.moderate(user);
@@ -88,20 +92,31 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
           {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
           {t.title}
         </h1>
-        {user && <TopicFollowButton topicId={t.id} initialFollowing={following} />}
+        <div className="ftopic-actions">
+          {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}
+          {user && <TopicFollowButton topicId={t.id} initialFollowing={following} />}
+        </div>
       </div>
 
-      {isMod && <TopicModToolbar topicId={t.id} forumSlug={t.forumSlug} pinned={t.pinned} locked={t.status === "locked"} />}
+      {poll && <ForumPoll poll={poll} canVote={!!user && !poll.closed && !poll.hasVoted} />}
 
       <div className="fpost-list">
         {items.map((post) => {
-          const canReport = userId && post.authorId !== userId && reportTypeOpts.length > 0;
-          const canModPost = isMod && !post.isFirst;
-          const footer = (canReport || canModPost) ? (
-            <>
-              {canReport && <ReportButton targetType="forum_post" targetId={post.id} reportTypes={reportTypeOpts} messageMandatory={reportingSettings.messageMandatory} variant="icon" />}
-              {canModPost && <PostModActions postId={post.id} />}
-            </>
+          const isAuthor = userId != null && post.authorId === userId;
+          const canReport = !!userId && !isAuthor && reportTypeOpts.length > 0;
+          const canEdit = isAuthor || isMod;
+          const actions = (!!userId || isMod) ? (
+            <PostActionsMenu
+              postId={post.id}
+              permalink={postHref(t.forumSlug, t.slug, post.id)}
+              initialDoc={forumDocFromBody(post.body) as JSONContent}
+              canReport={canReport}
+              reportTypes={reportTypeOpts}
+              reportMessageMandatory={reportingSettings.messageMandatory}
+              canEdit={canEdit}
+              canModerate={isMod}
+              isFirst={post.isFirst}
+            />
           ) : undefined;
           const st = reactionState.get(post.id);
           const reactions = reactionOpts.length > 0 ? (
@@ -114,7 +129,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               canReact={!!userId}
             />
           ) : undefined;
-          return <ForumPostCard key={post.id} post={post} reactions={reactions} footer={footer} />;
+          return <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} />;
         })}
       </div>
 

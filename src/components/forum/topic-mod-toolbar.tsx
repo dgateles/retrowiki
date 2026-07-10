@@ -3,12 +3,15 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Pin, PinOff, Lock, LockOpen, EyeOff, Trash2, Shield } from "lucide-react";
+import { Settings2, Pin, PinOff, Lock, LockOpen, EyeOff, Trash2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { setTopicPinnedAction, setTopicLockedAction, hideTopicAction, deleteTopicAction } from "@/lib/actions/forum-mod-actions";
 import { forumHref } from "@/lib/forum-url";
 
+/** Menu "Ações" do tópico (estilo IPB): agrupa as funções de moderação num único
+ * botão em vez de vários botões soltos. */
 export function TopicModToolbar({ topicId, forumSlug, pinned, locked }: { topicId: number; forumSlug: string; pinned: boolean; locked: boolean }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -22,16 +25,25 @@ export function TopicModToolbar({ topicId, forumSlug, pinned, locked }: { topicI
     });
 
   return (
-    <div className="fmod" role="group" aria-label="Ações de moderação">
-      <span className="fmod__label"><Shield className="size-3.5" aria-hidden="true" /> Mod</span>
-      <Button variant="outline" size="sm" disabled={pending} onClick={() => run(() => setTopicPinnedAction(topicId, !pinned), pinned ? "Desafixado." : "Fixado.")}>
-        {pinned ? <PinOff className="size-4" aria-hidden="true" /> : <Pin className="size-4" aria-hidden="true" />}{pinned ? "Desafixar" : "Fixar"}
-      </Button>
-      <Button variant="outline" size="sm" disabled={pending} onClick={() => run(() => setTopicLockedAction(topicId, !locked), locked ? "Destrancado." : "Trancado.")}>
-        {locked ? <LockOpen className="size-4" aria-hidden="true" /> : <Lock className="size-4" aria-hidden="true" />}{locked ? "Destrancar" : "Trancar"}
-      </Button>
-      <Button variant="outline" size="sm" disabled={pending} onClick={() => setConfirm("hide")}><EyeOff className="size-4" aria-hidden="true" /> Ocultar</Button>
-      <Button variant="outline" size="sm" className="text-destructive" disabled={pending} onClick={() => setConfirm("delete")}><Trash2 className="size-4" aria-hidden="true" /> Excluir</Button>
+    <div className="fmod">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" disabled={pending}>
+            <Settings2 className="size-4" aria-hidden="true" /> Ações <ChevronDown className="size-4 opacity-60" aria-hidden="true" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={() => run(() => setTopicPinnedAction(topicId, !pinned), pinned ? "Desafixado." : "Fixado.")}>
+            {pinned ? <PinOff className="size-4" aria-hidden="true" /> : <Pin className="size-4" aria-hidden="true" />} {pinned ? "Desafixar" : "Fixar"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => run(() => setTopicLockedAction(topicId, !locked), locked ? "Destrancado." : "Trancado.")}>
+            {locked ? <LockOpen className="size-4" aria-hidden="true" /> : <Lock className="size-4" aria-hidden="true" />} {locked ? "Destrancar" : "Trancar"}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => setConfirm("hide")}><EyeOff className="size-4" aria-hidden="true" /> Ocultar</DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={() => setConfirm("delete")}><Trash2 className="size-4" aria-hidden="true" /> Excluir</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <Dialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
         <DialogContent aria-describedby={undefined}>

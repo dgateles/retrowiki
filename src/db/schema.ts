@@ -987,6 +987,46 @@ export const forumTopicFollows = mysqlTable("forum_topic_follows", {
   index("forum_topic_follows_topic_idx").on(t.topicId),
 ]);
 
+// Enquete de um tópico (estilo IPB: várias perguntas, votantes públicos opcionais,
+// fechamento automático por data). Uma enquete por tópico.
+export const forumPolls = mysqlTable("forum_polls", {
+  id: pk(),
+  topicId: bigint("topic_id", { mode: "number" }).notNull(),
+  title: varchar("title", { length: 200 }),
+  publicVoters: boolean("public_voters").notNull().default(false),
+  closesAt: datetime("closes_at"),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("forum_polls_topic_idx").on(t.topicId)]);
+
+export const forumPollQuestions = mysqlTable("forum_poll_questions", {
+  id: pk(),
+  pollId: bigint("poll_id", { mode: "number" }).notNull(),
+  title: varchar("title", { length: 300 }).notNull(),
+  multiple: boolean("multiple").notNull().default(false), // múltipla escolha
+  sortOrder: int("sort_order").notNull().default(0),
+}, (t) => [index("forum_poll_questions_poll_idx").on(t.pollId, t.sortOrder)]);
+
+export const forumPollChoices = mysqlTable("forum_poll_choices", {
+  id: pk(),
+  questionId: bigint("question_id", { mode: "number" }).notNull(),
+  label: varchar("label", { length: 300 }).notNull(),
+  votesCount: int("votes_count").notNull().default(0), // denormalizado
+  sortOrder: int("sort_order").notNull().default(0),
+}, (t) => [index("forum_poll_choices_question_idx").on(t.questionId, t.sortOrder)]);
+
+export const forumPollVotes = mysqlTable("forum_poll_votes", {
+  id: pk(),
+  pollId: bigint("poll_id", { mode: "number" }).notNull(),
+  questionId: bigint("question_id", { mode: "number" }).notNull(),
+  choiceId: bigint("choice_id", { mode: "number" }).notNull(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("forum_poll_votes_user_choice_idx").on(t.userId, t.choiceId),
+  index("forum_poll_votes_poll_idx").on(t.pollId),
+  index("forum_poll_votes_user_poll_idx").on(t.userId, t.pollId),
+]);
+
 // Tipos exportados --------------------------------------------------------
 export type MenuItem = typeof menuItems.$inferSelect;
 export type UserRole = (typeof users.$inferSelect)["role"];
@@ -999,3 +1039,6 @@ export type Forum = typeof forums.$inferSelect;
 export type ForumTopic = typeof forumTopics.$inferSelect;
 export type ForumPost = typeof forumPosts.$inferSelect;
 export type ForumTopicStatus = ForumTopic["status"];
+export type ForumPoll = typeof forumPolls.$inferSelect;
+export type ForumPollQuestion = typeof forumPollQuestions.$inferSelect;
+export type ForumPollChoice = typeof forumPollChoices.$inferSelect;

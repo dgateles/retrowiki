@@ -3877,12 +3877,14 @@
   .fpost__since { @apply hidden text-xs text-muted-foreground sm:block; }
   .fpost__main { @apply flex min-w-0 flex-col p-4 sm:p-5; }
   .fpost__head { @apply mb-3 flex items-center gap-2 border-b border-border/60 pb-3 text-xs text-muted-foreground; }
+  .fpost__head-meta { @apply flex flex-1 flex-wrap items-center gap-2; }
+  .fpost__head-actions { @apply shrink-0; }
+  .fpost__more { @apply inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring; }
   .fpost__badge { @apply rounded-full bg-primary/10 px-2 py-0.5 text-primary; }
   .fpost__edited { @apply italic; }
   .fpost__content { @apply min-w-0; }
   .fpost__foot { @apply mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-3; }
-  .fpost__foot .react-bar { @apply ml-0 mr-auto; }
-  .fpost__foot-actions { @apply flex items-center gap-2; }
+  .fpost__foot .react-bar { @apply ml-auto; }
 }
 
 @layer components {
@@ -3892,13 +3894,54 @@
 }
 
 @layer components {
-  .fmod { @apply mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-2; }
-  .fmod__label { @apply flex items-center gap-1 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground; }
+  .fmod { @apply inline-flex; }
+  .ftopic-actions { @apply flex shrink-0 items-center gap-2; }
 }
 
 @layer components {
-  .ftopic-form { @apply mt-4 overflow-hidden rounded-lg border border-border bg-card; }
-  .ftopic-form__section { @apply border-b border-border p-5; }
+  .ftopic-grid { @apply mt-4 grid grid-cols-1 gap-4; }
+  .ftopic-grid--aside { @apply lg:grid-cols-[1fr_18rem]; }
+  .ftopic-main { @apply overflow-hidden rounded-lg border border-border bg-card; }
+  .ftopic-tabs { @apply flex items-center gap-1 border-b border-border p-2; }
+  .ftopic-tab { @apply inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground; }
+  .ftopic-tab--on { @apply bg-muted text-foreground; }
+  .ftopic-tab__dot { @apply size-1.5 rounded-full bg-primary; }
+  .ftopic-form { @apply flex flex-col gap-5 p-5; }
+  .ftopic-form__section { @apply flex flex-col; }
   .ftopic-form__labelrow { @apply mb-2 flex items-center justify-between; }
-  .ftopic-form__foot { @apply flex flex-wrap items-center justify-between gap-4 p-5; }
+  .ftopic-form__foot { @apply flex flex-wrap items-center justify-between gap-4 border-t border-border p-5; }
+
+  .ftopic-aside { @apply flex h-fit flex-col gap-3 rounded-lg border border-border bg-card p-5; }
+  .ftopic-aside__title { @apply text-sm font-semibold; }
+  .ftopic-aside__note { @apply text-xs text-muted-foreground; }
+
+  /* Editor de enquete (formulário de novo tópico) */
+  .fpoll-edit { @apply flex flex-col gap-3 rounded-lg border border-border bg-muted/20 p-4; }
+  .fpoll-edit__head { @apply flex items-center gap-2; }
+  .fpoll-edit__choices { @apply flex flex-col gap-2; }
+  .fpoll-edit__choice { @apply flex items-center gap-2; }
+  .fpoll-edit__num { @apply w-5 text-center text-sm text-muted-foreground; }
+  .fpoll-edit__foot { @apply flex flex-wrap items-center justify-between gap-3; }
+
+  /* Enquete exibida no tópico */
+  .fpoll { @apply mb-6 rounded-lg border border-border bg-card p-5; }
+  .fpoll__head { @apply mb-4 flex items-center gap-2 border-b border-border pb-3; }
+  .fpoll__title { @apply text-base font-bold; }
+  .fpoll__badge { @apply ml-auto inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground; }
+  .fpoll__q { @apply mb-4 last:mb-0; }
+  .fpoll__q-title { @apply mb-2 font-semibold; }
+  .fpoll__q-hint { @apply text-xs font-normal text-muted-foreground; }
+  .fpoll__choices { @apply flex flex-col gap-2; }
+  .fpoll__opt { @apply flex cursor-pointer items-center gap-3 rounded-md border border-border px-3 py-2 text-sm transition-colors hover:bg-accent/40; }
+  .fpoll__opt--on { @apply border-primary/50 bg-primary/5; }
+  .fpoll__result { @apply flex flex-col gap-1; }
+  .fpoll__result--mine .fpoll__result-label { @apply font-semibold text-foreground; }
+  .fpoll__result-top { @apply flex items-center justify-between text-sm; }
+  .fpoll__result-num { @apply text-muted-foreground; }
+  .fpoll__bar { @apply h-2 overflow-hidden rounded-full bg-muted; }
+  .fpoll__bar-fill { @apply h-full rounded-full bg-primary transition-all; }
+  .fpoll__foot { @apply mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3; }
+  .fpoll__meta { @apply text-sm text-muted-foreground; }
+  .fpoll__voters { @apply mt-3 border-t border-border pt-3 text-sm text-muted-foreground; }
+  .fpoll__voters-label { @apply font-medium text-foreground; }
 }

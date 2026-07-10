@@ -13,7 +13,7 @@ const joined = (d: Date) => new Intl.DateTimeFormat("pt-BR", { month: "short", y
 const posted = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Post do fórum com "postbit" (cartão do autor) à esquerda — visual estilo IPB. */
-export function ForumPostCard({ post, reactions, footer }: { post: ForumPostItem; reactions?: React.ReactNode; footer?: React.ReactNode }) {
+export function ForumPostCard({ post, reactions, actions }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode }) {
   const isStaff = post.authorRole === "moderator" || post.authorRole === "admin";
   return (
     <article id={`post-${post.id}`} className="fpost">
@@ -37,19 +37,17 @@ export function ForumPostCard({ post, reactions, footer }: { post: ForumPostItem
 
       <div className="fpost__main">
         <header className="fpost__head">
-          <time dateTime={post.createdAt.toISOString()}>{posted(post.createdAt)}</time>
-          {post.isFirst && <span className="fpost__badge">Autor do tópico</span>}
-          {post.editedAt && <span className="fpost__edited">editado</span>}
+          <div className="fpost__head-meta">
+            <time dateTime={post.createdAt.toISOString()}>{posted(post.createdAt)}</time>
+            {post.isFirst && <span className="fpost__badge">Autor do tópico</span>}
+            {post.editedAt && <span className="fpost__edited">editado</span>}
+          </div>
+          {actions && <div className="fpost__head-actions">{actions}</div>}
         </header>
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
-        {(reactions || footer) && (
-          <footer className="fpost__foot">
-            {reactions}
-            {footer && <div className="fpost__foot-actions">{footer}</div>}
-          </footer>
-        )}
+        {reactions && <footer className="fpost__foot">{reactions}</footer>}
       </div>
     </article>
   );

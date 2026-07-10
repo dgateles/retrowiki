@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getForumBySlug, canReadForumPublic, canPostForum } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
-import { getCurrentUser } from "@/lib/auth-helpers";
+import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { NewTopicForm } from "@/components/forum/new-topic-form";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +25,7 @@ export default async function NewTopicPage({ params }: { params: Promise<{ forum
       <div className="page__head">
         <h1 className="page__title">Novo tópico</h1>
       </div>
-      <NewTopicForm forumId={f.id} forumSlug={f.slug} />
+      <NewTopicForm forumId={f.id} forumSlug={f.slug} isStaff={can.moderate(user)} />
     </main>
   );
 }
