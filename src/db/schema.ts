@@ -872,6 +872,121 @@ export const menuItems = mysqlTable("menu_items", {
   updatedAt: updatedAt(),
 }, (t) => [index("menu_items_tree_idx").on(t.location, t.parentId, t.sortOrder)]);
 
+// ── Fórum (estilo IPB) ───────────────────────────────────────────────────
+// Categoria → Fórum (→ sub-fórum) → Tópico → Post. FKs sem constraint (padrão do
+// projeto). Ver docs-plataforma/19-forum.md. Papéis usados nos gates: os mesmos
+// de users.role (member/contributor/moderator/admin).
+const FORUM_ROLE = ["member", "contributor", "moderator", "admin"] as const;
+
+// Cabeçalho de agrupamento (só organiza a home do fórum).
+export const forumCategories = mysqlTable("forum_categories", {
+  id: pk(),
+  title: varchar("title", { length: 120 }).notNull(),
+  description: varchar("description", { length: 300 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (t) => [index("forum_categories_order_idx").on(t.sortOrder)]);
+
+// Fórum: onde vivem os tópicos. Pode ter sub-fóruns (1 nível). Gates por papel.
+export const forums = mysqlTable("forums", {
+  id: pk(),
+  categoryId: bigint("category_id", { mode: "number" }).notNull(),
+  parentId: bigint("parent_id", { mode: "number" }), // sub-fórum; null = topo
+  title: varchar("title", { length: 120 }).notNull(),
+  slug: varchar("slug", { length: 140 }).notNull(),
+  description: varchar("description", { length: 300 }),
+  icon: varchar("icon", { length: 40 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
+  locked: boolean("locked").notNull().default(false), // ninguém posta (só staff)
+  minReadRole: mysqlEnum("min_read_role", FORUM_ROLE).notNull().default("member"),
+  minPostRole: mysqlEnum("min_post_role", FORUM_ROLE).notNull().default("member"),
+  // Denormalizados para a listagem (atualizados na criação/remoção de post).
+  topicsCount: int("topics_count").notNull().default(0),
+  postsCount: int("posts_count").notNull().default(0),
+  lastPostId: bigint("last_post_id", { mode: "number" }),
+  lastPostAt: datetime("last_post_at"),
+  lastPosterId: bigint("last_poster_id", { mode: "number" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (t) => [
+  uniqueIndex("forums_slug_idx").on(t.slug),
+  index("forums_category_idx").on(t.categoryId, t.sortOrder),
+]);
+
+// Tópico: uma discussão. O post de abertura é firstPostId (isFirst no post).
+export const forumTopics = mysqlTable("forum_topics", {
+  id: pk(),
+  forumId: bigint("forum_id", { mode: "number" }).notNull(),
+  authorId: bigint("author_id", { mode: "number" }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  slug: varchar("slug", { length: 220 }).notNull(),
+  status: mysqlEnum("status", ["open", "locked", "archived", "hidden", "pending"])
+    .notNull()
+    .default("open"),
+  pinned: boolean("pinned").notNull().default(false), // fixado no topo
+  isQuestion: boolean("is_question").notNull().default(false), // modo Q&A (Fase 2)
+  bestPostId: bigint("best_post_id", { mode: "number" }), // melhor resposta (Q&A)
+  views: int("views").notNull().default(0),
+  postsCount: int("posts_count").notNull().default(0), // nº de respostas (sem o 1º)
+  firstPostId: bigint("first_post_id", { mode: "number" }),
+  lastPostId: bigint("last_post_id", { mode: "number" }),
+  lastPostAt: datetime("last_post_at"),
+  lastPosterId: bigint("last_poster_id", { mode: "number" }),
+  deletedAt: datetime("deleted_at"), // soft-delete / LGPD
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (t) => [
+  uniqueIndex("forum_topics_slug_idx").on(t.slug),
+  index("forum_topics_forum_idx").on(t.forumId, t.status, t.lastPostAt),
+  index("forum_topics_author_idx").on(t.authorId),
+]);
+
+// Post: cada mensagem do tópico. Corpo rich (JSON string) como em comments.
+export const forumPosts = mysqlTable("forum_posts", {
+  id: pk(),
+  topicId: bigint("topic_id", { mode: "number" }).notNull(),
+  authorId: bigint("author_id", { mode: "number" }).notNull(),
+  body: text("body").notNull(),
+  status: mysqlEnum("status", ["visible", "hidden", "flagged"])
+    .notNull()
+    .default("visible"),
+  isFirst: boolean("is_first").notNull().default(false), // post de abertura
+  editedAt: datetime("edited_at"),
+  editedById: bigint("edited_by_id", { mode: "number" }),
+  deletedAt: datetime("deleted_at"),
+  createdAt: createdAt(),
+}, (t) => [
+  index("forum_posts_topic_idx").on(t.topicId, t.createdAt),
+  index("forum_posts_author_idx").on(t.authorId),
+]);
+
+// Reação em post (reusa a config de `reactions`). Uma por usuário por post.
+export const forumPostReactions = mysqlTable("forum_post_reactions", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  postId: bigint("post_id", { mode: "number" }).notNull(),
+  reactionId: bigint("reaction_id", { mode: "number" }),
+  value: int("value").notNull().default(1),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("forum_post_reactions_user_post_idx").on(t.userId, t.postId),
+  index("forum_post_reactions_post_idx").on(t.postId),
+]);
+
+// Seguir um tópico (notificação de nova resposta).
+export const forumTopicFollows = mysqlTable("forum_topic_follows", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  topicId: bigint("topic_id", { mode: "number" }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("forum_topic_follows_user_topic_idx").on(t.userId, t.topicId),
+  index("forum_topic_follows_topic_idx").on(t.topicId),
+]);
+
 // Tipos exportados --------------------------------------------------------
 export type MenuItem = typeof menuItems.$inferSelect;
 export type UserRole = (typeof users.$inferSelect)["role"];
@@ -879,3 +994,8 @@ export type User = typeof users.$inferSelect;
 export type Device = typeof devices.$inferSelect;
 export type DeviceSpec = typeof deviceSpecs.$inferSelect;
 export type Article = typeof articles.$inferSelect;
+export type ForumCategory = typeof forumCategories.$inferSelect;
+export type Forum = typeof forums.$inferSelect;
+export type ForumTopic = typeof forumTopics.$inferSelect;
+export type ForumPost = typeof forumPosts.$inferSelect;
+export type ForumTopicStatus = ForumTopic["status"];
