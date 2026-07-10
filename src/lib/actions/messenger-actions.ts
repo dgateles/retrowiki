@@ -50,8 +50,8 @@ export async function startConversationAction(input: unknown): Promise<Result<{ 
   const [recipient] = await db.select({ id: users.id, handle: users.handle, name: users.displayName }).from(users).where(eq(users.handle, handle)).limit(1);
   if (!recipient) return { ok: false, error: "Usuário não encontrado." };
   if (recipient.id === userId) return { ok: false, error: "Você não pode enviar mensagem para si mesmo." };
-  if (await isIgnoring(userId, recipient.id)) return { ok: false, error: "Você ignora este usuário." };
-  if (await isIgnoring(recipient.id, userId)) return { ok: false, error: "Este usuário não está aceitando suas mensagens." };
+  if (await isIgnoring(userId, recipient.id)) return { ok: false, error: "Mensagem não enviada: você está ignorando este usuário. Deixe de ignorá-lo para conversar." };
+  if (await isIgnoring(recipient.id, userId)) return { ok: false, error: "Mensagem não enviada: este usuário não está aceitando suas mensagens." };
 
   const now = new Date();
   const conversationId = await db.transaction(async (tx) => {
