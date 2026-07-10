@@ -3873,3 +3873,9 @@
   .fpost__content { @apply min-w-0; }
   .fpost__foot { @apply mt-4 flex items-center gap-2 border-t border-border pt-3; }
 }
+
+@layer components {
+  .freply { @apply mt-2 rounded-lg border border-border bg-card p-4; }
+  .freply__title { @apply mb-3 text-base font-semibold; }
+  .freply__foot { @apply mt-3 flex items-center justify-between gap-4; }
+}

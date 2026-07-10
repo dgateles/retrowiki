@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
-import { getTopicBySlug, listPosts, canReadForumPublic, incrementTopicView } from "@/lib/forum";
+import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
+import { ReplyForm } from "@/components/forum/reply-form";
+import { TopicFollowButton } from "@/components/forum/topic-follow-button";
 import { Pager } from "@/components/ui/pager";
 import { richDocToText } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody } from "@/lib/forum";
@@ -34,6 +36,8 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
 
   if (page === 1) await incrementTopicView(t.id);
   const { items, hasMore } = await listPosts(t.id, page);
+  const following = await isFollowingTopic(t.id, user ? Number(user.id) : null);
+  const canReply = !!user && t.status === "open" && canPostForum({ locked: t.forumLocked, minPostRole: t.forumMinPostRole }, user.role);
 
   return (
     <main id="main" className="page">
@@ -48,6 +52,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
           {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
           {t.title}
         </h1>
+        {user && <TopicFollowButton topicId={t.id} initialFollowing={following} />}
       </div>
 
       <div className="fpost-list">
@@ -57,6 +62,16 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
       </div>
 
       <Pager path={`/forum/${t.forumSlug}/${t.slug}`} page={page} hasMore={hasMore} />
+
+      {canReply ? (
+        <div className="mt-8"><ReplyForm topicId={t.id} /></div>
+      ) : t.status === "locked" ? (
+        <p className="mt-8 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">Este tópico está trancado para novas respostas.</p>
+      ) : !user ? (
+        <p className="mt-8 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+          <Link href={`/auth/entrar?next=${encodeURIComponent(`/forum/${t.forumSlug}/${t.slug}`)}`} className="link-inline">Entre</Link> para participar da conversa.
+        </p>
+      ) : null}
     </main>
   );
 }
