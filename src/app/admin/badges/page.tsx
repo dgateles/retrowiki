@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listBadgesWithCounts } from "@/lib/badges";
 import { BadgeIcon } from "@/components/admin/badge-icon";
 import { BadgeDelete } from "@/components/admin/badge-delete";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,18 @@ export default async function BadgesPage() {
         </Button>
       </div>
 
+      {badges.length === 0 ? (
+        <Empty className="mt-6">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Award aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>Nenhuma badge ainda</EmptyTitle>
+            <EmptyDescription>Crie a primeira conquista para atribuir nas Regras ou manualmente.</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button asChild size="sm"><Link href="/admin/badges/nova"><Plus className="size-4" aria-hidden="true" /> Nova badge</Link></Button>
+          </EmptyContent>
+        </Empty>
+      ) : (
       <ul className="rank-list">
         {badges.map((b) => (
           <li key={b.id} className="rank-row">
@@ -44,6 +57,7 @@ export default async function BadgesPage() {
           </li>
         ))}
       </ul>
+      )}
     </>
   );
 }

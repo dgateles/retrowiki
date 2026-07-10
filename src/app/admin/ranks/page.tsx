@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getRankRows, getRankMemberCounts } from "@/lib/admin/ranks-db";
 import { RankIcon } from "@/components/admin/rank-icon";
 import { RankDelete } from "@/components/admin/rank-delete";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,18 @@ export default async function RanksPage() {
         </Button>
       </div>
 
+      {rows.length === 0 ? (
+        <Empty className="mt-6">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Trophy aria-hidden="true" /></EmptyMedia>
+            <EmptyTitle>Nenhum rank ainda</EmptyTitle>
+            <EmptyDescription>Crie o primeiro nível de reputação da comunidade.</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button asChild size="sm"><Link href="/admin/ranks/novo"><Plus className="size-4" aria-hidden="true" /> Novo rank</Link></Button>
+          </EmptyContent>
+        </Empty>
+      ) : (
       <ul className="rank-list">
         {rows.map((r) => (
           <li key={r.id} className="rank-row">
@@ -40,6 +53,7 @@ export default async function RanksPage() {
           </li>
         ))}
       </ul>
+      )}
     </>
   );
 }

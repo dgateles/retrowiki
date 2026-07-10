@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { X } from "lucide-react";
 import { deleteNotificationAction } from "@/lib/actions/notification-actions";
 
@@ -16,8 +17,16 @@ export function NotifDelete({ id }: { id: number }) {
       disabled={pending}
       onClick={() =>
         start(async () => {
-          await deleteNotificationAction(id);
-          router.refresh();
+          try {
+            const res = await deleteNotificationAction(id);
+            if (!res?.ok) {
+              toast.error("Não foi possível excluir a notificação.");
+              return;
+            }
+            router.refresh();
+          } catch {
+            toast.error("Não foi possível excluir a notificação.");
+          }
         })
       }
     >
