@@ -10,6 +10,10 @@ type Payload = {
   roleLabel?: string; // promoção
   rankLabel?: string; // subida de rank
   decision?: string; // denúncia resolvida
+  forumSlug?: string; // fórum
+  topicSlug?: string;
+  topicTitle?: string;
+  postId?: number;
 };
 
 function asPayload(p: unknown): Payload {
@@ -29,8 +33,13 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
     ? `${base}${p.commentId ? `#comentario-${p.commentId}` : ""}`
     : undefined;
   const actor = p.actorName ?? "Alguém";
+  const forumTopicHref = p.forumSlug && p.topicSlug
+    ? `/forum/${p.forumSlug}/${p.topicSlug}${p.postId ? `#post-${p.postId}` : ""}`
+    : undefined;
 
   switch (type) {
+    case "forum.reply":
+      return { text: `${actor} respondeu em "${p.topicTitle ?? "um tópico"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
     case "article.approved":
       return { text: `"${title}" foi aprovado e publicado.`, href: articleHref };
     case "article.changes_requested":

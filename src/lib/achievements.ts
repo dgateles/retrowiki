@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { achievementRules, users, comments, articles, votes } from "@/db/schema";
+import { achievementRules, users, comments, articles, votes, forumTopics, forumPosts } from "@/db/schema";
 import { awardBadgeBySlug, evaluateBadges } from "@/lib/badges";
 import { getAchievementSettings } from "@/lib/settings";
 import { progressQuestsForRule } from "@/lib/admin/quests";
@@ -31,6 +31,17 @@ export const TRIGGERS: Record<string, TriggerDef> = {
     recipients: [
       { key: "actor", label: "Quem reagiu" },
       { key: "target", label: "Autor do conteúdo" },
+    ],
+  },
+  "forum.topic.created": {
+    label: "Tópico de fórum criado",
+    recipients: [{ key: "actor", label: "Quem criou o tópico" }],
+  },
+  "forum.reply.posted": {
+    label: "Resposta no fórum",
+    recipients: [
+      { key: "actor", label: "Quem respondeu" },
+      { key: "target", label: "Autor do tópico" },
     ],
   },
 };
@@ -140,6 +151,14 @@ async function actionCount(trigger: string, userId: number): Promise<number> {
     }
     if (trigger === "reaction.given") {
       const [r] = await db.select({ n: count() }).from(votes).where(eq(votes.userId, userId));
+      return r?.n ?? 0;
+    }
+    if (trigger === "forum.topic.created") {
+      const [r] = await db.select({ n: count() }).from(forumTopics).where(and(eq(forumTopics.authorId, userId), inArray(forumTopics.status, ["open", "locked", "archived"])));
+      return r?.n ?? 0;
+    }
+    if (trigger === "forum.reply.posted") {
+      const [r] = await db.select({ n: count() }).from(forumPosts).where(and(eq(forumPosts.authorId, userId), eq(forumPosts.status, "visible"), eq(forumPosts.isFirst, false)));
       return r?.n ?? 0;
     }
   } catch {
