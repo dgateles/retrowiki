@@ -110,6 +110,9 @@ export async function anonymizeUser(userId: number): Promise<void> {
   }).where(eq(users.id, userId));
   await db.delete(profileFieldValues).where(eq(profileFieldValues.userId, userId));
   await db.delete(memberIps).where(eq(memberIps.userId, userId));
+  // Conteúdo (comentários, posts/tópicos de fórum) é anonimizado POR REFERÊNCIA:
+  // guarda apenas authorId → o join com users passa a mostrar "Usuário removido",
+  // sem nomes/PII denormalizados. Preserva a integridade das threads.
 }
 
 export async function resolveDeletionRequest(id: number, decision: "completed" | "rejected", modId: number): Promise<{ ok: boolean; error?: string }> {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Search, Gamepad2, BookOpen } from "lucide-react";
+import { Search, Gamepad2, BookOpen, MessagesSquare } from "lucide-react";
 import { searchAll, type SearchScope } from "@/lib/search";
 import { articleHref } from "@/lib/article-url";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const SCOPES: { key: SearchScope; label: string }[] = [
   { key: "tudo", label: "Tudo" },
   { key: "consoles", label: "Consoles" },
   { key: "guias", label: "Guias" },
+  { key: "forum", label: "Fórum" },
 ];
 
 export default async function SearchPage({
@@ -20,9 +21,9 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string; escopo?: string }>;
 }) {
   const { q = "", escopo } = await searchParams;
-  const scope: SearchScope = escopo === "consoles" || escopo === "guias" ? escopo : "tudo";
-  const results = q.trim().length >= 2 ? await searchAll(q, scope) : { devices: [], articles: [] };
-  const total = results.devices.length + results.articles.length;
+  const scope: SearchScope = escopo === "consoles" || escopo === "guias" || escopo === "forum" ? escopo : "tudo";
+  const results = q.trim().length >= 2 ? await searchAll(q, scope) : { devices: [], articles: [], forumTopics: [] };
+  const total = results.devices.length + results.articles.length + results.forumTopics.length;
 
   return (
     <main id="main" className="page">
@@ -90,6 +91,23 @@ export default async function SearchPage({
                 <Link href={articleHref(a.kind, a.slug)} className="results__item">
                   <span className="results__item-title">{a.title}</span>
                   {a.summary && <p className="results__item-sub">{a.summary}</p>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {results.forumTopics.length > 0 && (
+        <section aria-labelledby="r-forum" className="results__group">
+          <h2 id="r-forum" className="results__group-title">
+            <MessagesSquare className="size-4" aria-hidden="true" /> Fórum
+          </h2>
+          <ul className="results__list">
+            {results.forumTopics.map((t) => (
+              <li key={t.slug}>
+                <Link href={`/forum/${t.forumSlug}/${t.slug}`} className="results__item">
+                  <span className="results__item-title">{t.title}</span>
                 </Link>
               </li>
             ))}

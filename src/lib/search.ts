@@ -1,14 +1,30 @@
 import "server-only";
-import { and, eq, like, or, sql, desc } from "drizzle-orm";
+import { and, eq, inArray, isNull, like, or, sql, desc } from "drizzle-orm";
 import { db } from "@/db";
-import { articles, devices, users } from "@/db/schema";
+import { articles, devices, users, forumTopics, forums } from "@/db/schema";
 
-export type SearchScope = "tudo" | "consoles" | "guias";
+export type SearchScope = "tudo" | "consoles" | "guias" | "forum";
 
 export type SearchResults = {
   devices: { slug: string; name: string; manufacturer: string }[];
   articles: { slug: string; title: string; summary: string | null; kind: "guide" | "blog"; authorHandle: string }[];
+  forumTopics: { slug: string; forumSlug: string; title: string }[];
 };
+
+const EMPTY: SearchResults = { devices: [], articles: [], forumTopics: [] };
+
+async function searchForumTopicsLike(term: string): Promise<SearchResults["forumTopics"]> {
+  return db
+    .select({ slug: forumTopics.slug, forumSlug: forums.slug, title: forumTopics.title })
+    .from(forumTopics)
+    .innerJoin(forums, eq(forums.id, forumTopics.forumId))
+    .where(and(
+      like(forumTopics.title, term),
+      eq(forums.visible, true), eq(forums.minReadRole, "member"),
+      inArray(forumTopics.status, ["open", "locked", "archived"]), isNull(forumTopics.deletedAt),
+    ))
+    .limit(10);
+}
 
 const MAX_QUERY_LENGTH = 100;
 
@@ -42,11 +58,12 @@ async function searchArticlesLike(term: string) {
 
 export async function searchAll(query: string, scope: SearchScope = "tudo"): Promise<SearchResults> {
   const q = query.trim().slice(0, MAX_QUERY_LENGTH);
-  if (q.length < 2) return { devices: [], articles: [] };
+  if (q.length < 2) return EMPTY;
   const term = `%${q.replace(/[%_]/g, "\\$&")}%`;
   const boolean = booleanQuery(q);
   const wantDevices = scope === "tudo" || scope === "consoles";
   const wantArticles = scope === "tudo" || scope === "guias";
+  const wantForum = scope === "tudo" || scope === "forum";
 
   try {
     const devMatch = sql`MATCH(${devices.name}, ${devices.manufacturer}) AGAINST(${boolean} IN BOOLEAN MODE)`;
@@ -76,18 +93,21 @@ export async function searchAll(query: string, scope: SearchScope = "tudo"): Pro
     // termos abaixo do innodb_ft_min_token_size).
     if (wantDevices && dev.length === 0) dev = await searchDevicesLike(term);
     if (wantArticles && art.length === 0) art = await searchArticlesLike(term);
+    // Tópicos de fórum: só LIKE (sem índice FULLTEXT), sempre no escopo tudo/forum.
+    const forumTopicsRes = wantForum ? await searchForumTopicsLike(term) : [];
 
-    return { devices: dev, articles: art };
+    return { devices: dev, articles: art, forumTopics: forumTopicsRes };
   } catch {
     // Em qualquer erro (ex.: índice ausente), cai para LIKE.
     try {
-      const [dev, art] = await Promise.all([
+      const [dev, art, ftopics] = await Promise.all([
         wantDevices ? searchDevicesLike(term) : Promise.resolve([] as SearchResults["devices"]),
         wantArticles ? searchArticlesLike(term) : Promise.resolve([] as SearchResults["articles"]),
+        wantForum ? searchForumTopicsLike(term) : Promise.resolve([] as SearchResults["forumTopics"]),
       ]);
-      return { devices: dev, articles: art };
+      return { devices: dev, articles: art, forumTopics: ftopics };
     } catch {
-      return { devices: [], articles: [] };
+      return EMPTY;
     }
   }
 }

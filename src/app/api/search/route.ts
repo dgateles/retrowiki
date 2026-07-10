@@ -10,7 +10,7 @@ function clientIp(req: NextRequest): string {
 }
 
 function parseScope(v: string | null): SearchScope {
-  return v === "consoles" || v === "guias" ? v : "tudo";
+  return v === "consoles" || v === "guias" || v === "forum" ? v : "tudo";
 }
 
 export async function GET(req: NextRequest) {

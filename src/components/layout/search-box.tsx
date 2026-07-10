@@ -6,17 +6,19 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { articleHref } from "@/lib/article-url";
 
-type Scope = "tudo" | "consoles" | "guias";
+type Scope = "tudo" | "consoles" | "guias" | "forum";
 type Option = { label: string; sublabel: string; href: string };
 type Results = {
   devices: { slug: string; name: string; manufacturer: string }[];
   articles: { slug: string; title: string; summary: string | null; kind: "guide" | "blog" }[];
+  forumTopics: { slug: string; forumSlug: string; title: string }[];
 };
 
 const SCOPES: { key: Scope; label: string }[] = [
   { key: "tudo", label: "Tudo" },
   { key: "consoles", label: "Consoles" },
   { key: "guias", label: "Guias" },
+  { key: "forum", label: "Fórum" },
 ];
 
 export function SearchBox({ className }: { className?: string }) {
@@ -45,6 +47,7 @@ export function SearchBox({ className }: { className?: string }) {
         const opts: Option[] = [
           ...data.devices.map((d) => ({ label: d.name, sublabel: d.manufacturer, href: `/consoles/${d.slug}` })),
           ...data.articles.map((a) => ({ label: a.title, sublabel: a.summary ?? (a.kind === "blog" ? "Blog" : "Guia"), href: articleHref(a.kind, a.slug) })),
+          ...(data.forumTopics ?? []).map((t) => ({ label: t.title, sublabel: "Fórum", href: `/forum/${t.forumSlug}/${t.slug}` })),
         ];
         setOptions(opts);
         setActive(-1);
