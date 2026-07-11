@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { MessageSquarePlus, Pin, Lock, MessagesSquare, CircleCheck } from "lucide-react";
 import { getForumBySlug, listTopics, listSubForums, canReadForumPublic, canPostForum } from "@/lib/forum";
 import { topicHref, forumHref } from "@/lib/forum-url";
-import { getCurrentUser } from "@/lib/auth-helpers";
+import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { MenuIcon } from "@/components/layout/menu-icon";
+import { BulkModProvider, TopicCheckbox } from "@/components/forum/forum-bulk-mod";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
@@ -35,6 +36,7 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
   const { items, hasMore } = await listTopics(f.id, page, tag);
   const subForums = await listSubForums(f.id, user?.role ?? null);
   const canPost = !!user && canPostForum(f, user.role);
+  const isMod = can.moderate(user);
 
   return (
     <main id="main" className="page">
@@ -113,9 +115,11 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
           )}
         </Empty>
       ) : (
+        <BulkModProvider forumSlug={f.slug}>
         <ul className="topic-list">
           {items.map((t) => (
             <li key={t.id} className="topic-row">
+              {isMod && <TopicCheckbox topicId={t.id} />}
               <span className="topic-row__icon" aria-hidden="true">
                 {t.isQuestion && t.bestPostId ? <CircleCheck className="size-4 text-success" /> : t.pinned ? <Pin className="size-4 text-primary" /> : t.status === "locked" ? <Lock className="size-4 text-muted-foreground" /> : t.isQuestion ? <MessagesSquare className="size-4 text-muted-foreground" /> : <MessagesSquare className="size-4 text-muted-foreground" />}
               </span>
@@ -144,6 +148,7 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
             </li>
           ))}
         </ul>
+        </BulkModProvider>
       )}
 
       <Pager path={`/forum/${f.slug}`} page={page} hasMore={hasMore} />

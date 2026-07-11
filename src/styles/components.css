@@ -3917,6 +3917,11 @@
   .fmod { @apply inline-flex; }
   .ftopic-actions { @apply flex shrink-0 items-center gap-2; }
 
+  /* Moderação em lote */
+  .topic-row__check { @apply shrink-0; }
+  .fbulk-bar { @apply fixed inset-x-0 bottom-4 z-40 mx-auto flex w-fit max-w-[95vw] flex-wrap items-center justify-center gap-2 rounded-xl border border-border bg-popover px-4 py-2.5 shadow-lg; }
+  .fbulk-bar__count { @apply mr-1 text-sm font-medium text-muted-foreground; }
+
   /* Mensagens privadas */
   .pm-navbtn { @apply relative inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground; }
   .pm-navbtn__badge { @apply absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground; }
