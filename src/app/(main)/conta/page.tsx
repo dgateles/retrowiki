@@ -18,6 +18,8 @@ import { listUserWarnings, activePoints, hasUnacknowledgedWarnings } from "@/lib
 import { getWarningSettings } from "@/lib/settings";
 import { PrivacyTools } from "@/components/account/privacy-tools";
 import { hasOpenDeletionRequest } from "@/lib/privacy";
+import { MfaSetup } from "@/components/account/mfa-setup";
+import { getMfaState, countRemainingRecoveryCodes } from "@/lib/mfa";
 import { BulkMailOptOut } from "@/components/account/bulk-mail-optout";
 import { ChangeEmailForm } from "@/components/account/change-email-form";
 import { GalleryManager } from "@/components/account/gallery-manager";
@@ -60,6 +62,8 @@ export default async function AccountPage({
   const warnPoints = active === "avisos" && warnSettings?.membersCanSee ? await activePoints(Number(user.id)) : 0;
   const needsAck = active === "avisos" && warnSettings?.mustAcknowledge ? await hasUnacknowledgedWarnings(Number(user.id)) : false;
   const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
+  const mfa = active === "seguranca" ? await getMfaState(Number(user.id)) : { enabled: false, hasSecret: false };
+  const mfaCodes = active === "seguranca" && mfa.enabled ? await countRemainingRecoveryCodes(Number(user.id)) : 0;
   const linkedGoogle = active === "contas" ? await getLinkedGoogle(Number(user.id)) : null;
   const gallerySettings = active === "galeria" ? await getGallerySettings() : null;
   const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotosManage(Number(user.id)) : [];
@@ -279,6 +283,9 @@ export default async function AccountPage({
               <h2 id="s-seg" className="settings-section__title">Segurança e privacidade</h2>
               <p className="settings-section__desc">Seus dados e o controle sobre eles.</p>
               <div className="mt-4">
+                <MfaSetup initialEnabled={mfa.enabled} remainingCodes={mfaCodes} />
+              </div>
+              <div className="mt-6">
                 <PrivacyTools hasOpenRequest={openDeletion} />
               </div>
             </section>

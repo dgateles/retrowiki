@@ -43,6 +43,8 @@ export const users = mysqlTable(
     referredById: bigint("referred_by_id", { mode: "number" }), // quem indicou no cadastro
     bulkMailOptOut: boolean("bulk_mail_opt_out").notNull().default(false), // e-mail em massa
     showVisitors: boolean("show_visitors").notNull().default(true), // exibir "visitantes recentes" no perfil
+    totpSecret: varchar("totp_secret", { length: 255 }), // segredo TOTP cifrado (AES-256-GCM); null = sem 2FA
+    totpEnabled: boolean("totp_enabled").notNull().default(false), // 2FA confirmado e ativo
     deletedAt: datetime("deleted_at"), // conta anonimizada (LGPD)
     reputation: int("reputation").notNull().default(0),
     trusted: boolean("trusted").notNull().default(false),
@@ -1103,6 +1105,18 @@ export const userIgnores = mysqlTable("user_ignores", {
 }, (t) => [
   uniqueIndex("user_ignores_pair_idx").on(t.userId, t.ignoredId),
   index("user_ignores_user_idx").on(t.userId),
+]);
+
+// Códigos de recuperação de 2FA (usados uma vez, guardados só como hash).
+export const mfaRecoveryCodes = mysqlTable("mfa_recovery_codes", {
+  id: pk(),
+  userId: bigint("user_id", { mode: "number" }).notNull(),
+  codeHash: varchar("code_hash", { length: 128 }).notNull(), // sha-256 hex do código
+  usedAt: datetime("used_at"), // null = ainda válido
+  createdAt: createdAt(),
+}, (t) => [
+  index("mfa_recovery_codes_user_idx").on(t.userId),
+  uniqueIndex("mfa_recovery_codes_hash_idx").on(t.codeHash),
 ]);
 
 // Tipos exportados --------------------------------------------------------

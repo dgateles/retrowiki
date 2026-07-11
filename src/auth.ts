@@ -10,12 +10,14 @@ import { recordMemberIp, getClientIp } from "@/lib/ip";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { isBanned } from "@/lib/admin/ban-filters";
 import { resolveOAuthUser } from "@/lib/oauth";
+import { verifySecondFactor } from "@/lib/mfa";
 import { env } from "@/lib/env";
 import type { UserRole } from "@/db/schema";
 
 const credentialsSchema = z.object({
   email: z.email(),
   password: z.string().min(1),
+  code: z.string().optional(), // segundo fator (TOTP ou código de recuperação)
 });
 
 const providers: NextAuthConfig["providers"] = [];
@@ -47,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
+        const { email, password, code } = parsed.data;
         const lowerEmail = email.toLowerCase();
         const ip = await getClientIp();
 
@@ -72,6 +74,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const ok = await verifyPassword(password, user.passwordHash);
         if (!ok) return null;
+
+        // Segundo fator: se o usuário tem 2FA ativo, exige código válido.
+        if (user.totpEnabled && user.totpSecret) {
+          if (!code || !(await verifySecondFactor(user.id, user.totpSecret, code))) return null;
+        }
 
         await recordMemberIp(user.id);
 
