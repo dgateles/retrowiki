@@ -7,7 +7,6 @@ import { isIgnoring } from "@/lib/ignore";
 import { IgnoreButton } from "@/components/social/ignore-button";
 import { isFollowing, getFollowCounts } from "@/lib/follows";
 import { FollowButton } from "@/components/social/follow-button";
-import { plural } from "@/lib/plural";
 import { recordProfileVisit, listRecentVisitors } from "@/lib/profile-visits";
 import { VisitorsToggle } from "@/components/social/visitors-toggle";
 import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
@@ -59,17 +58,18 @@ function relDate(d: Date): string {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(d));
 }
 
-function lastSeenText(d: Date | null): string | null {
+/** Valor legível do "visto por último" (sem rótulo) + se está online agora. */
+function lastSeenValue(d: Date | null): { value: string; online: boolean } | null {
   if (!d) return null;
   const diff = Date.now() - new Date(d).getTime();
-  if (diff < 5 * 60 * 1000) return "Online agora";
+  if (diff < 5 * 60 * 1000) return { value: "Online agora", online: true };
   const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `Visto por último há ${mins} min`;
+  if (mins < 60) return { value: `há ${mins} min`, online: false };
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `Visto por último há ${hours} h`;
+  if (hours < 24) return { value: `há ${hours} h`, online: false };
   const days = Math.floor(hours / 24);
-  if (days < 30) return `Visto por último há ${days} ${days === 1 ? "dia" : "dias"}`;
-  return `Visto por último em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(d))}`;
+  if (days < 30) return { value: `há ${days} ${days === 1 ? "dia" : "dias"}`, online: false };
+  return { value: new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(d)), online: false };
 }
 
 export default async function ProfilePage({
@@ -96,7 +96,7 @@ export default async function ProfilePage({
   const joined = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(
     new Date(profile.createdAt),
   );
-  const lastSeen = lastSeenText(profile.lastSeenAt);
+  const lastSeen = lastSeenValue(profile.lastSeenAt);
 
   // Relação do visitante: dono do perfil ou membro da equipe.
   const isOwner = Boolean(viewer && Number(viewer.id) === profile.id);
@@ -170,16 +170,32 @@ export default async function ProfilePage({
           )}
         </span>
         <div className="profile-id__body">
-          <div>
+          <div className="profile-id__ident">
             <h1 className="profile-id__name">{profile.displayName}</h1>
             <p className="profile-id__role">@{profile.handle} · {roleLabel(profile.role)}</p>
-            <p className="profile-id__meta">Na comunidade desde {joined}</p>
-            {lastSeen && <p className="profile-id__meta">{lastSeen}</p>}
-            <p className="profile-id__meta profile-id__follows">
-              <span><strong className="text-foreground tabular-nums">{followCounts.followers}</strong> {plural(followCounts.followers, "seguidor", "seguidores")}</span>
-              <span aria-hidden="true"> · </span>
-              <span><strong className="text-foreground tabular-nums">{followCounts.following}</strong> seguindo</span>
-            </p>
+            <dl className="profile-id__stats">
+              <div className="profile-id__stat">
+                <dt className="profile-id__stat-label">Membro desde</dt>
+                <dd className="profile-id__stat-value">{joined}</dd>
+              </div>
+              {lastSeen && (
+                <div className="profile-id__stat">
+                  <dt className="profile-id__stat-label">Visto por último</dt>
+                  <dd className="profile-id__stat-value">
+                    {lastSeen.value}
+                    {lastSeen.online && <span className="profile-id__online" aria-hidden="true" />}
+                  </dd>
+                </div>
+              )}
+              <div className="profile-id__stat">
+                <dt className="profile-id__stat-label">Seguidores</dt>
+                <dd className="profile-id__stat-value tabular-nums">{followCounts.followers}</dd>
+              </div>
+              <div className="profile-id__stat">
+                <dt className="profile-id__stat-label">Seguindo</dt>
+                <dd className="profile-id__stat-value tabular-nums">{followCounts.following}</dd>
+              </div>
+            </dl>
           </div>
           {isOwner ? (
             <Button asChild size="sm" className="profile-id__activity">

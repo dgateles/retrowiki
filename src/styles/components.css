@@ -3018,13 +3018,26 @@
     @apply text-2xl font-bold tracking-tight;
   }
   .profile-id__role {
-    @apply text-sm font-medium text-primary;
+    @apply mt-0.5 text-sm font-medium text-primary;
   }
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
-  .profile-id__follows {
-    @apply mt-2 flex flex-wrap items-center gap-x-1;
+  /* Metadados em blocos rotulados lado a lado (estilo IPB), com respiro. */
+  .profile-id__stats {
+    @apply mt-3 flex flex-wrap items-start gap-x-8 gap-y-3;
+  }
+  .profile-id__stat {
+    @apply flex flex-col gap-0.5;
+  }
+  .profile-id__stat-label {
+    @apply text-xs font-medium uppercase tracking-wide text-muted-foreground/80;
+  }
+  .profile-id__stat-value {
+    @apply flex items-center gap-1.5 text-sm font-medium text-foreground;
+  }
+  .profile-id__online {
+    @apply inline-block size-2 rounded-full bg-success ring-2 ring-success/25;
   }
   .profile-cover__edit {
     @apply absolute right-3 top-3 z-10;
