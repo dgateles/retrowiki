@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
@@ -34,7 +35,7 @@ export function BulkMailForm() {
     setPending(true);
     const res = await sendBulkMailAction(subject, body, audience);
     setPending(false);
-    if (res.ok) { toast.success(`Enviado para ${res.data?.sent ?? 0} membro(s).`); setSubject(""); setBody(""); router.refresh(); } else toast.error(res.error ?? "Falha.");
+    if (res.ok) { toast.success(`Enviado para ${count(res.data?.sent ?? 0, "membro", "membros")}.`); setSubject(""); setBody(""); router.refresh(); } else toast.error(res.error ?? "Falha.");
   }
 
   return (

@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth-helpers";
 import { MenuIcon } from "@/components/layout/menu-icon";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { count } from "@/lib/plural";
 
 export const metadata: Metadata = pageMetadata({
   title: "Fórum",
@@ -70,8 +71,8 @@ export default async function ForumIndexPage() {
                       )}
                     </div>
                     <div className="forum-row__stats tabular-nums">
-                      <span>{f.topicsCount} tópico(s)</span>
-                      <span>{f.postsCount} post(s)</span>
+                      <span>{count(f.topicsCount, "tópico", "tópicos")}</span>
+                      <span>{count(f.postsCount, "post", "posts")}</span>
                     </div>
                     <div className="forum-row__last">
                       {f.lastPosterName ? (

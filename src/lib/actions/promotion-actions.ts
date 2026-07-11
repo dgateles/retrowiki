@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { count } from "@/lib/plural";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { promotionRules, auditLog } from "@/db/schema";
@@ -97,5 +98,5 @@ export async function runPromotionsAction(): Promise<Result> {
   if (!actor) return { ok: false, error: "Acesso restrito." };
   const changed = await runAllPromotions(Number(actor.id));
   revalidatePath("/admin/promocoes");
-  return { ok: true, message: `${changed} membro(s) promovido(s).` };
+  return { ok: true, message: `${count(changed, "membro promovido", "membros promovidos")}.` };
 }

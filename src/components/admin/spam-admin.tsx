@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Pencil, X } from "lucide-react";
@@ -116,7 +117,7 @@ export function SpamAdmin({
                     <div className="pf-group__head">
                       <span className="min-w-0">
                         <span className="pf-group__name">{q.question}</span>
-                        <span className="pf-field__meta block">{q.answers.length} resposta(s) aceita(s)</span>
+                        <span className="pf-field__meta block">{count(q.answers.length, "resposta aceita", "respostas aceitas")}</span>
                       </span>
                       <div className="pf-group__actions">
                         <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setQDialog({ q })}><Pencil className="size-4" aria-hidden="true" /></Button>

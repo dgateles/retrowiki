@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Pencil, X, UserPlus, ChevronUp, ChevronDown } from "lucide-react";
@@ -76,7 +77,7 @@ export function StaffDirectoryAdmin({ categories }: { categories: CategoryWithEn
           {categories.map((c, ci) => (
             <li key={c.id} className="pf-group">
               <div className="pf-group__head">
-                <span className="min-w-0"><span className="pf-group__name">{c.title}</span><span className="pf-field__meta block">{LAYOUTS.find((l) => l.value === c.layout)?.label} · {c.entries.length} entrada(s)</span></span>
+                <span className="min-w-0"><span className="pf-group__name">{c.title}</span><span className="pf-field__meta block">{LAYOUTS.find((l) => l.value === c.layout)?.label} · {count(c.entries.length, "entrada", "entradas")}</span></span>
                 <div className="pf-group__actions">
                   <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Subir" disabled={ci === 0} onClick={() => moveCat(c.id, -1)}><ChevronUp className="size-4" aria-hidden="true" /></Button>
                   <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Descer" disabled={ci === categories.length - 1} onClick={() => moveCat(c.id, 1)}><ChevronDown className="size-4" aria-hidden="true" /></Button>

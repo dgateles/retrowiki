@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { listQuests } from "@/lib/admin/quests";
 import { QuestToggle, QuestDelete } from "@/components/admin/quest-row-actions";
 
+import { count } from "@/lib/plural";
+
 export const dynamic = "force-dynamic";
 
 export default async function QuestsPage() {
@@ -31,7 +33,7 @@ export default async function QuestsPage() {
               <div className="min-w-0">
                 <p className="rule-row__name">{q.title}</p>
                 <p className="rule-row__meta">
-                  {q.taskCount} tarefa(s){q.rewardBadge && ` · recompensa: ${q.rewardBadge}`}{!q.enabled && " · desativada"}
+                  {count(q.taskCount, "tarefa", "tarefas")}{q.rewardBadge && ` · recompensa: ${q.rewardBadge}`}{!q.enabled && " · desativada"}
                 </p>
               </div>
               <QuestToggle id={q.id} enabled={q.enabled} />

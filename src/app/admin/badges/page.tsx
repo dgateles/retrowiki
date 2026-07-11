@@ -6,6 +6,8 @@ import { BadgeIcon } from "@/components/admin/badge-icon";
 import { BadgeDelete } from "@/components/admin/badge-delete";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
+import { count } from "@/lib/plural";
+
 export const dynamic = "force-dynamic";
 
 const TIER_LABEL: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro" };
@@ -44,7 +46,7 @@ export default async function BadgesPage() {
             <div className="min-w-0">
               <p className="rank-row__name">{b.name}</p>
               <p className="rank-row__meta">
-                {b.count} membro(s) · {TIER_LABEL[b.tier]}
+                {count(b.count, "membro", "membros")} · {TIER_LABEL[b.tier]}
                 {b.manuallyAwardable && " · manual"}
               </p>
             </div>

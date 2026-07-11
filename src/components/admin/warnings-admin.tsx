@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -90,7 +91,7 @@ export function WarningsAdmin({ reasons, actions, settings: initial }: { reasons
                   <div className="pf-group__head">
                     <span className="min-w-0">
                       <span className="pf-group__name">{r.name}</span>
-                      <span className="pf-field__meta block">{r.points} ponto(s){r.removeAfterHours ? ` · expira em ${r.removeAfterHours}h` : ""}{r.deductReputation ? ` · −${r.deductReputation} reputação` : ""}</span>
+                      <span className="pf-field__meta block">{count(r.points, "ponto", "pontos")}{r.removeAfterHours ? ` · expira em ${r.removeAfterHours}h` : ""}{r.deductReputation ? ` · −${r.deductReputation} reputação` : ""}</span>
                     </span>
                     <div className="pf-group__actions">
                       <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setReasonDialog({ r })}><Pencil className="size-4" aria-hidden="true" /></Button>

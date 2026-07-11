@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { bulkModerateTopicsAction, type BulkTopicAction } from "@/lib/actions/forum-mod-actions";
+import { count } from "@/lib/plural";
 
 type Ctx = { selected: Set<number>; toggle: (id: number) => void };
 const BulkCtx = createContext<Ctx | null>(null);
@@ -58,14 +59,14 @@ function BulkBar({ ids, forumSlug, onClear }: { ids: number[]; forumSlug: string
   function run(action: BulkTopicAction) {
     start(async () => {
       const res = await bulkModerateTopicsAction(ids, action, forumSlug);
-      if (res.ok) { toast.success(`${ids.length} tópico(s) atualizados.`); onClear(); router.refresh(); }
+      if (res.ok) { toast.success(`${count(ids.length, "tópico atualizado", "tópicos atualizados")}.`); onClear(); router.refresh(); }
       else toast.error(res.error ?? "Não foi possível concluir.");
     });
   }
 
   return (
     <div className="fbulk-bar" role="region" aria-label="Moderação em lote">
-      <span className="fbulk-bar__count tabular-nums">{ids.length} selecionado(s)</span>
+      <span className="fbulk-bar__count tabular-nums">{count(ids.length, "selecionado", "selecionados")}</span>
       {QUICK.map(({ a, label, Icon }) => (
         <Button key={a} variant="outline" size="sm" disabled={pending} onClick={() => run(a)}>
           <Icon className="size-4" aria-hidden="true" /> {label}
@@ -86,8 +87,8 @@ function BulkBar({ ids, forumSlug, onClear }: { ids: number[]; forumSlug: string
           <DialogTitle>{confirm === "delete" ? "Excluir tópicos" : "Ocultar tópicos"}</DialogTitle>
           <p className="muted mt-1">
             {confirm === "delete"
-              ? `Excluir ${ids.length} tópico(s)? Eles somem da listagem.`
-              : `Ocultar ${ids.length} tópico(s) do público?`}
+              ? `Excluir ${count(ids.length, "tópico", "tópicos")}? Eles somem da listagem.`
+              : `Ocultar ${count(ids.length, "tópico", "tópicos")} do público?`}
           </p>
           <div className="modal-actions">
             <DialogClose asChild><Button variant="ghost" size="sm">Cancelar</Button></DialogClose>

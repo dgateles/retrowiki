@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { count } from "@/lib/plural";
 import { timingSafeEqual } from "node:crypto";
 import { and, isNull, inArray, eq } from "drizzle-orm";
 import { db } from "@/db";
@@ -72,10 +73,11 @@ export async function POST(req: NextRequest) {
       const href = v.href ? `${env.APP_URL}${v.href}` : env.APP_URL;
       return `<li style="margin:6px 0"><a href="${href}">${escapeHtml(v.text)}</a></li>`;
     });
-    const html = `<p>Olá, ${escapeHtml(u.name)}.</p><p>Você tem ${allowed.length} nova(s) notificação(ões) na RetroWiki:</p><ul>${lines.join("")}</ul><p><a href="${env.APP_URL}/conta?secao=notificacoes">Gerenciar notificações por e-mail</a></p>`;
-    const text = `Olá, ${u.name}.\nVocê tem ${allowed.length} nova(s) notificação(ões):\n` + allowed.map((n) => "- " + describeNotification(n.type, n.payload).text).join("\n");
+    const digestLabel = count(allowed.length, "nova notificação", "novas notificações");
+    const html = `<p>Olá, ${escapeHtml(u.name)}.</p><p>Você tem ${digestLabel} na RetroWiki:</p><ul>${lines.join("")}</ul><p><a href="${env.APP_URL}/conta?secao=notificacoes">Gerenciar notificações por e-mail</a></p>`;
+    const text = `Olá, ${u.name}.\nVocê tem ${digestLabel}:\n` + allowed.map((n) => "- " + describeNotification(n.type, n.payload).text).join("\n");
 
-    await sendEmail({ to: u.email, subject: `RetroWiki: ${allowed.length} nova(s) notificação(ões)`, html, text });
+    await sendEmail({ to: u.email, subject: `RetroWiki: ${digestLabel}`, html, text });
     sent += allowed.length;
     recipientsSent += 1;
   }

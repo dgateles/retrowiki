@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -90,7 +91,7 @@ export function ReportsAdmin({
                       <p className="report-row__title">
                         {g.link ? <Link href={g.link} className="link-inline" target="_blank">{g.title}</Link> : g.title}
                       </p>
-                      <p className="pf-field__meta">{g.reportCount} denúncia(s) · {g.reasons.join(", ")}{g.lastMessage ? ` · "${g.lastMessage.slice(0, 80)}"` : ""}</p>
+                      <p className="pf-field__meta">{count(g.reportCount, "denúncia", "denúncias")} · {g.reasons.join(", ")}{g.lastMessage ? ` · "${g.lastMessage.slice(0, 80)}"` : ""}</p>
                     </div>
                     <div className="report-row__actions">
                       <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => resolve(g, "rejected")}><Ban className="size-4" aria-hidden="true" /> Arquivar</Button>

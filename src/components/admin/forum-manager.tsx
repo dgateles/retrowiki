@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { count } from "@/lib/plural";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, FolderPlus, Lock, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -100,7 +101,7 @@ export function ForumManager({ categories }: { categories: AdminForumCategory[] 
                         {!f.visible && <EyeOff className="size-3.5 text-muted-foreground" aria-label="Oculto" />}
                         {f.locked && <Lock className="size-3.5 text-muted-foreground" aria-label="Trancado" />}
                       </p>
-                      <p className="text-xs text-muted-foreground">/{f.slug} · {f.topicsCount} tópico(s) · ler: {ROLE_LABEL[f.minReadRole]} · postar: {ROLE_LABEL[f.minPostRole]}</p>
+                      <p className="text-xs text-muted-foreground">/{f.slug} · {count(f.topicsCount, "tópico", "tópicos")} · ler: {ROLE_LABEL[f.minReadRole]} · postar: {ROLE_LABEL[f.minPostRole]}</p>
                     </div>
                     <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${f.title}`} onClick={() => setForum({ id: f.id, categoryId: f.categoryId, parentId: f.parentId, title: f.title, description: f.description ?? "", icon: f.icon ?? "", visible: f.visible, locked: f.locked, minReadRole: f.minReadRole, minPostRole: f.minPostRole, sortOrder: f.sortOrder })}><Pencil className="size-4" /></Button>
                     <Button variant="ghost" size="icon" className="size-8 text-destructive" aria-label={`Excluir ${f.title}`} onClick={() => setDel({ kind: "forum", id: f.id, name: f.title })}><Trash2 className="size-4" /></Button>

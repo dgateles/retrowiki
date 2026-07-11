@@ -6,6 +6,8 @@ import { RankIcon } from "@/components/admin/rank-icon";
 import { RankDelete } from "@/components/admin/rank-delete";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 
+import { count } from "@/lib/plural";
+
 export const dynamic = "force-dynamic";
 
 export default async function RanksPage() {
@@ -42,7 +44,7 @@ export default async function RanksPage() {
             <span className="rank-badge" aria-hidden="true"><RankIcon name={r.icon} image={r.image} className="size-5" /></span>
             <div className="min-w-0">
               <p className="rank-row__name">{r.title}</p>
-              <p className="rank-row__meta">{counts[r.id] ?? 0} membro(s) · {r.points} pontos</p>
+              <p className="rank-row__meta">{count(counts[r.id] ?? 0, "membro", "membros")} · {count(r.points, "ponto", "pontos")}</p>
             </div>
             <Button asChild variant="outline" size="sm" className="ml-auto">
               <Link href={`/admin/ranks/${r.id}`} aria-label={`Editar ${r.title}`}>

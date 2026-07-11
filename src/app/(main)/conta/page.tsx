@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { count, plural } from "@/lib/plural";
 import { listIgnored } from "@/lib/ignore";
 import { IgnoreButton } from "@/components/social/ignore-button";
 import type { Metadata } from "next";
@@ -210,7 +211,7 @@ export default async function AccountPage({
               ) : (
                 <>
                   <p className="settings-section__desc">
-                    {warnPoints > 0 ? `Você tem ${warnPoints} ponto(s) de advertência ativo(s).` : "Você não tem advertências ativas."}
+                    {warnPoints > 0 ? `Você tem ${count(warnPoints, "ponto", "pontos")} de advertência ${plural(warnPoints, "ativo", "ativos")}.` : "Você não tem advertências ativas."}
                   </p>
                   {needsAck && (
                     <div className="mt-4"><AcknowledgeWarnings /></div>

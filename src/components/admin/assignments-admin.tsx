@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useConfirm } from "@/components/admin/confirm-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SettingGroup, SettingToggle } from "@/components/admin/setting-toggle";
@@ -102,7 +103,7 @@ export function AssignmentsAdmin({ assignments, teams, mods, settings: initial }
                 {teams.map((t) => (
                   <li key={t.id} className="pf-group">
                     <div className="pf-group__head">
-                      <span className="min-w-0"><span className="pf-group__name">{t.name}</span><span className="pf-field__meta block">{t.memberCount} membro(s)</span></span>
+                      <span className="min-w-0"><span className="pf-group__name">{t.name}</span><span className="pf-field__meta block">{count(t.memberCount, "membro", "membros")}</span></span>
                       <div className="pf-group__actions">
                         <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setTeamDialog({ t })}><Pencil className="size-4" aria-hidden="true" /></Button>
                         <Button type="button" variant="ghost" size="icon" className="size-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" title="Excluir" onClick={() => removeTeam(t.id, t.name)}><X className="size-4" aria-hidden="true" /></Button>

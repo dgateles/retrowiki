@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { ROLES, ROLE_LABEL, DEFAULTS, getRoleCounts, getRolePermissions } from "@/lib/admin/role-permissions";
 
+import { count } from "@/lib/plural";
+
 export const dynamic = "force-dynamic";
 
 export default async function GroupsPage() {
@@ -20,7 +22,7 @@ export default async function GroupsPage() {
             <li key={role} className="group-row">
               <span className="group-row__dot" style={{ backgroundColor: color }} aria-hidden="true" />
               <span className="group-row__name">{ROLE_LABEL[role]}</span>
-              <span className="group-row__count">{counts[role] ?? 0} membro(s)</span>
+              <span className="group-row__count">{count(counts[role] ?? 0, "membro", "membros")}</span>
               <Link href={`/admin/grupos/${role}`} className="group-row__edit" aria-label={`Editar ${ROLE_LABEL[role]}`}>
                 <Pencil className="size-4" aria-hidden="true" /> Editar
               </Link>

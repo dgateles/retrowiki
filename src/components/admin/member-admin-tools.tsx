@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Upload, Download } from "lucide-react";
@@ -49,7 +50,7 @@ export function MemberAdminTools() {
     const res = await importMembersAction(csv);
     setImporting(false);
     if (res.ok && res.data) {
-      toast.success(`${res.data.created} criado(s), ${res.data.skipped} ignorado(s), ${res.data.errors} erro(s).`);
+      toast.success(`${count(res.data.created, "criado", "criados")}, ${count(res.data.skipped, "ignorado", "ignorados")}, ${count(res.data.errors, "erro", "erros")}.`);
       setImportOpen(false);
       setCsv("");
       router.refresh();

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { count } from "@/lib/plural";
 import { articleHref } from "@/lib/article-url";
 import { ReferralCard } from "@/components/account/referral-card";
 import { VerifyEmailBanner } from "@/components/account/verify-email-banner";
@@ -75,7 +76,7 @@ export default async function PanelPage() {
             <p className="profile-nudge__text">
               {completion.needsAvatar && "Adicione um avatar"}
               {completion.needsAvatar && completion.missingFields > 0 && " e "}
-              {completion.missingFields > 0 && `preencha ${completion.missingFields} campo(s) de perfil`}
+              {completion.missingFields > 0 && `preencha ${count(completion.missingFields, "campo", "campos")} de perfil`}
               {" "}para a comunidade conhecer você.
             </p>
           </div>

@@ -7,6 +7,8 @@ import { getAchievementSettings } from "@/lib/settings";
 import { GamificationTools } from "@/components/admin/gamification-tools";
 import { BadgeIcon } from "@/components/admin/badge-icon";
 
+import { count as qtd } from "@/lib/plural";
+
 export const dynamic = "force-dynamic";
 
 const TIER_LABEL: Record<string, string> = { bronze: "Bronze", silver: "Prata", gold: "Ouro" };
@@ -39,7 +41,7 @@ export default async function AdminGamificationPage() {
                   {isRare(b.count) && <span className="badge-rare">Rara</span>}
                 </p>
                 <p className="badge-card__desc">{b.description}</p>
-                <p className="badge-card__meta">{TIER_LABEL[b.tier]} · {b.count} usuário(s)</p>
+                <p className="badge-card__meta">{TIER_LABEL[b.tier]} · {qtd(b.count, "usuário", "usuários")}</p>
               </div>
             </li>
           ))}

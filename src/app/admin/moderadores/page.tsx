@@ -6,6 +6,7 @@ import { roleLabel } from "@/lib/ranks";
 import { StaffSettingsForm } from "@/components/admin/staff-settings-form";
 import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
+import { count } from "@/lib/plural";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +29,11 @@ export default async function ModeratorsPage({ searchParams }: { searchParams: P
         </div>
         <ul className="staff-groups mt-3">
           <li className="staff-groups__row">
-            <span className="staff-groups__name">Administradores <span className="muted font-normal">· {counts.admins} membro(s)</span></span>
+            <span className="staff-groups__name">Administradores <span className="muted font-normal">· {count(counts.admins, "membro", "membros")}</span></span>
             <Link href="/admin/membros?role=admin" className="link-inline text-sm">Mostrar administradores</Link>
           </li>
           <li className="staff-groups__row">
-            <span className="staff-groups__name">Moderadores <span className="muted font-normal">· {counts.moderators} membro(s)</span></span>
+            <span className="staff-groups__name">Moderadores <span className="muted font-normal">· {count(counts.moderators, "membro", "membros")}</span></span>
             <Link href="/admin/membros?role=moderator" className="link-inline text-sm">Mostrar moderadores</Link>
           </li>
         </ul>

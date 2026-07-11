@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Pager } from "@/components/ui/pager";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { count } from "@/lib/plural";
 
 export const dynamic = "force-dynamic";
 
@@ -75,8 +76,8 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
                   {s.description && <p className="forum-row__desc">{s.description}</p>}
                 </div>
                 <div className="forum-row__stats tabular-nums">
-                  <span>{s.topicsCount} tópico(s)</span>
-                  <span>{s.postsCount} post(s)</span>
+                  <span>{count(s.topicsCount, "tópico", "tópicos")}</span>
+                  <span>{count(s.postsCount, "post", "posts")}</span>
                 </div>
                 <div className="forum-row__last">
                   {s.lastPosterName ? (
@@ -128,7 +129,7 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
                   {t.title}
                   {t.isQuestion && t.bestPostId && <span className="topic-row__solved">Resolvido</span>}
                 </Link>
-                <p className="topic-row__meta">por {t.authorName} · {t.postsCount} resposta(s) · {t.views} visualização(ões)</p>
+                <p className="topic-row__meta">por {t.authorName} · {count(t.postsCount, "resposta", "respostas")} · {count(t.views, "visualização", "visualizações")}</p>
                 {t.tags.length > 0 && (
                   <div className="topic-row__tags">
                     {t.tags.map((tg) => (

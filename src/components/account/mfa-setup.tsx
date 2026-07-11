@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { count } from "@/lib/plural";
 import Image from "next/image";
 import { toast } from "sonner";
 import { ShieldCheck, ShieldAlert, KeyRound, Copy, Check } from "lucide-react";
@@ -152,7 +153,7 @@ export function MfaSetup({ initialEnabled, remainingCodes }: Props) {
               <p className="mfa__manage-title">Códigos de recuperação</p>
               <p className="mfa__manage-note">
                 {remaining > 0
-                  ? `${remaining} código(s) restante(s). Use-os se perder o acesso ao app.`
+                  ? `${count(remaining, "código restante", "códigos restantes")}. Use-os se perder o acesso ao app.`
                   : "Nenhum código restante. Gere novos agora."}
               </p>
             </div>

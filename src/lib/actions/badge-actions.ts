@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { count } from "@/lib/plural";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { users, auditLog } from "@/db/schema";
@@ -49,7 +50,7 @@ export async function recalculateBadgesAction(): Promise<Result> {
   const { users: changed, awarded } = await recalcAllBadges();
   await db.insert(auditLog).values({ actorId: Number(actor.id), action: "badges_recalc", target: "badges:all", meta: { changed, awarded } });
   revalidatePath("/admin/gamificacao");
-  return { ok: true, message: `${awarded} conquista(s) concedida(s) a ${changed} usuário(s).` };
+  return { ok: true, message: `${count(awarded, "conquista concedida", "conquistas concedidas")} a ${count(changed, "usuário", "usuários")}.` };
 }
 
 export async function awardBadgeAction(handle: string, slug: string): Promise<Result> {
