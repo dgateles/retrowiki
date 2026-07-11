@@ -3003,19 +3003,24 @@
     @apply absolute inset-0 size-full object-cover;
   }
   .profile-id {
-    @apply flex flex-col gap-4 px-4 sm:flex-row sm:items-start;
+    @apply flex flex-col gap-3 px-4 lg:flex-row lg:items-end lg:gap-4;
   }
   .profile-id__avatar {
-    @apply relative -mt-12 flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary;
+    @apply relative -mt-10 flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary sm:size-24 lg:-mt-12;
   }
   .profile-id__avatar-img {
     @apply size-full object-cover;
   }
-  .profile-id__body {
-    @apply flex flex-1 flex-wrap items-end justify-between gap-3 pb-1;
+  /* Barra do perfil (estilo IPB): nome = 1º item, stats = células com divisórias.
+     Desktop (lg): tudo numa linha. Abaixo: nome+botão em cima, stats full-width embaixo. */
+  .profile-id__bar {
+    @apply flex flex-1 flex-wrap items-center gap-x-4 gap-y-3;
+  }
+  .profile-id__ident {
+    @apply order-1 min-w-0 lg:pr-2;
   }
   .profile-id__name {
-    @apply text-2xl font-bold tracking-tight;
+    @apply text-xl font-bold tracking-tight sm:text-2xl;
   }
   .profile-id__role {
     @apply mt-0.5 text-sm font-medium text-primary;
@@ -3023,12 +3028,13 @@
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
-  /* Metadados em blocos rotulados lado a lado (estilo IPB), com respiro. */
   .profile-id__stats {
-    @apply mt-3 flex flex-wrap items-start gap-x-8 gap-y-3;
+    @apply order-3 flex basis-full items-stretch border-y border-border
+           lg:order-2 lg:basis-auto lg:border-y-0 lg:border-l lg:border-border;
   }
   .profile-id__stat {
-    @apply flex flex-col gap-0.5;
+    @apply flex flex-1 flex-col justify-center gap-0.5 border-l border-border px-4 py-2.5 first:border-l-0
+           lg:flex-none lg:py-0;
   }
   .profile-id__stat-label {
     @apply text-xs font-medium uppercase tracking-wide text-muted-foreground/80;
@@ -3039,11 +3045,11 @@
   .profile-id__online {
     @apply inline-block size-2 rounded-full bg-success ring-2 ring-success/25;
   }
+  .profile-id__activity {
+    @apply order-2 ml-auto shrink-0 lg:order-3 lg:self-center;
+  }
   .profile-cover__edit {
     @apply absolute right-3 top-3 z-10;
-  }
-  .profile-id__activity {
-    @apply shrink-0;
   }
   .profile-grid {
     @apply mt-8 grid gap-6 md:grid-cols-[260px_1fr];
