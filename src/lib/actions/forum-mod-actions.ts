@@ -111,6 +111,117 @@ export async function deleteTopicAction(topicId: number): Promise<Result> {
   return { ok: true };
 }
 
+// ── Recálculo de agregados (self-healing após mover/mesclar) ────────────────
+/** Recalcula os contadores e o "último post" de um fórum a partir dos dados reais. */
+async function recomputeForum(forumId: number) {
+  const [tc] = await db.select({ n: sql<number>`count(*)` }).from(forumTopics)
+    .where(and(eq(forumTopics.forumId, forumId), isNull(forumTopics.deletedAt), inArray(forumTopics.status, ["open", "locked", "archived"] as const)));
+  const topicsCount = Number(tc?.n ?? 0);
+  // Posts visíveis (1º + respostas) nos tópicos contáveis do fórum.
+  const [pc] = await db.select({ n: sql<number>`count(*)` })
+    .from(forumPosts).innerJoin(forumTopics, eq(forumTopics.id, forumPosts.topicId))
+    .where(and(eq(forumTopics.forumId, forumId), isNull(forumTopics.deletedAt), inArray(forumTopics.status, ["open", "locked", "archived"] as const), isNull(forumPosts.deletedAt), inArray(forumPosts.status, ["visible", "flagged"] as const)));
+  const postsCount = Number(pc?.n ?? 0);
+  const [last] = await db.select({ id: forumPosts.id, at: forumPosts.createdAt, authorId: forumPosts.authorId })
+    .from(forumPosts).innerJoin(forumTopics, eq(forumTopics.id, forumPosts.topicId))
+    .where(and(eq(forumTopics.forumId, forumId), isNull(forumTopics.deletedAt), inArray(forumTopics.status, ["open", "locked", "archived"] as const), isNull(forumPosts.deletedAt), inArray(forumPosts.status, ["visible", "flagged"] as const)))
+    .orderBy(sql`${forumPosts.createdAt} desc`).limit(1);
+  await db.update(forums).set({
+    topicsCount, postsCount,
+    lastPostId: last?.id ?? null, lastPostAt: last?.at ?? null, lastPosterId: last?.authorId ?? null,
+  }).where(eq(forums.id, forumId));
+}
+
+/** Recalcula respostas e "último post" de um tópico a partir dos posts reais. */
+async function recomputeTopic(topicId: number) {
+  const [rc] = await db.select({ n: sql<number>`count(*)` }).from(forumPosts)
+    .where(and(eq(forumPosts.topicId, topicId), eq(forumPosts.isFirst, false), isNull(forumPosts.deletedAt)));
+  const [last] = await db.select({ id: forumPosts.id, at: forumPosts.createdAt, authorId: forumPosts.authorId })
+    .from(forumPosts).where(and(eq(forumPosts.topicId, topicId), isNull(forumPosts.deletedAt)))
+    .orderBy(sql`${forumPosts.createdAt} desc`).limit(1);
+  await db.update(forumTopics).set({
+    postsCount: Number(rc?.n ?? 0),
+    lastPostId: last?.id ?? null, lastPostAt: last?.at ?? null, lastPosterId: last?.authorId ?? null,
+  }).where(eq(forumTopics.id, topicId));
+}
+
+/** Move um tópico para outro fórum (staff). Recalcula os agregados dos dois fóruns. */
+export async function moveTopicAction(topicId: number, targetForumId: number): Promise<Result> {
+  const actorId = await staff();
+  if (!actorId) return { ok: false, error: "Acesso restrito." };
+  const [t] = await db.select({ forumId: forumTopics.forumId, deletedAt: forumTopics.deletedAt })
+    .from(forumTopics).where(eq(forumTopics.id, topicId)).limit(1);
+  if (!t || t.deletedAt) return { ok: false, error: "Tópico indisponível." };
+  if (t.forumId === targetForumId) return { ok: false, error: "O tópico já está neste fórum." };
+  const [target] = await db.select({ id: forums.id }).from(forums).where(eq(forums.id, targetForumId)).limit(1);
+  if (!target) return { ok: false, error: "Fórum de destino não encontrado." };
+
+  const sourceForumId = t.forumId;
+  await db.update(forumTopics).set({ forumId: targetForumId }).where(eq(forumTopics.id, topicId));
+  await Promise.all([recomputeForum(sourceForumId), recomputeForum(targetForumId)]);
+  await log(actorId, "forum_topic_move", `forum_topic:${topicId}->forum:${targetForumId}`);
+
+  const ctx = await topicCtx(topicId);
+  const [src] = await db.select({ slug: forums.slug }).from(forums).where(eq(forums.id, sourceForumId)).limit(1);
+  if (src) revalidatePath(`/forum/${src.slug}`);
+  if (ctx) { revalidatePath(`/forum/${ctx.forumSlug}`); revalidatePath(`/forum/${ctx.forumSlug}/${ctx.slug}`); }
+  return { ok: true };
+}
+
+/**
+ * Mescla o tópico de origem no de destino (staff): move todos os posts da origem
+ * para o destino (o 1º post da origem vira resposta), remove a origem e recalcula
+ * os agregados de tópicos e fóruns envolvidos.
+ */
+export async function mergeTopicsAction(sourceTopicId: number, targetTopicId: number): Promise<Result> {
+  const actorId = await staff();
+  if (!actorId) return { ok: false, error: "Acesso restrito." };
+  if (sourceTopicId === targetTopicId) return { ok: false, error: "Escolha dois tópicos diferentes." };
+  const [src] = await db.select({ id: forumTopics.id, forumId: forumTopics.forumId, deletedAt: forumTopics.deletedAt })
+    .from(forumTopics).where(eq(forumTopics.id, sourceTopicId)).limit(1);
+  const [tgt] = await db.select({ id: forumTopics.id, forumId: forumTopics.forumId, deletedAt: forumTopics.deletedAt })
+    .from(forumTopics).where(eq(forumTopics.id, targetTopicId)).limit(1);
+  if (!src || src.deletedAt) return { ok: false, error: "Tópico de origem indisponível." };
+  if (!tgt || tgt.deletedAt) return { ok: false, error: "Tópico de destino indisponível." };
+
+  // Todos os posts da origem passam a pertencer ao destino, como respostas.
+  await db.update(forumPosts).set({ topicId: targetTopicId, isFirst: false }).where(eq(forumPosts.topicId, sourceTopicId));
+  // A origem some (soft-delete), sem contribuir mais para contadores.
+  await db.update(forumTopics).set({ deletedAt: new Date(), status: "hidden", postsCount: 0 }).where(eq(forumTopics.id, sourceTopicId));
+
+  await recomputeTopic(targetTopicId);
+  const forumsToFix = [...new Set([src.forumId, tgt.forumId])];
+  await Promise.all(forumsToFix.map((fid) => recomputeForum(fid)));
+  await log(actorId, "forum_topic_merge", `forum_topic:${sourceTopicId}->topic:${targetTopicId}`);
+
+  const ctx = await topicCtx(targetTopicId);
+  if (ctx) { revalidatePath(`/forum/${ctx.forumSlug}`); revalidatePath(`/forum/${ctx.forumSlug}/${ctx.slug}`); }
+  return { ok: true };
+}
+
+/** Lista de fóruns (destino de mover). */
+export async function listForumsForMoveAction(): Promise<{ ok: boolean; data?: { id: number; title: string }[] }> {
+  const actorId = await staff();
+  if (!actorId) return { ok: false };
+  const rows = await db.select({ id: forums.id, title: forums.title }).from(forums)
+    .where(eq(forums.visible, true)).orderBy(sql`${forums.sortOrder} asc`, sql`${forums.title} asc`);
+  return { ok: true, data: rows };
+}
+
+/** Resolve um tópico de destino pela URL ou slug (para o fluxo de mesclar). */
+export async function resolveTopicBySlugAction(input: string): Promise<{ ok: boolean; error?: string; data?: { id: number; title: string } }> {
+  const actorId = await staff();
+  if (!actorId) return { ok: false, error: "Acesso restrito." };
+  // Aceita URL completa (…/forum/<forum>/<slug>) ou o slug puro.
+  const raw = input.trim();
+  const slug = (raw.split("?")[0].replace(/\/+$/, "").split("/").pop() ?? "").trim();
+  if (!slug) return { ok: false, error: "Informe a URL ou o slug do tópico." };
+  const [t] = await db.select({ id: forumTopics.id, title: forumTopics.title, deletedAt: forumTopics.deletedAt })
+    .from(forumTopics).where(eq(forumTopics.slug, slug)).limit(1);
+  if (!t || t.deletedAt) return { ok: false, error: "Tópico não encontrado." };
+  return { ok: true, data: { id: t.id, title: t.title } };
+}
+
 // ── Posts ──────────────────────────────────────────────────────────────────
 async function postCtx(postId: number) {
   const [p] = await db.select({ topicId: forumPosts.topicId, isFirst: forumPosts.isFirst, slug: forumTopics.slug, forumSlug: forums.slug, forumId: forums.id })
