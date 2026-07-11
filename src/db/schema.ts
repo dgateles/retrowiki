@@ -1,3 +1,4 @@
+import { FORUM_PREFIX_COLORS } from "@/lib/forum-prefix-style";
 import {
   mysqlTable,
   bigint,
@@ -930,6 +931,7 @@ export const forumTopics = mysqlTable("forum_topics", {
     .notNull()
     .default("open"),
   pinned: boolean("pinned").notNull().default(false), // fixado no topo
+  prefixId: bigint("prefix_id", { mode: "number" }), // prefixo curado (null = sem)
   isQuestion: boolean("is_question").notNull().default(false), // modo Q&A (Fase 2)
   bestPostId: bigint("best_post_id", { mode: "number" }), // melhor resposta (Q&A)
   views: int("views").notNull().default(0),
@@ -1047,6 +1049,17 @@ export const forumTopicTags = mysqlTable("forum_topic_tags", {
   index("forum_topic_tags_tag_idx").on(t.tagId),
 ]);
 
+// Prefixos de tópico (curados pelo admin; um por tópico, exibido antes do título).
+// A lista de cores vive em @/lib/forum-prefix-style (client-safe, sem ciclo).
+export const forumPrefixes = mysqlTable("forum_prefixes", {
+  id: pk(),
+  label: varchar("label", { length: 40 }).notNull(),
+  slug: varchar("slug", { length: 60 }).notNull(),
+  color: mysqlEnum("color", FORUM_PREFIX_COLORS).notNull().default("slate"),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex("forum_prefixes_slug_idx").on(t.slug)]);
+
 // Mensagens privadas (messenger): conversa → participantes → mensagens.
 export const conversations = mysqlTable("conversations", {
   id: pk(),
@@ -1135,6 +1148,8 @@ export type ForumPoll = typeof forumPolls.$inferSelect;
 export type ForumPollQuestion = typeof forumPollQuestions.$inferSelect;
 export type ForumPollChoice = typeof forumPollChoices.$inferSelect;
 export type ForumTag = typeof forumTags.$inferSelect;
+export type ForumPrefix = typeof forumPrefixes.$inferSelect;
+export type { ForumPrefixColor } from "@/lib/forum-prefix-style";
 export type StockReply = typeof stockReplies.$inferSelect;
 export type Conversation = typeof conversations.$inferSelect;
 export type ConversationMessage = typeof conversationMessages.$inferSelect;

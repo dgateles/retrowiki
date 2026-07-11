@@ -29,6 +29,8 @@ import type { JSONContent } from "@tiptap/react";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/json-ld";
 import { forumTopicSchema, breadcrumbSchema } from "@/lib/seo/builders";
+import { PREFIX_CHIP_CLASS } from "@/lib/forum-prefix-style";
+import { cn } from "@/lib/utils";
 
 const SEO_BASE = process.env.APP_URL ?? "http://localhost:3000";
 
@@ -105,6 +107,9 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
           )}
           <h1 className="page__title">
             {(t.status === "locked") && <Lock className="mr-1 inline size-5 text-muted-foreground" aria-label="Trancado" />}
+            {t.prefix && (
+              <Link href={`${forumHref(t.forumSlug)}?prefix=${encodeURIComponent(t.prefix.slug)}`} className={cn("mr-2 rounded px-2 py-0.5 text-sm font-semibold align-middle", PREFIX_CHIP_CLASS[t.prefix.color])}>{t.prefix.label}</Link>
+            )}
             {t.title}
           </h1>
           {topicTags.length > 0 && (

@@ -12,10 +12,15 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { TagInput } from "@/components/forum/tag-input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { docHasText } from "@/components/engagement/comment-form";
 import { createTopicAction } from "@/lib/actions/forum-actions";
 import { topicHref, forumHref } from "@/lib/forum-url";
+import { PREFIX_CHIP_CLASS } from "@/lib/forum-prefix-style";
 import { cn } from "@/lib/utils";
+
+export type PrefixOption = { id: number; label: string; color: keyof typeof PREFIX_CHIP_CLASS };
+const NO_PREFIX = "none";
 
 const EMPTY: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
 const Required = () => <span className="text-xs font-semibold uppercase tracking-wide text-destructive">Obrigatório</span>;
@@ -23,7 +28,7 @@ const Required = () => <span className="text-xs font-semibold uppercase tracking
 type PollQuestion = { title: string; multiple: boolean; choices: string[] };
 const newQuestion = (): PollQuestion => ({ title: "", multiple: false, choices: ["", ""] });
 
-export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId: number; forumSlug: string; isStaff?: boolean }) {
+export function NewTopicForm({ forumId, forumSlug, isStaff = false, prefixes = [] }: { forumId: number; forumSlug: string; isStaff?: boolean; prefixes?: PrefixOption[] }) {
   const router = useRouter();
   const [tab, setTab] = useState<"content" | "poll">("content");
   const [title, setTitle] = useState("");
@@ -31,6 +36,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
   const [follow, setFollow] = useState(true);
   const [isQuestion, setIsQuestion] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  const [prefixId, setPrefixId] = useState<string>(NO_PREFIX);
   const [pending, setPending] = useState(false);
 
   // Enquete
@@ -84,7 +90,8 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
     }
     setPending(true);
     const res = await createTopicAction({
-      forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion, tags, poll,
+      forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion,
+      prefixId: prefixId === NO_PREFIX ? null : Number(prefixId), tags, poll,
       options: isStaff ? { lock, pin, hide } : undefined,
     });
     setPending(false);
@@ -129,6 +136,22 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false }: { forumId:
               <Switch checked={isQuestion} onCheckedChange={setIsQuestion} />
               É uma pergunta <span className="text-muted-foreground">— habilita marcar a “melhor resposta” (Resolvido)</span>
             </label>
+            {prefixes.length > 0 && (
+              <div className="ftopic-form__section">
+                <Label htmlFor="topic-prefix" className="mb-2 text-sm font-semibold">Prefixo <span className="font-normal text-muted-foreground">(opcional)</span></Label>
+                <Select value={prefixId} onValueChange={setPrefixId}>
+                  <SelectTrigger id="topic-prefix" className="w-full sm:w-72"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_PREFIX}>Sem prefixo</SelectItem>
+                    {prefixes.map((p) => (
+                      <SelectItem key={p.id} value={String(p.id)}>
+                        <span className={cn("rounded px-1.5 py-0.5 text-xs font-semibold", PREFIX_CHIP_CLASS[p.color])}>{p.label}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="ftopic-form__section">
               <Label className="mb-2 text-sm font-semibold">Tags <span className="font-normal text-muted-foreground">(opcional)</span></Label>
               <TagInput tags={tags} onChange={setTags} />

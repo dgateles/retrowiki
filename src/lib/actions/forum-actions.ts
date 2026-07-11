@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, forumTopicTags, users } from "@/db/schema";
+import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, forumTopicTags, forumPrefixes, users } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -78,6 +78,7 @@ const CreateTopicSchema = z.object({
   body: z.string(),
   follow: z.boolean().optional(),
   isQuestion: z.boolean().optional(),
+  prefixId: z.number().int().positive().nullable().optional(),
   tags: z.array(z.string().max(40)).max(10).optional(),
   poll: PollSchema.optional(),
   options: z.object({ lock: z.boolean().optional(), pin: z.boolean().optional(), hide: z.boolean().optional() }).optional(),
@@ -106,6 +107,13 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
   const userId = Number(user.id);
   const staff = isStaff(user.role);
   const moderated = await isContentModerated(userId);
+
+  // Prefixo: só aceita um id que exista de fato (senão fica sem prefixo).
+  let prefixId: number | null = null;
+  if (parsed.data.prefixId) {
+    const [pref] = await db.select({ id: forumPrefixes.id }).from(forumPrefixes).where(eq(forumPrefixes.id, parsed.data.prefixId)).limit(1);
+    if (pref) prefixId = pref.id;
+  }
   const slug = await uniqueTopicSlug(parsed.data.title);
   const now = new Date();
 
@@ -131,7 +139,7 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
   const topicId = await db.transaction(async (tx) => {
     const topicIns = await tx.insert(forumTopics).values({
       forumId: forum.id, authorId: userId, title: parsed.data.title, slug,
-      status, pinned, isQuestion: parsed.data.isQuestion ?? false, lastPostAt: now, lastPosterId: userId,
+      status, pinned, prefixId, isQuestion: parsed.data.isQuestion ?? false, lastPostAt: now, lastPosterId: userId,
     });
     const tId = insertId(topicIns);
     const postIns = await tx.insert(forumPosts).values({

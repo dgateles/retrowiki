@@ -2,10 +2,10 @@ import "server-only";
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/mysql-core";
 import { db } from "@/db";
-import { forumCategories, forums, forumTopics, forumPosts, forumTopicFollows, forumTags, forumTopicTags, users } from "@/db/schema";
+import { forumCategories, forums, forumTopics, forumPosts, forumTopicFollows, forumTags, forumTopicTags, forumPrefixes, users } from "@/db/schema";
 import { isRichDoc } from "@/lib/blocks/rich-schema";
 import { slugify } from "@/lib/utils";
-import type { UserRole } from "@/db/schema";
+import type { UserRole, ForumPrefixColor } from "@/db/schema";
 
 const ROLE_RANK: Record<UserRole, number> = { member: 0, contributor: 1, moderator: 2, admin: 3 };
 export function roleAtLeast(role: UserRole | null | undefined, min: UserRole): boolean {
@@ -154,13 +154,14 @@ export async function listSubForums(parentId: number, viewerRole: UserRole | nul
 
 // ── Lista de tópicos de um fórum ───────────────────────────────────────────
 export type TopicTag = { name: string; slug: string };
+export type TopicPrefix = { label: string; slug: string; color: ForumPrefixColor };
 export type TopicRow = {
   id: number; title: string; slug: string; status: string; pinned: boolean; isQuestion: boolean; bestPostId: number | null;
   views: number; postsCount: number; createdAt: Date; lastPostAt: Date | null;
   authorHandle: string; authorName: string; lastPosterHandle: string | null; lastPosterName: string | null;
-  tags: TopicTag[];
+  prefix: TopicPrefix | null; tags: TopicTag[];
 };
-export async function listTopics(forumId: number, page: number, tagSlug?: string): Promise<{ items: TopicRow[]; hasMore: boolean }> {
+export async function listTopics(forumId: number, page: number, tagSlug?: string, prefixSlug?: string): Promise<{ items: TopicRow[]; hasMore: boolean }> {
   const p = Math.max(1, page);
   const lp = alias(users, "lp"); // segundo join a users: o último a postar
   try {
@@ -170,17 +171,24 @@ export async function listTopics(forumId: number, page: number, tagSlug?: string
       if (!tag) return { items: [], hasMore: false };
       conds.push(inArray(forumTopics.id, db.select({ id: forumTopicTags.topicId }).from(forumTopicTags).where(eq(forumTopicTags.tagId, tag.id))));
     }
+    if (prefixSlug) {
+      const [pref] = await db.select({ id: forumPrefixes.id }).from(forumPrefixes).where(eq(forumPrefixes.slug, prefixSlug)).limit(1);
+      if (!pref) return { items: [], hasMore: false };
+      conds.push(eq(forumTopics.prefixId, pref.id));
+    }
     const rows = await db
       .select({
         id: forumTopics.id, title: forumTopics.title, slug: forumTopics.slug, status: forumTopics.status,
         pinned: forumTopics.pinned, isQuestion: forumTopics.isQuestion, bestPostId: forumTopics.bestPostId,
         views: forumTopics.views, postsCount: forumTopics.postsCount, createdAt: forumTopics.createdAt, lastPostAt: forumTopics.lastPostAt,
+        prefixLabel: forumPrefixes.label, prefixSlug: forumPrefixes.slug, prefixColor: forumPrefixes.color,
         authorHandle: users.handle, authorName: users.displayName,
         lastPosterHandle: lp.handle, lastPosterName: lp.displayName,
       })
       .from(forumTopics)
       .innerJoin(users, eq(users.id, forumTopics.authorId))
       .leftJoin(lp, eq(lp.id, forumTopics.lastPosterId))
+      .leftJoin(forumPrefixes, eq(forumPrefixes.id, forumTopics.prefixId))
       .where(and(...conds))
       .orderBy(desc(forumTopics.pinned), desc(forumTopics.lastPostAt))
       .limit(TOPICS_PER_PAGE + 1)
@@ -202,7 +210,14 @@ export async function listTopics(forumId: number, page: number, tagSlug?: string
         byTopic.set(tr.topicId, arr);
       }
     }
-    return { items: items.map((r) => ({ ...r, tags: byTopic.get(r.id) ?? [] })), hasMore };
+    return {
+      items: items.map(({ prefixLabel, prefixSlug: pslug, prefixColor, ...r }) => ({
+        ...r,
+        prefix: prefixLabel && pslug && prefixColor ? { label: prefixLabel, slug: pslug, color: prefixColor } : null,
+        tags: byTopic.get(r.id) ?? [],
+      })),
+      hasMore,
+    };
   } catch {
     return { items: [], hasMore: false };
   }
@@ -255,7 +270,7 @@ export async function getTopicTags(topicId: number): Promise<TopicTag[]> {
 // ── Tópico + posts ─────────────────────────────────────────────────────────
 export type TopicWithForum = {
   id: number; title: string; slug: string; status: string; pinned: boolean; isQuestion: boolean; bestPostId: number | null;
-  views: number; postsCount: number; authorId: number; createdAt: Date;
+  views: number; postsCount: number; authorId: number; createdAt: Date; prefix: TopicPrefix | null;
   forumId: number; forumSlug: string; forumTitle: string; forumLocked: boolean;
   forumMinReadRole: UserRole; forumMinPostRole: UserRole; forumVisible: boolean;
 };
@@ -267,15 +282,18 @@ export async function getTopicBySlug(slug: string): Promise<TopicWithForum | nul
         pinned: forumTopics.pinned, isQuestion: forumTopics.isQuestion, bestPostId: forumTopics.bestPostId,
         views: forumTopics.views, postsCount: forumTopics.postsCount, authorId: forumTopics.authorId,
         createdAt: forumTopics.createdAt, deletedAt: forumTopics.deletedAt,
+        prefixLabel: forumPrefixes.label, prefixSlug: forumPrefixes.slug, prefixColor: forumPrefixes.color,
         forumId: forums.id, forumSlug: forums.slug, forumTitle: forums.title, forumLocked: forums.locked,
         forumMinReadRole: forums.minReadRole, forumMinPostRole: forums.minPostRole, forumVisible: forums.visible,
       })
       .from(forumTopics)
       .innerJoin(forums, eq(forums.id, forumTopics.forumId))
+      .leftJoin(forumPrefixes, eq(forumPrefixes.id, forumTopics.prefixId))
       .where(eq(forumTopics.slug, slug))
       .limit(1);
     if (!r || r.deletedAt) return null;
-    return r;
+    const { prefixLabel, prefixSlug, prefixColor, ...rest } = r;
+    return { ...rest, prefix: prefixLabel && prefixSlug && prefixColor ? { label: prefixLabel, slug: prefixSlug, color: prefixColor } : null };
   } catch {
     return null;
   }

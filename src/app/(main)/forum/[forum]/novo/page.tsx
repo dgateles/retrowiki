@@ -4,6 +4,7 @@ import { getForumBySlug, canReadForumPublic, canPostForum } from "@/lib/forum";
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { NewTopicForm } from "@/components/forum/new-topic-form";
+import { listPrefixes } from "@/lib/forum-prefixes";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,8 @@ export default async function NewTopicPage({ params }: { params: Promise<{ forum
   if (!user) redirect(`/auth/entrar?next=${encodeURIComponent(`/forum/${f.slug}/novo`)}`);
   if (!canPostForum(f, user.role)) notFound();
 
+  const prefixes = (await listPrefixes()).map((p) => ({ id: p.id, label: p.label, color: p.color }));
+
   return (
     <main id="main" className="page">
       <nav className="forum-crumbs" aria-label="Trilha">
@@ -25,7 +28,7 @@ export default async function NewTopicPage({ params }: { params: Promise<{ forum
       <div className="page__head">
         <h1 className="page__title">Novo tópico</h1>
       </div>
-      <NewTopicForm forumId={f.id} forumSlug={f.slug} isStaff={can.moderate(user)} />
+      <NewTopicForm forumId={f.id} forumSlug={f.slug} isStaff={can.moderate(user)} prefixes={prefixes} />
     </main>
   );
 }

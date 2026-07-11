@@ -12,6 +12,8 @@ import { Pager } from "@/components/ui/pager";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { count } from "@/lib/plural";
+import { PREFIX_CHIP_CLASS } from "@/lib/forum-prefix-style";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -24,17 +26,18 @@ export async function generateMetadata({ params }: { params: Promise<{ forum: st
   return pageMetadata({ title: f.title, description: f.description ?? `Tópicos do fórum ${f.title}.`, path: `/forum/${f.slug}` });
 }
 
-export default async function ForumPage({ params, searchParams }: { params: Promise<{ forum: string }>; searchParams: Promise<{ page?: string; tag?: string }> }) {
+export default async function ForumPage({ params, searchParams }: { params: Promise<{ forum: string }>; searchParams: Promise<{ page?: string; tag?: string; prefix?: string }> }) {
   const { forum } = await params;
-  const { page: pageStr, tag: tagParam } = await searchParams;
+  const { page: pageStr, tag: tagParam, prefix: prefixParam } = await searchParams;
   const page = Math.max(1, Number(pageStr) || 1);
   const tag = typeof tagParam === "string" && tagParam.trim() ? tagParam.trim().toLowerCase() : undefined;
+  const prefix = typeof prefixParam === "string" && prefixParam.trim() ? prefixParam.trim().toLowerCase() : undefined;
 
   const user = await getCurrentUser();
   const f = await getForumBySlug(forum);
   if (!f || !canReadForumPublic(f, user?.role ?? null)) notFound();
 
-  const { items, hasMore } = await listTopics(f.id, page, tag);
+  const { items, hasMore } = await listTopics(f.id, page, tag, prefix);
   const subForums = await listSubForums(f.id, user?.role ?? null);
   const canPost = !!user && canPostForum(f, user.role);
   const isMod = can.moderate(user);
@@ -102,6 +105,13 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
         </div>
       )}
 
+      {prefix && items[0]?.prefix && (
+        <div className="ftag-filter">
+          <span>Filtrando por <span className={cn("rounded px-1.5 py-0.5 text-xs font-semibold", PREFIX_CHIP_CLASS[items[0].prefix.color])}>{items[0].prefix.label}</span></span>
+          <Link href={forumHref(f.slug)} className="link-inline">Limpar filtro</Link>
+        </div>
+      )}
+
       {items.length === 0 ? (
         <Empty className="mt-6">
           <EmptyHeader>
@@ -126,6 +136,7 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
               </span>
               <div className="topic-row__main">
                 <Link href={topicHref(f.slug, t.slug)} className="topic-row__title link-inline">
+                  {t.prefix && <span className={cn("mr-1.5 rounded px-1.5 py-0.5 text-xs font-semibold align-middle", PREFIX_CHIP_CLASS[t.prefix.color])}>{t.prefix.label}</span>}
                   {t.title}
                   {t.isQuestion && t.bestPostId && <span className="topic-row__solved">Resolvido</span>}
                 </Link>
