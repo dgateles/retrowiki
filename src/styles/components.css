@@ -4044,7 +4044,7 @@
   .ftag-chip--active { @apply bg-primary/15 text-primary; }
   .ftopic-tags { @apply mt-2 flex flex-wrap gap-1.5; }
   .topic-row__tags { @apply mt-1.5 flex flex-wrap gap-1.5; }
-  .ftag-filter { @apply mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground; }
+  .ftag-filter { @apply my-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground; }
   .ftag-input { @apply flex flex-wrap items-center gap-2 rounded-lg border border-input bg-transparent p-2; }
   .ftag-input .ftag-chip { @apply bg-primary/12 text-foreground; }
   .ftag-input .ftag-chip button { @apply ml-0.5 rounded-full p-0.5 text-muted-foreground hover:bg-background hover:text-foreground; }
