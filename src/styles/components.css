@@ -3559,6 +3559,22 @@
     @apply block rounded-md border border-border bg-muted px-2 py-1.5 text-center font-mono text-sm tracking-wide;
   }
 
+  /* Acessos recentes / sessões */
+  .rsess { @apply rounded-xl border border-border bg-card p-4 sm:p-5; }
+  .rsess__head { @apply flex items-start gap-3; }
+  .rsess__icon { @apply grid size-9 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground; }
+  .rsess__title { @apply text-sm font-semibold; }
+  .rsess__desc { @apply mt-0.5 text-sm text-muted-foreground; }
+  .rsess__empty { @apply mt-4 text-sm text-muted-foreground; }
+  .rsess__list { @apply mt-4 flex flex-col divide-y divide-border rounded-lg border border-border; }
+  .rsess__item { @apply flex items-center gap-3 p-3; }
+  .rsess__item-icon { @apply grid size-8 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground; }
+  .rsess__item-main { @apply min-w-0 flex-1; }
+  .rsess__item-device { @apply text-sm font-medium; }
+  .rsess__item-meta { @apply mt-0.5 truncate text-xs text-muted-foreground; }
+  .rsess__item-when { @apply flex shrink-0 flex-col items-end gap-0.5 text-right text-xs text-muted-foreground tabular-nums; }
+  .rsess__item-uses { @apply opacity-70; }
+
   /* Editor rico (TipTap). */
   .rte {
     @apply rounded-lg border border-input bg-background focus-within:border-ring;

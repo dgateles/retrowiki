@@ -21,6 +21,8 @@ import { PrivacyTools } from "@/components/account/privacy-tools";
 import { hasOpenDeletionRequest } from "@/lib/privacy";
 import { MfaSetup } from "@/components/account/mfa-setup";
 import { getMfaState, countRemainingRecoveryCodes } from "@/lib/mfa";
+import { RecentSessions } from "@/components/account/recent-sessions";
+import { listRecentAccess } from "@/lib/sessions";
 import { BulkMailOptOut } from "@/components/account/bulk-mail-optout";
 import { ChangeEmailForm } from "@/components/account/change-email-form";
 import { GalleryManager } from "@/components/account/gallery-manager";
@@ -65,6 +67,7 @@ export default async function AccountPage({
   const openDeletion = active === "seguranca" ? await hasOpenDeletionRequest(Number(user.id)) : false;
   const mfa = active === "seguranca" ? await getMfaState(Number(user.id)) : { enabled: false, hasSecret: false };
   const mfaCodes = active === "seguranca" && mfa.enabled ? await countRemainingRecoveryCodes(Number(user.id)) : 0;
+  const recentSessions = active === "seguranca" ? await listRecentAccess(Number(user.id)) : [];
   const linkedGoogle = active === "contas" ? await getLinkedGoogle(Number(user.id)) : null;
   const gallerySettings = active === "galeria" ? await getGallerySettings() : null;
   const photos = active === "galeria" && gallerySettings?.enabled ? await listPhotosManage(Number(user.id)) : [];
@@ -285,6 +288,9 @@ export default async function AccountPage({
               <p className="settings-section__desc">Seus dados e o controle sobre eles.</p>
               <div className="mt-4">
                 <MfaSetup initialEnabled={mfa.enabled} remainingCodes={mfaCodes} />
+              </div>
+              <div className="mt-6">
+                <RecentSessions sessions={recentSessions} />
               </div>
               <div className="mt-6">
                 <PrivacyTools hasOpenRequest={openDeletion} />
