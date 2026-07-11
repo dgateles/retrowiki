@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody, type ForumPostItem } from "@/lib/forum";
+import type { PostAttachment } from "@/lib/forum-attachments";
 import { roleLabel } from "@/lib/ranks";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +15,7 @@ const joined = (d: Date) => new Intl.DateTimeFormat("pt-BR", { month: "short", y
 const posted = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Post do fórum com "postbit" (cartão do autor) à esquerda — visual estilo IPB. */
-export function ForumPostCard({ post, reactions, actions, bestAnswer = false, solutionControl, quoteControl }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode; bestAnswer?: boolean; solutionControl?: React.ReactNode; quoteControl?: React.ReactNode }) {
+export function ForumPostCard({ post, reactions, actions, bestAnswer = false, solutionControl, quoteControl, attachments = [] }: { post: ForumPostItem; reactions?: React.ReactNode; actions?: React.ReactNode; bestAnswer?: boolean; solutionControl?: React.ReactNode; quoteControl?: React.ReactNode; attachments?: PostAttachment[] }) {
   const isStaff = post.authorRole === "moderator" || post.authorRole === "admin";
   return (
     <article id={`post-${post.id}`} className={cn("fpost", bestAnswer && "fpost--best")}>
@@ -49,6 +50,18 @@ export function ForumPostCard({ post, reactions, actions, bestAnswer = false, so
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
+        {attachments.length > 0 && (
+          <ul className="fpost__attachments" aria-label="Anexos">
+            {attachments.map((a) => (
+              <li key={a.id}>
+                <a href={a.url} target="_blank" rel="noopener noreferrer" className="fpost__attach">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={a.url} alt={a.filename} loading="lazy" className="fpost__attach-img" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
         {(reactions || solutionControl || quoteControl) && (
           <footer className="fpost__foot">
             {(quoteControl || solutionControl) && (

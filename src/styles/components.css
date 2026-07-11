@@ -4061,6 +4061,19 @@
   .fpost--best { @apply border-success/50 shadow-[0_0_0_1px_var(--color-success)]; }
   .fpost__solution { @apply inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 font-semibold text-success; }
   .fpost__foot-left { @apply mr-auto flex flex-wrap items-center gap-2; }
+
+  /* Anexos de imagem em posts */
+  .fpost__attachments { @apply mt-3 flex flex-wrap gap-2; }
+  .fpost__attach { @apply block overflow-hidden rounded-lg border border-border transition-colors hover:border-ring; }
+  .fpost__attach-img { @apply h-28 w-28 object-cover; }
+  .fatt-picker { @apply flex flex-col gap-2; }
+  .fatt-picker__list { @apply flex flex-wrap gap-2; }
+  .fatt-picker__item { @apply relative; }
+  .fatt-picker__thumb { @apply size-20 rounded-lg border border-border object-cover; }
+  .fatt-picker__remove { @apply absolute -right-1.5 -top-1.5 grid size-6 cursor-pointer place-items-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-destructive hover:text-destructive-foreground; }
+  .fatt-picker__add { @apply inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-ring hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50; }
+  .fatt-picker__count { @apply text-xs tabular-nums opacity-70; }
+  .freply__attach { @apply mt-3; }
   .fquote-btn { @apply inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground; }
   .fsolution-btn { @apply inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-success/50 hover:text-success; }
   .fsolution-btn--on { @apply border-success/50 bg-success/10 text-success; }

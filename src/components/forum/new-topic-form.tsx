@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RichEditor } from "@/components/editor/rich-editor";
 import { TagInput } from "@/components/forum/tag-input";
+import { AttachmentPicker, type PickedAttachment } from "@/components/forum/attachment-picker";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { docHasText } from "@/components/engagement/comment-form";
 import { createTopicAction } from "@/lib/actions/forum-actions";
@@ -37,6 +38,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false, prefixes = [
   const [isQuestion, setIsQuestion] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [prefixId, setPrefixId] = useState<string>(NO_PREFIX);
+  const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
   const [pending, setPending] = useState(false);
 
   // Enquete
@@ -91,7 +93,7 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false, prefixes = [
     setPending(true);
     const res = await createTopicAction({
       forumId, title: title.trim(), body: JSON.stringify(doc), follow, isQuestion,
-      prefixId: prefixId === NO_PREFIX ? null : Number(prefixId), tags, poll,
+      prefixId: prefixId === NO_PREFIX ? null : Number(prefixId), tags, poll, attachments,
       options: isStaff ? { lock, pin, hide } : undefined,
     });
     setPending(false);
@@ -131,6 +133,10 @@ export function NewTopicForm({ forumId, forumSlug, isStaff = false, prefixes = [
                 <Required />
               </div>
               <RichEditor variant="full" value={doc} onChange={setDoc} placeholder="Escreva sua mensagem…" />
+            </div>
+            <div className="ftopic-form__section">
+              <Label className="mb-2 text-sm font-semibold">Anexos <span className="font-normal text-muted-foreground">(imagens, opcional)</span></Label>
+              <AttachmentPicker value={attachments} onChange={setAttachments} />
             </div>
             <label className="flex items-center gap-2 text-sm">
               <Switch checked={isQuestion} onCheckedChange={setIsQuestion} />

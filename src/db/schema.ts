@@ -968,6 +968,17 @@ export const forumPosts = mysqlTable("forum_posts", {
   index("forum_posts_author_idx").on(t.authorId),
 ]);
 
+// Anexos de imagem de um post (screenshots, fotos). Hospedados no BunnyCDN.
+export const forumAttachments = mysqlTable("forum_attachments", {
+  id: pk(),
+  postId: bigint("post_id", { mode: "number" }).notNull(),
+  url: varchar("url", { length: 500 }).notNull(),
+  filename: varchar("filename", { length: 200 }).notNull(),
+  contentType: varchar("content_type", { length: 100 }).notNull(),
+  sortOrder: int("sort_order").notNull().default(0),
+  createdAt: createdAt(),
+}, (t) => [index("forum_attachments_post_idx").on(t.postId)]);
+
 // Reação em post (reusa a config de `reactions`). Uma por usuário por post.
 export const forumPostReactions = mysqlTable("forum_post_reactions", {
   id: pk(),

@@ -15,6 +15,7 @@ const FOLDERS: Record<string, "admin" | "user"> = {
   avatars: "user",
   covers: "user",
   gallery: "user",
+  forum: "user", // anexos de imagem em posts do fórum
 };
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB

@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, forumTopicTags, forumPrefixes, users } from "@/db/schema";
+import { forums, forumTopics, forumPosts, forumTopicFollows, forumPostReactions, forumPolls, forumPollQuestions, forumPollChoices, forumPollVotes, forumTopicTags, forumPrefixes, forumAttachments, users } from "@/db/schema";
+import { sanitizeAttachments } from "@/lib/forum-attachments";
 import { requireUser } from "@/lib/auth-helpers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { evaluateBadges } from "@/lib/badges";
@@ -81,9 +82,15 @@ const CreateTopicSchema = z.object({
   prefixId: z.number().int().positive().nullable().optional(),
   tags: z.array(z.string().max(40)).max(10).optional(),
   poll: PollSchema.optional(),
+  attachments: z.array(z.object({ url: z.string(), filename: z.string(), contentType: z.string() })).max(8).optional(),
   options: z.object({ lock: z.boolean().optional(), pin: z.boolean().optional(), hide: z.boolean().optional() }).optional(),
 });
-const ReplySchema = z.object({ topicId: z.number().int().positive(), body: z.string(), follow: z.boolean().optional() });
+const ReplySchema = z.object({
+  topicId: z.number().int().positive(),
+  body: z.string(),
+  follow: z.boolean().optional(),
+  attachments: z.array(z.object({ url: z.string(), filename: z.string(), contentType: z.string() })).max(8).optional(),
+});
 
 // ── Criar tópico ───────────────────────────────────────────────────────────
 export async function createTopicAction(input: unknown): Promise<Result<{ forumSlug: string; topicSlug: string; pending?: boolean }>> {
@@ -146,6 +153,8 @@ export async function createTopicAction(input: unknown): Promise<Result<{ forumS
       topicId: tId, authorId: userId, body: valid.json, isFirst: true, status: moderated ? "flagged" : "visible",
     });
     const pId = insertId(postIns);
+    const atts = sanitizeAttachments(parsed.data.attachments);
+    if (atts.length) await tx.insert(forumAttachments).values(atts.map((a, i) => ({ postId: pId, url: a.url, filename: a.filename, contentType: a.contentType, sortOrder: i })));
     await tx.update(forumTopics).set({ firstPostId: pId, lastPostId: pId }).where(eq(forumTopics.id, tId));
     if (countsPublic) {
       await tx.update(forums).set({
@@ -215,6 +224,8 @@ export async function replyTopicAction(input: unknown): Promise<Result<{ forumSl
   const postId = await db.transaction(async (tx) => {
     const ins = await tx.insert(forumPosts).values({ topicId: t.id, authorId: userId, body: valid.json, status: moderated ? "flagged" : "visible" });
     const pId = insertId(ins);
+    const atts = sanitizeAttachments(parsed.data.attachments);
+    if (atts.length) await tx.insert(forumAttachments).values(atts.map((a, i) => ({ postId: pId, url: a.url, filename: a.filename, contentType: a.contentType, sortOrder: i })));
     if (!moderated) {
       await tx.update(forumTopics).set({ postsCount: sql`${forumTopics.postsCount} + 1`, lastPostId: pId, lastPostAt: now, lastPosterId: userId }).where(eq(forumTopics.id, t.id));
       await tx.update(forums).set({ postsCount: sql`${forums.postsCount} + 1`, lastPostId: pId, lastPostAt: now, lastPosterId: userId }).where(eq(forums.id, t.forumId));

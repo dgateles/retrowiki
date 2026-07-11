@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Lock, Check, CircleCheck, CircleHelp } from "lucide-react";
 import { getTopicBySlug, listPosts, canReadForumPublic, canPostForum, incrementTopicView, isFollowingTopic, getTopicTags } from "@/lib/forum";
+import { getAttachmentsFor } from "@/lib/forum-attachments";
 import { forumHref } from "@/lib/forum-url";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { ForumPostCard } from "@/components/forum/forum-post-card";
@@ -57,6 +58,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
 
   if (page === 1) await incrementTopicView(t.id);
   const { items, hasMore } = await listPosts(t.id, page);
+  const attachmentsByPost = await getAttachmentsFor(items.map((p) => p.id));
   const poll = page === 1 ? await getTopicPoll(t.id, user ? Number(user.id) : null) : null;
   const topicTags = await getTopicTags(t.id);
   const ignoredIds = await getIgnoredUserIds(user ? Number(user.id) : null);
@@ -178,7 +180,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
               permalink={postHref(t.forumSlug, t.slug, post.id)}
             />
           ) : undefined;
-          const card = <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} quoteControl={quoteControl} />;
+          const card = <ForumPostCard key={post.id} post={post} reactions={reactions} actions={actions} bestAnswer={isBest} solutionControl={solutionControl} quoteControl={quoteControl} attachments={attachmentsByPost.get(post.id) ?? []} />;
           return ignoredIds.includes(post.authorId)
             ? <IgnoredPostGate key={post.id} authorName={post.authorName}>{card}</IgnoredPostGate>
             : card;

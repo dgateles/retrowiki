@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { RichEditor } from "@/components/editor/rich-editor";
 import { docHasText } from "@/components/engagement/comment-form";
 import { replyTopicAction } from "@/lib/actions/forum-actions";
+import { AttachmentPicker, type PickedAttachment } from "@/components/forum/attachment-picker";
 import type { ForumQuoteDetail } from "@/components/forum/quote-button";
 
 type StockReply = { id: number; title: string; body: string };
@@ -47,6 +48,7 @@ export function ReplyForm({ topicId, stockReplies }: { topicId: number; stockRep
   const formRef = useRef<HTMLFormElement>(null);
   const [doc, setDoc] = useState<JSONContent>(EMPTY);
   const [follow, setFollow] = useState(true);
+  const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
   const [pending, setPending] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
 
@@ -67,10 +69,11 @@ export function ReplyForm({ topicId, stockReplies }: { topicId: number; stockRep
     e.preventDefault();
     if (!docHasText(doc)) return;
     setPending(true);
-    const res = await replyTopicAction({ topicId, body: JSON.stringify(doc), follow });
+    const res = await replyTopicAction({ topicId, body: JSON.stringify(doc), follow, attachments });
     setPending(false);
     if (res.ok) {
       setDoc(EMPTY);
+      setAttachments([]);
       setEditorKey((k) => k + 1);
       toast.success((res.data as { pending?: boolean } | undefined)?.pending ? "Enviado para revisão." : "Resposta publicada.");
       router.refresh();
@@ -101,6 +104,9 @@ export function ReplyForm({ topicId, stockReplies }: { topicId: number; stockRep
         )}
       </div>
       <RichEditor key={editorKey} value={doc} onChange={setDoc} variant="full" placeholder="Escreva sua resposta…" />
+      <div className="freply__attach">
+        <AttachmentPicker value={attachments} onChange={setAttachments} />
+      </div>
       <div className="freply__foot">
         <label className="flex items-center gap-2 text-sm">
           <Checkbox checked={follow} onCheckedChange={(c) => setFollow(c === true)} />
