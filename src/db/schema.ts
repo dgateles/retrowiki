@@ -1120,6 +1120,18 @@ export const userIgnores = mysqlTable("user_ignores", {
   index("user_ignores_user_idx").on(t.userId),
 ]);
 
+// Seguir membros: acompanha a atividade de alguém no feed "Seguindo".
+export const userFollows = mysqlTable("user_follows", {
+  id: pk(),
+  followerId: bigint("follower_id", { mode: "number" }).notNull(), // quem segue
+  followedId: bigint("followed_id", { mode: "number" }).notNull(), // quem é seguido
+  createdAt: createdAt(),
+}, (t) => [
+  uniqueIndex("user_follows_pair_idx").on(t.followerId, t.followedId),
+  index("user_follows_follower_idx").on(t.followerId),
+  index("user_follows_followed_idx").on(t.followedId),
+]);
+
 // Códigos de recuperação de 2FA (usados uma vez, guardados só como hash).
 export const mfaRecoveryCodes = mysqlTable("mfa_recovery_codes", {
   id: pk(),

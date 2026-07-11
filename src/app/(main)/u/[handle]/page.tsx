@@ -5,6 +5,9 @@ import { getProfile } from "@/lib/profiles";
 import { getCurrentUser, can } from "@/lib/auth-helpers";
 import { isIgnoring } from "@/lib/ignore";
 import { IgnoreButton } from "@/components/social/ignore-button";
+import { isFollowing, getFollowCounts } from "@/lib/follows";
+import { FollowButton } from "@/components/social/follow-button";
+import { plural } from "@/lib/plural";
 import { recordProfileVisit, listRecentVisitors } from "@/lib/profile-visits";
 import { VisitorsToggle } from "@/components/social/visitors-toggle";
 import { ProfileEditMenu } from "@/components/profile/profile-edit-menu";
@@ -101,6 +104,8 @@ export default async function ProfilePage({
   const targetIsStaff = profile.role === "moderator" || profile.role === "admin";
   const canIgnore = Boolean(viewer && !isOwner && !targetIsStaff);
   const ignoringProfile = canIgnore ? await isIgnoring(Number(viewer!.id), profile.id) : false;
+  const followingProfile = Boolean(viewer && !isOwner) ? await isFollowing(Number(viewer!.id), profile.id) : false;
+  const followCounts = await getFollowCounts(profile.id);
   if (viewer && !isOwner) await recordProfileVisit(profile.id, Number(viewer.id));
   const showVisitorsBlock = profile.showVisitors || isOwner;
   const visitors = showVisitorsBlock ? await listRecentVisitors(profile.id) : [];
@@ -170,6 +175,11 @@ export default async function ProfilePage({
             <p className="profile-id__role">@{profile.handle} · {roleLabel(profile.role)}</p>
             <p className="profile-id__meta">Na comunidade desde {joined}</p>
             {lastSeen && <p className="profile-id__meta">{lastSeen}</p>}
+            <p className="profile-id__meta profile-id__follows">
+              <span><strong className="text-foreground tabular-nums">{followCounts.followers}</strong> {plural(followCounts.followers, "seguidor", "seguidores")}</span>
+              <span aria-hidden="true"> · </span>
+              <span><strong className="text-foreground tabular-nums">{followCounts.following}</strong> seguindo</span>
+            </p>
           </div>
           {isOwner ? (
             <Button asChild size="sm" className="profile-id__activity">
@@ -177,6 +187,7 @@ export default async function ProfilePage({
             </Button>
           ) : viewer ? (
             <div className="profile-id__activity flex flex-wrap gap-2">
+              <FollowButton targetId={profile.id} initialFollowing={followingProfile} />
               <Button asChild variant="outline" size="sm">
                 <Link href={`/mensagens/nova?para=${profile.handle}`}><Mail className="size-4" aria-hidden="true" /> Mensagem</Link>
               </Button>

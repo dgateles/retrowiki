@@ -6,6 +6,7 @@ type Payload = {
   commentId?: number;
   actorName?: string;
   actorAvatar?: string | null;
+  actorHandle?: string; // @handle do autor (ex.: quem começou a seguir)
   name?: string; // badge
   roleLabel?: string; // promoção
   rankLabel?: string; // subida de rank
@@ -46,6 +47,8 @@ export function describeNotification(type: string, payloadRaw: unknown): Notific
       return { text: `Sua resposta foi marcada como solução em "${p.topicTitle ?? "uma pergunta"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
     case "forum.mention":
       return { text: `${actor} mencionou você em "${p.topicTitle ?? "um tópico"}".`, href: forumTopicHref, image: p.actorAvatar, actor };
+    case "user.followed":
+      return { text: `${actor} começou a seguir você.`, href: p.actorHandle ? `/u/${p.actorHandle}` : undefined, image: p.actorAvatar, actor };
     case "pm.received":
       return { text: `${actor} enviou uma mensagem${p.subject ? `: "${p.subject}"` : ""}.`, href: p.conversationId ? `/mensagens/${p.conversationId}` : "/mensagens", actor };
     case "pm.reply":

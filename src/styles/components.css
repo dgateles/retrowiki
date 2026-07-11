@@ -3023,6 +3023,9 @@
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
+  .profile-id__follows {
+    @apply mt-2 flex flex-wrap items-center gap-x-1;
+  }
   .profile-cover__edit {
     @apply absolute right-3 top-3 z-10;
   }

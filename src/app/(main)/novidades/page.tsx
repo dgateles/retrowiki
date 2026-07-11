@@ -2,12 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { MessagesSquare, Reply, BookOpen, PenLine } from "lucide-react";
 import { getActivityStream, type StreamScope, type StreamType } from "@/lib/activity-stream";
+import { getCurrentUser } from "@/lib/auth-helpers";
+import { getFollowedUserIds } from "@/lib/follows";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Novidades", description: "O que está acontecendo na comunidade RetroWiki." };
 
-const SCOPES: { key: StreamScope; label: string }[] = [
+const BASE_SCOPES: { key: StreamScope; label: string }[] = [
   { key: "tudo", label: "Tudo" },
   { key: "forum", label: "Fórum" },
   { key: "conteudo", label: "Guias & Blog" },
@@ -17,8 +19,12 @@ const fmt = (d: Date) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", mont
 
 export default async function NovidadesPage({ searchParams }: { searchParams: Promise<{ escopo?: string }> }) {
   const { escopo } = await searchParams;
-  const scope: StreamScope = escopo === "forum" || escopo === "conteudo" ? escopo : "tudo";
-  const items = await getActivityStream(scope);
+  const user = await getCurrentUser();
+  const valid: StreamScope[] = user ? ["tudo", "forum", "conteudo", "seguindo"] : ["tudo", "forum", "conteudo"];
+  const scope: StreamScope = (valid as string[]).includes(escopo ?? "") ? (escopo as StreamScope) : "tudo";
+  const SCOPES = user ? [...BASE_SCOPES, { key: "seguindo" as StreamScope, label: "Seguindo" }] : BASE_SCOPES;
+  const followedIds = scope === "seguindo" && user ? await getFollowedUserIds(Number(user.id)) : undefined;
+  const items = await getActivityStream(scope, 40, followedIds);
 
   return (
     <main id="main" className="page">
@@ -43,7 +49,7 @@ export default async function NovidadesPage({ searchParams }: { searchParams: Pr
       </nav>
 
       {items.length === 0 ? (
-        <p className="empty mt-8">Nada por aqui ainda. Volte em breve.</p>
+        <p className="empty mt-8">{scope === "seguindo" ? "Você ainda não segue ninguém — ou quem você segue ainda não postou. Visite perfis e toque em Seguir." : "Nada por aqui ainda. Volte em breve."}</p>
       ) : (
         <ul className="stream mt-6">
           {items.map((it) => {
