@@ -3003,10 +3003,10 @@
     @apply absolute inset-0 size-full object-cover;
   }
   .profile-id {
-    @apply -mt-12 flex flex-col gap-4 px-4 sm:flex-row sm:items-end;
+    @apply flex flex-col gap-4 px-4 sm:flex-row sm:items-start;
   }
   .profile-id__avatar {
-    @apply relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary;
+    @apply relative -mt-12 flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary;
   }
   .profile-id__avatar-img {
     @apply size-full object-cover;
