@@ -3020,7 +3020,7 @@
     @apply order-1 min-w-0 lg:pr-2;
   }
   .profile-id__name {
-    @apply text-xl font-bold tracking-tight sm:text-2xl;
+    @apply text-lg font-bold tracking-tight sm:text-xl;
   }
   .profile-id__role {
     @apply mt-0.5 text-sm font-medium text-primary;
