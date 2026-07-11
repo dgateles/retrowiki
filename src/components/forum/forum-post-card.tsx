@@ -4,6 +4,7 @@ import { RichContent } from "@/components/blocks/rich-content";
 import type { RichDoc } from "@/lib/blocks/rich-schema";
 import { forumDocFromBody, type ForumPostItem } from "@/lib/forum";
 import type { PostAttachment } from "@/lib/forum-attachments";
+import { PostAttachments } from "@/components/forum/post-attachments";
 import { roleLabel } from "@/lib/ranks";
 import { cn } from "@/lib/utils";
 
@@ -50,18 +51,7 @@ export function ForumPostCard({ post, reactions, actions, bestAnswer = false, so
         <div className="fpost__content page-w__rich">
           <RichContent doc={forumDocFromBody(post.body) as RichDoc} />
         </div>
-        {attachments.length > 0 && (
-          <ul className="fpost__attachments" aria-label="Anexos">
-            {attachments.map((a) => (
-              <li key={a.id}>
-                <a href={a.url} target="_blank" rel="noopener noreferrer" className="fpost__attach">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={a.url} alt={a.filename} loading="lazy" className="fpost__attach-img" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+        <PostAttachments attachments={attachments} />
         {(reactions || solutionControl || quoteControl) && (
           <footer className="fpost__foot">
             {(quoteControl || solutionControl) && (

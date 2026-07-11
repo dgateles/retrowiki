@@ -4080,7 +4080,7 @@
 
   /* Anexos de imagem em posts */
   .fpost__attachments { @apply mt-3 flex flex-wrap gap-2; }
-  .fpost__attach { @apply block overflow-hidden rounded-lg border border-border transition-colors hover:border-ring; }
+  .fpost__attach { @apply block cursor-pointer overflow-hidden rounded-lg border border-border transition-colors hover:border-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring; }
   .fpost__attach-img { @apply h-28 w-28 object-cover; }
   .fatt-picker { @apply flex flex-col gap-2; }
   .fatt-picker__list { @apply flex flex-wrap gap-2; }

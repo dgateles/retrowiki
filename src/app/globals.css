@@ -236,6 +236,10 @@
      garante que full-bleed (100vw) nunca crie barra horizontal fantasma. */
   html {
     overflow-x: clip;
+    /* Reserva a calha da barra de rolagem sempre. Assim, quando um overlay do
+       Radix (dropdown/modal) trava o scroll do body, a barra não some e o
+       layout não "pula" para o lado. */
+    scrollbar-gutter: stable;
   }
   body {
     background-color: var(--background);
@@ -267,6 +271,15 @@
     background-color: color-mix(in srgb, var(--primary) 30%, transparent);
   }
   /* Acento retro sutil: numerais tabulares em dados/selos via .tabular-nums (shadcn) */
+}
+
+/* Fora de @layer (regra sem camada vence o <style> em runtime do Radix por
+   ordem/especificidade). O react-remove-scroll adiciona `margin-right: 15px`
+   ao body ao travar o scroll para compensar a barra removida — mas como usamos
+   `scrollbar-gutter: stable`, a barra nunca sai do layout, então essa margem só
+   faz o conteúdo "pular". Neutralizamos. */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
 }
 
 @layer components {
