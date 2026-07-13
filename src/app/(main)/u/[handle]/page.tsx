@@ -161,40 +161,21 @@ export default async function ProfilePage({
       </div>
 
       <header className="profile-id">
-        <span className="profile-id__avatar" aria-hidden="true">
-          {profile.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.avatarUrl} alt="" className="profile-id__avatar-img" />
-          ) : (
-            initials(profile.displayName)
-          )}
-        </span>
-        <div className="profile-id__bar">
+        {/* Topo: avatar + nome + ações. No desktop, `contents` dissolve o wrapper
+            para que tudo (incl. a barra) fique numa linha só. */}
+        <div className="profile-id__top">
+          <span className="profile-id__avatar" aria-hidden="true">
+            {profile.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profile.avatarUrl} alt="" className="profile-id__avatar-img" />
+            ) : (
+              initials(profile.displayName)
+            )}
+          </span>
           <div className="profile-id__ident">
             <h1 className="profile-id__name">{profile.displayName}</h1>
             <p className="profile-id__role">@{profile.handle} · {roleLabel(profile.role)}</p>
           </div>
-          <dl className="profile-id__stats">
-            <div className="profile-id__stat">
-              <dt className="profile-id__stat-label">Membro desde</dt>
-              <dd className="profile-id__stat-value">{joined}</dd>
-            </div>
-            <div className="profile-id__stat">
-              <dt className="profile-id__stat-label">Visto por último</dt>
-              <dd className="profile-id__stat-value">
-                {lastSeen ? lastSeen.value : "—"}
-                {lastSeen?.online && <span className="profile-id__online" aria-hidden="true" />}
-              </dd>
-            </div>
-            <div className="profile-id__stat">
-              <dt className="profile-id__stat-label">Seguidores</dt>
-              <dd className="profile-id__stat-value tabular-nums">{followCounts.followers}</dd>
-            </div>
-            <div className="profile-id__stat">
-              <dt className="profile-id__stat-label">Seguindo</dt>
-              <dd className="profile-id__stat-value tabular-nums">{followCounts.following}</dd>
-            </div>
-          </dl>
           {isOwner ? (
             <Button asChild size="sm" className="profile-id__activity">
               <Link href="#atividade"><FileText className="size-4" aria-hidden="true" /> Ver minha atividade</Link>
@@ -209,6 +190,27 @@ export default async function ProfilePage({
             </div>
           ) : null}
         </div>
+        <dl className="profile-id__stats">
+          <div className="profile-id__stat">
+            <dt className="profile-id__stat-label">Membro desde</dt>
+            <dd className="profile-id__stat-value">{joined}</dd>
+          </div>
+          <div className="profile-id__stat">
+            <dt className="profile-id__stat-label">Visto por último</dt>
+            <dd className="profile-id__stat-value">
+              {lastSeen ? lastSeen.value : "—"}
+              {lastSeen?.online && <span className="profile-id__online" aria-hidden="true" />}
+            </dd>
+          </div>
+          <div className="profile-id__stat">
+            <dt className="profile-id__stat-label">Seguidores</dt>
+            <dd className="profile-id__stat-value tabular-nums">{followCounts.followers}</dd>
+          </div>
+          <div className="profile-id__stat">
+            <dt className="profile-id__stat-label">Seguindo</dt>
+            <dd className="profile-id__stat-value tabular-nums">{followCounts.following}</dd>
+          </div>
+        </dl>
       </header>
 
       <div className="profile-grid">

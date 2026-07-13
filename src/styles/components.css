@@ -3002,22 +3002,23 @@
   .profile-cover__img {
     @apply absolute inset-0 size-full object-cover;
   }
+  /* Mobile: coluna (topo + barra full-width). Desktop: uma linha só. */
   .profile-id {
-    @apply flex flex-row items-start gap-3 px-4 lg:items-end lg:gap-4;
+    @apply flex flex-col gap-3 px-4 lg:flex-row lg:items-end lg:gap-4;
+  }
+  /* Wrapper do topo. No desktop vira `contents` (some do layout), deixando
+     avatar/nome/ações e a barra todos como itens diretos da linha. */
+  .profile-id__top {
+    @apply flex flex-wrap items-start gap-3 lg:contents;
   }
   .profile-id__avatar {
-    @apply relative -mt-8 flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-xl font-bold text-primary sm:size-20 sm:text-2xl lg:-mt-12 lg:size-24;
+    @apply relative -mt-8 flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-xl font-bold text-primary sm:size-20 sm:text-2xl lg:order-1 lg:-mt-12 lg:size-24;
   }
   .profile-id__avatar-img {
     @apply size-full object-cover;
   }
-  /* Barra do perfil (estilo IPB): nome = 1º item, stats = células com divisórias.
-     Desktop (lg): tudo numa linha. Abaixo: nome+botão em cima, stats em grade 2×2. */
-  .profile-id__bar {
-    @apply flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-3;
-  }
   .profile-id__ident {
-    @apply order-1 min-w-0 lg:pr-2;
+    @apply min-w-0 flex-1 lg:order-2 lg:flex-none lg:pr-2;
   }
   .profile-id__name {
     @apply text-lg font-bold tracking-tight sm:text-xl;
@@ -3028,14 +3029,15 @@
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
-  /* Mobile: grade 2×2 com divisórias (gap de 1px sobre bg-border). Desktop: linha. */
+  /* Mobile: barra full-bleed em grade 2×2, células centralizadas, com divisórias
+     (gap de 1px sobre bg-border). Desktop: linha de células por conteúdo. */
   .profile-id__stats {
-    @apply order-3 grid basis-full grid-cols-2 gap-px overflow-hidden border-y border-border bg-border
-           lg:order-2 lg:flex lg:basis-auto lg:gap-0 lg:border-y-0 lg:bg-transparent;
+    @apply -mx-4 grid grid-cols-2 gap-px border-y border-border bg-border
+           lg:order-3 lg:mx-0 lg:flex lg:gap-0 lg:border-y-0 lg:bg-transparent lg:self-center;
   }
   .profile-id__stat {
-    @apply flex flex-col justify-center gap-0.5 bg-background px-4 py-3
-           lg:flex-none lg:whitespace-nowrap lg:border-l lg:border-border lg:bg-transparent lg:py-0;
+    @apply flex flex-col items-center justify-center gap-0.5 bg-background px-3 py-3 text-center
+           lg:flex-none lg:items-start lg:whitespace-nowrap lg:border-l lg:border-border lg:bg-transparent lg:px-4 lg:py-0 lg:text-left;
   }
   .profile-id__stat-label {
     @apply text-xs font-medium uppercase tracking-wide text-muted-foreground/80;
@@ -3047,7 +3049,7 @@
     @apply inline-block size-2 rounded-full bg-success ring-2 ring-success/25;
   }
   .profile-id__activity {
-    @apply order-2 ml-auto shrink-0 lg:order-3 lg:self-center;
+    @apply ml-auto shrink-0 lg:order-4 lg:self-center;
   }
   .profile-cover__edit {
     @apply absolute right-3 top-3 z-10;
