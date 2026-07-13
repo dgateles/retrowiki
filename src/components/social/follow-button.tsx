@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toggleFollowUserAction } from "@/lib/actions/follow-actions";
 
 /** Botão de seguir/deixar de seguir um usuário. */
-export function FollowButton({ targetId, initialFollowing }: { targetId: number; initialFollowing: boolean }) {
+export function FollowButton({ targetId, initialFollowing, className }: { targetId: number; initialFollowing: boolean; className?: string }) {
   const router = useRouter();
   const [following, setFollowing] = useState(initialFollowing);
   const [pending, start] = useTransition();
@@ -27,7 +27,7 @@ export function FollowButton({ targetId, initialFollowing }: { targetId: number;
   }
 
   return (
-    <Button variant={following ? "secondary" : "default"} size="sm" disabled={pending} onClick={toggle}>
+    <Button variant={following ? "secondary" : "default"} size="sm" disabled={pending} onClick={toggle} className={className}>
       {following ? <><UserCheck className="size-4" aria-hidden="true" /> Seguindo</> : <><UserPlus className="size-4" aria-hidden="true" /> Seguir</>}
     </Button>
   );

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toggleIgnoreUserAction } from "@/lib/actions/ignore-actions";
 
 /** Botão de ignorar/deixar de ignorar um usuário. */
-export function IgnoreButton({ targetId, initialIgnoring }: { targetId: number; initialIgnoring: boolean }) {
+export function IgnoreButton({ targetId, initialIgnoring, className }: { targetId: number; initialIgnoring: boolean; className?: string }) {
   const router = useRouter();
   const [ignoring, setIgnoring] = useState(initialIgnoring);
   const [pending, start] = useTransition();
@@ -27,7 +27,7 @@ export function IgnoreButton({ targetId, initialIgnoring }: { targetId: number; 
   }
 
   return (
-    <Button variant={ignoring ? "secondary" : "outline"} size="sm" disabled={pending} onClick={toggle}>
+    <Button variant={ignoring ? "secondary" : "outline"} size="sm" disabled={pending} onClick={toggle} className={className}>
       {ignoring ? <><UserCheck className="size-4" aria-hidden="true" /> Ignorando</> : <><UserX className="size-4" aria-hidden="true" /> Ignorar</>}
     </Button>
   );

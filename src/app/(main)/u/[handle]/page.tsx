@@ -177,16 +177,16 @@ export default async function ProfilePage({
             <p className="profile-id__role">@{profile.handle} · {roleLabel(profile.role)}</p>
           </div>
           {isOwner ? (
-            <Button asChild size="sm" className="profile-id__activity">
+            <Button asChild size="sm" className="profile-id__activity w-full lg:w-auto">
               <Link href="#atividade"><FileText className="size-4" aria-hidden="true" /> Ver minha atividade</Link>
             </Button>
           ) : viewer ? (
-            <div className="profile-id__activity flex flex-wrap gap-2">
-              <FollowButton targetId={profile.id} initialFollowing={followingProfile} />
-              <Button asChild variant="outline" size="sm">
+            <div className={`profile-id__activity grid gap-2 lg:flex ${canIgnore ? "grid-cols-3" : "grid-cols-2"}`}>
+              <FollowButton targetId={profile.id} initialFollowing={followingProfile} className="w-full lg:w-auto" />
+              <Button asChild variant="outline" size="sm" className="w-full lg:w-auto">
                 <Link href={`/mensagens/nova?para=${profile.handle}`}><Mail className="size-4" aria-hidden="true" /> Mensagem</Link>
               </Button>
-              {canIgnore && <IgnoreButton targetId={profile.id} initialIgnoring={ignoringProfile} />}
+              {canIgnore && <IgnoreButton targetId={profile.id} initialIgnoring={ignoringProfile} className="w-full lg:w-auto" />}
             </div>
           ) : null}
         </div>
@@ -242,6 +242,9 @@ export default async function ProfilePage({
                     ? "Rank máximo alcançado."
                     : `${rank.pointsToNext} ${rank.pointsToNext === 1 ? "ponto" : "pontos"} até o próximo rank.`}
                 </p>
+                <Link href={`/u/${profile.handle}/ranks`} className="mt-3 inline-block text-xs font-medium text-primary hover:underline">
+                  Ver escala completa →
+                </Link>
               </CardContent>
             </Card>
           )}
@@ -272,10 +275,11 @@ export default async function ProfilePage({
 
           {gami.enabled && (
             <Card>
-              <CardHeader>
+              <CardHeader className="flex-row items-center justify-between gap-2">
                 <h2 id="p-badges" className="text-base font-semibold leading-none">Conquistas</h2>
+                <Link href={`/u/${profile.handle}/badges`} className="text-xs font-medium text-primary hover:underline">Ver tudo →</Link>
               </CardHeader>
-              <CardContent><BadgeList items={userBadges} /></CardContent>
+              <CardContent><BadgeList items={userBadges.slice(0, 8)} /></CardContent>
             </Card>
           )}
 

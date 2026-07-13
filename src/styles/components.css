@@ -1811,6 +1811,9 @@
   .page {
     @apply mx-auto w-full max-w-6xl px-6 py-10;
   }
+  .page--narrow {
+    @apply max-w-2xl;
+  }
   .page--wide {
     @apply max-w-7xl;
   }
@@ -3048,8 +3051,9 @@
   .profile-id__online {
     @apply inline-block size-2 rounded-full bg-success ring-2 ring-success/25;
   }
+  /* Mobile: ações ocupam a linha inteira (botões dividem o espaço). Desktop: à direita. */
   .profile-id__activity {
-    @apply ml-auto shrink-0 lg:order-4 lg:self-center;
+    @apply basis-full shrink-0 lg:order-4 lg:ml-auto lg:basis-auto lg:self-center;
   }
   .profile-cover__edit {
     @apply absolute right-3 top-3 z-10;
@@ -3382,6 +3386,82 @@
   }
   .badge-pill--gold {
     @apply border-yellow-500/40 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400;
+  }
+
+  /* Escada de ranks (/u/[handle]/ranks) */
+  .rankladder {
+    @apply mt-6 flex flex-col overflow-hidden rounded-xl border border-border;
+  }
+  .rankladder__item {
+    @apply flex items-center gap-3 border-b border-border bg-card px-4 py-3 last:border-b-0;
+  }
+  .rankladder__item--earned {
+    @apply bg-card;
+  }
+  .rankladder__item--current {
+    @apply bg-primary/5;
+  }
+  .rankladder__medal {
+    @apply grid size-10 shrink-0 place-items-center rounded-full border border-border bg-muted text-muted-foreground;
+  }
+  .rankladder__item--earned .rankladder__medal {
+    @apply border-primary/30 bg-primary/10 text-primary;
+  }
+  .rankladder__body {
+    @apply min-w-0 flex-1;
+  }
+  .rankladder__title {
+    @apply flex flex-wrap items-center gap-2 text-sm font-semibold;
+  }
+  .rankladder__item:not(.rankladder__item--earned) .rankladder__title {
+    @apply text-muted-foreground;
+  }
+  .rankladder__badge {
+    @apply rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-medium text-primary;
+  }
+  .rankladder__meta {
+    @apply mt-0.5 flex flex-wrap items-center gap-1 text-xs text-muted-foreground;
+  }
+  .rankladder__req {
+    @apply tabular-nums;
+  }
+
+  /* Grade de badges (/u/[handle]/badges) */
+  .badgegrid__heading {
+    @apply mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-muted-foreground first:mt-0;
+  }
+  .badgegrid {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2;
+  }
+  .badgecard {
+    @apply flex items-start gap-3 rounded-xl border border-border bg-card p-4;
+  }
+  .badgecard--locked {
+    @apply border-dashed bg-transparent;
+  }
+  .badgecard__icon {
+    @apply grid size-10 shrink-0 place-items-center rounded-full border;
+  }
+  .badgecard__icon--bronze {
+    @apply border-amber-700/30 bg-amber-700/10 text-amber-700 dark:text-amber-500;
+  }
+  .badgecard__icon--silver {
+    @apply border-slate-400/40 bg-slate-400/10 text-slate-600 dark:text-slate-300;
+  }
+  .badgecard__icon--gold {
+    @apply border-yellow-500/40 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400;
+  }
+  .badgecard__icon--locked {
+    @apply border-border bg-muted text-muted-foreground;
+  }
+  .badgecard__body {
+    @apply min-w-0 flex-1;
+  }
+  .badgecard__name {
+    @apply text-sm font-semibold;
+  }
+  .badgecard__desc {
+    @apply mt-0.5 text-sm text-muted-foreground;
   }
 
   /* Cartão de rank (perfil e menu). */
