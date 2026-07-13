@@ -77,6 +77,10 @@ export default async function ForumPage({ params, searchParams }: { params: Prom
                     {s.locked && <Lock className="ml-1 inline size-3.5 text-muted-foreground" aria-label="Trancado" />}
                   </Link>
                   {s.description && <p className="forum-row__desc">{s.description}</p>}
+                  <p className="forum-row__meta">
+                    <span className="tabular-nums">{count(s.topicsCount, "tópico", "tópicos")} · {count(s.postsCount, "post", "posts")}</span>
+                    {s.lastPosterName && <span className="forum-row__meta-last">· {s.lastPosterName} · {fmt(s.lastPostAt)}</span>}
+                  </p>
                 </div>
                 <div className="forum-row__stats tabular-nums">
                   <span>{count(s.topicsCount, "tópico", "tópicos")}</span>

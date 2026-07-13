@@ -69,6 +69,11 @@ export default async function ForumIndexPage() {
                           ))}
                         </ul>
                       )}
+                      {/* Meta compacto só no mobile (as colunas à direita ficam ocultas lá). */}
+                      <p className="forum-row__meta">
+                        <span className="tabular-nums">{count(f.topicsCount, "tópico", "tópicos")} · {count(f.postsCount, "post", "posts")}</span>
+                        {f.lastPosterName && <span className="forum-row__meta-last">· {f.lastPosterName} · {fmt(f.lastPostAt)}</span>}
+                      </p>
                     </div>
                     <div className="forum-row__stats tabular-nums">
                       <span>{count(f.topicsCount, "tópico", "tópicos")}</span>
