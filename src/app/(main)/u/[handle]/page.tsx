@@ -179,15 +179,13 @@ export default async function ProfilePage({
               <dt className="profile-id__stat-label">Membro desde</dt>
               <dd className="profile-id__stat-value">{joined}</dd>
             </div>
-            {lastSeen && (
-              <div className="profile-id__stat">
-                <dt className="profile-id__stat-label">Visto por último</dt>
-                <dd className="profile-id__stat-value">
-                  {lastSeen.value}
-                  {lastSeen.online && <span className="profile-id__online" aria-hidden="true" />}
-                </dd>
-              </div>
-            )}
+            <div className="profile-id__stat">
+              <dt className="profile-id__stat-label">Visto por último</dt>
+              <dd className="profile-id__stat-value">
+                {lastSeen ? lastSeen.value : "—"}
+                {lastSeen?.online && <span className="profile-id__online" aria-hidden="true" />}
+              </dd>
+            </div>
             <div className="profile-id__stat">
               <dt className="profile-id__stat-label">Seguidores</dt>
               <dd className="profile-id__stat-value tabular-nums">{followCounts.followers}</dd>

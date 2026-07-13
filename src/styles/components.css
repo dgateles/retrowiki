@@ -3003,18 +3003,18 @@
     @apply absolute inset-0 size-full object-cover;
   }
   .profile-id {
-    @apply flex flex-col gap-3 px-4 lg:flex-row lg:items-end lg:gap-4;
+    @apply flex flex-row items-start gap-3 px-4 lg:items-end lg:gap-4;
   }
   .profile-id__avatar {
-    @apply relative -mt-10 flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-2xl font-bold text-primary sm:size-24 lg:-mt-12;
+    @apply relative -mt-8 flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary/10 text-xl font-bold text-primary sm:size-20 sm:text-2xl lg:-mt-12 lg:size-24;
   }
   .profile-id__avatar-img {
     @apply size-full object-cover;
   }
   /* Barra do perfil (estilo IPB): nome = 1º item, stats = células com divisórias.
-     Desktop (lg): tudo numa linha. Abaixo: nome+botão em cima, stats full-width embaixo. */
+     Desktop (lg): tudo numa linha. Abaixo: nome+botão em cima, stats em grade 2×2. */
   .profile-id__bar {
-    @apply flex flex-1 flex-wrap items-center gap-x-4 gap-y-3;
+    @apply flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-3;
   }
   .profile-id__ident {
     @apply order-1 min-w-0 lg:pr-2;
@@ -3028,13 +3028,14 @@
   .profile-id__meta {
     @apply mt-1 text-sm text-muted-foreground;
   }
+  /* Mobile: grade 2×2 com divisórias (gap de 1px sobre bg-border). Desktop: linha. */
   .profile-id__stats {
-    @apply order-3 flex basis-full items-stretch border-y border-border
-           lg:order-2 lg:basis-auto lg:border-y-0 lg:border-l lg:border-border;
+    @apply order-3 grid basis-full grid-cols-2 gap-px overflow-hidden border-y border-border bg-border
+           lg:order-2 lg:flex lg:basis-auto lg:gap-0 lg:border-y-0 lg:bg-transparent;
   }
   .profile-id__stat {
-    @apply flex flex-1 flex-col justify-center gap-0.5 border-l border-border px-4 py-2.5 first:border-l-0
-           lg:flex-none lg:py-0;
+    @apply flex flex-col justify-center gap-0.5 bg-background px-4 py-3
+           lg:flex-none lg:whitespace-nowrap lg:border-l lg:border-border lg:bg-transparent lg:py-0;
   }
   .profile-id__stat-label {
     @apply text-xs font-medium uppercase tracking-wide text-muted-foreground/80;
